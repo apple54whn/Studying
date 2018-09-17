@@ -2604,6 +2604,93 @@ public class StaticFilter implements Filter {
 
 
 
+# 8 Ajax
+
+## 8.1 Ajax是什么
+
+* Ajax(asynchronous javascript and xml)：异步的js和xml。它能**使用js异步访问服务器**
+* 服务器给客户端的响应一般是整个页面，一个html完整页面！但在ajax中因为是局部刷新，那么服务器就不用再响应整个页面！而只是数据，如下：
+  * text：纯文本
+  * xml：大家都熟悉！！！
+  * json：它是js提供的数据交互格式，它在ajax中最受欢迎！
+* Ajax的优缺点
+  * 优点：
+    * 异步交互：增强了用户的体验！
+    * 性能：因为服务器无需再响应整个页面，只需要响应部份内容，所以服务器的压力减轻了
+  * 缺点：
+    * ajax不能应用在所有场景！
+      * ajax无端的增多了对服务器的访问次数，给服务器带来了压力！
+
+## 8.2 异步交互和同步交互
+
+* 同步：发一个请求，就要等待服务器的响应结束，然后才能发第二个请求！中间这段时间就是一个字“卡”，刷新的是整个页面！
+  * 异步：发一个请求后，无需等待服务器的响应，然后就可以发第二个请求！可以使用js接收服务器的响应，然后使用js来局部刷新！
+
+## 8.3 Ajax应用场景
+
+  * 谷歌/百度的搜索框自动补全
+  * 用户注册时（校验用户名是否被注册过）
+  * 下拉框联动
+
+## 8.4 ajax发送异步请求（四步操作）
+
+1. **得到XMLHttpRequest对象**
+
+   * 大多数浏览器都支持：var xmlHttp = new XMLHttpRequest();
+   * IE6.0：var xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+     IE5.5以更早版本的IE：var xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+2. **打开与服务器的连接(open)**
+
+    * xmlHttp.open("GET", "/day23_1/AServlet", true)：用来打开与服务器的连接，它需要三个参数：
+       * **请求方式**：可以是GET或POST
+       * **请求的URL**：指定服务器端资源，例如；/day23_1/AServlet
+       * **请求是否为异步**：如果为true表示发送异步请求，否则同步请求！
+
+3. **发送请求(send)**
+
+   * xmlHttp.send(null)：如果不给可能会造成部份浏览器无法发送！
+       * 参数：就是请求体内容！如果是GET请求没有请求体，必须给出null
+       * **发送POST请求**(如果发送请求时需要**带有参数**，一般都用POST请求)
+         * **设置Content-Type请求头**
+           * xmlHttp.**setRequestHeader**("Content-Type", "application/x-www-form-urlencoded");
+
+4. **回调函数(onreadystatechange)**
+
+   * 在xmlHttp对象的一个事件上设置回调函数：**onreadystatechange**
+
+   - xmlHttp对象一共有5个状态：
+     - 0状态：刚创建，还没有调用open()方法; 
+     - 1状态：请求开始：调用了open()方法，但还没有调用send()方法
+     - 2状态：调用完了send()方法了；
+     - 3状态：服务器已经开始响应，但不表示响应结束了！
+     - **4状态**：服务器响应结束！（通常我们只关心这个状态！！！）
+   - **得到xmlHttp对象的状态**：var state = xmlHttp.**readyState**;//可能是0、1、2、3、4
+   - 得到服务器响应的状态码：var status = xmlHttp.**status**;//例如为200、404、500
+   - 得到服务器响应的内容：
+     - var content = xmlHttp.responseText;//得到服务器的响应的文本格式的内容
+     - var content = xmlHttp.responseXML;//得到服务器的响应的xml响应的内容，它是Document对象了！
+
+   ```javascript
+   xmlHttp.onreadystatechange = function() {//xmlHttp的5种状态都会调用本方法
+       //双重判断：判断是否为4状态，而且还要判断是否为200
+       if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+           // 获取服务器的响应内容
+           var text = xmlHttp.responseText;
+       }
+   };
+   ```
+
+5. 5
+
+6. 
+
+
+
+
+
+
+
 # 9 国际化
 
 * 一般内容排版都不一样，尽量再写一份HTML页面
