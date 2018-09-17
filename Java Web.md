@@ -886,9 +886,7 @@ Date: Thu, 16 Aug 2018 07:20:30 GMT //响应的时间，这可能会有8小时�
     <meta http-equiv="Refresh" content="3;url=http://www.itcast.cn">
     ```
 
-# 
 
-# 
 
 # 3 Servlet
 
@@ -1274,11 +1272,6 @@ resp.getWriter().write("invite:"+count+"times");
     ```java
     PrintWriter writer = response.getWriter()
     ```
-
-
-## 
-
-
 
 
 
@@ -2401,6 +2394,214 @@ ${requestScope.emp.address.street }
     * ServletRequest getServletRequest()；
 
   * ServletRequestAttributeEvent ：略
+
+
+
+# 7 Filter(过滤器)
+
+* Java Web三大组件都需要在web.xml中进行配置
+
+  Servlet、Listener(2个感知监听器不需要配置)、Filter
+
+* 过滤器：它会在**一组资源**（jsp、servlet、.css、.html等等）**的前面执行**！它可以让请求得到目标资源，也可以不让请求达到！**过滤器有<span style="font-family:monaco;color:red;font-weight:bold">拦截请求</span>的能力**！
+
+* **过滤器如何编写：**（**单例**）
+
+  1. 写一个类**实现Filter接口**
+
+  2. 在web.xml中进行**配置**
+
+     ```xml
+     <filter>
+       <filter-name>xxx</filter-name>
+       <filter-class>cn.itcast.web.filter.AFitler</fitler-class>
+     </servlet>
+     <fitler-mapping>
+       <filter-name>xxx</filter-name>
+       <url-pattern>/*</url-pattern>
+     </filter-mapping>
+     ```
+
+* **Filter接口**
+
+  * void **init**(FilterConfig)：创建之后，马上执行；Filter会在服务器启动时就创建！
+  * void **destory**()：销毁之前执行！在服务器关闭时销毁
+  * void <span style="font-family:monaco;color:red;font-weight:bold">doFilter**(ServletRequest,ServletResponse,**FilterChain)</span>：每次过滤时都会执行
+
+* FilterConfig-->与ServletConfig相似
+    * 获取初始化参数：getInitParameter()
+    * 获取过滤器名称：getFilterName()
+    * 获取appliction：getServletContext()
+
+  * **FilterChain**
+
+      * <span style="font-family:monaco;color:red;font-weight:bold">doFilter(ServletRequest, ServletResponse)</span>：**放行**！**相当于调用了目标Servlet的service()方法**！
+
+
+
+* **多过滤器**
+
+  * **FilterChain#doFilter()方法：执行目标资源，或是执行下一个过滤器！**
+
+    如果没有下一个过滤器那么执行的是目标资源，如果有，那么就执行下一个过滤器！
+
+* 过滤器的四种拦截方式，在< filter-mapping>中进行配置!
+
+*   < dispatcher>**REQUEST**< /dispatcher>默认的！拦截请求
+    < dispatcher>**FORWARD**< /dispatcher> 拦截转发
+    < dispatcher>**INCLUDE**< /dispatcher> 拦截包含
+    < dispatcher>**ERROR**< /dispatcher> 拦截错误
+
+* 
+
+* 
+
+* 
+
+* 多个过滤器的执行顺序
+
+  < filter-mapping>的**配置顺序决定了过滤器的执行顺序**！
+
+* 过滤器的应用场景：
+
+  * **执行目标资源之前做预处理工作**，例如设置编码，这种试通常都会**放行**，在目标资源执行前做准备工作
+  * **通过条件判断是否放行**，例如校验当前用户是否已经登录，或者用户IP是否已经被禁用
+  * **在目标资源执行后**，做一些**后续的特殊处理**工作，例如把目标资源输出的数据进行处理
+
+## 7.1 分IP统计网站访问次数
+
+* 统计工作需要在所有资源之前都执行，那么就可以放到**Filter**中了,不做拦截操作！**获取map并保存数据**
+* 用Map<String,Integer>来装载统计的数据,整个网站只需要一个**Map**即可！使用**ServletContextListener**，在服务器启动时完成创建，并保存到ServletContext中
+* 打印Map中的数据
+
+## 7.2 粗粒度权限控制（拦截是否登录、拦截用户名admin权限）
+
+* RBAC(基于角色的权限控制)细粒度权限控制
+
+  * tb_user
+  * tb_role
+  * tb_userrole
+  * tb_menu(增、删、改、查)
+  * tb_rolemenu
+
+* 我们给出三个页面：index.jsp、user.jsp、admin.jsp。
+
+  * index.jsp：谁都可以访问，没有限制；
+
+  * user.jsp：只有登录用户才能访问；
+
+  * admin.jsp：只有管理员才能访问。
+
+* 在Servlet中判断登录成功后保存信息到HTTPSession中，创建两个Filter，分别过滤user和admin的Session。Filter中Session的获取需将req强转为Http后才可以得到
+
+## 7.3 全站编码问题(增强request)
+
+```java
+//装饰Request
+public class EncodingRequest extends HttpServletRequestWrapper {
+	private HttpServletRequest req;
+	
+	public EncodingRequest(HttpServletRequest request) {
+		super(request);
+		this.req = request;
+	}
+	public String getParameter(String name) {
+		String value = req.getParameter(name);
+		// 处理编码问题
+		try {
+			value = new String(value.getBytes("iso-8859-1"), "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		return value;
+	}
+}
+```
+
+```java
+public void doFilter(ServletRequest request, ServletResponse response,
+                     FilterChain chain) throws IOException, ServletException {
+    request.setCharacterEncoding("utf-8");   // 处理post请求编码问题
+    
+    HttpServletRequest req = (HttpServletRequest) request;
+		/*
+		 * 调包request
+		 * 1. 写一个request的装饰类
+		 * 2. 在放行时，使用我们自己的request
+		 */
+    if(req.getMethod().equals("GET")) {
+        EncodingRequest er = new EncodingRequest(req);
+        chain.doFilter(er, response);
+    } else if(req.getMethod().equals("POST")) {
+        chain.doFilter(request, response);
+    }
+}
+```
+
+
+
+## 7.4 页面静态化(增强response)
+
+```java
+public class StaticResponse extends HttpServletResponseWrapper {
+	private PrintWriter pw;
+	//String path：html文件路径！
+	public StaticResponse(HttpServletResponse response, String path) 
+			throws FileNotFoundException, UnsupportedEncodingException {
+		super(response);
+		// 创建一个与html文件路径在一起的流对象
+		pw = new PrintWriter(path, "utf-8");
+	}
+	public PrintWriter getWriter() {
+		// 返回一个与html绑定在一起的printWriter对象
+		// jsp会使用它进行输出，这样数据都输出到html文件了。
+		return pw;
+	}
+}
+```
+
+```java
+public class StaticFilter implements Filter {
+	private FilterConfig config;
+	public void destroy() {}
+	public void init(FilterConfig fConfig) throws ServletException {
+		this.config = fConfig;
+	}
+	public void doFilter(ServletRequest request, 
+			ServletResponse response, FilterChain chain) 
+					throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		/*
+		 * 1. 第一次访问时，查找请求对应的html页面是否存在，如果存在重定向到html
+		 * 2. 如果不存在，放行！把servlet访问数据库后，输出给客户端的数据保存到一个html文件中
+		 *   再重定向到html
+		 * 一、获取category参数！
+		 * category有四种可能：null --> null.html....
+		 * html页面的保存路径, htmls目录下
+		 * 判断对应的html文件是否存在，如果存在，直接重定向！
+		 */
+		String category = request.getParameter("category");
+		String htmlPage = category + ".html";//得到对应的文件名称
+		String htmlPath = config.getServletContext().getRealPath("/htmls");//得到文件目录
+		File destFile = new File(htmlPath, htmlPage);
+		if(destFile.exists()) {//如果文件存在
+			// 重定向到这个文件
+			res.sendRedirect(req.getContextPath() + "/htmls/" + htmlPage);
+			return;
+		}
+		/*
+		 * 二、如果html文件不存在，我们要生成html
+		 * * 调包response，让它的getWriter()与一个html文件绑定，那么show.jsp的输出就到了html中
+		 */
+		StaticResponse sr = new StaticResponse(res, destFile.getAbsolutePath());
+		chain.doFilter(request, sr);//放行，即生成了html文件
+		// 这时页面已经存在，重定向到html文件
+		res.sendRedirect(req.getContextPath() + "/htmls/" + htmlPage);
+	}
+}
+```
+
 
 
 # 9 国际化
