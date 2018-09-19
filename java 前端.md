@@ -4,7 +4,7 @@
 
 * **规范**
 
-  ```
+  ```html
   <!DOCTYPE html>
   <html lang='en'>
   	<head>
@@ -24,61 +24,59 @@
 
   `<div></div>`   **块级元素**
 
-  `<span></span>`   **行内组合元素**
+  `<span></span>`   **内联元素**
 
-  
 
-  `<pre></pre>`   **预格式文本**，保留原有格式
 
-  `&lt;&gt;&amp;&nbsp;`   **转义字符**(<>&空格)
+​      `<pre></pre>`   **预格式文本**，保留原有格式
 
-  `<!--注释-->`   **注释**
+​      `&lt;&gt;&amp;&nbsp;`   **转义字符**(<>&空格)
 
-  `<hr/>`   **横线**
+​      `<!--注释-->`   **注释**
 
-  `<br/>`   **换行**
+​      `<hr/>`   **横线**
 
-  
+​      `<br/>`   **换行**
 
-* **HTML样式(style)**
+* HTML样式(style)尽量使用CSS来操作
 
-  * **字体、颜色、尺寸**
+  * 字体、颜色、尺寸
 
-  ```
+  ```html
   <p style="font-family: Consolas;color: white;font-size: 20px;">学习HTML</p>
   ```
 
-  * **文本对齐、背景颜色**
+  * 文本对齐、背景颜色
 
-  ```
+  ```html
   <p style="text-align: center;background-color: gray">HTML</p>
   ```
 
 * **列表标签**
 
-  `<ol>` `<ul>` `<li>`   **有序、无序、列表** type='1'或'a'或'i'或'A'或'I'  type='circle'等
+  `<ol>` `<ul>` `<li>`   **有序、无序、列表** **type**='1'或'a'或'i'或'A'或'I'或type='circle'等；**start**；**reversed**
 
   `<dl>` `<dt>` `<dd>`   **定义列表、定义项目、描述**
 
 * **图像标签**
 
-  `<img src = 'test.jpg' width='400' height='300'alt='测试图片'/>` 
+  `<img src = 'test.jpg' width='400' height='300'alt='无法显示'/>` 
 
 * **超链接标签**
 
-  `<a href = 'https://www.baidu.com' target='_blank'>百度链接</a>`默认是_self，不需要跳转时src值填#
+  `<a href='https://www.qq.com' target='_blank'>百度链接</a>`默认是_self，不需要跳转时href值填#
 
   在**定位资源**时：
 
-  ```
+  ```html
   <a name='top'>top</a>
   <a href='#top'>returnTop</a>
   ```
 
 * **表格标签**
 
-  ```
-  <table border='1' cellpading='10' cellspacing='10'> <!--边框粗细、边沿与内容间距、单元格间距，但是推荐在CSS中修改-->
+  ```html
+  <table border='1' cellpadding='10' cellspacing='10' bgcolor="aqua"> <!--表格框粗细、边沿与内容间距、单元格间距，背景颜色，但是推荐在CSS中修改-->
   	<caption>表格标题</caption>
   	<thead>
   		<tr>
@@ -106,7 +104,7 @@
 
   * `<form></form>`: 定义一个表单的范围 
 
-    * **action**：提交到地址，默认提交到当前的页面 
+    * **action**：提交到地址，默认提交到当前的页面（可以是一个页面，也可以是后台代码）
     * **method**：常用的有两种  get和post，默认是get请求 
       * **get和post区别**
         1. get请求地址栏会携带提交的数据，post不会携带（请求体里面。在第七天时候讲http协议时候）
@@ -116,21 +114,26 @@
 
   * **输入项**`<input type="输入项类型">`
 
-    * **text**：普通 (name属性)
+    ```html
+    <input maxlength="" size="" readonly="" placeholder="" required autofocus >
+    	  内容最大长度   框框大小    只读	     占位符            必填   自动获得焦点
+    ```
 
-    * **password**：密码(name属性)
+    * **text**：普通 (**name属性**)
 
-    * **radio**：单选(name属性且相同，value) checked=true/false
+    * **password**：密码(**name属性**)
 
-    * **checkbox**：多选(name属性且相同，value) checked=true/false
+    * **radio**：单选(**name属性相同**，value) checked=true/false
 
-    * **file**：上传文件
+    * **checkbox**：多选(**name属性相同**，value) checked=true/false
 
-    * **hidden**：隐藏
+    * **file**：上传文件(**name属性**)
+
+    * **hidden**：隐藏(**name属性**，value)
 
     * **submit**：提交按钮
 
-      ```
+      ```html
       <input type="submit"/>
       <input type="submit" value="注册"/>
       ```
@@ -140,25 +143,24 @@
 
     * **button**:普通按钮，和JS使用
 
-      
+    * **reset**:重置按钮
 
-    * **下拉输入项**
+  * **下拉输入项select(name属性)**
 
-      **multiple**、**autofocus**、**size**
+    ```html
+    <select name="birth" multiple  size="2">
+        				 多行显示  自动获得焦点    显示行数
+    	<option value="1991" selected>1991</option>
+    	<option value="1992">1992</option>
+    	<option value="1993">1993</option>
+    </select>
+    ```
 
-      ```
-      <select name="birth">
-      	<option value="1991" selected>1991</option>
-      	<option value="1992">1992</option>
-      	<option value="1993">1993</option>
-      </select>
-      ```
+  * **文本域textarea(name属性)**目前都不用了
 
-    * **文本域**
-
-      ```
-      <textarea cols="10" rows="10"></textarea>
-      ```
+    ```html
+    <textarea cols="10" rows="10"></textarea>
+    ```
 
 * 其他标签
 
@@ -182,7 +184,7 @@
 
 * 框架标签
 
-  ```
+  ```html
   <frameset rows="80,*">                        //把页面划分成上下两部分 
        <frame name="top" src="a.html">             //上面页面
        <frameset cols="150,*">                     //把下面部分划分成左右两部分
@@ -194,7 +196,7 @@
 
   点击左边的页面超链接，内容显示在右边的页面中
 
-  ```
+  ```html
   <a href="01-hello.html" target="right">超链接1</a>
   ```
 
@@ -218,7 +220,7 @@
 
   2. 使用html的一个**style元素**实现，写在head里面
 
-     ```
+     ```css
      <style type="text/css">	
      	div {
      		background-color:blue;
@@ -229,7 +231,7 @@
 
   3. 使用头标签 **link，引入外部css文件**
 
-      ```
+      ```css
       <link rel="stylesheet" type="text/css" href="css文件的路径" />
       ```
 
@@ -295,18 +297,27 @@
   1. 边框（**border:**2px solid blue;）
      * 统一设置
      * 单独设置（border-top、border-bottom、border-left、border-right）
-  2. 内边距（**padding**:20px|auto;）
+  2. 内边距（**padding**:20px|auto;）：第二个参数auto和居中类似
      - 统一设置
      - 单独设置（padding-top、padding-bottom、padding-left、padding-right）
   3. 外边距（**margin**:20px|auto）
 
-
+* **CSS的display属性：规定元素应该生成的框的类型**
+  * **none**：此元素**不会被显示**
+  * **block**：此元素将**显示为块级元素**，此元素前后会带有换行符
+  * **inline**：默认。此元素会被显示为**内联元素**，元素前后没有换行符
 
 ## 2.5 CSS的布局（浮动）float
 
-* `float:none|left|right`        文本流向对象的左边|右边
+* **浮动元素**会**脱离正常的文档布局流**，并**吸附**到其**父容器的左边或右边**或**另一个浮动元素的边框**。在正常布局中位于该浮动元素之下的内容，此时会围绕着浮动元素，填满其右侧的空间
+  * 当框 1 向左浮动时，它脱离文档流并且向左移动，直到它的左边缘碰到包含框的左边缘，覆盖框2
+  * 如果把三个框都向左浮动，那框1向左浮动直到碰到包含框，另外两个框向左浮动直到碰到前一个浮动框
+  * 如果包含框太窄，无法容纳水平排列的三个浮动元素，那么其它浮动块向下移动，直到有足够的空间；如果浮动元素的高度不同，那么当它们向下移动时可能被其它浮动元素“卡住”
 
-## 2.6 CSS的布局（定位）
+* `float:none|left|right;`        对象象左边|右边浮动
+  * `clear:none|left|right|both;`    规定元素的哪一侧不允许其他浮动元素
+
+## 2.6 CSS的布局（定位）position
 
 * **position**的属性值：
   * **absolute** ：生成**绝对定位的元素**，相对于 static 定位以外的第一个**父元素**进行定位。 
@@ -328,7 +339,7 @@
 
   - 结合使用百分比和 EM，根据body
 
-    ```
+    ```css
     body {font-size:100%;}
     h1 {font-size:3.75em;}
     p {font-size:0.875em;}
@@ -393,6 +404,10 @@
 * crosshair：十字架
 * url：自定义光标的url
 
+### 2.7.7 其他
+
+* text-decoration(a标签的)：none即为无下划线
+
 
 
 
@@ -423,15 +438,25 @@
 
 * **js和html的结合方式：**
 
-  1. ```
-     <script type="text/javascript">  
-     js代码; 
-     </script>
-     ```
+  * 和HTML同一页下载script标签中
 
-  2. ```
-     <script type="text/javascript" src="1.js"></script>
-     ```
+    ```html
+    <script type="text/javascript">  
+    js代码; 
+    </script>
+    ```
+
+  * 在HTML标签中写入
+
+    ```html
+    <img src="img/1.jpg"  id="img1" onclick="javascript:fun2()">
+    ```
+
+  * 外部引入
+
+    ```html
+    <script type="text/javascript" src="1.js"></script>
+    ```
 
 * **Js的原始类型(五个)**和声明变量
 
@@ -441,7 +466,7 @@
 
   * boolean：**布尔**
 
-  * null：对象引用为空
+  * object：变量是一种Object类型或Null类型
 
   * undefined：定义变量未赋值
 
@@ -451,7 +476,7 @@
 
   * **不区分整数和小数**
 
-    ```
+    ```javascript
     var j = 123;
     alert(j/1000*1000);  //123
     ```
@@ -466,7 +491,7 @@
 
   * **== 和 === 区别（只用===）**
 
-    * == 比较的只是值， === 比较的是**值和类型**
+    * == 比较的只是值(会执行类型转换)， === 比较的是**值和类型**
 
 * **Js循环语句**
 
@@ -476,34 +501,24 @@
 
   * for...in：**遍历数组或者对象的*属性*（对数组或者对象的属性进行循环操作）**
 
-    ```
+    ```javascript
     for (变量 in 对象) {//指定的变量可以是数组元素，也可以是对象的属性
         在此执行代码
     }
     ```
 
-    
-
 * **直接向页面输出的语句**
 
   * 可以向页面输出变量，固定值和html代码
 
-   ```
+    ```javascript
     document.write("aaa");
     document.wirte("<hr/>");
-   ```
-
-* **Js的数组(存放不同的数据类型的数据)**
-
-  1. `var arr = [1,2,3];   var arr = [1,"4",true];`
-  2. `var arr2 = new Array(3,4,5); //定义一个数组，数组里面的元素是3 4 5` 
-     - `var arr1 = new Array(5); arr1[0] = "1"; //定义一个数组，数组的长度是5`
-
-  * **属性  length**：获取到数组的长度
+    ```
 
 * **Js的函数**
 
-  1. ```
+  1. ```javascript
      function 方法名(参数列表) {
      	方法体;
      	返回值可有可无（根据实际需要）;
@@ -512,7 +527,7 @@
 
   2. **匿名函数**
 
-     ```
+     ```javascript
      var funcName = function(参数列表) {
      	方法体和返回值;
      }
@@ -561,24 +576,34 @@
 
 ### 3.2.2 Array对象
 
-* 创建数组（三种），看3.1
-* **属性：length**（数组的长度）
+* 创建数组（三种）**存放不同的数据类型的数据**
+  * `var arr = [1,2,3];   var arr = [1,"4",true];`
+  * `var arr = new Array();`
+  * `var arr2 = new Array(3,4,5); //定义一个数组，数组里面的元素是3 4 5` 
+    - `var arr1 = new Array(5); arr1[0] = "1"; //定义一个数组，数组的长度是5`
+* **特点**：**长度可变**、**length=最大角标+1(切记)**
+* **属性：length**（数组的长度），与Java不同的是**可以设置值为0**从而清空，Java中是final不可修改
+* for in：遍历的是**属性**
 * 方法：
   * concat：数组的连接
-  * join()：根据指定的字符**分割数组**`document.write(arr13.join("-"));`,默认逗号隔开
+  * join()：根据指定的字符**分割数组**`document.write(arr13.join("-"));`,**默认逗号**隔开
   * push()：向数组末尾添加**元素**，**返回数组的新的长度**
     * 如果添加的是一个**数组**，这个时候把数组当做一个**整体字符串**添加进去
   * pop()：表示 删除最后一个元素，**返回删除的那个元素**
   * reverse()：颠倒数组中的元素的顺序，改变原有数组顺序
 
-### 3.2.3 Date对象
+### 3.2.3 Boolean对象
+
+* `var flag = new Boolean(true);`**不传值时默认为false**
+
+### 3.2.4 Date对象
 
 * 在java里面获取当前时间 `Date date = new Date();`
   格式化`toLocaleString(); //2015年4月17日 11:17:12`
 
 * **Js里面获取当前时间(toLocalString())**
 
-  ```
+  ```javascript
   var date = new Date();
   document.write(date);  // Fri Apr 17 10:47:46 UTC+0800 2015 
   document.write(date.toLocaleString());//转换成习惯的格式
@@ -586,54 +611,54 @@
 
 * **获取当前的年方法**
 
-  ```
+  ```javascript
   date.getFullYear()：得到当前的年
   ```
 
 * **获取当前的月方法(0~11)**
 
-  ```
+  ```javascript
   var month = date.getMonth()+1;
   ```
 
 * **获取当前的日**
 
-  ```
+  ```javascript
   var day = date.getDate();
   ```
 
 * **获取当前的星期(0~6)**
 
-  ```
+  ```javascript
   var week = date.getDay();//周日为0
   ```
 
 * **获取当前的小时**
 
-  ```
+  ```javascript
   var hour = date.getHours();
   ```
 
 * **获取当前的分钟**
 
-  ```
+  ```javascript
   var minutes = date.getMinutes();
   ```
 
 * **获取当前的秒**
 
-  ```
+  ```javascript
   var second = date.getSecondes();
   ```
 
 * **获取毫秒数(时间戳)**
 
-  ```
+  ```javascript
   var time = date.getTime();//返回的是1970.1.1至今的毫秒数
   //使用毫秒数处理缓存的效果（不有缓存）；http://www.baidu.com?毫秒数
   ```
 
-### 3.2.4 Math对象
+### 3.2.5 Math对象
 
 * 里面的都是**静态**方法，使用可以直接使用 Math.方法()
 * **属性：**
@@ -644,7 +669,7 @@
   * round(x)：四舍五入
   * random()：得到**[0.0,1.0)**随机数（伪随机数）
 
-### 3.2.5 全局函数
+### 3.2.6 全局函数
 
 * 由于**不属于任何一个对象**，**直接写名称**使用
 
@@ -652,7 +677,7 @@
 
   * **eval()** ： 执行js代码（如果字符串是一个js代码，使用方法直接执行）
 
-    ```
+    ```javascript
     var str = "alert('1234');";
     alert(str);    //alert('1234');
     eval(str);    //1234
@@ -666,18 +691,20 @@
 
   * **isNaN()**:判断当前字符串是否**不是数字**
 
-  * **parseInt()**：类型转换
+  * **parseInt() parseFloat()**：类型转换、进制转换
 
-    ```
+    ```javascript
     var str3 = "123";
     document.write(parseInt(str3)+1);
+    //进制转换
+    parseInt('11',2)//3
     ```
 
-### 3.2.6 函数重载
+### 3.2.7 函数重载
 
 * **Js中不存在函数重载！**调用**最后一个方法！**把**传递的参数保存到 arguments数组里**面来模拟函数重载
 
-  ```
+  ```javascript
   var add = function(){
       let sum = 0;
       for(let i = 0;i<arguments.length;i++){
@@ -687,7 +714,7 @@
   }
   ```
 
-### 3.2.7 其他函数
+### 3.2.8 其他函数
 
 * 自调函数：定义()()，第一个小括号是函数定义，第二个小括号是函数调用
 * 回调函数：作为参数传递的函数 
@@ -705,12 +732,13 @@
 
   * screen: 获取屏幕的信息   `document.write(screen.width+"*"+screen.height);`
 
-  * location: 请求url地址,href属性   
+  * **location**: 请求url信息
 
-    * 获取请求的url地址：`document.write(location.href); `
-    * 设置url地址：`document.write("<input type='button' value='跳转' onclick='tiaozhuan();'")`
+    * **href属性**   
+      * 获取请求的url地址：`document.write(location.href); `
+      * 设置url地址：`<input type='button' value='跳转'onclick="JavaScript:location.href='xxx.html'")`
 
-  * history：请求的url的历史记录
+  * **history**：请求的url的历史记录
 
     * 到上一个url：`history.back();` `history.go(-1);`
     * 到下一个url：`history.forWard();` `history.go(1);`
@@ -725,7 +753,7 @@
 
     * **方法：**(可以不带window)
 
-      * **window.alert()** : 页面弹出一个框，显示内容，可省略window
+      * **window.alert()** : 页面弹出一个框，显示内容，可省略window.一般还是用**console.log()**
 
       * **confirm()**： 确认框，返回值是boolean   `var flag = window.confirm("确认删除？"); `
 
@@ -741,8 +769,8 @@
 
         * **clearInterval**(): 清除setInterval设置的定时器
 
-          ```
-          var id = setInterval("alert('123');",3000);//通过setInterval会有一个返回值
+          ```javascript
+          var id = setInterval("alert('123');",3000);//通过setInterval有一个返回值
           clearInterval(id1);
           ```
 
@@ -750,8 +778,8 @@
 
         * **clearTimeout**() : 清除setTimeout设置的定时器
 
-          ```
-          var id = setTimeout("alert('abc');",4000);
+          ```javascript
+          javascriptvar id = setTimeout("alert('abc');",4000);
           clearTimeout(id);
           ```
 
@@ -759,18 +787,15 @@
 
 * document object model：**文档**（超文本文档）**对象**（提供了属性和方法）**模型**（使用属性和方法操作文档）
 
-* 解析过程:
+* 解析过程：根据html的层级结构，在内存中分配一个树形结构，需要把html中的每部分封装成对象
 
-  * 根据html的层级结构，在内存中分配一个树形结构，需要把html中的每部分封装成对象
+  * **Node节点对象**：这个对象是**这些对象的父对象**；在对象里面找不到想要的方法时从这里面找
+    * **document**对象：整个文档
+      * **element**对象：标签对象
+        * **attribute**对象
+        * **text**对象
 
-    * document对象：整个文档
-    * element对象：标签对象
-    * 属性对象
-
-      - 文本对象
-      - **Node节点对象**：这个对象是**这些对象的父对象**；在对象里面找不到想要的方法时从这里面找
-
-### 3.4.1 document对象（表示整个的文档）
+### 3.4.1 document对象（表示整个文档）
 
 * **方法：**
 
@@ -778,23 +803,23 @@
 
   * **getElementById**()：通过id得到一个元素（标签）**对象**
 
-    ```
+    ```javascript
     var input = document.getElementById("Id");
     input1.value = "bbbbb";///向input里面设置一个值value
     alert(input1.value); //标签对象.属性名称
     ```
 
-  * **getElementsByName**()：通过标签的name属性值得到标签集合（数组）
+  * **getElementsByName**()：通过标签的name属性值得到标签集合（**数组**）
 
-  * **getElementsByClassName**()：通过标签的class的属性值得到标签集合（数组）
+  * **getElementsByClassName**()：通过标签的class的属性值得到标签集合（**数组**）
 
-  * **getElementsByTagName**("标签名称")：通过标签名称得到元素集合（数组）
+  * **getElementsByTagName**("标签名称")：通过标签名称得到元素集合（**数组**）
 
     只有一个标签时通过`document.getElementsBy(Tag)Name("input")[0]`获取元素（标签）对象
 
   【注意】由于我们现在访问的是本地文件，js安全性，谷歌浏览器安全级别很高，不允许访问本地文件。在实际开发中，没有这样的问题，实际中不可能访问本地的文件。
 
-### 3.4.2**element对象（元素对象）**
+### 3.4.2 **element对象（元素对象，标签）**
 
 * 要操作element对象，首先必须要获取到element。使用document里面相应的方法获取
 
@@ -802,7 +827,7 @@
 
   * **getAttribute("name")**：获取属性里面的值
 
-    ```
+    ```javascript
     var input = document.getElementById("inputid");
     alert(input1.getAttribute("value"));
     ```
@@ -813,7 +838,7 @@
 
 * **获取标签下面的子标签**的唯一有效办法，使用父节点**getElementsByTagName**方法，不使用childNodes
 
-### 3.4.3**Node对象的属性**
+### 3.4.3 Node对象
 
 * 使用dom解析html时候，需要html里面的**标签**、**属性**和**文本**都封装成对象
 
@@ -823,15 +848,15 @@
     nodeValue: null
   * **属性**节点对应的值
 
-  ​        **nodeType： 2**
-  	nodeName： 属性名称
-  	nodeValue: 属性的值
+    **nodeType： 2**
+    nodeName： 属性名称
+    nodeValue: 属性的值
 
   * **文本**节点对应的值
 
-  ​        **nodeType： 3**
-  	nodeName： #text
-  	nodeValue: 文本内容
+    **nodeType： 3**
+    nodeName： #text
+    nodeValue: 文本内容
 
 * 关系：
 
@@ -855,18 +880,16 @@
 
 ### 3.4.4 操作DOM树
 
-* **appendChild**：添加子节点到末尾，**类似于剪贴**的效果
+- **document.createElement("标签名称")**
+
+- **document.createTextNode("文本内容")**
+
+
+* **appendChild()**：添加子节点到末尾，**类似于剪贴**的效果
 
 * **insertBefore(newNode,oldNode)**：在某个节点之前插入一个新的节点，没有insertAfter()方法
 
-  1. 获取到li13标签
-  2. 创建li
-  3. 创建文本
-  4. 把文本添加到li下面
-  5. 获取到ul
-  6. 把li添加到ul下面
-
-* **removeChild**：通过父节点删除，不能自己删除自己   `ul31.removeChild(li24)`
+* **removeChild()**：通过父节点删除，不能自己删除自己   `ul31.removeChild(li24)`
 
 * **replaceChild(newNode,oldNode)**：通过父节点替换，不能自己替换自己
 
@@ -878,6 +901,8 @@
   2. 执行复制方法 cloneNode方法复制 true
   3. 把复制之后的内容放到div里面去
 
+
+
 * **innerHTML属性**
 
   * 这个属性不是dom的组成部分，但是大多数浏览器都支持的属性
@@ -887,7 +912,7 @@
     1. 获取标签的文本内容
     2. 向标签里面设置内容（可以是html代码）
 
-    ```
+    ```javascript
     var span1 = document.getElementById("sid");
     alert(span1.innerHTML);
     
@@ -895,20 +920,44 @@
     div11.innerHTML = "<h1>AAAAA</h1>";
     ```
 
-    
+## 3.5 事件(event对象)
 
-## 3.5 事件
+* onload：文档被浏览器**加载**时触发，**只能写一次**;**一般在body标签中注册函数**；所有的其他操作（**匿名方式**）
 
-* **onClick：**鼠标点击事件(按钮) 
-* **onChange：**选择的值发生变化事件(输入框/下拉) 
-* **onFocus：**组件获得焦点事件(输入框/单选/多选/下拉) ，光标闪动
-* **onBlur：**组件失去焦点事件(输入框/单选/多选/下拉) 
-* **onsubmit**：表单提交时触发的事件 
-* onload：文档被浏览器加载时触发. body标签
-* onmouseover：鼠标移动到组件上时触发
-* onmouseout：鼠标移出组件时触发
+  ```javascript
+  window.onload = function () {
+      document.getElementById("btn").onclick = function () {
+          alert("haha");
+      }
+  }
+  ```
 
+* **onsubmit**：表单**提交**时触发的事件(**表单校验**)**在form后注册函数，有返回值true/false**
 
+* **onChange：域的内容改变**/选择的值发生变化事件(输入框/下拉) 
+
+* **点击、改变事件**
+
+  * **onclick：**鼠标点击事件(按钮) 
+  * **ondblclick**：鼠标双击事件
+
+* **焦点事件**(表单校验)
+
+  * **onFocus：**组件获得焦点事件(输入框/单选/多选/下拉) ，光标闪动
+  * **onBlur：**组件失去焦点事件(输入框/单选/多选/下拉) 
+
+* **鼠标事件**
+
+  * **onmouseover**：鼠标移动到组件上时触发
+  * **onmouseout**：鼠标移出组件时触发
+  * **onmousemove**：鼠标移动就触发
+  * **onmousedown**：鼠标按键按下时触发
+  * **onmouseup**：鼠标按键松开时触发
+
+* 键盘事件
+  * onkeydown：某个键盘按键被按下
+  * onkeyup：某个键盘按键被松开
+  * onkeypress：某个键盘按键被按下并松开
 
 
 
@@ -926,52 +975,11 @@
 
 * Date、toLocalString、innerHTML、setInterval
 
-### 3.6.3 全选练习
-
-```
-var selectAll = function () {
-    var inp1 = document.getElementsByClassName("inp1");
-    for (let i = 0; i < inp1.length; i++) {
-        inp1[i].checked = true;
-        // inp1[i].checked = "checked";
-    }
-    var inpall = document.getElementById("all");
-    inpall.checked = false;
-}
-
-var notSelectAll = function () {
-    var inp1 = document.getElementsByClassName("inp1");
-    for (let i = 0; i < inp1.length; i++) {
-        inp1[i].checked = false;
-    }
-    var inpall = document.getElementById("all");
-    inpall.checked = false;
-}
-
-var reverseSelect = function(){
-    var inp1 = document.getElementsByClassName("inp1");
-    for (let i = 0; i < inp1.length; i++) {
-        inp1[i].checked = !inp1[i].checked;
-    }
-}
-
-var method3 = function(){
-    var inpall = document.getElementById("all");
-    if(inpall.checked){
-        selectAll();
-        inpall.checked=true;
-    }else{
-        notSelectAll();
-        inpall.checked=false;
-    }
-}
-```
-
-### 3.6.4 左右下拉列表
+### 3.6.3 左右下拉列表
 
 * select、option、multiple、selected=true/false、appendChild()剪贴的length变化
 
-```
+```javascript
 var left = document.getElementById("left");
 var leftlist = left.getElementsByTagName("option");
 var right = document.getElementById("right");
@@ -993,57 +1001,207 @@ var allToRight = function () {
 }
 ```
 
-### 3.6.5 省市联动
+### 3.6.4 动态生成表格
 
-* select、**onchange**()、添加时注意原本若已有option则删除、removeChild()时注意length变化
-
-```
-var arr = new Array(4);
-arr[0] = ["陕西", "西安", "安康", "宝鸡", "渭南"];
-arr[1] = ["广东", "广州", "深圳", "东莞", "佛山"];
-arr[2] = ["西藏", "拉萨", "日客则", "墨脱"];
-arr[3] = ["河北", "唐山", "秦皇岛", "张家口", "承德"];
-
-var select = function (obj) {
-	var shi = document.getElementsByName("shi")[0];
-	var option = shi.getElementsByTagName("option");
-	if (option.length !== 0) {
-		for (let i = 0; i < option.length; i++) {
-			shi.removeChild(option[i]);
-			i--;
-		}
-	}
-	for (let i = 0; i < arr.length; i++) {
-		if (arr[i][0] === obj.value) {
-			for (let j = 1; j < arr[i].length; j++) {
-				var newoption = document.createElement("option");
-				var newtext = document.createTextNode(arr[i][j]);
-				newoption.appendChild(newtext);
-				shi.appendChild(newoption);
-			}
-		}
-	}
+```javascript
+var show = function(){
+    var row = document.getElementById("row").value;
+    var col = document.getElementById("col").value;
+    alert(row+"---"+col);
+    var tab="";
+    for(let i =0;i<row;i++){
+        tab+="<table border='1'><tr>";
+        for(let j=0;j<col;j++){
+            tab+="<td>aa</td>";
+        }
+        tab+="</tr></table>";
+    }
+    var div1 = document.getElementById("div1");
+    div1.innerHTML = tab; 
 }
 ```
 
-### 3.6.6 动态生成表格
+### 3.6.5 表单校验1(return)
 
+```html
+<form method="post" action="" onsubmit= "return fun1()">
 ```
-        var show = function(){
-            var row = document.getElementById("row").value;
-            var col = document.getElementById("col").value;
-            alert(row+"---"+col);
-            var tab="";
-            for(let i =0;i<row;i++){
-                tab+="<table border='1'><tr>";
-                for(let j=0;j<col;j++){
-                    tab+="<td>aa</td>";
-                }
-                tab+="</tr></table>";
-            }
-            var div1 = document.getElementById("div1");
-            div1.innerHTML = tab; 
+
+```javascript
+var fun1 = function () {
+    var username = document.getElementById("username").value;
+    if(username==="") {
+            document.getElementById("usernameText").innerHTML = "请填写用户名";
+            return false;
+    }
+}
+```
+
+### 3.6.6 表单校验2
+
+```html
+密码：<input type="password" id="password" name="password" onfocus="onfocus1('password','密码必填')" onblur="onblur1('password','密码不能为空')">
+<span id="passwordText" class="tipText"></span><br/>
+
+确认密码：<input type="password" id="rePassword" name="rePassword" onfocus="onfocus1('rePassword','**必填')" onblur="onblur1('rePassword','两次密码不一致')">
+<span id="rePasswordText" class="tipText"></span><br/>
+```
+
+```javascript
+//获得焦点时，校验是否为空，并在tip中填写灰色提示信息
+var onfocus1 = function (id,msg) {
+    var userValue = document.getElementById(id).value;
+    if (userValue === "") {
+      document.getElementById(id+"Text").innerHTML = "<span style='color: gray;'>"+msg+"</span>";
+    }
+}
+
+//失去焦点时，先判断是否是重复密码框
+var onblur1 = function (id,msg) {
+  if(id==="rePassword"){
+    if (document.getElementById(id).value!==document.getElementById("password").value){
+       document.getElementById(id+"Text").innerHTML = msg;
+    } else {
+       document.getElementById(id+"Text").innerHTML = "";
+    }
+  } else {
+    var userValue = document.getElementById(id).value;
+    if (userValue === "") {
+       document.getElementById(id+"Text").innerHTML = msg;
+    } else {
+       document.getElementById(id+"Text").innerHTML = "";
+    }
+  }
+}
+```
+
+### 3.6.7 轮播图(正常不这么做)
+
+```javascript
+//注册onload事件
+var init = function () {
+    setInterval("changeImg()", 5000);
+}
+var i = 1;
+var changeImg = function () {
+    i++;
+    document.getElementById("img1").src = "img/" + i + ".jpg";
+    if (i == 3) {i = 0;}
+}
+```
+
+### 3.6.8 定时弹出广告(style.display)
+
+```javascript
+//注册onload事件
+var init = function () {
+	showTime = setTimeout("showAd()",1000);
+}
+var showAd = function () {
+    document.getElementById("adImg").style.display="block";
+    clearTimeout(showTime);
+    hiddenTime = setTimeout("hiddenAd()",5000);
+}
+var hiddenAd = function () {
+    document.getElementById("adImg").style.display="none";
+    clearTimeout(hiddenTime);
+}
+```
+
+### 3.6.9 表格隔行换色(tBodies、rows)
+
+```javascript
+//这样也可以获得行数
+//var tbody = document.getElementsByTagName("tbody")[0];
+//var rows = tbody.getElementsByTagName("tr").length;
+
+var tb = document.getElementById("table1");
+var rows = tb.tBodies[0].rows.length;
+for (let i = 0; i < rows; i++) {
+    if (i % 2 === 0) {
+        tb.tBodies[0].rows[i].style.backgroundColor = "gray";
+    } else {
+        tb.tBodies[0].rows[i].style.backgroundColor = "yellow";
+    }
+}
+```
+
+### 3.6.10 表格高亮显示(style.background)
+
+```html
+<tr id="tr0" onmouseover="change('tr0','over')" onmouseout="change('tr0','out')">*</tr>
+```
+
+```javascript
+var changeColor = function (id,flag) {
+    if (flag==='over'){
+        var tr = document.getElementById(id);
+        tr.style.backgroundColor = "gray";
+    } else if (flag==='out') {
+        var tr = document.getElementById(id);
+        tr.style.backgroundColor = "white";
+    }
+}
+```
+
+### 3.6.11 全选/反选
+
+```javascript
+//checkbox
+var checkAll = function (id) {
+    var ckAll = document.getElementById(id);
+    var ck = document.getElementsByClassName('ck');
+    if (ckAll.checked){
+        // alert(tr.checked);
+        for(let i=0;i<ck.length;i++){
+            ck[i].checked=true;
         }
+    } else {
+        for (let i =0;i<ck.length;i++){
+            ck[i].checked=false;
+        }
+    }
+}
+//button
+var reCheck = function () {
+    var ck = document.getElementsByClassName("ck");
+    for(let i=0;i<ck.length;i++){
+        if (ck[i].checked){
+            ck[i].checked=false;
+        } else {
+            ck[i].checked=true;
+
+        }
+    }
+}
+```
+
+### 3.6.12 省市联动(this.value,options)
+
+```javascript
+var change1 = function (obj) {
+    var arr = [['陕西','西安','商洛','延安','安康'],
+               ['河北','石家庄','廊坊','秦皇岛','雄安'],
+               ['广东','深圳','珠海','广州','不知道']];
+    var shi = document.getElementById('shi');
+    shi.options.length=0;
+    //var value = shi.getElementsByTagName("option");
+    //for(let i=0;i<value.length;i++){
+    //    shi.remove(value[i]);
+    //    i--;//记得删除时本身就减少了，和java迭代器修改参数时问题一样
+    //}
+    for (let i=0;i<arr.length;i++){
+        if(arr[i][0]===obj){
+            for(let j = 1;j<arr[i].length;j++){
+                var option = document.createElement("option");
+                var text = document.createTextNode(arr[i][j]);
+                option.appendChild(text);
+                shi.appendChild(option);
+            }
+        }
+    }
+}
+//传值<select name="sheng" onchange="change1(this.value)"></select>
 ```
 
 
@@ -1054,21 +1212,32 @@ var select = function (obj) {
 
 # 4 jQuery
 
-* 不带min的和带min的版本区别在于格式
+## 4.1 jQuery概述
+
+* 是JavaScript的一个库，不带min的和带min的版本区别在于格式
+
+* 区别：
+
+  * **jQuery的加载比js快**，jQuery在dom树结构绘制完毕就会加载；而js在整个页面加载完毕才加载
+  * jQuery没有覆盖问题，并且按顺序执行；而js存在覆盖问题
 
 * 基本语法：**jQuery(选择器)**、**$(选择器)**，jQuery对象内部以**数组**存放匹配的数据，若只有一个，索引号为0
 
-  * jQuery对象和DOM对象转换
+  * jQuery对象和DOM对象转换(jQuery对象和js对象无法互相操作属性和方法)
     * DOM-->jQuery：**jQuery(DOM对象)**
-    * jQuery-->DOM：**$username[0]**
+    * jQuery-->DOM：**`$(选择器)[0]或$(选择器).get(0)`**
 
 * **基本操作：**
 
-  * **ready()**：用于页面加载成功后执行，与window.onload()一样
+  * **ready**()：用于页面加载成功后执行，与window.onload()一样。可以简写如下
 
-    ```
+    ```javascript
     $(document).ready(function(){
         alert("jQuery页面加载");
+    });
+    
+    $(function () {
+        alert("hello")
     });
     ```
 
@@ -1108,7 +1277,6 @@ var select = function (obj) {
   * 隔行换色：
     * 
 
-  
 
 
 
