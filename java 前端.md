@@ -149,7 +149,7 @@
 
     ```html
     <select name="birth" multiple  size="2">
-        				 多行显示  自动获得焦点    显示行数
+        				 可以多选   可见选项数目
     	<option value="1991" selected>1991</option>
     	<option value="1992">1992</option>
     	<option value="1993">1993</option>
@@ -274,8 +274,8 @@
    | A,B   | 满足A（和/或）B的任意元素                                    |
    | A B   | 满足条件：**B**是A的**后代结点**（B是A的子节点，或者A的子节点的子节点） |
    | A > B | 满足条件：**B**是A的**直接子节点**                           |
-   | A + B | 满足条件：**B**是A的**下一个兄弟节点**（AB有相同的父结点，并且B紧跟在A的后面） |
-   | A ~ B | 满足条件：**B**是A之后的**兄弟节点中的任意一个**（AB有相同的父节点，B在A之后，但不一定是紧挨着A） |
+   | A + B | 满足条件：**下一个兄弟选择器**（AB有相同的父结点，**B**是A的**紧跟着的兄弟节点**） |
+   | A ~ B | 满足条件：**一般兄弟选择器**（AB有相同的父节点，**B**是A之后的**所有兄弟节点**） |
 
 3. **伪类选择器（:）**
 
@@ -975,7 +975,7 @@
 
 * Date、toLocalString、innerHTML、setInterval
 
-### 3.6.3 左右下拉列表
+### 3.6.3 左右列表
 
 * select、option、multiple、selected=true/false、appendChild()剪贴的length变化
 
@@ -1227,7 +1227,7 @@ var change1 = function (obj) {
     * DOM-->jQuery：**jQuery(DOM对象)**
     * jQuery-->DOM：**`$(选择器)[0]或$(选择器).get(0)`**
 
-* **基本操作：**
+* **页面加载：**
 
   * **ready**()：用于页面加载成功后执行，与window.onload()一样。可以简写如下
 
@@ -1241,49 +1241,352 @@ var change1 = function (obj) {
     });
     ```
 
-* **选择器：**
+## 4.2 选择器
 
-  * 基本选择器：
-    * **#id**
-    * **.class**
-    * **element**
-  * 层级选择器：
-    * A    B：A的后代
-    * A > B：A的儿子
-    * A + B：A的下一个兄弟
-    * A ~ B：A的兄弟
-  * 基本过滤选择器
-    * :first
-    * :last
-    * :not(...)：删除指定内容。如：1234:not(3)--->124
-    * :even：偶数，从0开始计数。操作索引号，页面显示奇数项
-    * :odd：奇数
-    * ;eq(index)：指定第几个
-    * ;gt(index)：大于n个
-    * ;lt(index)：小于n个
-    * :header：获得标题
-    * :animated：获得动画的
-    * :focus：获得焦点
-  * 属性选择器:
-    * 同CSS
-  * 表单属性选择器
-    * :enabled：可用
-    * :disabled：不可用
-    * :checked：选中（radio、checkbox）
-    * :selected：选择（select）
+* **基本选择器**
 
-* 案例
+  * **#id**
+  * **.class**
+  * **element**
+  * **\*** ：选择所有元素
 
-  * 隔行换色：
-    * 
+* **组合选择器**
+
+  | 组合  | 选择                                                         |
+  | ----- | ------------------------------------------------------------ |
+  | A,B   | 满足A（和/或）B的任意元素                                    |
+  | A B   | 满足条件：**B**是A的**后代结点**（B是A的子节点，或者A的子节点的子节点） |
+  | A > B | 满足条件：**B**是A的**直接子节点**                           |
+  | A + B | 满足条件：**下一个兄弟选择器**（AB有相同的父结点，**B**是A的**紧跟着的兄弟节点**） |
+  | A ~ B | 满足条件：**一般兄弟选择器**（AB有相同的父节点，**B**是A之后的**所有兄弟节点**） |
+
+* **属性选择器**
+
+  | 属性         | 选择                                                        |
+  | ------------ | ----------------------------------------------------------- |
+  | [attr]       | 包含 attr 属性的**所有元素**                                |
+  | [attr=val]   | 选择 attr 属性被赋值**为 val** 的所有元素                   |
+  | [attr~=val]  | 选择 attr 属性里被空白分开的字符串里**其中一个是val**的元素 |
+  | [attr\|=val] | 选择attr属性的值是 **val 或值以 val- 开头**的元素           |
+  | [attr^=val]  | 选择attr属性的值**以 val 开头（包括 val）**的元素           |
+  | [attr$=val]  | 选择attr属性的值**以 val 结尾（包括 val）**的元素           |
+  | [attr*=val]  | 选择attr属性的值中包含**子字符串 val** 的元素               |
+
+* 基本过滤选择器
+
+  * :**first**
+  * :**last**
+  * :not(...)：删除指定内容。如：1234:not(3)--->124
+  * :**even**：偶数，从0开始计数。操作索引号，页面显示奇数项
+  * :**odd**：奇数
+  * :eq(index)：指定第几个
+  * :gt(index)：大于n个
+  * :lt(index)：小于n个
+  * :header：获得标题
+  * :animated：获得动画的
+  * :focus：获得焦点
+  * :first-child：第一个子元素
+  * :last-child：最后一个子元素
+  * ……
+
+* 内容过滤选择器
+
+  - :contains：匹配包含指定文本的元素
+
+* 表单属性过滤选择器
+
+  * :input：匹配所有 input, textarea, select 和 button 元素（其他的只匹配自己）
+  * :enabled：可用
+  * :disabled：不可用
+  * **:checked**：选中（radio、checkbox）
+  * **:selected**：选择（select）
+
+## 4.3 属性
+
+* **属性操作**：从jQuery 1.6开始，**尚未设置的属性该.attr()方法返回undefined**。**检索和修改DOM属性，如checked，selected或disabled**元素形式的元素状态，使用**.prop()**方法
+  * **.attr(name)** 
+  * .attr(properties) 
+  * **.attr(key, value)** 
+  * .attr(key, fn) 
+  * .removeAttr(name) 
+  * **.prop用法同attr**
+
+* **CSS类**
+  - **.addClass**(class)
+  - **.removeClass**(class)
+  - **.toggleClass**(class)
+    - **.css**(name | properties | [name,val | fn])：自己练习用，开发时不用，用上面那个
+    - 操作CSS的方法有：
+      - 设置CSS样式属性`css(name, value)` 设置一个CSS样式属性
+      - 通过attr属性设置 / 获取 style属性 `attr('style', 'color:red');` 添加style属性
+      - 设置class属性`addClass(class)`等
+
+* **HTML**代码/文本/值
+  * **.html**( [val | fn] ) ：带标签，获取值/设置值
+  * **.text**( [val | fn] ) ：不带标签，获取值/设置值
+  * **.val**( [val | fn | arr] ) ：获取属性的值
+  * - [html](html.html)( [[val](html_val.html)[ | fn\]](html_function(index,%20html).html) )  
+    - [text](text.html)( [[val](text_val.html)[ | fn\]](text_function(index,%20text).html) )  
+    - [val](val.html)( [[val](val_val.html)[ | fn ](val_function(index,%20value).html)[|  arr\]](val_array.html) ) 
+
+## 4.4 遍历
+
+- **.each(callback)**：**jQuery对象使用**（选择器获取后使用）
+
+  ```javascript
+  $(arr).each(function (key,value) {});
+  ```
+
+- **$.each(object,[callback])**：遍历任意对象。callback可设置function(k,v)
+
+  ```javascript
+  $.each(arr,function (key,value) {});
+  ```
+
+
+## 4.5 DOM操作
+
+* 内部插入
+
+  * **append**(content) ：内部结尾处，将B追加到A里面去
+  * **appendTo**(content)：内部结尾处，将A追加到B里面去
+  * prepend(content)：内部开始处，将B追加到A里面去
+
+  - prependTo(content)：内部开始处，将A追加到B里面去
+
+* 外部插入
+
+  * after(content):外部，将B追加到A后面
+  * before(content):外部，将A追加到B前面
+  * insertAfter(content):外部，将A追加到B后面
+  * insertBefore(content)::外部，将A追加到B前面
+
+* 复制：clone([flag])，克隆匹配的DOM元素并且选中这些克隆的副本
+
+  * flag为true副本具有与真身一样的事件处理能力，默认不用填写代表为false
+
+* 删除
+
+  * **empty**()：**清空**匹配元素中所有的**子节点（所有Node）**
+  * **remove**([expr])：expr筛选元素。**删除所有匹配的元素，事件数据也会删除**
+  * detach([expr])：expr筛选元素。**删除所有匹配的元素，事件数据会保留**
+
+* 替换
+  * replaceWith(html)：把匹配的元素替换为指定元素，用B替换A
+  * replaceAll(html)：相反，用A替换B
+
+* wrap(content)
+
+* unwrap()
+
+* wrapAll(content)
+
+* wrapInner(content)
+
+   
+
+## 4.6 事件
+
+* **页面加载：**
+  * **ready(fn)**
+  * 有时标签绑定一个事件但是函数不执行，原因就是DOM没有加载完毕。可以放在/body之前，或onload里
+* **事件绑定**：（或直接绑定）
+  * bind(type,[data],fn)
+  * unbind(type,[data],fn)
+* 鼠标事件
+  * mouseover
+  * mouseout
+  * hover(overfn, outfn)
+  * toggle
+  * 同js方法
+
+## 4.7 动画
+
+* 显示/隐藏
+
+  * show([s],[e],[fn])
+
+  * hide([s],[e],[fn])
+
+  * toggle([s],[e],[fn])
+
+* 滑动显示/隐藏
+
+  * slideDown([s],[e],[fn]) 
+
+  * slideUp([s,[e],[fn]]) 
+
+  * slideToggle([s],[e],[fn])
+
+* 淡入淡出
+
+  * fadeIn([s],[e],[fn]) 
+
+  * fadeOut([s],[e],[fn]) 
+
+  * fadeToggle([s,[e],[fn]])
+  * fadeTo([[s],o,[e],[fn]])：调整元素不透明度
 
 
 
+## 4.8 jQuery重写案例
+
+### 4.8.1 定时弹出广告(show()/hide())
+
+```javascript
+$(function () {
+    showTime = setTimeout("showAd()", 1000);
+})
+var showAd =function () {
+    $("#adImg").show(500);
+    clearTimeout(showTime);
+    hiddenTime = setTimeout("hiddenAd()",5000);
+}
+var hiddenAd = function () {
+    $("#adImg").hide(1000);
+    clearTimeout(hiddenTime);
+}
+```
+
+### 4.8.2 隔行换色(.css)
+
+```javascript
+$(function () {
+    // $("tbody>tr:even").css("background-color","red");//偶数行设置
+    $("tbody>tr:odd").css("background-color","red");//奇数行设置
+})
+```
+
+### 4.8.3 全选全不选(attr/prop)
+
+```javascript
+$(function () {
+    //全选/不选使用prop属性
+    $("#ckAll").click(function () {
+        $("tbody input").prop("checked", this.checked);
+
+    })
+	//反选只会转为DOM对象后再操作
+    $("#reCk").click(function () {
+        $("tbody input").each(function () {
+            this.checked = !this.checked;
+        })
+    })
+});
+```
+
+### 4.8.4 省市联动
+
+```javascript
+$(function () {
+    var arr = new Array();
+    arr[0] = ['西安', '商洛', '延安', '安康'];
+    arr[1] = ['石家庄', '廊坊', '秦皇岛', '雄安'];
+    arr[2] = ['深圳', '珠海', '广州', '不知道'];
+
+    $("#sheng").change(function () {
+        $("#shi option").remove();
+        // $("#shi").empty();
+
+        var value = parseInt(this.value);
+        $.each(arr,function (k,v) {
+            if(k===value){
+                $(v).each(function (k,v) {
+                    var text = document.createTextNode(v);
+                    var option = document.createElement("option");
+                    option.appendChild(text);
+                    $("#shi").append(option);
+                    // $(option).appendTo($("#shi"));
+                })；
+            }
+        });
+    });
+});
+```
+
+### 4.8.5 左右列表(双击和selected有关)
+
+```javascript
+$(function () {
+    //按键
+    $("#toRight").click(function () {
+        // $("#right").append($("#left option:selected"));
+        $("#left option:selected").appendTo($("#right"));
+    });
+    $("#toLeft").click(function () {
+        // $("#left").append($("#right option:selected"));
+        $("#right option:selected").appendTo($("#left"));
+    });
+    $("#allToRight").click(function () {
+        $("#left option").appendTo($("#right"));
+    });
+    $("#allToLeft").click(function () {
+        $("#right option").appendTo($("#left"));
+    });
+
+    //双击
+    $("#left").dblclick(function () {
+        $("#left option:selected").appendTo($("#right"));
+    });
+    $("#right").dblclick(function () {
+        $("#right option:selected").appendTo($("#left"));
+    });
+});
+```
 
 
 
+## 4.9 使用validate完成表单校验
 
+* 依赖jQuery库，所以先导入jQuery再导入validate，最后导入国际化信息库(提示为中文)
 
+```javascript
+$(function () {
+    $("#form1").validate({
+        rules: {
+            username: {
+                required: true,
+                minlength: 6,
+            } , password: {
+                required: true,
+                maxlength: 16,
+                digits: true
+            } , rePassword:{
+                required:true,
+                equalTo:"[name='password']"
+            } , email:{
+                email:true
+            }
+        },
+        messages: {
+            username: {
+                required: "用户名不能为空",
+                minlength: "用户名不能少于6位",
+            } , password: {
+                required: "密码不能为空",
+                maxlength: "密码不能多于16位",
+                digits: "密码只能是数字"
+            } , rePassword:{
+                required:"确认密码不能为空",
+                equalTo:"两次输入的密码不一致"
+            } , email:{
+                email:"邮箱格式不正确"
+            }
+        },
+        errorElement: "label", //用来创建错误提示信息标签,validate插件默认的就是label
+        success: function(label) { //验证成功后的执行的回调函数
+        //label指向上面那个错误提示信息标签label
+            label.text(" ") //清空错误提示消息
+            	.addClass("success"); //加上自定义的success类
+        }
+    });
+});
+```
+
+```html
+<!--单选，多选标签得在其后面加label标签，否则提示信息位置不正确-->
+<label for="sex" class="error" style="display: none;"></label>
+```
 
 
 
