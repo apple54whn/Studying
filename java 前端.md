@@ -76,7 +76,7 @@
 * **表格标签**
 
   ```html
-  <table border='1' cellpadding='10' cellspacing='10' bgcolor="aqua"> <!--表格框粗细、边沿与内容间距、单元格间距，背景颜色，但是推荐在CSS中修改-->
+  <table border='1' cellpadding='10' cellspacing='10' bgcolor="aqua"> <!--表格框、边沿与内容间距、单元格间距，背景颜色，但是推荐在CSS中修改-->
   	<caption>表格标题</caption>
   	<thead>
   		<tr>
@@ -1591,4 +1591,50 @@ $(function () {
 
 
 
-# 
+
+#5 bootstrap4
+
+* 引入依赖
+
+  * css：bootstrap.css
+  * js：jquery.js、popper.js(用于弹窗、提示、下拉菜单)、bootstrap.js
+
+* 响应式布局：一个网站可以兼容多个终端
+
+  ```html
+  <meta charset="UTF-8">
+  <!--响应式 meta 标签;viewport宽度；初始缩放值；最小/最大缩放值；是否允许用户缩放-->
+  <!--还有minimum-scale；maximum-scale；user-scalable=true/false-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--文档兼容模式-->
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  ```
+
+  * viewport
+    * 移动设备上的就是**设备的屏幕上能用来显示我们的网页的那一块区域**
+  * px
+    * css中1px并不等于设备的1px
+
+## 5.1 布局容器
+
+* Bootstrap 需要为页面内容和栅格系统包裹一个容器
+  * `.container` **类**用于固定宽度并支持响应式布局的容器
+  * `.container-fluid` **类**用于 100% 宽度，占据全部视口（viewport）的容器
+
+## 5.2 栅格系统
+
+Bootstrap 提供了一套响应式、移动设备优先的流式栅格系统，随着屏幕或视口（viewport）尺寸的增加，系统会自动分为最多**12列**
+
+* 栅格系统用于通过一系列的行（row）与列（column）的组合来创建页面布局，你的内容就可以放入这些创建好的布局中。工作原理如下：
+  * “行（row）”必须包含在 `.container` （固定宽度）或 `.container-fluid` （100% 宽度）中，以便为其赋予合适的排列（aligment）和内补（padding）。
+  * 通过“行（row）”在水平方向创建一组“列（column）”。
+  * 你的内容应当放置于“列（column）”内，并且，只有“列（column）”可以作为行（row）”的直接子元素。
+  * 类似 `.row` 和 `.col-xs-4` 这种预定义的类，可以用来快速创建栅格布局。Bootstrap 源码中定义的 mixin 也可以用来创建语义化的布局。
+  * 通过为“**列（column）”设置 `padding` 属性**，从而创建列与列之间的间隔（gutter）。通过**为 `.row` 元素设置负值 `margin`** 从而抵消掉为 `.container` 元素设置的 `padding`，也就间接为“行（row）”所包含的“列（column）”抵消掉了`padding`。
+  * 负值的 margin就是下面的示例为什么是向外突出的原因。在栅格列中的内容排成一行。
+  * 栅格系统中的列是通过指定1到12的值来表示其**跨越的范围**。例如，三个等宽的列可以使用三个 `.col-xs-4` 来创建。
+  * 如果一“行（row）”中包含了的“列（column）”大于 12，多余的“列（column）”所在的元素将被作为一个整体另起一行排列。
+  * 栅格类适用于与屏幕宽度大于或等于分界点大小的设备 ， 并且针对小屏幕设备覆盖栅格类。 因此，在元素上应用任何 `.col-md-*`栅格类适用于与屏幕宽度大于或等于分界点大小的设备 ， 并且针对小屏幕设备覆盖栅格类。 因此，在元素上应用任何 `.col-lg-*`不存在， 也影响大屏幕设备。
+
+## 5.3 其他详细的看文档去吧！
+
