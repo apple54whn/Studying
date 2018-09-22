@@ -1113,13 +1113,13 @@ public class ServletAuto extends HttpServlet {
   * void **removeAttribute**(String name)：移除ServletContext中的域属性，name指定域属性不存在不动
   * Enumeration **getAttributeNames**()：获取所有域属性的名称
 
-* **获取应用/WEB站点初始化参数（getInitParameter()）**
+* **<span style="background:yellow">获取应用/WEB站点初始化参数（getInitParameter()）</span>**
 
   * Servlet也可以获取初始化参数，但它是局部的参数(一个Servlet只能获取自己的初始化参数，不能获取别人的，即初始化参数只为一个Servlet准备)
 
   * 可以配置**应用的初始化参数**，为所有Servlet而用！这需要使用ServletContext才能使用
 
-  * 可以使用ServletContext来获取在web.xml文件中配置的**应用初始化参数**！注意，应用初始化参数与Servlet初始化参数不同
+  * 可以使用ServletContext来获取在web.xml文件中配置的**应用初始化参数**！注意，应用初始化参数与Servlet初始化参数不同（Spring中有使用）
 
     ```xml
     <context-param>
@@ -1212,7 +1212,7 @@ resp.getWriter().write("invite:"+count+"times");
 
 * **sendError(int sc)** --> 发送**错误状态码**，例如404、500
 * **sendError(int sc, String msg)** --> 也是发送错误状态码，还可以带一个错误信息！
-* **setStatus(int sc)** --> **设置此响应的状态码**，可以用来发送302、200或者404等
+* **<span style="background:yellow">setStatus(int sc)</span>** --> **设置此响应的状态码**，可以用来发送302、200或者404等
 
 ### 4.1.2 响应头（Content-Type、Refresh、Location等）
 
@@ -1387,7 +1387,7 @@ resp.getWriter().write("invite:"+count+"times");
   请求包含：由两个Servlet共同未完成响应体！（<span style="font-family:monaco;color:red;font-weight:bold">都留</span>）
   无论是请求转发还是请求包含，都在一个请求范围内！使用同一个request和response！
 
-* RequestDispatcher rd = <span style="font-family:monaco;color:red;font-weight:bold">request.getRequestDispatcher("/BServlet")</span>;  参数是被转发或包含的Servlet的路径
+* RequestDispatcher rd = <span style="font-family:monaco;color:red;font-weight:bold">request.getRequestDispatcher("/BServlet")</span>;  参数是被转发或包含的Servlet的路径，**不带项目名**
 
   <span style="font-family:monaco;color:red;font-weight:bold">请求转发：rd.forward(request,response)</span>
 
@@ -1644,9 +1644,10 @@ resp.getWriter().write("invite:"+count+"times");
 * Cookie的<span style="font-family:monaco;color:red;font-weight:bold">path</span>（理解）：
 
   * Cookie的path并**不是设置这个Cookie在客户端的保存路径**！！！
-  * Cookie的path**由服务器创建Cookie时设置**
+
+    * Cookie的path**由服务器创建Cookie时设置**
   * 当浏览器访问服务器某个路径时，**需要归还哪些Cookie给服务器呢**？这**由Cookie的path决定**
-  * 浏览器<span style="font-family:monaco;color:red;font-weight:bold">访问服务器的路径，如果包含(理解为contains)某个Cookie的路径</span>，那么就会归还这个Cookie
+  * 浏览器<span style="font-family:monaco;color:red;font-weight:bold">访问服务器的路径如果包含(理解为字符串contains)某个Cookie的路径</span>，那么就会归还这个Cookie
 
   * **例如：**
 
@@ -1722,7 +1723,7 @@ resp.getWriter().write("invite:"+count+"times");
 
   * String **getId**()：获取sessionId（UUID）；
 
-  * int **getMaxInactiveInterval**()：获取session可以的最大不活动时间（秒），默认为30分钟。当session在30分钟内没有使用，那么Tomcat会在session池中移除这个session；
+  * int **getMaxInactiveInterval**()：获取session可以的最大不活动时间（秒），默认为**<span style="background:yellow">30分钟</span>**。当session在30分钟内没有使用，那么Tomcat会在session池中移除这个session；
 
       * web.xml中配置session的最大不活动时间
 
@@ -2317,7 +2318,7 @@ ${requestScope.emp.address.street }
 * Java Web中监听器（8大）：
   * **ServletContext**
 
-    * 生命周期监听：**ServletContextListener**，它有两个方法，一个在出生时调用，一个在死亡时调用
+    * 生命周期监听：<span style="background:yellow">**ServletContextListener**</span>，它有两个方法，一个在出生时调用，一个在死亡时调用
       * void contextInitialized(ServletContextEvent sce)：创建Servletcontext时
       * void contextDestroyed(ServletContextEvent sce)：销毁Servletcontext时
     * 属性监听：**ServletContextAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
@@ -2433,7 +2434,7 @@ ${requestScope.emp.address.street }
     * 获取过滤器名称：getFilterName()
     * 获取appliction：getServletContext()
 
-  * **FilterChain**
+  * **FilterChain(Filter链)**
 
       * <span style="font-family:monaco;color:red;font-weight:bold">doFilter(ServletRequest, ServletResponse)</span>：**放行**！**相当于调用了目标Servlet的service()方法**！
 
@@ -2447,16 +2448,10 @@ ${requestScope.emp.address.street }
 
 * 过滤器的四种拦截方式，在< filter-mapping>中进行配置!
 
-*   < dispatcher>**REQUEST**< /dispatcher>默认的！拦截请求
+* < dispatcher>**REQUEST**< /dispatcher>默认的！拦截请求
     < dispatcher>**FORWARD**< /dispatcher> 拦截转发
     < dispatcher>**INCLUDE**< /dispatcher> 拦截包含
     < dispatcher>**ERROR**< /dispatcher> 拦截错误
-
-* 
-
-* 
-
-* 
 
 * 多个过滤器的执行顺序
 
@@ -2603,87 +2598,6 @@ public class StaticFilter implements Filter {
 ```
 
 
-
-# 8 Ajax
-
-## 8.1 Ajax是什么
-
-* Ajax(asynchronous javascript and xml)：异步的js和xml。它能**使用js异步访问服务器**
-* 服务器给客户端的响应一般是整个页面，一个html完整页面！但在ajax中因为是局部刷新，那么服务器就不用再响应整个页面！而只是数据，如下：
-  * text：纯文本
-  * xml：大家都熟悉！！！
-  * json：它是js提供的数据交互格式，它在ajax中最受欢迎！
-* Ajax的优缺点
-  * 优点：
-    * 异步交互：增强了用户的体验！
-    * 性能：因为服务器无需再响应整个页面，只需要响应部份内容，所以服务器的压力减轻了
-  * 缺点：
-    * ajax不能应用在所有场景！
-      * ajax无端的增多了对服务器的访问次数，给服务器带来了压力！
-
-## 8.2 异步交互和同步交互
-
-* 同步：发一个请求，就要等待服务器的响应结束，然后才能发第二个请求！中间这段时间就是一个字“卡”，刷新的是整个页面！
-  * 异步：发一个请求后，无需等待服务器的响应，然后就可以发第二个请求！可以使用js接收服务器的响应，然后使用js来局部刷新！
-
-## 8.3 Ajax应用场景
-
-  * 谷歌/百度的搜索框自动补全
-  * 用户注册时（校验用户名是否被注册过）
-  * 下拉框联动
-
-## 8.4 ajax发送异步请求（四步操作）
-
-1. **得到XMLHttpRequest对象**
-
-   * 大多数浏览器都支持：var xmlHttp = new XMLHttpRequest();
-   * IE6.0：var xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-     IE5.5以更早版本的IE：var xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-2. **打开与服务器的连接(open)**
-
-    * xmlHttp.open("GET", "/day23_1/AServlet", true)：用来打开与服务器的连接，它需要三个参数：
-       * **请求方式**：可以是GET或POST
-       * **请求的URL**：指定服务器端资源，例如；/day23_1/AServlet
-       * **请求是否为异步**：如果为true表示发送异步请求，否则同步请求！
-
-3. **发送请求(send)**
-
-   * xmlHttp.send(null)：如果不给可能会造成部份浏览器无法发送！
-       * 参数：就是请求体内容！如果是GET请求没有请求体，必须给出null
-       * **发送POST请求**(如果发送请求时需要**带有参数**，一般都用POST请求)
-         * **设置Content-Type请求头**
-           * xmlHttp.**setRequestHeader**("Content-Type", "application/x-www-form-urlencoded");
-
-4. **回调函数(onreadystatechange)**
-
-   * 在xmlHttp对象的一个事件上设置回调函数：**onreadystatechange**
-
-   - xmlHttp对象一共有5个状态：
-     - 0状态：刚创建，还没有调用open()方法; 
-     - 1状态：请求开始：调用了open()方法，但还没有调用send()方法
-     - 2状态：调用完了send()方法了；
-     - 3状态：服务器已经开始响应，但不表示响应结束了！
-     - **4状态**：服务器响应结束！（通常我们只关心这个状态！！！）
-   - **得到xmlHttp对象的状态**：var state = xmlHttp.**readyState**;//可能是0、1、2、3、4
-   - 得到服务器响应的状态码：var status = xmlHttp.**status**;//例如为200、404、500
-   - 得到服务器响应的内容：
-     - var content = xmlHttp.responseText;//得到服务器的响应的文本格式的内容
-     - var content = xmlHttp.responseXML;//得到服务器的响应的xml响应的内容，它是Document对象了！
-
-   ```javascript
-   xmlHttp.onreadystatechange = function() {//xmlHttp的5种状态都会调用本方法
-       //双重判断：判断是否为4状态，而且还要判断是否为200
-       if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-           // 获取服务器的响应内容
-           var text = xmlHttp.responseText;
-       }
-   };
-   ```
-
-5. 5
-
-6. 
 
 
 

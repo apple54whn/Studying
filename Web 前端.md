@@ -145,6 +145,8 @@
 
     * **reset**:重置按钮
 
+    * **image**:图片提交按钮
+
   * **下拉输入项select(name属性)**
 
     ```html
@@ -159,7 +161,7 @@
   * **文本域textarea(name属性)**目前都不用了
 
     ```html
-    <textarea cols="10" rows="10"></textarea>
+    <textarea cols="10" rows="10">我是...</textarea>
     ```
 
 * 其他标签
@@ -407,6 +409,7 @@
 ### 2.7.7 其他
 
 * text-decoration(a标签的)：none即为无下划线
+* display
 
 
 
@@ -416,7 +419,7 @@
 
 ## 3.1 简介
 
-* Js是基于**对象**和**事件**驱动的语言，应用与客户端（提供好了很多对象，可以直接拿过来使用）
+* Js是基于<span style="color:red">**对象**</span>和<span style="color:red">**事件**</span>驱动的语言，应用与客户端（提供好了很多对象，可以直接拿过来使用）
 
 * **和Java区别**
 
@@ -765,7 +768,7 @@
 
       * **定时器：**
 
-        * **setInterval**("Js代码",millisec)：每隔millisec毫秒执行一次代码串
+        * **setInterval**("function",millisec)：每隔millisec毫秒执行一次代码串
 
         * **clearInterval**(): 清除setInterval设置的定时器
 
@@ -774,7 +777,7 @@
           clearInterval(id1);
           ```
 
-        * **setTimeout**("Js代码",millisec)：在millisec毫秒后执行且只执行一次代码串
+        * **setTimeout**("function",millisec)：在millisec毫秒后执行且只执行一次代码串
 
         * **clearTimeout**() : 清除setTimeout设置的定时器
 
@@ -1272,7 +1275,7 @@ var change1 = function (obj) {
   | [attr$=val]  | 选择attr属性的值**以 val 结尾（包括 val）**的元素           |
   | [attr*=val]  | 选择attr属性的值中包含**子字符串 val** 的元素               |
 
-* 基本过滤选择器
+* **基本过滤选择器**
 
   * :**first**
   * :**last**
@@ -1293,7 +1296,7 @@ var change1 = function (obj) {
 
   - :contains：匹配包含指定文本的元素
 
-* 表单属性过滤选择器
+* **表单属性过滤选择器**
 
   * :input：匹配所有 input, textarea, select 和 button 元素（其他的只匹配自己）
   * :enabled：可用
@@ -1303,7 +1306,7 @@ var change1 = function (obj) {
 
 ## 4.3 属性
 
-* **属性操作**：从jQuery 1.6开始，**尚未设置的属性该.attr()方法返回undefined**。**检索和修改DOM属性，如checked，selected或disabled**元素形式的元素状态，使用**.prop()**方法
+* **属性操作**：从jQuery 1.6开始，**尚未设置的属性该.attr()方法返回undefined**。**检索和修改DOM属性，如checked，selected或disabled等boolean值**元素形式的元素状态，使用**.prop()**方法
   * **.attr(name)** 
   * .attr(properties) 
   * **.attr(key, value)** 
@@ -1325,9 +1328,6 @@ var change1 = function (obj) {
   * **.html**( [val | fn] ) ：带标签，获取值/设置值
   * **.text**( [val | fn] ) ：不带标签，获取值/设置值
   * **.val**( [val | fn | arr] ) ：获取属性的值
-  * - [html](html.html)( [[val](html_val.html)[ | fn\]](html_function(index,%20html).html) )  
-    - [text](text.html)( [[val](text_val.html)[ | fn\]](text_function(index,%20text).html) )  
-    - [val](val.html)( [[val](val_val.html)[ | fn ](val_function(index,%20value).html)[|  arr\]](val_array.html) ) 
 
 ## 4.4 遍历
 
@@ -1592,7 +1592,145 @@ $(function () {
 
 
 
-#5 bootstrap4
+
+
+# 5 Ajax
+
+## 5.1 Ajax概述
+
+* Ajax(asynchronous javascript and xml)：异步的js和xml。它能**使用js异步访问服务器**
+
+### 5.1.1 什么是同步，什么是异步
+
+* 同步：客户端发送请求到服务器端，**当服务器返回响应之前**，客户端都处于**等待**卡死状态
+* 异步：客户端发送请求到服务器端，**无论服务器是否返回响应**，客户端都可以**随意做其他事情**，不会被卡死
+
+### 5.1.2 Ajax运行原理
+
+* 页面发起请求，会**将请求发送给浏览器内核中的Ajax引擎**，Ajax引擎会提交请求到服务器端，在这段时间里，客户端可以任意进行任意操作，**直到服务器端将数据返回给Ajax引擎后**，会**触发**你设置的**事件**，从而**执行自定义的js逻辑代码**完成某种页面功能
+
+### 5.1.3 Ajax应用场景
+
+- 谷歌/百度的搜索框自动补全
+- 用户注册时（校验用户名是否被注册过）
+- 下拉框联动
+
+## 5.2 js原生的Ajax技术(了解)
+
+* js原生的Ajax其实就是围绕浏览器内内置的Ajax引擎对象进行学习的，使用js原生的Ajax完成异步操作：
+
+  1. 创建Ajax引擎对象
+
+     ```javascript
+     var xmlHttp = new XMLHttpRequest();
+     var xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");//IE5和IE6,现在基本没了吧
+     ```
+
+  2. 为Ajax引擎对象**绑定监听onreadystatechange**（监听服务器已将数据响应给引擎），每当 **readyState** 改变时，就会触发 onreadystatechange 事件
+
+     ```javascript
+     xmlhttp.onreadystatechange=function(){
+     	if (xmlhttp.readyState==4 && xmlhttp.status==200){
+         	document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+     		//还有responseXml这个方法
+     	}
+     }
+     /*    readyState有如下5个状态
+      - 0: 请求未初始化
+      - 1: 服务器连接已建立
+      - 2: 请求已接收
+      - 3: 请求处理中
+      - 4: 请求已完成，且响应已就绪*/
+     
+     /*  status情况
+       - 200: "OK"
+       - 404: 未找到页面*/
+     ```
+
+  3. 绑定提交地址**open**
+
+     ```javascript
+     xmlHttp.open("GET", "/day23_1/AServlet", true);
+     //- 请求方式：可以是GET或POST
+     //- 请求的URL：指定服务器端资源，例如；/day23_1/AServlet
+     //- 请求是否为异步：如果为true表示发送异步请求，否则同步请求！
+     ```
+
+  4. 发送请求
+
+     ```javascript
+     //如果是发送POST请求，需要设置Content-Type请求头
+     xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+     xmlHttp.send();//POST请求参数写在方法里；如果是GET请求参数可以写在open中URL后
+     ```
+
+  5. 接受响应数据：写在onreadystatechange事件函数中
+
+## 5.3 Json
+
+* json是一种**与语言无关**的**数据交换的格式**，作用：
+  * 使用ajax进行前后台数据交换
+  * 移动端与服务端的数据交换
+
+* json有两种格式：
+  * **对象**格式：{"key1":obj,"key2":obj,"key3":obj...}
+  * **数组/集合**格式：[obj,obj,obj...]
+  * 注意：对象格式和数组格式**可以互相嵌套**；json的**key是字符串**，json的**value是Object**
+
+* json的解析：
+  * **json是js的原生内容**，也就意味着**js可以直接取出**json对象中的数据
+
+## 5.4 jQuery的Ajax技术(重点)
+
+* jQuery是一个优秀的js框架，自然对js原生的ajax进行了封装，封装后的ajax的操作方法更简洁，功能更强大，与ajax操作相关的jQuery方法有如下几种，但开发中经常使用的有三种
+
+  <pre style="background:yellow">$.ajax(url[,settings])：是ajax在jquery中的底层实现,最复杂,最强功能.</pre> 
+
+  ```javascript
+  $.ajax("/AjaxServlet",
+         {
+      type: "POST",
+      async: true,//是否异步
+      data: {"name": "zhangsan", "age": 22},
+      success: function (data) {
+          alert(data.name);
+      },
+      error: function () {
+          alert("请求失败");
+      },
+      dataType: "json"
+  
+  });
+  ```
+
+  <pre style="background:yellow">$.get(url[,data][,callback][,type])</pre>
+
+  <pre style="background:yellow">$.post(url[,data][,callback][,type])</pre>
+
+  ```javascript
+  $.get(
+      "/AjaxServlet",  //url：待载入页面的URL地址
+      {"name":"zhangsan","age":22},  //data：待发送 Key/value 参数
+      function (data) {  //callback：载入成功时回调函数;data是接收服务端发送的数据
+          alert(data.name+":"+data.age)
+      },
+      "json"  //type：返回内容格式xml, html, script, json, text, _default
+  );
+  ```
+
+  <pre style="background:yellow">$.getJSON(url[,data][,callback])：getJSON专门用于请求json数据</pre>
+
+  <pre>$.getScript(url[,callback])</pre>
+
+  <pre>load(url[,data][,callback])</pre>
+
+  * GET和POST提交基本差不多，有一个地方不一样就是提交的数据是中文的话，Servlet需要编码，解码
+    * 若是POST提交，可以设置request.setCharacterEncoding("utf-8")或者不用管，Ajax本身就解决了
+    * 若是GET提交，则需要编码解码
+
+
+
+#6 bootstrap4
 
 * 引入依赖
 
@@ -1615,13 +1753,13 @@ $(function () {
   * px
     * css中1px并不等于设备的1px
 
-## 5.1 布局容器
+## 6.1 布局容器
 
 * Bootstrap 需要为页面内容和栅格系统包裹一个容器
   * `.container` **类**用于固定宽度并支持响应式布局的容器
   * `.container-fluid` **类**用于 100% 宽度，占据全部视口（viewport）的容器
 
-## 5.2 栅格系统
+## 6.2 栅格系统
 
 Bootstrap 提供了一套响应式、移动设备优先的流式栅格系统，随着屏幕或视口（viewport）尺寸的增加，系统会自动分为最多**12列**
 
@@ -1636,5 +1774,5 @@ Bootstrap 提供了一套响应式、移动设备优先的流式栅格系统，�
   * 如果一“行（row）”中包含了的“列（column）”大于 12，多余的“列（column）”所在的元素将被作为一个整体另起一行排列。
   * 栅格类适用于与屏幕宽度大于或等于分界点大小的设备 ， 并且针对小屏幕设备覆盖栅格类。 因此，在元素上应用任何 `.col-md-*`栅格类适用于与屏幕宽度大于或等于分界点大小的设备 ， 并且针对小屏幕设备覆盖栅格类。 因此，在元素上应用任何 `.col-lg-*`不存在， 也影响大屏幕设备。
 
-## 5.3 其他详细的看文档去吧！
+## 6.3 其他详细的看文档去吧！
 
