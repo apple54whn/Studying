@@ -1327,7 +1327,7 @@ var change1 = function (obj) {
 * **HTML**代码/文本/值
   * **.html**( [val | fn] ) ：带标签，获取值/设置值
   * **.text**( [val | fn] ) ：不带标签，获取值/设置值
-  * **.val**( [val | fn | arr] ) ：获取属性的值
+  * **.val**( [val | fn | arr] ) ：获取值
 
 ## 4.4 遍历
 
@@ -1678,7 +1678,16 @@ $(function () {
   * 注意：对象格式和数组格式**可以互相嵌套**；json的**key是字符串**，json的**value是Object**
 
 * json的解析：
+
   * **json是js的原生内容**，也就意味着**js可以直接取出**json对象中的数据
+
+* json的转换工具，将java的对象或集合转成json形式字符串
+
+  ​    blclick(fu"1�<�
+
+* * jsonlib
+  * Gson：google
+  * fastjson：阿里巴巴
 
 ## 5.4 jQuery的Ajax技术(重点)
 
@@ -1727,6 +1736,61 @@ $(function () {
   * GET和POST提交基本差不多，有一个地方不一样就是提交的数据是中文的话，Servlet需要编码，解码
     * 若是POST提交，可以设置request.setCharacterEncoding("utf-8")或者不用管，Ajax本身就解决了
     * 若是GET提交，则需要编码解码
+
+
+
+## 5.5 案例
+
+### 5.5.1 异步校验用户名是否存在
+
+```javascript
+$("#inputusername").blur(function () {
+    var username = $(this).val();
+    $.post(
+        "/CheckServlet",
+        {"username":username},
+        function(data){
+            if(data.check){
+                $("#usernameTag").text("用户名已存在");
+                 $("#usernameTag").css("color","red")
+            } else {
+                $("#usernameTag").text("用户名可以使用");
+                 $("#usernameTag").css("color","green")
+            }
+        },
+        "json"
+    )
+});
+```
+
+```java
+//CheckServlet
+UserService userService = new UserService();
+String username = request.getParameter("username");
+boolean flag = false;
+try {
+    flag = userService.checkUsername(username);
+    System.out.println(flag);
+} catch (SQLException e) {
+    e.printStackTrace();
+}
+response.getWriter().write("{\"check\":"+flag+"}");//拼凑字符串看清楚了
+
+//dao
+QueryRunner queryRunner = new QueryRunner(JdbcUtils.getDataSource());
+String sql = "select count(*) from user where username=?";
+Object[] params = {username};
+Long number = (Long) queryRunner.query(sql,new ScalarHandler(),params);
+return number>0?true:false;
+```
+
+### 5.5.2 站内搜索
+
+
+
+
+
+
 
 
 
