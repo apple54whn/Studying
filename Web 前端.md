@@ -92,7 +92,7 @@
   		<tr>
   			<td>备注</td>
   		</tr>
-  	<tfoot>
+      </tfoot>
   </table>
   ```
 
@@ -282,6 +282,10 @@
 3. **伪类选择器（:）**
 
    * 匹配处于确定状态的一个或多个元素 ，被鼠标指针悬停的元素，或当前被选中或未选中的复选框，或元素是DOM树中一父节点的第一个子节点
+
+     ```css
+     tr>td:first-child{}/*first-child相对的是tr*/
+     ```
 
    * **超链接伪类**
 
@@ -1683,9 +1687,7 @@ $(function () {
 
 * json的转换工具，将java的对象或集合转成json形式字符串
 
-  ​    blclick(fu"1�<�
-
-* * jsonlib
+  * jsonlib
   * Gson：google
   * fastjson：阿里巴巴
 

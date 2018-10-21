@@ -1396,3 +1396,1153 @@ public class ItemController {
   ```
 
 
+
+### 3.6 *高级参数绑定
+
+#### 3.6.1 绑定到数组
+
+* 需求：在商品列表页面**选中多个商品**，选中多个商品后点击删除按钮把商品**id**传递给Controller，然后**删除**
+
+* Controller方法中可以用**数组接收**，或者**pojo中某数组属性接收**，两种方式任选其一即可。表单中name不用改
+
+  ```java
+  @RequestMapping("queryItem")
+  public String queryItem(Integer[] ids) { //或QueryVo queryVo
+  
+  	system.out.println(ids);//两种方法都是这样调用即可显示
+      return "success";
+  }
+  ```
+
+#### 3.6.2 绑定到List
+
+* 需求：在商品列表页面中可以对商品信息进行修改，可以**批量提交修改**后的商品数据
+
+* 定义pojo：**List中存放对象**，并将定义的List**放在包装类QueryVo中**
+
+  ```java
+  private List<Item> itemList;//QueryVo类中
+  ```
+
+* 前端页面：name属性必须是**list属性名+下标+元素属性**
+
+  ```jsp
+  <input type="hidden" name="itemList[${s.index}].id" value="${item.id }"/>
+  <input type="text" name="itemList[${s.index}].name" value="${item.name }"/>
+  ```
+
+* **接收List类型的数据必须是pojo的属性**，如3.6.1中pojo方法
+
+
+
+## 4 @RequestMapping
+
+* 通过@RequestMapping注解可以**定义不同的处理器映射规则**
+
+### 4.1 URL路径映射
+
+* **value**的值是**数组**，可以将**多个url映射到同一个方法**
+
+  ```java
+  @RequestMapping(value="itemList")
+  @RequestMapping(value={"itemList","itemListAll"})
+  // @RequestMapping("/item"） 只有在其值时一个类型时使用
+  ```
+
+  * **添加在类上面(前缀)**，限制此类下的所有方法请求url必须以请求前缀开头，**以便对url进行分类管理**
+
+### 4.2 请求方法限定
+
+* **method**限定请求进来的方法，值也是**数组**
+
+  ```java
+  @RequestMapping(value = "itemList",method = {RequestMethod.GET,RequestMethod.POST})
+  ```
+
+
+## 5 Controller方法返回值
+
+### 5.1. 返回ModelAndView
+
+* controller方法中定义ModelAndView对象并返回，对象中可添加model数据、指定view
+
+  ```java
+  @RequestMapping(value = "/iteam/iteamlist.action")
+  public ModelAndView itemList(){
+      ...
+      ModelAndView modelAndView = new ModelAndView();
+      modelAndView.addObject("iteamList",list);
+      modelAndView.setViewName("/WEB-INF/jsp/iteamList.jsp");
+      return modelAndView;
+  }
+  ```
+
+### 5.2 *void(Ajax使用)
+
+* 在Controller方法形参上可以**定义request和response**，使用request或response**指定响应结果**
+
+  ```java
+  //使用request请求转发页面
+  request.getRequestDispatcher("页面路径").forward(request, response);
+  //通过response页面重定向
+  response.sendRedirect("url")
+  //通过response指定响应结果，例如响应json数据如下
+  response.getWriter().print("{\"abc\":123}");
+  ```
+
+### 5.3 *返回字符串(推荐)
+
+#### 5.3.1 返回逻辑视图名
+
+* controller方法返回字符串可以**指定逻辑视图名**，通过视图解析器解析为物理视图地址
+
+  ```java
+  //指定逻辑视图名，经过视图解析器解析为jsp物理路径：/WEB-INF/jsp/itemList.jsp
+  return "itemList";
+  ```
+
+#### 5.3.2 Redirect重定向
+
+* Controller方法返回字符串可以**重定向到一个url地址**
+
+  ```java
+  @RequestMapping("updateItem")
+  public String updateItemById(Item item) {
+      // 更新商品
+      this.itemService.updateItemById(item);
+  
+      // 修改商品成功后，重定向到商品编辑页面
+      // 重定向后浏览器地址栏变更为重定向的地址，
+      // 重定向相当于执行了新的request和response，所以之前的请求参数都会丢失
+      // 如果要指定请求参数，需要在重定向的url后面添加 ?itemId=1 这样的请求参数
+      return "redirect:/itemEdit.action?itemId=" + item.getId();
+  }
+  ```
+
+#### 5.3.3 forward转发
+
+* Controller方法执行后继续执行另一个Controller方法，如商品修改提交后转向到商品修改页面，修改商品的id参数可以带到商品修改方法中
+
+  ```java
+  @RequestMapping("updateItem")
+  public String updateItemById(Item item) {
+      // 更新商品
+      this.itemService.updateItemById(item);
+  
+      // 修改商品成功后，继续执行另一个方法
+      // 使用转发的方式实现。转发后浏览器地址栏还是原来的请求地址，
+      // 转发并没有执行新的request和response，所以之前的请求参数都存在
+      return "forward:/itemEdit.action";
+  }
+  ```
+
+
+## 6 异常处理器
+
+* SpringMVC在处理请求过程中出现异常信息交由异常处理器进行处理，自定义异常处理器可以实现一个系统的异常处理逻辑
+
+* 思路：
+
+  * 系统中异常包括两类：**预期异常**和运行时异常**RuntimeException**，前者通过捕获异常从而获取异常信息，后者主要通过规范代码开发、测试通过手段减少运行时异常的发生
+  * 系统的dao、service、controller出现都通过throws Exception向上抛出，最后由SpringMVC**前端控制器交由异常处理器**进行异常处理
+
+* **自定义异常类(继承Exception或RuntimeException)**：为了区别不同的异常,通常根据异常类型进行区分
+
+  ```java
+  public class MyException{
+      public MyException(){};
+      public MyException(String msg){
+          super(msg);
+      };
+  }
+  ```
+
+* **自定义异常处理器(实现HandlerExceptionResolver)**，并**在springmvc.xml中实例化配置**
+
+  ```java
+  public class CustomHandleException implements HandlerExceptionResolver {
+     	//Object:发生异常的地方，包名+类名+方法名(形参)的字符串，用于日志
+      @Override
+      public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,Exception exception) {
+          
+          ModelAndView modelAndView = new ModelAndView();
+          // 定义异常信息
+          String msg;
+  
+          // 判断异常类型
+          if (exception instanceof MyException) {
+              // 如果是自定义异常，读取异常信息
+              msg = exception.getMessage();
+          } else {
+              //简写
+              modelAndView.addObject("msg", "未知异常");
+              //或 如果是运行时异常，则取错误堆栈，从堆栈中获取异常信息
+              Writer out = new StringWriter();
+              PrintWriter s = new PrintWriter(out);
+              exception.printStackTrace(s);
+              msg = out.toString();
+  
+          }
+          // 把错误信息发给相关人员,邮件,短信等方式
+          // 返回错误页面，给用户友好页面显示错误信息
+         
+          modelAndView.addObject("msg", msg);
+          modelAndView.setViewName("error");
+  
+          return modelAndView;
+      }
+  }
+  ```
+
+
+
+## 7 处理multipart数据
+
+* 需要配置**MultipartResolver**接口的实现类，下面不提供xml配置
+
+  * CommonsMultipartResolver：使用Jakarta Commons FileUpload解析multipart请求
+
+  * **StandardServletMultipartResolver**：依赖于**Servlet3.0**对multipart请求支持（**始于Spring3.1**）
+
+    选择这个，它使用Servlet所提供的功能支持，不依赖其他项目。它**没有构造器参数和属性**
+
+    ```java
+    @Bean
+    public MultipartResolver multipartResolver() throws IOException {
+        return new StandardServletMultipartResolver();
+    }
+    ```
+
+    如果配置DispatcherServlet的Servlet初始化类继承了**AbstractAnnotationConfigDispatcherServletInitializer**或AbstractDispatcherServletInitializer的话，通过**重载customize Registration()方法**（它会得到Dynamic参数）来配置multipart的具体细节
+
+    ```java
+    //class Config extends AbstractAnnotationConfigDispatcherServletInitializer
+    @Override
+    protected void customizeRegistration(Dynamic registration) {
+        registration.setMultipartConfig(new MultipartConfigElement("/tmp/file/uploads",2097152,4194304,0));
+        //location,maxFileSize,maxRequestSize,fileSizeThreshold(为0则上传文件写到磁盘)
+    }
+    ```
+
+* **处理multipart请求**
+
+  * form标签中**enctype**属性设置为**multipart/form-data**，告诉浏览器以multipart数据形式提交表单
+
+* **MultipartFile接口**
+
+  ```java
+  @RequestMapping("updateItem")
+  public String updateItemById(Item item, MultipartFile pictureFile) throws Exception {
+      // 图片上传
+      // 设置图片名称，不能重复，可以使用uuid
+      String picName = UUID.randomUUID().toString();
+  
+      // 获取文件名
+      String oriName = pictureFile.getOriginalFilename();
+      // 获取图片后缀
+      String extName = oriName.substring(oriName.lastIndexOf("."));
+  
+      // 开始上传
+      pictureFile.transferTo(new File("C:/upload/image/" + picName + extName));
+  
+      // 设置图片名到商品中
+      item.setPic(picName + extName);
+  
+      // 更新商品
+      this.itemService.updateItemById(item);
+      return "forward:/itemEdit.action";
+  }
+  ```
+
+
+
+  ## 8 Json数据交换及RESTful
+
+### 8.1 @RequestBody
+
+* **读取http请求的内容(字符串)**，通过SpringMVC提供的HttpMessageConverter接口将读到的内容(json数据)转换为java对象并**绑定到Controller方法的参数上，如8.2**
+
+  * 传统的请求参数：itemEdit.action?id=1&name=zhangsan&age=12
+
+  * 现在的请求参数：使用POST请求，在请求体里面加入json数据
+
+    ```json
+    {
+        "id": 1,
+        "name": "测试商品",
+        "price": 99.9,
+        "detail": "测试商品描述",
+        "pic": "123456.jpg"
+    }
+    ```
+
+
+### 8.2 @ResponseBody
+
+* **将Controller的方法返回的对象**，通过SpringMVC提供的HttpMessageConverter接口**转换为指定格式的数据**如：json,xml等，**通过Response响应给客户端**
+  * 如果需要SpringMVC支持json，必须加入json的处理**jar包**：Jackson
+
+    > jackson-annotations.jar
+    >
+    > jackson-core-2.4.2.jar
+    >
+    > jackson-databind-2.4.2.jar
+
+  ```java
+  @RequestMapping("testJson")
+  @ResponseBody
+  public Item testJson(@RequestBody Item item) {
+      //    发送json串                   接收json串
+      return item;
+  }
+  ```
+
+
+
+### 8.3 RESTful
+
+* RESTful是一个资源定位及资源操作的风格。使用POST、DELETE、PUT、GET，使用不同方法对资源进行操作，分别对应 添加、 删除、修改、查询
+
+* 需求：RESTful方式实现商品信息查询，返回json数据
+
+  * **从URL上获取参数**：根据id查询商品，使用RESTful风格开发的接口地址是：http://127.0.0.1/item/1
+
+    * 注解**@RequestMapping("item/{id}")**声明请求的URL，{xxx}为占位符，请求的URL是“item /1”
+
+    * 使用**@PathVariable() Integer id**获取url上的数据
+
+      ```java
+      @RequestMapping("item/{id}")
+      @ResponseBody
+      public Item queryItemById(@PathVariable Integer id) {
+          Item item = this.itemService.queryItemById(id);
+          return item;
+      }
+      ```
+
+      * 如果@RequestMapping中表示为"item/{id}"，id和形参名称一致，@PathVariable不用指定名称。如果不一致，例如"item/{ItemId}"则需要指定名称@PathVariable("itemId")
+
+    * **注意**：
+
+      * @PathVariable是获取url上数据的。@RequestParam获取请求参数的（包括post表单提交）
+      * 如果加上@ResponseBody注解，就不会走视图解析器，不会返回页面，目前返回的json数据。如果不加，就走视图解析器，返回页面
+
+
+
+## 9 拦截器
+
+* 类似于Servlet 开发中的过滤器Filter，用于对处理器进行预处理和后处理
+
+### 9.1 拦截器定义
+
+* **实现HandlerInterceptor接口**
+
+  ```java
+  public class HandlerInterceptor1 implements HandlerInterceptor {
+      // Controller执行前调用此方法
+      // 返回true表示继续执行，返回false中止执行
+      // 这里可以加入登录校验、权限拦截等
+      @Override
+      public boolean preHandle(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2) throws Exception {
+          System.out.println("HandlerInterceptor1....preHandle");
+          return true;
+      }
+  
+      // controller执行后但未返回视图前调用此方法
+      // 这里可在返回用户前对模型数据进行加工处理，比如这里加入公用信息以便页面显示
+      @Override
+      public void postHandle(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, ModelAndView arg3) throws Exception {
+          System.out.println("HandlerInterceptor1....postHandle");
+      }
+  
+      // controller执行后且视图返回后调用此方法
+      // 这里可得到执行controller时的异常信息
+      // 这里可记录操作日志
+      @Override
+      public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3) throws Exception {
+          System.out.println("HandlerInterceptor1....afterCompletion");
+      }
+  }
+  ```
+
+### 9.2 拦截器配置
+
+```xml
+//springmvc-config.xml
+<!-- 配置拦截器 -->
+<mvc:interceptors>
+    <mvc:interceptor>
+        <!-- 所有的请求都进入拦截器 -->
+        <mvc:mapping path="/**" />
+        <!-- 配置具体的拦截器 -->
+        <bean class="cn.itcast.ssm.interceptor.HandlerInterceptor1" />
+    </mvc:interceptor>
+    <mvc:interceptor>
+        <!-- 所有的请求都进入拦截器 -->
+        <mvc:mapping path="/**" />
+        <!-- 配置具体的拦截器 -->
+        <bean class="cn.itcast.ssm.interceptor.HandlerInterceptor2" />
+    </mvc:interceptor>
+</mvc:interceptors>
+```
+
+* 总结：
+
+  * preHandle按拦截器定义顺序调用，**返回false时后续拦截器将不调用**
+
+  * postHandler按拦截器定义逆序调用
+
+  * postHandler在拦截器链内**所有拦截器返回成功时调用**
+
+  * afterCompletion按拦截器定义逆序调用
+
+  * afterCompletion**只有preHandle返回true才调用**
+
+
+
+### 9.3 应用
+
+* 有一个登录页面，需要写一个Controller访问登录页面
+* 登录页面有一提交表单的动作。需要在Controller中处理
+  * 判断用户名密码是否正确（在控制台打印）
+  * 如果正确,向session中写入用户信息（写入用户名username）
+  * 跳转到商品列表
+* 拦截器
+  * 拦截用户请求，判断用户是否登录（登录请求不能拦截）
+  * 如果用户已经登录。放行
+  * 如果用户未登录，跳转到登录页面。
+
+
+
+
+
+# 第四部分 Maven
+
+## 1 Maven简介
+
+是apache下的一个开源项目，是纯java开发，用于对java项目进行**构建**、**依赖管理**
+
+- **项目构建**：一个项目从编写源代码到编译、测试、运行、打包、部署、运行的过程
+  - Maven项目构建过程：
+    - 清理(**clean**)——>编译(**compile**)——>测试(test)——>报告——>打包(**package**)——>部署
+    - 运行一个Maven工程(web项目)的命令：tomcat:run
+- **依赖管理**：java项目所依赖jar包的规范化管理
+  - Maven项目的jar包只需在**pom.xml**添加jar包的**坐标**，自动从Maven仓库下载jar包、运行
+
+
+
+Maven文件夹目录
+
+​	|——bin：mvn.bat(run方式运行项目)、mvnDebug.bat(debug方式运行项目)
+
+​	|——boot：Maven运行需要类加载器
+
+​	|——conf：**settings.xml**(整个Maven工具核心配置文件。配置本地仓库)
+
+​	|——lib：Maven运行依赖的jar包
+
+
+
+## 2 Maven项目工程目录
+
+Project
+
+​	|—src
+
+​		|—main
+
+​			|—java				存放项目的java文件
+
+​			|—resources			存放项目的资源文件，如spring、mybatis等配置文件
+
+​			|—webapp				web工程主目录
+
+​				|—WEB-INF
+
+​					|—web.xml
+
+​		|—test
+
+​			|—java				存放所有测试.java文件，如JUnit测试类
+
+​			|—resources			测试资源文件，一般不放东西，调用的main中的资源文件
+
+​	|—target						目标文件输出位置，如.class、.jar、.war文件
+
+​	|—pom.xml					Maven项目核心配置文件
+
+
+
+
+
+## 3 常用的Maven命令
+
+- **tomcat:run**：在**当前项目的路径**中执行后，运行Maven工程项目
+- mvn **spring-boot:run**：运行SpringBoot项目
+- mvn **clean**：删除target及其内容
+- mvn **compile**：只编译了main目录的文件
+- mvn **test**：只编译test目录文件并运行
+- mvn **package**：根据项目类型打包
+- mvn **install**：把项目发布到本地仓库，web项目不用(因为是war包)，一般java项目用来打jar包
+
+
+
+## 4 Maven的生命周期（了解）
+
+compile——>test——>package——>install——deploy（按顺序）
+
+- Clean生命周期：clean命令
+- Default生命周期：上面4个
+- Site生命周期：mvn site生成项目的站点文档
+
+命令和生命周期的阶段的关系：不同的生命周期的命令可以同时执行(mvn clean package)
+
+
+
+## 5 依赖管理
+
+- 在pom.xml中，添加dependency标签，并填写坐标。
+  - 可以在Maven repository网站上查找
+  - 在本地重建索引，以索引方式搜索
+- **依赖范围**（A依赖B，需要在A的pom.xml文件中添加B的坐标，同时指定依赖范围）
+  - Compile：编译范围，指A在编译时依赖B，为默认依赖范围。在编译、测试、运行、打包时需要
+    - 如：struts2-core
+  - **Provided**：依赖只有在当JDK或者一个容器已经提供该依赖后才使用，在编译、测试时需要
+    - 如：jsp-api.jar   servlet-api.jar
+  - Runtime：在测试、运行、打包时需要
+    - 如：数据库驱动包
+  - Test：只测试时需要
+    - 如：JUnit.jar
+- 依赖传递：只添加一个依赖，有关这个依赖的依赖都添加过来了
+- 解决依赖冲突：
+  - 调解：
+    - 第一声明者优先原则（先声明的用）
+    - 路径近者优先原则（A依赖spring-bean1，A依赖B依赖spring-bean2，则应该用1）
+  - 排除依赖：
+  - 锁定版本：
+
+
+
+
+
+
+
+# 第五部分 Spring Boot
+
+## Spring Boot 简介
+
+* Spring Boot来简化Spring应用开发，约定大于配置， 去繁从简，just run就能创建一个独立的，产品级别应用
+* 背景：J2EE笨重的开发、繁多的配置、低下的开发效率、 复杂的部署流程、第三方技术集成难度大
+* 解决：
+  * “Spring全家桶”时代。
+  * Spring Boot：J2EE**一站式解决方案** 
+  * Spring Cloud：分布式整体解决方案
+* **优点**：
+  * **快速创建**独立运行的Spring项目以及与主流框架集成
+  * 使用**嵌入式的Servlet容器**，应用无需打成WAR包
+  * **starters自动依赖与版本控制**
+  * 大量的**自动配置**，简化开发，也可修改默认值
+  * **无需配置XML，无代码生成**，开箱即用 
+  * 准生产环境的运行时应用**监控**
+  * 与**云计算**的天然集成
+
+## 微服务
+
+* 2014，martin fowler提出的架构风格（服务微化）。一个应用应该是一组小型服务，可以通过HTTP的方式进行互通
+  * 单体应用：ALL IN ONE
+  * 微服务：每一个功能元素最终都是一个可独立替换和独立升级的软件单元
+* [详细参照微服务文档](https://martinfowler.com/articles/microservices.html#MicroservicesAndSoa)
+
+## 环境准备
+
+* **Maven设置**：给maven 的settings.xml配置文件的profiles标签添加如下内容
+
+  ```xml
+  <profile>
+      <id>jdk-1.8</id>
+      <activation>
+          <activeByDefault>true</activeByDefault>
+          <jdk>1.8</jdk>
+      </activation>
+      <properties>
+          <maven.compiler.source>1.8</maven.compiler.source>
+          <maven.compiler.target>1.8</maven.compiler.target>
+          <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+      </properties>
+  </profile>
+  ```
+
+* IDEA设置：整合安装的Maven
+
+  * Settings—build—Build Tools—Maven
+
+
+
+## 1 快速开始
+
+- 使用Spring Initializr初始化Spring Boot项目： https://start.spring.io/
+
+- **Application.java**，看1.1.2节
+
+- **HelloController.java**
+
+  ```java
+  @RestController//是@Controller和@ResponseBody的简写
+  public class HelloController {
+      @RequestMapping("/hello")
+      public String hello(){
+          return "Hello World!";
+      }
+  }
+  ```
+
+- pom.xml之打包插件，**简化部署**，通过**java -jar** 包名来运行应用，Spring Boot使用嵌入式的Tomcat无需配置
+
+  ```xml
+  <!--这个插件可将应用打包成可执行的jar包，使用Spring Initializr会自动添加这个依赖-->
+  <build>
+      <plugins>
+          <plugin>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-maven-plugin</artifactId>
+          </plugin>
+      </plugins>
+  </build>
+  ```
+
+### 1.1 HelloWorld探究
+
+#### 1.1.1 POM文件
+
+* **父项目**
+
+  ```xml
+  <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>2.0.6.RELEASE</version>
+      <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+  ```
+
+  他的父项目是：
+
+  ```xml
+  <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-dependencies</artifactId>
+      <version>2.0.6.RELEASE</version>
+      <relativePath>../../spring-boot-dependencies</relativePath>
+  </parent>
+  ```
+
+  这是真正管理Spring Boot应用里面所依赖的版本。Spring Boot的版本仲裁中心，以后我们**导入依赖默认是不需要写版本**；（没有在dependencies里面管理的依赖自然需要声明版本号）
+
+* **启动器**
+
+  ```xml
+  <dependencies>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+  		...
+  </dependencies>
+  ```
+
+  * **spring-boot-starter**：spring-boot**场景启动器**，帮我们**导入**了web模块**正常运行所依赖的组件**
+  * Spring Boot将所有的功能场景都抽取出来，做成一个个的starters（启动器），只需要在项目里面引入这些starter相关场景的所有依赖都会导入进来
+
+#### 1.1.2 主程序类、主入口类
+
+```java
+//@SpringBootApplication 来标注一个主程序，说明这是一个SpringBoot应用
+@SpringBootApplication
+public class Application {
+
+    public static void main(String[] args) {
+        // Spring应用启动起来
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
+
+* **@SpringBootApplication** : Spring Boot应用标注在某个类上说明这个类是SpringBoot的**主配置类**，SpringBoot就应该**运行这个类的main方法**来**启动**SpringBoot应用。是如下注解的**简写**：
+
+  ```java
+  @Target(ElementType.TYPE)
+  @Retention(RetentionPolicy.RUNTIME)
+  @Documented
+  @Inherited
+  @SpringBootConfiguration
+  @EnableAutoConfiguration
+  @ComponentScan(excludeFilters = {
+        @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
+        @Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
+  public @interface SpringBootApplication {
+  ```
+
+  - @**SpringBootConfiguration** : Spring Boot的配置类，标注在某个类上表示这是一个Spring Boot配置类
+
+  - @**Configuration** : 配置类上来标注这个注解，配置类也是容器中的一个组件@Component
+
+  - @**EnableAutoConfiguration**：开启自动配置功能，**如下注解的简写**
+
+    以前我们需要配置的东西，Spring Boot帮我们自动配置；@**EnableAutoConfiguration**告诉SpringBoot开启自动配置功能；这样自动配置才能生效；
+
+    ```java
+    @AutoConfigurationPackage
+    @Import(EnableAutoConfigurationImportSelector.class)
+    public @interface EnableAutoConfiguration {...}
+    ```
+
+    * @**AutoConfigurationPackage**：自动配置包，**如下注解的简写**
+
+      * @**Import**(AutoConfigurationPackages.Registrar.class)
+
+        Spring底层注解@Import，给容器中导入一个组件；导入的组件由AutoConfigurationPackages.**Registrar**.class**指定**，这个类有一个方法，通过注解metadata，将
+
+        ==**主配置类**（@SpringBootApplication）所在**包及下面所有子包**里面的**所有组件扫描到Spring容器**==
+
+    * @**Import**({AutoConfigurationImportSelector.class})
+
+      **AutoConfigurationImportSelector**：导入哪些组件的选择器
+
+      将所有需要导入的组件以全类名的方式返回，这些组件就会被添加到容器中； 会给容器中**导入非常多的自动配置类**（xxxAutoConfiguration），就是给容器中导入这个场景需要的所有组件，并配置好这些组件；
+
+      ![自动配置类](F:\GitHub\Studying\Spring Boot\images\自动配置类.PNG)
+
+      * 有了自动配置类，免去了我们手动编写配置注入功能组件等的工作
+
+      * 调用了SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,classLoader)方法。Spring Boot在**启动的时候从类路径下**的META-INF/spring.factories中获取**EnableAutoConfiguration指定的值**，将这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作
+
+      * J2EE的整体整合解决方案和自动配置都在spring-boot-autoconfigure-1.5.9.RELEASE.jar
+
+
+
+## 2 请求数据
+
+* **@RestController**：Spring4的新注解，将类标记为控制器，其中每个方法都返回一个域对象而不是视图，这是@Controller和@ResponseBody的简写
+
+* @**RequestMapping**、@GetMapping、@PostMapping、@PutMapping、@DeleteMapping。value中也可以用正则表达式限制类型。若不符合要求会返回4xx的错误信息，表示请求有问题
+
+  * 当POST方法传递的是表单数据时，可在上述注解加**consumes参数**（根据请求的**Content-Type**缩小请求映射范围）
+
+    * 设置consumes ={MediaType.MULTIPART_FORM_DATA_VALUE ,MediaType.APPLICATION_ATOM_XML_VALUE})，任选，<a href="#postman">详细区别看这里</a>。第一个可以传文件，第二个传文件慢
+
+    * 在@PostMapping**上传文件**方法中使用**MultipartFile**接口的流保存文件
+
+      ```java
+      public void uploadFile(@RequestParam MultipartFile file) {...}
+      ```
+
+  * GET方法**下载文件**，设置**produces参数**根据**Accept**请求标头和控制器方法生成的内容类型列表来缩小请求映射
+
+* @**PathVariable**：访问URL模板变量
+
+* @**RequestBody**：通过HttpMessageConverter读取请求体并反序列化为Object
+
+* @**RequestParam**：将Servlet请求参数（即查询参数或表单数据）绑定到控制器中方法的参数上，value可不写（必须和参数一致），默认required=true，可以设置为false防止异常
+
+* @RequestHeader：将请求头绑定到控制器方法的参数上，value可不写（必须和参数一致），不区分大小写
+
+* @CookieValue：将HTTP cookie的值绑定到控制器方法的参数上，同上。除非为了兼容老客户端，否则不用
+
+* Authenticated：获取当前用户，直接在方法中增加参数，类型为它即可
+
+```java
+//此代码使用Spring 4的新注解@RestController，该注注解将类标记为控制器，
+//其中每个方法都返回一个域对象而不是视图。 这是@Controller和@ResponseBody的简写。
+@RestController
+@RequestMapping(value = "/tvSeries")
+public class TvSeriesController {
+
+    /**
+     * GET查询所有电视剧
+     */
+    @GetMapping
+    public List<TvSeries> queryAll() {
+        List<TvSeries> tvSeriesList = new ArrayList<>();
+        tvSeriesList.add(new TvSeries(0, "天龙八部", 50, new Date()));
+        tvSeriesList.add(new TvSeries(1, "笑傲江湖", 40, new Date()));
+        return tvSeriesList;
+    }
+
+    /**
+     * GET按id查询电视剧
+     */
+    @GetMapping(value = "/{id}")
+    public TvSeries queryOne(@PathVariable Integer id) {
+
+        if (id == 1) {
+            return new TvSeries(0, "天龙八部", 50, new Date());
+        } else if (id == 2) {
+            return new TvSeries(1, "笑傲江湖", 40, new Date());
+        } else
+            return null;
+    }
+
+    /**
+     * POST增加电视剧（没写持久层代码）
+     */
+    @PostMapping
+    public TvSeries addOne(@RequestBody TvSeries tvSeries) {
+        System.out.println(tvSeries);
+        return tvSeries;
+    }
+
+    /**
+     * PUT更改电视剧
+     */
+    @PutMapping(value = "/{id}")
+  	public TvSeries updateOne(@PathVariable Integer id, @RequestBody TvSeries tvSeries) {
+        if (id == 1) {
+            TvSeries tvSeries1 = new TvSeries(0, "天龙八部", 50, new Date());
+            tvSeries1.setName(tvSeries.getName());
+            return tvSeries1;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * DELETE删除电视节目
+     */
+    @DeleteMapping(value = "/{id}")
+    public Map<String, String> deleteOne(@PathVariable Integer id, HttpServletRequest request,                                      @RequestParam(value = "deleteReason", required = false) String deleteReason) {
+        Map<String, String> result = new HashMap<>();
+        if (id == 0) {
+            //执行删除代码
+            result.put("message", "#0被" + request.getRemoteAddr() + "删除，原因：" + deleteReason);
+        } else if (id == 1) {
+            //不能删除这个，抛异常。spring security处理更好，之后学习
+            throw new RuntimeException("#1不能删除");
+        } else
+            throw new ResourceNotFoundException();
+        return result;
+    }
+    
+    /**
+     * MultipartFile上传文件,利用consumes您根据请求的Content-Type缩小请求映射范围
+     */
+    @PostMapping(value = "/{id}/file" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void uploadFile(@PathVariable Integer id,@RequestParam MultipartFile file) throws IOException {
+        file.transferTo(new File("F:\\GitHub\\Studying\\SSM\\"+file.getOriginalFilename()));
+        System.out.println(id+"id上传了文件");
+    }
+    
+    /**
+     * 下载文件，根据Accept请求标头和控制器方法生成的内容类型列表来缩小请求映射，如以下示例所示：
+     */
+    @GetMapping(value = "/{id}/file" ,produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] downloadFile(@PathVariable Integer id) throws IOException {
+        System.out.println(id+"id下载了文件");
+        return IOUtils.toByteArray(new FileInputStream("target/classes/WindowsPic.jpg"));
+
+    }
+}
+```
+
+
+
+### 2.1 数据校验(Bean Validation)
+
+* 不要相信前端传入的数据，尽量要前端少传数据
+
+* **使用基于注解的验证**
+
+  > JSR303 是一套JavaBean参数校验的标准，它定义了很多常用的校验注解，我们可以直接将这些注解加在我们JavaBean的属性上面，就可以在需要校验的时候进行校验了。
+  >
+  > Hibernate validator是Bean Validation1.0（JSR303）的一个实现
+  >
+  > 目前最新的Hibernate validator 6.0 是Bean Validation 2.0（JSR380，于2017年8月完成）的一个实现
+  >
+  > [Bean Validation官网点这里](https://beanvalidation.org/)
+
+* Hibernate Validator包含一组基本的常用约束，这些最重要的是Bean Validation规范定义的约束。此外，Hibernate Validator还提供了有用的自定义约束。
+
+* @**Valid**      级联验证，**确保这个对象满足校验限制**。校验的对象后**紧跟着Errors或BindingResult参数**
+
+  ```java
+  @NotNull
+  private List<@Valid Image> images;//images不可为null，每个Image元素需要级联验证
+  
+  @NotNull
+  @Size(min=1,max=10)//messages不为null，长度至少为1，最长10；
+  private List<@Size(min=10) @NotNull String> messages;//每个String不为空，长度至少为10
+  ```
+
+  ```java
+  @PutMapping
+  public TvSeries updateOne(@Valid @RequestBody TvSeries tvSeries,BindingResult result) {
+      //参数没过校验也会进入方法执行，校验结果通过result参数传递进来
+      if(result.hasErrors()){
+          //没通过校验
+      }
+  }
+  ```
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <style>
+          tr{
+              color: rgb(76, 78, 47)
+          }
+          tr>td:first-child{
+              font-weight: bold;
+              color: black;
+              font-family: consolas;
+
+      <table border="3">
+          <caption>注解说明表</caption>
+          <tr style="background-color:#90CAF9">
+             <td style="color: rgb(76, 78, 47);font-weight: normal;">注解</td>
+             <td>说明</td>
+             <td>支持的数据类型</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@Null</td>
+             <td>被注释的元素必须为 null</td>
+             <td rowspan="2">所有类型</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@NotNull</td>
+             <td>被注释的元素必须不为 null</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@NotEmpty</td>
+             <td>被注释的元素非null且非空（字符串是不是空格无所谓）</td>
+             <td>CharSequence, Collection, Map and arrays</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@NotBlank</td>
+             <td>被注释的元素非null，且必须包含至少一个非空格字符</td>
+             <td>CharSequence</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@Pattern(regex=, flags=)</td>
+             <td>被注释的字符串是否与给定的正则表达式匹配</td>
+             <td>CharSequence</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@Email</td>
+             <td>检查指定的字符序列是否是有效的电子邮件地址。 可选参数regexp和flags允许指定电子邮件必须匹配的附加正则表达式（包括正则表达式标志）</td>
+             <td>CharSequence</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@AssertTrue</td>
+             <td>被注释的元素必须为 true</td>
+             <td rowspan="2">Boolean、boolean</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@AssertFalse</td>
+             <td>被注释的元素必须为 false</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@DecimalMin(value=, inclusive=)</td>
+             <td>当inclusive = false时，检查带注释的值是否大于指定的最小值；否则该值是否大于或等于指定的最小值。参数值是根据BigDecimal字符串表示形式的最大值的字符串表示形式</td>
+             <td rowspan="3">BigDecimal，BigInteger，CharSequence，byte，short，int，long和原始类型相应包装类型</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@DecimalMax(value=, inclusive=)</td>
+             <td>与上相反</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@Digits(integer=, fraction=)</td>
+             <td>整数位数，小数位数必须在设置的范围内</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@Size(min=, max=)</td>
+             <td>被注释元素的大小是否在最小值和最大值（包括）之间</td>
+             <td>CharSequence, Collection, Map and arrays</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@Min(value=)</td>
+             <td>被注释值是否大于或等于指定的最小值</td>
+             <td rowspan="6">BigDecimal，BigInteger，byte，short，int，long和原始类型相应包装类型; 另外由HV支持：任何子类型的CharSequence（由字符序列表示的数值被评估），任何子类型的Number和javax.money.MonetaryAmount </td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@Max(value=)</td>
+             <td>与上相反</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@Negative</td>
+             <td>检查元素是否为负数，0为无效</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@NegativeOrZero</td>
+             <td>检查元素是否为负数或0</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@Positive</td>
+             <td>检查元素是否为正数，0为无效</td>
+          </tr>
+          <tr style="background-color:#90CAF9">
+             <td>@PositiveOrZero</td>
+             <td>检查元素是否为正数或0</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@Past</td>
+             <td>被注释的元素必须是一个过去的日期</td>
+             <td rowspan="4">java.util.Date、java.util.Calendar、java.time和java.time.chrono两个包下的一些类</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@PastOrPresent</td>
+             <td>过去或现在</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@Future</td>
+             <td>被注释的元素必须是一个将来的日期</td>
+          </tr>
+          <tr style="background-color:#69F0AE">
+             <td>@FutureOrPresent</td>
+             <td>现在或将来</td>
+          </tr>
+       </table>
+  * 以上**每个注解都有groups、message、payload三个参数**可选
+  * 除表中特别说明的外，null值都是合法的
+  * 每个注解都还有一个名字后面跟.List的注解，例如@Null.List，推荐在标记一组同样注解时使用；还有.Iterable、.Map等
+  * 表中提到的**CharSequence的子类**有：String、StringBuffer、StringBuilder、CharBuffer、Segment
+
+* **注解的位置**
+
+  * 成员变量（Filed域）上
+  * 方法（get/is）上
+  * 类上
+
+* **约束规则对子类依然有效**
+
+### 2.2 对同一bean的不同验证需求
+
+* **groups参数**：每个约束的注解都有这个参数，可以接收多个class类型（必须是接口）
+
+  不声明groups参数默认为javax.validation.groups.Default，声明了groups参数的会从Default组移除，如需加入Default组需显示声明，例如：@Null(groups={Default.class,Step1.class})
+
+* **@Valid和@Validated区别**
+  * @Valid是JSR标准定义的注解，只验证Default组的约束
+  * @Validated是Spring定义注解，可通过参数来指定验证组，例：@Validated({Step1.class,Default.class})
+  * @Valid可以用在成员变量上，进行级联验证；@Validated只能用在参数上，表示这个参数需要验证
+
+* 自定义注解和不同验证更详细的[看这个博客](https://www.cnblogs.com/beiyan/p/5946345.html)
+
+* **手动验证**：Spring调用Controller层的方法时，其中有@Valid或@Validated注解，会自动数据校验。当在Service层也需要数据校验时，需手动验证
+
+  ```java
+  //装载验证器
+  @Autowired Validator validator;
+  //验证某个类，下面是执行默认的验证组，如需指定可多传一个class参数
+  Set<ConstraintViolation<?>> result = validator.validate(obj);
+  //通不过校验的result集合会有值，可以通过size()判断
+  ```
+
+
+
+
+## 3 SpringBoot中使用MyBatis
+
+### 3.1 后端程序结构层次
+
+* Web控制层：@**RestController**、@Controller
+* 业务逻辑层：@**Service**
+* 数据访问层：@**Repository**
+* 不能分清层次的：@**Component**，需要Spring来管理，可能被以上三个层调用
+
+
+
+* 分包问题：
+  * 按功能划分（PBF）：微服务、IDEA中module
+  * 按层次划分（PBL）
+
+### 3.2 添加MyBatis支持步骤
+
+1. 修改pom.xml，添加MyBatis支持
+
+   ```xml
+   <dependency>
+       <groupId>org.mybatis.spring.boot</groupId>
+       <artifactId>mybatis-spring-boot-starter</artifactId>
+       <version>1.3.2</version>
+   </dependency>
+   <dependency>
+       <groupId>mysql</groupId>
+       <artifactId>mysql-connector-java</artifactId>
+       <scope>runtime</scope>
+   </dependency>
+   ```
+
+2. 修改application.properties，添加数据库连接
+
+3. 修改启动类，增加@MapperScan("cn.itcast.myapplication.dao")注解
+
+4. 编写dao中mapping接口
+
+5. 添加mapping接口对应的xml文件
+
+
+
+## 4 JUnit单元测试
+
+* Assert：断言
+
+* Mockito 框架引入
+
+  ```xml
+  <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <!--<version>2.23.0</version> springboot不需要提供版本-->
+      <scope>test</scope>
+  </dependency>
+  ```
+
+* TDD（Test-Driven Development，测试驱动开发）先写测试用例，后写实现代码。重构现有代码时很好用
+
+  * RDD（Resume-Driven Development，简历驱动开发）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 其他
+
+## <span name="postman">1 Postman的几种参数格式</span>
+
+* form-data
+
+  > 即multipart/form-data，它将表单的数据组织成Key-Value形式，用分隔符boundary（boundary可任意设置）处理成一条消息。由于有boundary隔离，所以既可以上传文件，也可以上传参数
+
+* x-www-form-urlencoded
+
+  > 即application/x-www-from-urlencoded，将表单内的数据转换为Key-Value
+
+* raw
+
+  > 可以上传任意格式的文本，text、json、xml、html等
+
+* binary 
+
+  > 即Content-Type:application/octet-stream，只可以上传二进制数据，通常用来上传文件。由于没有键值，所以一次只能上传一个文件
+
+* 注意：multipart/form-data与x-www-form-urlencoded**区别**
+  * html中的form 表单有**两种：**
+    * **application/x-www-form-urlencoded**是默认的MIME内容编码类型，它在传输比较大的二进制或者文本数据时效率极低
+      * MIME：简单说，MIME类型就是设定某种扩展名的文件用一种应用程序来打开的方式类型。服务器会将它们发送的多媒体数据的类型告诉浏览器，而通知手段就是说明该多媒体数据的MIME类型，服务器将 MIME标志符放入传送的数据中来告诉浏览器使用哪种插件读取相关文件
+    * **multipart/form-data**：既可以上传文件等二进制数据，也可以上传表单键值对，只是最后会转化为一条信息。当设置multipart/form-data，http会忽略 contentType 属性。

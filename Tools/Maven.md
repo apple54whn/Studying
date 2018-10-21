@@ -58,7 +58,7 @@ Project
 # 3 常用的Maven命令
 
 * **tomcat:run**：在**当前项目的路径**中执行后，运行Maven工程项目
-
+* mvn **spring-boot:run**：运行SpringBoot项目
 * mvn **clean**：删除target及其内容
 * mvn **compile**：只编译了main目录的文件
 * mvn **test**：只编译test目录文件并运行
