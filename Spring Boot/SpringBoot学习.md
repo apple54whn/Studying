@@ -1978,28 +1978,22 @@ compile——>test——>package——>install——deploy（按顺序）
 
 
 
-## 1 快速开始
+## 1 Spring Boot 入门
 
 - 使用Spring Initializr初始化Spring Boot项目： https://start.spring.io/
 
-- **Application.java**，看1.1.2节
+- 默认生成的Spring Boot项目；
 
-- **HelloController.java**
-
-  ```java
-  @RestController//是@Controller和@ResponseBody的简写
-  public class HelloController {
-      @RequestMapping("/hello")
-      public String hello(){
-          return "Hello World!";
-      }
-  }
-  ```
+  - 主程序已经生成好了，我们只需要我们自己的逻辑
+  - **resources**文件夹中目录结构
+    - **static**：保存所有的静态资源； js css images；
+    - **templates**：保存所有的模板页面；（Spring Boot默认jar包使用嵌入式的Tomcat，默认不支持JSP页面）；可以使用模板引擎（freemarker、thymeleaf）；
+    - **application.properties**：Spring Boot应用的配置文件；可以修改一些默认设置；
 
 - pom.xml之打包插件，**简化部署**，通过**java -jar** 包名来运行应用，Spring Boot使用嵌入式的Tomcat无需配置
 
   ```xml
-  <!--这个插件可将应用打包成可执行的jar包，使用Spring Initializr会自动添加这个依赖-->
+  <!--这个插件可将应用打包成可执行的jar包，使用Spring Initializr 创建web项目会自动添加这个依赖-->
   <build>
       <plugins>
           <plugin>
@@ -2117,6 +2111,301 @@ public class Application {
       * 调用了SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,classLoader)方法。Spring Boot在**启动的时候从类路径下**的META-INF/spring.factories中获取**EnableAutoConfiguration指定的值**，将这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作
 
       * J2EE的整体整合解决方案和自动配置都在spring-boot-autoconfigure-1.5.9.RELEASE.jar
+
+
+
+
+
+## 2 Spring Boot 配置
+
+### 2.1 配置文件
+
+* SpringBoot使用一个全局的配置文件，配置文件名是固定的；
+  * **application.properties**
+  * **application.yml**
+
+* 配置文件的**作用**：修改SpringBoot自动配置的默认值；SpringBoot在底层都给我们自动配置好；
+
+* YAML（YAML Ain't Markup Language）
+
+  YAML A Markup Language：是一个标记语言
+
+  YAML isn't Markup Language：不是一个标记语言
+
+* 标记语言：
+
+  * 以前的配置文件；大多都使用的是 **xxx.xml**文件
+
+    ```xml
+    <server>
+        <port>8081</port>
+    </server>
+    ```
+
+  * YAML：**以数据为中心**，比json、xml等更适合做配置文件
+
+    ```yml
+    server:
+      port: 8081
+    ```
+
+### 2.2 YML语法
+
+* 基本语法：**k:(空格)v**：表示一对键值对（空格必须有）
+
+  * 以**空格**的**缩进**来控制层级关系；只要是左对齐的一列数据，都是同一个层级的；属性和值也是**大小写敏感**
+
+* **值的写法**
+
+  * **字面量**：普通的值（**数字，字符串，布尔**）
+
+    * k: v：字面**直接来写**；**字符串默认不用加上单引号或者双引号**；
+      * ""：**双引号**；**不会转义**字符串里面的特殊字符；特殊字符会作为本身想表示的意思
+        * name: "zhangsan \n lisi"：输出；zhangsan 换行 lisi
+      * ''：**单引号**；**会转义**特殊字符，特殊字符最终只是一个普通的字符串数据
+        * name: ‘zhangsan \n lisi’：输出；zhangsan \n lisi
+
+  * **对象、Map**（属性和值）（键值对）：
+
+    * k: v：在下一行来写对象的属性和值的关系；注意缩进；对象还是k: v的方式
+
+      ```yaml
+      friends:
+      	lastName: zhangsan
+      	age: 20
+      ```
+
+      ```yaml
+      #行内写法
+      friends: {lastName: zhangsan, age: 18}
+      ```
+
+  * **数组（List、Set）：**
+
+    * 用**-** 值表示数组中的一个元素
+
+      ```yaml
+      pets:
+       - cat
+       - dog
+       - pig
+      ```
+
+      ```yaml
+      #行内写法
+      pets: [cat, dog, pig]
+      ```
+
+
+### 2.3 配置文件值注入
+
+* **配置文件**
+
+  ```yaml
+  person:
+      lastName: hello
+      age: 18
+      boss: false
+      birth: 2017/12/12
+      maps: {k1: v1, k2: 12}
+      lists:
+        - lisi
+        - zhaoliu
+      dog:
+        name: 小狗
+        age: 12
+  ```
+
+  ```properties
+  #IDEA使用的是UTF-8，但properties文件以前都是ASCII码，需在IDEA中设置
+  person.last-name=张三
+  person.age=15
+  person.birth=2017/12/12
+  person.boss=false
+  person.lists=a,b,c
+  person.maps.k1=v1
+  person.maps.k2=v2
+  person.dog.name=dog
+  person.dog.age=5
+  ```
+
+* **JavaBean**
+
+  * **将配置文件中配置的每一个属性的值，映射到这个组件中**
+  * **@ConfigurationProperties**：告诉SpringBoot将本类中的所有属性和配置文件中相关的配置进行绑定；
+  * **prefix** = "person"：**全局配置文件**中哪个下面的所有属性进行一一映射
+  * **@Component**只有这个组件是容器中的组件，才能容器提供的@ConfigurationProperties功能；
+  * @Data是一个插件，免去了getter/setter和toString这些繁琐的东西
+
+  ```java
+  @Data
+  @Component
+  @ConfigurationProperties(prefix = "person")
+  public class Person {
+      private String lastName;
+      private Integer age;
+      private Boolean boss;
+      private Date birth;
+  
+      private Map<String,Object> maps;
+      private List<Object> lists;
+      private Dog dog;
+  }
+  ```
+
+* 出现以下提示，进入官网，在pom中**导入配置文件处理器**，以后编写配置就有提示了
+
+  ![](F:\GitHub\Studying\Spring Boot\images\配置文件处理器.PNG)
+
+  ```xml
+  <!--导入配置文件处理器，配置文件进行绑定就会有提示-->
+  <dependency>
+  	<groupId>org.springframework.boot</groupId>
+  	<artifactId>spring-boot-configuration-processor</artifactId>
+  	<optional>true</optional>
+  </dependency>
+  ```
+
+
+
+#### 2.3.1 properties配置文件在idea中默认utf-8可能会乱码
+
+![](F:\GitHub\Studying\Spring Boot\images\properties乱码配置.png)
+
+
+
+#### 2.3.2 @Value获取值和@ConfigurationProperties获取值比较
+
+|                      | @ConfigurationProperties | @Value     |
+| -------------------- | ------------------------ | ---------- |
+| 功能                 | 批量注入配置文件中的属性 | 一个个指定 |
+| 松散绑定（松散语法） | 支持                     | 不支持     |
+| SpEL                 | 不支持                   | 支持       |
+| JSR303数据校验       | 支持                     | 不支持     |
+| 复杂类型封装         | 支持                     | 不支持     |
+
+* **松散语法绑定**：last_name = last-name = lastName 他们取的值都是相同的
+
+* 配置文件yml还是properties他们都能获取到值，怎么选择呢？
+  * 若我们只是在某个业务逻辑中需要**获取**一下**配置文件**中的**某项值**，使用@Value；
+  * 若我们专门编写了一个javaBean来和配置文件**映射**，我们就直接使用@ConfigurationProperties
+
+
+
+#### 2.3.3 配置文件注入值数据校验
+
+```java
+@Component
+@ConfigurationProperties(prefix = "person")
+@Validated
+public class Person {
+    /**
+     * <bean class="Person">
+     *      <property name="lastName" value="字面量/${key}从环境变量、配置文件中获取值/#{SpEL}">
+     *      </property>
+     * <bean/>
+     */
+    
+    // lastName必须是邮箱格式
+	@Email
+    // @Value("${person.last-name}")
+    private String lastName;
+    // @Value("#{11*2}")
+    private Integer age;
+    // @Value("true")
+    private Boolean boss;
+
+    private Date birth;
+    // @Value("${person.maps}")
+    private Map<String,Object> maps;
+    private List<Object> lists;
+    private Dog dog;
+}
+```
+
+
+
+#### 2.3.4 @PropertySource & @ImportResource
+
+* @**PropertySource**：加载**指定的配置文件**，由于@ConfigurationProperties(prefix = "person")默认从全局配置文件中获取值；
+
+  ```java
+  /**
+   * 将配置文件中配置的每一个属性的值，映射到这个组件中
+   * @ConfigurationProperties：告诉SpringBoot将本类中的所有属性和配置文件中相关的配置进行绑定；
+   *      prefix = "person"：配置文件中哪个下面的所有属性进行一一映射
+   *
+   * 只有这个组件是容器中的组件，才能容器提供的@ConfigurationProperties功能；
+   *
+   */
+  @PropertySource(value = {"classpath:person.properties"})
+  @Component
+  @ConfigurationProperties(prefix = "person")
+  //@Validated
+  public class Person {
+  
+      private String lastName;
+      private Integer age;
+      private Boolean boss;
+  ```
+
+* @**ImportResource**：**导入Spring的配置文件，如beans.xml，加载bean**，让配置文件里面的内容生效
+
+  * Spring Boot里面没有Spring的配置文件，我们自己编写的配置文件，也不能自动识别；
+
+    想让Spring的配置文件生效，加载进来；@**ImportResource**标注在一个配置类上
+
+  ```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  
+      <bean id="helloService" class="com.cuzz.springboot.service.HelloService"></bean>
+  </beans>
+  ```
+
+  ```java
+  @ImportResource(locations = {"classpath:beans.xml"})
+  @SpringBootApplication
+  public class SpringbootApplication {
+  
+  	public static void main(String[] args) {
+  		SpringApplication.run(SpringbootApplication.class, args);
+  	}
+  }
+  ```
+
+
+
+#### 2.3.5 @Bean
+
+* 之前编写xml配置文件，现在不再推荐
+
+* ==SpringBoot推荐**给容器中添加组件**的方式：使用**全注解**的方式==
+
+  * 配置类**@Configuration** --> Spring配置文件
+
+  * 使用**@Bean**给容器中添加组件
+
+  ```java
+  /**
+   * @Configuration：指明当前类是一个配置类；就是来替代之前的Spring配置文件
+   */
+  @Configuration
+  public class MyAppConfig {
+  
+      // 将方法的返回值添加到容器中；容器中这个组件默认的id就是方法名
+      @Bean
+      public HelloService helloService02(){
+          System.out.println("配置类@Bean给容器中添加组件了...");
+          return new HelloService();
+      }
+  }
+  ```
+
+
+
 
 
 
