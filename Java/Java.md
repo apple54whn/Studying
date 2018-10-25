@@ -1,39 +1,188 @@
-# 1 基础
+# 1 入门
+
+## 1.1 环境搭建等基础
+
+* **命令提示符**
+
+  | 命令含义         | 命令提示符（cmd）          | Windows PowerShell |
+  | ---------------- | -------------------------- | ------------------ |
+  | 切换盘符         | c: **或** C:               | 同左               |
+  | 进入文件夹       | cd 文件夹名称              | 同左               |
+  | 进入多级文件夹   | cd 文件夹1\文件夹2\文件夹3 | 同左               |
+  | 返回上一级       | cd ..                      | 同左               |
+  | 直接回根路径     | cd \ **或** cd /           | 同左               |
+  | 查看当前目录内容 | dir                        | dir **或** ls      |
+  | 清屏             | cls                        | cls **或** clear   |
+  | 删除文件         | del                        | del **或** rm      |
+  | 退出             | exit                       | exit               |
+
+* **JVM**
+
+  * JVM（Java Virtual Machine ）：Java虚拟机，简称JVM，是运行所有Java程序的假想计算机，是Java程序的 运行环境，是Java 具吸引力的特性之一。我们编写的Java代码，都运行在 JVM 之上。 
+  * **跨平台**：任何软件的运行，都必须要运行在操作系统之上，而我们用Java编写的软件可以运行在任何的操作系 统上，这个特性称为**Java语言的跨平台特性**。该特性是**由JVM实现的**，我们编写的程序运行在JVM上，而**JVM** 运行在操作系统上，**不具有跨平台特性**，每个操作系统下都有不同版本的虚拟机。
+
+* **JRE 和 JDK** 
+
+  * JRE(Java Runtime Environment)：是Java程序的运行时环境，包含 **JVM** 和**运行时所需要的核心类库** 。
+  * JDK (Java Development Kit)：是Java程序开发工具包，包含 **JRE** 和**开发人员使用的工具**。
+
+* 安装及环境变量配置
+
+  * JAVA_HOME
+  * Path
+
+* 编译与运行
+
+  * **编译**：**javac** Test.java
+  * **运行**：**java** Test
+
+## 1.2 关键字
+
+* 完全**小写**的字母（**main不是**）
+
+* 在增强版的记事本当中（例如Notepad++）有特殊颜色
+
+   public 、 class 、 static 、  void 、
+
+## 1.3 标识符
+
+* 指在程序中，我们**自己定义内容**。比如类的名字、方法的名字和变量的名字等等
+  * **命名规则**： 硬性要求
+    * 标识符可以包含 英文字母26个(区分大小写) 、 0-9数字 、 $（美元符号） 和 _（下划线） 。 
+    * 标识符不能以数字开头。 
+    * 标识符不能是关键字
+  * **命名规范**： 软性建议
+    * 类名规范：首字母大写，后面每个单词首字母大写（大驼峰式）。 
+    * 方法名规范： 首字母小写，后面每个单词首字母大写（小驼峰式）。 
+    * 变量名规范：全部小写。 
+
+
+
+## 1.4 数据类型
+
+**字节**是我们常见的计算机中**最小存储单元**
+
+* **分类** 
+
+  * **基本数据类型**：整数型 、 浮点型 、 字符型 、 布尔型 
+
+    | 数据类型     | 关键字         | 内存占用 | 取值范围              |
+    | ------------ | -------------- | -------- | --------------------- |
+    | 字节型       | byte           | 1个字节  | -128~127              |
+    | 短整型       | short          | 2个字节  | -32768~32767          |
+    | 整型         | int（默认）    | 4个字节  | -2^31^~2^31^-1        |
+    | 长整型       | long           | 8个字节  | -2^63^~2^63^-1        |
+    | 单精度浮点数 | ﬂoat           | 4个字节  | 1.4013E-45~3.4028E+38 |
+    | 双精度浮点数 | double（默认） | 8个字节  | 4.9E-324~1.7977E+308  |
+    | 字符型       | char           | 2个字节  | 0~65535               |
+    | 布尔类型     | boolean        | 1个字节  | true，false           |
+
+  * **引用数据类型**：**字符串** 、数组 、类 、 接口 、Lambda
+
+* 注意事项
+
+  * 字符串不是基本类型，而是引用类型。
+  * **浮点型**可能只是一个**近似值**，并非精确的值。
+  * **数据范围与字节数不一定相关**，如**float数据范围比long更加广泛**，但是float是4字节，long是8字节。
+  * 浮点数当中默认类型是double。如果一定要使用float类型，需要加上一个后缀F。
+    如果是整数，默认为int类型，如果一定要使用long类型，需要加上一个后缀L。推荐使用大写字母。
+  * 字符对应ASCII码（0~127）：48—'0'、65—'A'、97—'a'
 
 * **数据类型转换**
 
-  `byte`,`short`,`char`**--->**`int`**--->**`long`**--->**`float`**--->**`double`(`boolean`不参与)
+  * **自动类型转换**(隐式)，范围**小**的类型向范围**大**的**类型提升**，如下：
 
-* **表达式**(变量和运算符组成的算式)**类型自动提升**
+    ==**参与运算时byte，short，char**——>**int**——>**long**——>**float**——>**double**(boolean不参与)==
 
-  ```java
-  byte a = 3;
-  byte b = 4;
-  byte c = a + b;//运算期间byte自动提升为int
-  ```
+    * ==**编译器的常量优化**==
+      * 对于byte、short、char三种类型来说，若右侧赋值的**数值(不能为变量)**没有超过范围，那么javac编译器会自动隐含得帮我们**补上(byte) (short) (char)** ，否则编译报错。
+      * 在给变量进行赋值时，若右侧的**表达式都是常量**，没有任何变量，那么javac编译器将会直接将若干个常量表达式计算得到结果。并根据是否超过范围决定编译成功与否。
 
-* **强制类型转换**
+    ```java
+    byte a = 3;
+    byte b = 4;
+    byte c = a + b;//运算期间byte类型变量自动提升为int，但int类型不能赋值给byte类型，因此编译失败。
+    byte d = 3 + 4;//常量在编译的时候（javac），已经确定了 3+4 的结果并没有超过byte类型的取值范围，可以赋值给d，成功
+    
+    char ch = 'A';
+    System.out.println(ch + 1);//66
+    ```
 
-  ```
-  int a = 3;
-  byte b = (byte)a;
-  ```
+  * **强制类型转换**(显式)。一般不推荐使用，有可能发生**精度损失**(浮点转成整数，直接取消小数)，**数据溢出**
 
-  **在使用+=、-=、*=、/=、%=运算符进行赋值时，强制类型转换会自动完成**
+    ```java
+    int a = 3;
+    byte b = (byte)a;
+    ```
 
-* **取余和取模**（C、C++、java中%是取余，Python中%是取模）
+    ==**在使用+=、-=、*=、/=、%=运算符进行赋值时，强制类型转换会自动完成**==
 
-  区别在于第一步的商**趋于0(取余)**、**趋于负无穷(取模)**，**取余和取模同符号数结果相同**
 
-  ```java
-  取余(结果符号取决于被除数)				取模(结果符号取决于模数)
-  5%3=2；					 			5%3=2；
-  -5%-3=-2;							 -5%-3=-2；
-  5%-3=2;								 5%-3=-1；
-  -5%3=-2;							 -5%3=1；
-  ```
 
-* **`&`与`&&`、`|`与`||`区别**
+## 1.5 常量
+
+- **整数**常量、**浮点数**常量、**字符**常量、**字符串**常量、**布尔**常量、**空**常量
+
+## 1.6 变量
+
+* 格式： 数据类型 变量名 = 数据值;
+* **注意**：
+  * 变量名称：在同一个大括号范围内（**作用域内**），变量的名字不可以相同。 
+  * 变量赋值：定义的变量，**不赋值不能使用**。
+  * 对于**byte或者short**类型变量，注意其**取值范围**
+  * 对于float或者long类型变量，**后缀F、L**不能丢
+
+
+
+## 1.7 运算符
+
+* **算术运算符**：【+】【-】【*】【/】【%】【++】【--】
+
+  * ++、--：混合运算时比较麻烦，在单独使用时没有区别，只有**变量**才能使用，常量不能使用
+
+    * 变量前：先算后用
+    * 变量后：先用后算
+
+  * +在字符串中的操作： 连接、拼接字符串
+
+    ```java
+    int a = 10;
+    int b = 20;
+    String str = "hello";
+    System.out.println(a + b + str);//30hello
+    System.out.println(str+a+b);//hello1020
+    ```
+
+  * **取余和取模**（C、C++、java中%是取余，Python中%是取模），只对于整数有意义
+
+    区别在于第一步的商**趋于0(取余)**、**趋于负无穷(取模)**，**取余和取模同符号数结果相同**
+
+    ```java
+    取余(结果符号取决于被除数)				取模(结果符号取决于模数)
+    5%3=2；					 			5%3=2；
+    -5%-3=-2;							 -5%-3=-2；
+    5%-3=2;								 5%-3=-1；
+    -5%3=-2;							 -5%3=1；
+    ```
+
+* **赋值运算符**
+
+  * 基本赋值运算符：【=】
+
+  * 复合赋值运算符：【+=】【-=】【*=】【/=】【%=】
+
+    ==**在使用+=、-=、*=、/=、%=复合运算符进行赋值时，强制类型转换会自动完成**==
+
+* **比较运算符**：【==】【<】【>】【<=】【>=】【!=】，结果是布尔值，不能连写
+* **逻辑运算符**：是用来连接两个布尔类型结果的运算符，结果是布尔值，可以连写
+  * 【**!**】：取反
+  * 【**&&**】：短路与，符号左边是false，右边不再运算；若是【&】需运算完
+  * 【**||**】：短路或，符号左边是true，右边不再运算；若是【|】需运算完
+
+* **三元运算符**
+  * 数据类型 变量名 = 布尔类型表达式？结果1：结果2
+    * 必须同时保证结果1和结果2符合左侧数据类型要求
+    * 三元运算符的结果必须被使用。赋值或打印
 
 * **位运算符**
 
@@ -43,11 +192,36 @@
 
   `>>>`无符号右移，不考虑正负，**左边补0**
 
-* **switch语句中条件的值可以有5种类型**:`byte`、`short`、`char`、`int`、`String`(JDK7)
 
-* **方法重载**：一个类中**方法名相同**，**参数类型**或者**个数**不同，与返回值类型无关
 
-* **可变参数，**写方法，参数个数不明确时可用（同js中arguments类似），可看做数组
+## 1.8 方法
+
+* **方法定义格式** 
+
+  ```java
+  修饰符 返回值类型 方法名 （参数列表）｛
+  	方法体;
+  	return 返回值;//停止方法，将返回值返回给调用处
+  }
+  ```
+
+  * 方法调用
+
+    ```java
+    method();
+    ```
+
+  * 方法定义**注意事项**： 
+
+    * 方法必须定义在一个**类中** 
+    * 方法不能定义在另一个方法的里面，**不能嵌套**
+    * 一个方法可以有多个return语句，但必须保证**同时只有一个return会被执行到**，return后不能有语句
+
+* ==**方法重载(overload)**：同一类中**方法名相同**，**参数列表不同**(类型 或 个数 或 多类型顺序 不同)==
+
+  ==与返回值类型无关、与参数名无关==
+
+* **可变参数，**写方法中参数个数不明确时可用（同js中arguments类似），**可看做数组**
 
   ```java
   public static void sum(int...arr) {
@@ -59,29 +233,384 @@
   }
   ```
 
-* **【注意】字符串有length()方法，数组有length属性**
+* 
+
+## 1.9  JShell脚本工具 
+
+* JShell**脚本**工具是JDK9的新特性。当我们编写的代码非常少的时候，而又不愿意编写类，main方法，也不愿意去编译和运行，这个时候可以使用JShell工具，**一步一步运行代码**。
+* 命令行直接输入`JShell`命令，退出`/exit`
+
+
+
+## 1.10 流程控制
+
+* **顺序结构**
+
+* **判断语句**
+
+  * If
+  * if...else...
+  * if...else if...else...
+    * if else 和 三元运算符互换：取两数最大值
+
+* **选择语句**
+
+  * switch语句中**表达式数据类型可以是：byte、short、char、int；enum（枚举）、String(JDK7后)**
+
+    ```java
+    switch (表达式) {
+        case 常量值1:
+            语句1；
+                break;
+        case 常量值2:
+            语句2；
+                break;
+            ......
+        default:
+            默认语句
+            break;//default的break可省略不写，但不建议
+    }
+    ```
+
+  * case的**穿透性**
+
+    * 在switch语句中，如果case的后面不写break，将出现穿透现象，也就是**不会再判断下一个case**的值，直接向后运行，直到**遇到break**，或者**整体switch结束**。
+
+  * **case后面的值不可重复，否则编译失败**
+
+  * switch语句格式可以很灵活，**前后顺序可以颠倒**，**break语句也可以省略（例如，季节）**
+
+* **循环语句**
+
+  * for（三角形图形，上右，下左）
+
+    ```java
+    for(初始化表达式; 布尔表达式; 步进表达式){
+        循环体; 
+    }
+    ```
+
+  * while
+
+    ```java
+    初始化表达式;
+    while(布尔表达式){
+        循环体; 
+        步进表达式;
+    }
+    ```
+
+  * do...while
+
+    ```java
+    初始化表达式;     
+    do {
+    	循环体;
+    	步进表达式;
+    } while(布尔表达式);
+    ```
+
+  * **for 和 while 的区别**
+
+    * 控制条件语句所控制的那个**变量**，在for循环结束后，就不能再被访问到了，而while循环结束还可以继续使用，如果你想**继续使用，就用while**，**否则推荐使用for**。原因是for循环结束，该变量就从内存中消失，能够提高内存的使用效率。 
+    * 在**已知循环次数**的时候使用推荐使用**for**，**循环次数未知**的时推荐使用**while**。
+    * do while 绝对会执行一次。
+
+* **跳出语句**
+
+  * **break**：**终止switch**或者**循环**，用在if中没用
+  * **continue**：**结束本次循环**，**继续下一次**的循环
+
+* 扩展知识点
+
+  * 死循环：循环中的条件永远为true，死循环的是永不结束的循环。（**死循环后语句执行不到，编译失败**）
+  * 嵌套循环：一个循环的循环体是另一个循环
+
+
+
+## 1.11 数组
+
+* **容器**：将多个数据存储到一起，每个数据称为该容器的元素
+
+  * **数组**： 存储数据**长度固定**的容器，保证多个数据的**数据类型要一致（常量优化）**。是**引用数据类型**
+
+    * 注意：数组**对象**有**定长**特性，**长度一旦指定，不可更改**，**不要把变量看成数组**
+
+      ```java
+      int[] arr1 = new int[3];
+      System.out.println(arr1.length);//3
+      arr1 = new int[5];
+      System.out.println(arr1.length);//5
+      ```
+
+* **初始化**：
+
+  * 动态初始化（**必须指定长度，二维数组可以只指定第一个**）
+
+    * ==元素**默认值**：整数类型—0；浮点类型—0.0；字符类型—‘\u0000’；布尔类型—false；引用类型—null==
+
+    ```java
+    数组存储的数据类型[] 数组名字 = new 数组存储的数据类型[长度];
+    数组存储的数据类型[] [] 数组名字 = new 数组存储的数据类型[长度] [长度];
+    ```
+
+  * 静态初始化（指定内容）
+
+    * 也有元素默认值，但是之后又把大括号内容赋值给数组了
+
+    ```java
+    数据类型[] 数组名 = {元素1,元素2,元素3...};//省略格式不能分两步写
+    数据类型[] 数组名 = {{元素1,元素2,元素3...},{元素1,元素2,元素3...}};
+    数据类型[] 数组名 = new 数据类型[]{元素1,元素2,元素3...};
+    ```
+
+
+* ==**【注意】字符串有length()方法，数组有length属性**==
+
+* 数组内存图
+
+  ![](F:\GitHub\Studying\Java\images\04-两个引用指向同一个数组的内存图.png)
+
+* 数组反转
+
+  ```java
+  public static void reverseArray(int[] arr){
+      for (int i = 0; i < arr.length/2; i++) {
+          int temp = arr[i];
+          arr[i] = arr[arr.length-1-i];
+          arr[arr.length-1-i]= temp;
+      }
+  }
+  //或
+  public static void reverseArray(int[] arr){
+      for (int min=0,max=arr.length-1;min<max;min++,max--) {
+          int temp = arr[min];
+          arr[min] = arr[max];
+          arr[max]= temp;
+      }
+  }
+  ```
+
+* 选择排序：找剩余数组元素中最小的，放在首位
+
+  ```java
+  public static void selectSort(int[] arr) {
+      for (int i = 0; i < arr.length - 1; i++) {
+          for (int j = i + 1; j < arr.length; j++) {
+              if (arr[i] > arr[j]) {
+                  int temp = arr[i];
+                  arr[i] = arr[j];
+                  arr[j] = temp;
+  ...
+  ```
+
+* 冒泡排序：相邻中最大的。。。
+
+  ```java
+  public static void bubbleSort(int[] arr){
+      for (int i = 0; i < arr.length-1; i++) {
+          for(int j=0;j<arr.length-i-1;j++){
+              if (arr[j]>arr[j+1]){
+                  int temp = arr[j];
+                  arr[j] = arr[j+1];
+                  arr[j+1] = temp;
+  ...
+  ```
+
+
+## 1.12 Java内存划分
+
+1. ==**栈（stack）**：存放的都是**方法中的局部变量**。**方法运行一定要在栈中**==
+   - 局部变量：方法的参数，或方法{}内部的变量
+   - 作用域：一旦**超出作用域**，立刻从栈内存中**消失**
+2. ==**堆（heap）**：凡是**new出来的**，都在堆内存中==
+   - 堆内存里东西都有一个**地址值**：16进制
+   - 堆内存里数据都有**默认值**。规则如下：
+     - **整数类型—0；浮点类型—0.0；字符类型—‘\u0000’；布尔类型—false；引用类型—null**
+3. ==**方法区（Method Area）**：存储**.class相关信息**，包含**方法的信息**==
+4. 本地方法栈（Native Method Stack）：与操作系统相关
+5. 寄存器（PC Register）：与CPU相关
+
+
+
+## 1.13 习题
+
+* 对角线画圈
+
+  ```java
+  public static void printPic(int num){
+      for (int i = 0; i < num; i++) {
+          for (int j = 0; j < num; j++) {
+              if(j==i||j==num-1-i){
+                  System.out.print("O");
+              } else {
+                  System.out.print("*");
+              }
+          }
+          System.out.println();
+      }
+  }
+  ```
+
+* 定义round方法，接收一位小数，实现四舍五入运算，并返回结果（+0.5，强转int）
+
+  ```java
+  public static int round(double d){
+      return (int) (d+0.5);
+  }
+  ```
+
+* 统计字符出现次数。利用容量为26的数组保存字符出现次数
+
+  ```java
+  public static void showTimes(char[] chs){
+      int[] count = new int[26];
+      for (int i = 0; i < chs.length; i++) {
+          count[chs[i] - 97]++;
+      }
+      for (int i=0,ch=97 ;i<count.length;i++,ch++){
+          if(count[i]!=0){
+              System.out.println("符号"+(char)ch+"出现的次数:"+count[i]);
+          }
+      }
+  }
+  ```
+
+
+
+
+
 
 # 2 类与对象
 
-* 面向对象特点：封装、继承、多态
+## 2.1 什么是类、对象
 
-* **构造方法**(创建构造对象时调用的方法，用于给对象初始化)
-  1. 方法名与类名相同
-  2. 方法名前面没有返回值类型
-  3. 方法没有return返回值
+* **类**：是一组相关**属性**和**行为**的集合
+  * **属性**：就是该事物的**状态信息**。
+  * **行为**：就是该事物**能够做什么**
+* **对象**：是**一类事物**的**具体体现**
+* **类与对象的关系**
+  * 类是对一类事物的描述，是抽象的
+  * 对象是一类事物的实例，是具体的
+  * ==**类是对象的模板，对象是类的实体**==
 
-* 类中没有定义构造方法，**系统会自动创建一个默认的无参构造方法**，一旦定义构造方法，系统就不提供了
+* **类的定义格式**
 
+  ```java
+  public class ClassName {
+      //成员变量，对应事物的属性，描述事物的状态信息
+      //构造方法：创建事物对象
+      //成员方法，对应事物的行为，描述事物能做什么
+  }
+  ```
+
+* **对象的使用**
+
+  * 创建对象：`类名 对象名 = new 类名();`
+  * 使用对象访问类中的成员：`对象名.成员变量； 对象名.成员方法()`
+
+* 匿名对象（了解）：没有对象名的对象。若一个对象只需要使用唯一的一次，就可以使用匿名对象。
+
+  * 创建匿名对象直接调用方法，没有变量名；匿名对象可以作为方法的参数和返回值。
+
+* ==**成员变量的默认值**：整数类型—0；浮点类型—0.0；字符类型—‘\u0000’；布尔类型—false；引用类型—null==
+
+* **两个对象使用同一方法**的内存图
+
+  对象调用方法时，根据对象中方法标记（地址值），去类中寻找方法信息。这样哪怕是多个对象，方法信息 只保存一份，节约内存空间。 
+
+  ![](F:\GitHub\Studying\Java\images\02-两个对象使用同一个方法的内存图.png)
+
+* **两个引用指向同一对象**的内存图
+
+  ![](F:\GitHub\Studying\Java\images\03-两个引用指向同一个对象的内存图.png)
+
+* **引用类型作为参数传递到方法中，传递的是地址值**
+
+  ![](F:\GitHub\Studying\Java\images\04-使用对象类型作为方法的参数.png)
+
+* **使用引用类型作为方法的返回值，返回值就是对象的地址值**
+
+  ![](F:\GitHub\Studying\Java\images\05-使用对象类型作为方法的返回值.png)
+
+## 2.2 成员变量与局部变量
+
+变量根据**定义位置**的不同，我们给变量起了不同的名字，成员变量与局部变量区别如下：
+
+* ==在类中定义的**位置不同**（重点）== 
+  * 成员变量：**类中，方法外** 
+  * 局部变量：**方法中或者方法声明上(形式参数)** 
+* ==**作用范围不一样**（重点）== 
+  * 成员变量：**类中** 
+  * 局部变量：**方法中**
+* ==**初始化值的不同**（重点）== 
+  * 成员变量：**有默认值** 
+  * 局部变量：**没有默认值。必须先定义，赋值，最后使用** 
+* ==在**内存中的位置不同**（了解）== 
+  * 成员变量：**堆**内存 
+  * 局部变量：**栈**内存 
+* ==**生命周期不同** （了解）== 
+  * 成员变量：**随着对象**的创建而存在，随着对象被垃圾回收而消失
+  * 局部变量：**随着方法**的调用而存在，随着方法的调用完毕而消失 
+
+
+
+## 2.3 面向对象
+
+* 面向对象特点：**封装、继承、多态**
+
+### 2.3.1 封装
+
+* 原则：将**属性隐藏**起来，若需要访问某个属性，**提供公共方法**对其访问
+* 封装的步骤：
+  1. 使用 **private** 关键字来修饰成员变量
+  2. 对需要访问的成员变量，提供对应的一对 **getXxx（isXxx）** 方法 、 **setXxx** 方法
+
+* **private关键字**含义
+  * private是一个权限修饰符，代表**最小权限**。 
+  * 可以修饰**成员变量**和**成员方法**。 
+  * 被private修饰后的成员变量和成员方法，只在**本类中才能访问**。 
+
+* **this关键字**含义（解决成员变量与局部变量名称冲突而被隐藏的问题）
+  * this代表**所在类的当前对象的引用**（地址值），即**对象自己的引用**。
+    * 记住 ：==方法**被哪个对象调用**，方法中的this**就代表那个对象**。即谁在调用，this就代表谁。== 
+
+* **构造方法**(**创建对象时**构造方法用来**初始化该对象**，给对象的**成员变量赋初始值**)
+  - 构造方法名与类名相同
+  - 构造方法名前面没有返回值类型
+  - 构造方法不能return一个具体返回值，可以有return;但是没意义
+  - 类中没有定义构造方法，**系统会自动创建一个默认的无参构造方法**，一旦定义构造方法，系统就不提供了
+  - 构造方法也可以重载
+* 标准代码—**JavaBean**
+  * JavaBean 是 Java语言编写类的一种标准规范。符合 JavaBean 的类，要求类必须是**具体的和公共的**，并且具有**无参数的构造方法**，提供用来操作成员变量的 **set 和 get** 方法。
+* **构造方法与成员方法的区别**
+  * **作用**不同
+    * 构造方法：创建对象
+    * 成员方法：执行某具体功能
+  * **命名**不同
+    * 构造方法：类名一致
+    * 成员方法：自定义
+  * **返回值类型**不同
+    * 构造方法：无返回值类型
+    * 成员方法：void或者确定的数据类型
+  * **调用**不同
+    ​	构造方法：new 关键字调用
+    ​	成员方法：对象.成员方法名调用
+* 
+* 
+* 
+* 
+* 
+* 
+* 
 * **this关键字**
   1. 明确的访问类的成员变量，解决与局部变量名称冲突问题
   2. 通过this关键字调用成员方法(可以省略)
   3. **只能在构造方法中调用**this来调用其他构造方法，并且必须**位于第一行且只能出现一次**，不能互相调用
-
 * **垃圾回收**(当一个对象在内存中被释放时，它的**finalize()方法**会被自动调用)
 
   1. 等待Java虚拟机自动垃圾回收
   2. **调用`System.gc()`方法**通知Java虚拟机立即进行垃圾回收)
-
 * **static关键字---**修饰**类的成员**(成员变量，成员方法，代码块等)
 
   * 随着**类的加载而存在**，被所有对象共享，可以通过类名直接调用(类名.成员)
@@ -188,6 +717,597 @@
      2. 静态方法和变量：编译、运行看左边
      3. 成员变量：编译、运行看左边
      4. **成员方法**：编译看**左边**，运行看**右边**(依赖对象)
+
+
+
+
+
+
+
+
+
+# 3 包
+
+- **package**
+
+  - 专门用于存放类，在声明时使用`package`语句，并且声明只能位于Java源文件的**第一行**
+
+    ```java
+    package cn.itcast.chapter01; //package关键字声明包
+    public class Hello{...}
+    ```
+
+  - 生成与包名对应目录(目录中可以是绝对地址、相对地址、“.”可以表示当前目录)，运行时要加上包名
+
+    ```java
+    javac -d [目录] Hello.java
+    cd 目录
+    java cn.itcast.chapter01.Hello
+    ```
+
+- **import**
+
+  - 导包，import一般出现在package后，类定义之前
+
+    ```java
+    import cn.itcast.chapter01.Hello;//导入MAIN类
+    import cn.itcast.chapter01.*;//导入包中所有类
+    ```
+
+  - **Java中常用包**
+
+    ```java
+    java.lang:Java语言核心类，如String、Math、System、Thread等，系统自动导入，无需import
+    java.util:工具类、集合类，如Arrays、List、Set等
+    java.net:网络编程相关类和接口
+    java.io:输入输出相关类和接口
+    java.awt:构建图形界面（GUI）相关类和接口
+    ```
+
+- **jar**
+
+  - Java Archive File，Java档案文件，是一种压缩文件，独立于任何操作系统
+
+  - **步骤：**
+
+    1. **编译生成**与包名对应目录的**class文件**
+
+       ```
+       java -d . Hello.java
+       ```
+
+    2. 利用**jar命令**将cn及其目录下的文件都**压缩成jar包**
+
+       ```
+       jar -cvf Hello.jar cn
+       ```
+
+    3. 由于目前jar包中没有**主清单属性**，修改jar包`META-INF`中`MANIFEST.MF`文件，**指定main方法所在类**
+
+       ```
+       Main-Class: cn.itcast.chapter01.Hello	//注意“:”后有空格
+       ```
+
+    4. **运行jar包**
+
+       ```
+       java -jar Hello.jar
+       ```
+
+    5. **解压jar包**
+
+       ```
+       jar -xvf Hello.jar
+       ```
+
+- **访问控制**
+
+  - **权限修饰符**
+
+    - **private(类访问级别)**：被修饰的类成员只能被**该类其他成员**访问
+    - **default(包访问级别)**：类或类成员没有修饰符为默认访问级别，只能被**本包中其他类**访问
+    - **protected(子类访问级别)**：被修饰的类成员能被**本包中其他类**、**不同包中该类子类**访问
+    - **public(公共访问级别)**：所有都能访问
+
+  - **访问控制级别**
+
+    | 访问范围 | private | default | protected | public |
+    | :------: | :-----: | :-----: | :-------: | :----: |
+    |  同一类  |    √    |    √    |     √     |   √    |
+    |  同一包  |         |    √    |     √     |   √    |
+    |   子类   |         |         |     √     |   √    |
+    |   全局   |         |         |           |   √    |
+
+
+
+# 4 Java API
+
+- API（Application Programming Interface），应用程序编程接口
+
+## 4.1 Scanner（java.util）
+
+* 可以解析基本类型和字符串的简单文本扫描器。 System.in 系统输入指的是通过**键盘录入**数据。 
+
+  ```java
+  Scanner sc = new Scanner(System.in); 
+  int a = sc.nextInt(); //将输入信息的下一个标记扫描为一个 int 值。 
+  String a = sc.next(); //查找并返回来自此扫描器的下一个完整标记。
+  ```
+
+
+
+## 4.2 Random（java.util）
+
+- 生成随机数的两个构造方法
+
+  - `Random()`                          创建一个伪随机数生成器，因为种子随机所以每个对象产生**随机数不同**
+  - `Random(long seed)`         创建一个伪随机数生成器，因为种子一定，每个对象产生**随机数序列相同**
+
+- Random类的方法
+
+  - `int nextInt()/nextLong()/nextFloat()/nextDouble()/nextBoolean()`  随机生成~类型所有范围内的随机数
+  - `int nextInt(int n)`   **随机生成[0,n)之间的随机数**
+
+- 生成**任意范围内的随机数**[]
+
+  ```java
+  Random r = new Random();
+  r.nextInt(end-start+1)+start;//+1是为了保留右极限
+  ```
+
+- 每次生成10组6位随机验证码
+
+  ```java
+  char[] chs = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'A', 'B', 'C', 'D' };
+  int len = chs.length;
+  Random r = new Random();
+  for (int i = 0; i < 10; i++) { //10组
+      System.out.print("随机验证码：");
+      for (int j = 0; j < 6; j++) { //6位
+          int index = r.nextInt(len);
+          System.out.print(chs[index]);
+      }
+      System.out.println();
+  }
+  ```
+
+
+## 6.1 Object
+
+- Object是所有类的父类，每个类的直接或间接继承自该类 ，有且只有一个无参构造方法。所以子类构造方法默认访问父类的构造是无参构造
+
+- **方法：**
+
+  1. `toString()`返回对象的字符串表示，默认是由类的全名+'@'+哈希值的十六进制表示，一般子类重写
+
+     ```
+     getClass().getName()+"@"toHexString(hashCode());
+     
+     ```
+
+  2. `equals()`比较两个对象是否相同，默认情况下比较的是地址值是否相同，一般子类重写
+
+  3. `hashCode()`返回对象的哈希值，不是实际地址值，可以理解为地址值
+
+  4. `getClass()`返回对象的字节码文件对象，反射中讲解
+
+  5. `finalize()`垃圾回收，不确定时间，可以调用`System.gc()`立即回收
+
+  6. `clone()`实现对象克隆，包括成员变量的数据复制，但是它和两个引用指向同一个对象是有区别的 
+
+- **注意问题**
+
+  - 父类是抽象类，**子类不是抽象类**时才需要**重新**父类所有方法
+  - **直接输出** 一个对象名称，默认调用该对象的`toString()`方法
+  - **【面试】**==和equals()区别：
+    1. `==`：**基本类型**：比较值是否相等；**引用类型**：比较地址值是否相等
+    2. `equals()`：只能比较**引用类型**，比较地址值是否相等，可以根据需要重写
+
+## 6.2 String
+
+- **特点**
+
+  1. String字符串是常量，一旦创建后内容和长度都无法改变（注意：这里指**new对象空间中的内容不能改变**，不是**引用**不**能改变**），其`overrid`了Object类的`equals()`方法。
+
+  2. **字面值**作为**字符串对象**和通过**构造方法**创建对象的不同
+
+     `String s = new String(char[] value,int offset,int count)`
+
+     `String s = new String("hello")`和`String s = "hello"`,前者创建两个对象，后者创建一个对象
+
+  3. 字符串若是**变量相加，先开空间再拼接**；若是**常量先加，然后在常量池中找**，有就返回，没有就创建
+
+     ```
+     String str1 = "hello";
+     String str2 = "hello";
+     System.out.println(str1.equals(str2));//true
+     System.out.println(str1==str2);//true
+     
+     ```
+
+     ```
+     String s1 = "hello";
+     String s2 = "world";
+     String s3 = "helloworld";
+     System.out.println(s3.equals(s1+s2));//true
+     System.out.println(s3==s1+s2);//false
+     System.out.println(s3.equals("hello"+"world"));//true
+     System.out.println(s3=="hello"+"world");//true
+     
+     ```
+
+- String常用方法(**不改变原String值**)
+
+  - **判断功能**
+
+    - `boolean isEmpty()`						       字符串长度是否为0
+
+    - `boolean contains(CharSwquence cs)`                      字符串中是否包含指定字符序列
+
+    - `boolean equals(Object anObject)`                          字符串与指定字符串是否相等(**内容**)
+
+      `boolean equalsIgnoreCase(String str)`                 字符串与指定字符串是否相等，忽略大小写
+
+      `boolean startWith(String prefix)`	  	                字符串是否以prefix前缀开始
+
+      `boolean startWith(String prefix,int toffset)`  字符串从指定索引开始的子串是否以prefix开始
+
+    - `boolean endWith(String suffix)`                             字符串是否以suffix后缀结尾
+
+  - **获取功能**
+
+    - `int length()`								 获取字符串长度
+
+    - `char charAt(int index)`                                             获取指定索引的字符
+
+    - `int indexOf(int ch/String str)`    获取指定字符/字符串第一次/出现的索引
+
+    - `int indexOf(int ch/String str,int fromIndex)`   获取指定~~从**[指定索引开始**第一次出现的索引
+
+      `ch`是`int`类型原因：'a'和97都能代表'a'。  (`lastIndexOF(...)`表示最后一次出现的索引)
+
+    - `String substring(int startIndex,int endIndex)`  获取从**[start到end)**的子串,没有end时到结尾
+
+  - **转换功能**
+
+    - **`static`**`String valueOf(int i/char[] chs)`             **静态方法**将int型和**字符数组型**数据转为字符串
+    - `String toLowerCase() /toUpperCase()`                     将所有字符都转换为小写/大写,本身不变
+    - `byte[] getBytes()`                                                        将字符串转换为字节数组
+    - `char[] toCharArray()`                                                  将字符串转换为字符数组
+    - `String concat(String str)`                                         将字符串拼接
+
+  - **其他功能**
+
+    - **替换**(将所有old字符或字符串替换为新~~)
+
+      `String replace(char/String old,char/String new)`
+
+    - **去空格**(去掉字符串**首尾**空格)
+
+      `String trim()`
+
+    - **按字典比较**(按字典顺序比较，在str前返回负数，在str后返回正数，否则返回0)
+
+      `int compareTo(String str)/compareIgnoreCase(String str)`
+
+    - **拆分**(根据给定正则表达式regex的匹配拆分)，返回字符串数组，不包括regex字符串
+
+      `String[] split(String regex)`
+
+## 6.3 StringBuffer(StringBuilder)
+
+- `StringBuffer`(字符串缓冲区)，表示字符容器，其**内容和长度可变**，同步，线程安全。没有`override`Object类的`equals()`方法，不能像String类对象可以用操作符+进行连接。
+
+  ```
+  StringBuffer sb = new StringBuffer();
+  
+  ```
+
+- StringBuffer常用方法(**在原StringBuffer对象中改变并返回本身**，原对象也改变)
+
+  - **添加**
+    - `StringBuffer append(String str)`                                   将**指定参数**添加到Stringbuffer对象**末端**
+    - `StringBuffer insert(int offset,String str)`               在字符串中的**offset位置**插入**指定参数**
+  - **删除**
+    - `StringBuffer deleteCharAt(int index)`                           删除指定位置字符
+    - `StringBuffer delete(int start,int end)`                       删除从**[start到end)**的字符串
+  - **替换**
+    - `StringBuffer replace(int start,int end,String s)`    从**[start到end)**的对象替换为指定字符串
+    - `void setCharAt(int index,char ch)`                                  **替换指定位置的字符**
+  - **反转**
+    - `StringBuffer reverse()`                                                       反转
+  - **截取(返回值类型不再是StringBuffer本身)**
+    - `String substring(int start,int end)`                               截取子串，没有end参数时截取到尾部
+  - **其他**
+    - `void setLength(int newLength)`                                          设置StringBuffer长度
+
+- **String和StringBuffer转换**
+
+  1. **String ---> StringBuffer**			通过构造函数传入或构造好之后append()
+
+  2. **StringBuffer ---> String**                     调用`toString()`或String类的`valueOf()`静态方法
+
+     ```
+     String str1 = sb.toString();
+     String str2 = String.valueOf(sb);
+     
+     ```
+
+- **【面试】**
+
+  1. **String、StringBuffer、StringBuilder区别**
+
+     - **String内容、长度不可变，后两个可变**
+     - **StringBuffer是同步的，数据安全，效率低；StringBuilder是不同步的，数据不安全，效率高**
+
+  2. **StringBuffer和数组的区别**
+
+     - **二者都可以看做装其他数据的容器，但是StringBuffer的数据最终是一个字符串数据，而数组可以存放多种类型的数据，但必须是同一种数据类型的**
+
+  3. **参数传递问题**
+
+     - 基本数据类型：形式参数的改变不影响实际参数
+
+     - 引用数据类型：形式参数的改变影响实际参数
+
+     - 注意：**String作为引用数据类型，但在参数传递时效果和基本类型一样**
+
+       ```
+       **StringBuffer、StringBuilder在赋值时不改变内容，调用方法时改变**
+       
+       ```
+
+       **【重点】在于String内容不可变并且变量相加需要开空间再拼接，StringBuffer等内容可以变**
+
+     ```
+       String s1 = "hello";
+       String s2 = "world";
+       System.out.println(s1+"---"+s2);//hello---world
+       change(s1,s2);
+       System.out.println(s1+"---"+s2);//hello---world
+       
+       StringBuffer sb1 = new StringBuffer("hello");
+       StringBuffer sb2 = new StringBuffer("world");
+       System.out.println(sb1+"---"+sb2);//hello---world
+       change(sb1,sb2);
+       System.out.println(sb1+"---"+sb2);//hello---worldworld
+       
+       public static void change(String s1, String s2) {
+       	s1 = s2;
+       	s2 = s1+s2;
+       }
+       public static void change(StringBuffer sb1, StringBuffer sb2) {
+       	sb1 = sb2;
+       	sb2 = sb1.append(sb2);
+       }
+     
+     ```
+
+       ![](D:\Typora\photo\形参实参问题.png)
+
+## 6.4 包装类（java.lang）
+
+- 为了让基本类型的数据进行更多的操作，Java就为每种基本类型提供了对应的包装类类型 
+
+  | 基本数据类型 | 引用数据类型 |
+  | :----------: | :----------: |
+  |     byte     |     Byte     |
+  |     char     |  Character   |
+  |    short     |    Short     |
+  |     int      |   Integer    |
+  |     long     |     Long     |
+  |    float     |    Float     |
+  |    double    |    Double    |
+  |   boolean    |   Boolean    |
+
+- **装箱与拆箱**
+
+  - 装箱：将基本数据类型的值转为引用数据类型
+  - 拆箱：将引用数据类型的值转为基本数据类型 `intValue()`将Integer转为int
+  - JDK 5.0后支持自动拆装箱
+
+- String和int的转换
+
+  - String--->int        `Integer.parseInt("100")` 或  `Integer.valueof("100")`包装类型再转int
+  - int--->String        `Integer.toString(100)` 或 `String.valueOf(100)`
+
+- **进制转换**
+
+  - `static String toString(int num,int radix)`               十进制到其他进制`toString`
+  - `static int parseInt(String s,int radix)`                   其他进制到十进制`parseInt`
+
+- **【面试】Integer数据直接赋值时，注意-128~127之间的数据缓冲池问题**
+
+- **注意：**
+
+  1. 包装类都重写Object类中的`toString()` 方法，以**字符串**形式返回包装类的基本数据类型的值
+  2. 除了Character外，包装类都有`valueOf(String s)`方法，根据String类型参数创建包装类对象
+  3. 除了Character外，包装类都有`parseXXX(String s)`的静态方法，将字符串转为基本类型数据
+
+## 6.5 System
+
+- System定义了一些与系统相关的属性和方法，并且都是静态的
+- 常用方法
+  - `void exit(int status)`                     退出当前运行的JVM，status表示状态码，非0表示异常终止
+  - `void gc()`                                            运行垃圾回收器并立即回收垃圾
+  - `long currentTimeMillis()`                获取当前时间戳，东八区应加8个小时
+  - `arraycopy(arr1, 1, arr2, 3, 2)`    复制数组，从arr1的1开始长度为2的数据复制到arr2从3开始的地方
+
+## 6.6 Arrays
+
+- Arrays工具类是针对数组进行操作的工具类，包括排序和查找等功能
+- 常用方法
+  - `Arrays.toString(int[] arr)`                           将数组转为字符串
+  - `Arrays.sort(int[] arr)`                                   给数组排序
+  - `Arrays.binarySearch(int[] arr,int key)`    二分查找 
+  - `Arrays.asList(int/String等[] arr)`              数组转集合，**长度不能变**
+
+## 6.7 Math
+
+- 针对数学运算进行操作的类
+
+- 常用方法
+
+  - 绝对值**abs**                               `abs(int/long/float/double a)`
+  - 向上取整，取大的**ceil**            `ceil(double a)`
+  - 向下取整，取小的**floor**          `floor(double a)`
+  - 两数据中大着                           `max(int a,int b)`
+  - a的b次幂**pow**                          `double pow(double a,double b)`
+  - 随机数[0,1)**random**                `double random()`
+  - 四舍五入**round**                        `long/int round(double a/float a)`-4.9四舍五入后为-5
+  - 平方根**sqrt**                                `double sqrt(double a)`
+
+- 任意**整数**范围的随机数 
+
+  ```java
+  (int)(Math.random()*(end-start+1))+start; //+1是为了包括右极限
+  ```
+
+- - 
+
+## 6.9 BigInteger
+
+- 针对大整数的运算
+
+## 6.10 BigDecimal
+
+- 浮点数据做运算，会丢失精度。所以，针对浮点数据的操作建议采用BigDecimal(**金融相关的项目**)
+
+## 6.11 Date/Calendar/DateFormat
+
+- java.util.**Date**用于表示日期和时间，可以精确到毫秒
+
+  - **构造方法**（只有两个没过时）
+
+    - `Date()`                      用于创建**当前**日期时间的Date对象
+
+    - `Date(long date)`     用于创建**指定**时间的Date对象，date为时间戳
+
+      ```
+      Date d = new Date();
+      System.out.println(d);
+      		
+      long date = System.currentTimeMillis();
+      Date dd = new Date(date);
+      System.out.println(dd);
+      
+      ```
+
+  - **成员方法**
+
+    - `setTime()`          设置此对象的**时间戳**
+    - `getTime()`          返回此对象的**时间戳**
+
+- java.util.**Calendar**用于完成日期和时间字段的操作，通过特定方法设置和读取日期的特定部分，是**抽象类**
+
+  - **调用静态方法获取一个Calendar对象**
+
+    ```
+    Calendar calendar = Calendar.gerInstance();
+    
+    ```
+
+  - **常用方法**(注意，MONTH从0开始)
+
+    - **获取指定日历字段**的值(Calendar.YEAR/MONTH/DATE/HOUR_OF_DAY/MINUTE/SECOND等)
+
+      `int get(int field)`
+
+    - **设置指定日历字段**的值(Calendar.YEAR/MONTH/DATE/HOUR_OF_DAY/MINUTE/SECOND等)
+
+      `void set(int field,int value)`
+
+    - **设置日历字段的值(年月日时分秒等)**
+
+      `void set(int year,int month,int date,int hourofday,int minute,int second)`
+
+    - **根据日历规则，为指定日历字段加上或减去指定时间量**
+
+      `void add(int field,int amount)`
+
+  - **Date和Calendar之间转换**(利用Calendar对象的方法)
+
+    - Date--->Calendar     接收一个Date对象并将其表示时间值**赋值给Calendar对象**
+
+    - Calendar--->Date     **返回**表示Calendar时间值的**Date对象**
+
+      ```
+      Date d = new Date(9532418005450l);
+      calendar.setTime(d);
+      System.out.println(calendar.get(Calendar.YEAR));//2272
+      
+      System.out.println(calendar.getTime());//Mon Jul 24 15:49:16 CST 2018
+      
+      ```
+
+  - 来世界多少天
+
+    ```
+    System.out.println("enter your birthday:(year/month/date)");
+    Scanner sc = new Scanner(System.in);
+    int year = sc.nextInt();
+    int month = sc.nextInt();
+    int date = sc.nextInt();
+    
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(year, month, date, 0, 0, 0);
+    Date d = calendar.getTime();
+    long bMillis = d.getTime();
+    long nMillis = System.currentTimeMillis();
+    long value = nMillis - bMillis;
+    System.out.println("你来这个世界"+value/86400000+"天了");
+    
+    ```
+
+  - 计算任意二月有多少天
+
+    ```
+    public static void howManyDays(int year) {
+    	Calendar cal = Calendar.getInstance();
+    	cal.set(year, 2, 1);
+    	cal.add(Calendar.DATE, -1);
+    	System.out.println(cal.get(Calendar.DATE));
+    }
+    
+    ```
+
+- java.text.**DateFormat**针**对日期进行格式化**和针**对字符串进行解析**的抽象类，使用其子类`SimpleDateFormat` 
+
+  - 构造方法(无参构造为默认格式)
+
+    - 指定格式构造`SimpleDateFormat sdf = new SimpleDateFormat(String pattern)`
+
+      - Date--->String     **格式化**`format(Date d)`
+
+        ```
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        String s = sdf.format(d);//对日期格式化为字符串
+        System.out.println(s);
+        
+        ```
+
+      - String--->Date     **解析**`parse(String str)`
+
+        ```
+        String str = "2018-07-24 16:48:54";
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd- HH:mm:ss");
+        d = sdf2.parse(str);//try...catch处理
+        System.out.println(d);
+        
+        ```
+
+- **【面试】**
+
+  - Date类用来表示某个特定的瞬间，能够精确到毫秒。而在实际应用中，往往需要把一个日期中的年、月、日等信息单独返回进行显示或处理，这个类中的大部分方法都已被标记过时。Calendar类基本取代了Date类，该类中定义了一系列用于完成日期和时间字段操作的方法。 
+    Calendar的`getTime()`方法)返回一个表示Calendar时间值的Date对象，同时Calendar有一个`setTime(Date date)`方法接收一个Date对象，将Date对象表示的时间值设置给Calendar对象，通过这两个方法就可以完成Date和Calendar对象之间的转换。
+
+
+
+
+
+
+
 
 
 
@@ -301,102 +1421,6 @@
        ```
 
   4. **多catch时，父类catch放在最下面**
-
-     
-
-     
-
-# 4 包
-
-* **package**
-
-  * 专门用于存放类，在声明时使用`package`语句，并且声明只能位于Java源文件的**第一行**
-
-    ```
-    package cn.itcast.chapter01; //package关键字声明包
-    public class Hello{...}
-    ```
-
-  * 生成与包名对应目录(目录中可以是绝对地址、相对地址、“.”可以表示当前目录)，运行时要加上包名
-
-    ```
-    javac -d [目录] Hello.java
-    cd 目录
-    java cn.itcast.chapter01.Hello
-    ```
-
-* **import**
-
-  * 导包，import一般出现在package后，类定义之前
-
-    ```
-    import cn.itcast.chapter01.Hello;//导入MAIN类
-    import cn.itcast.chapter01.*;//导入包中所有类
-    ```
-
-  * Java中常用包
-
-    ```
-    java.lang:Java语言核心类，如String、Math、System、Thread等，系统自动导入，无需import
-    java.util:工具类、集合类，如Arrays、List、Set等
-    java.net:网络编程相关类和接口
-    java.io:输入输出相关类和接口
-    java.awt:构建图形界面（GUI）相关类和接口
-    ```
-
-* **jar**
-
-  * Java Archive File，Java档案文件，是一种压缩文件，独立于任何操作系统
-
-  * **步骤：**
-
-    1. **编译生成**与包名对应目录的**class文件**
-
-       ```
-       java -d . Hello.java
-       ```
-
-    2. 利用**jar命令**将cn及其目录下的文件都**压缩成jar包**
-
-       ```
-       jar -cvf Hello.jar cn
-       ```
-
-    3. 由于目前jar包中没有**主清单属性**，修改jar包`META-INF`中`MANIFEST.MF`文件，**指定main方法所在类**
-
-       ```
-       Main-Class: cn.itcast.chapter01.Hello	//注意“:”后有空格
-       ```
-
-    4. **运行jar包**
-
-       ```
-       java -jar Hello.jar
-       ```
-
-    5. **解压jar包**
-
-       ```
-       jar -xvf Hello.jar
-       ```
-
-* **访问控制**
-
-  * **权限修饰符**
-
-    * **private(类访问级别)**：被修饰的类成员只能被**该类其他成员**访问
-    * **default(包访问级别)**：类或类成员没有修饰符为默认访问级别，只能被**本包中其他类**访问
-    * **protected(子类访问级别)**：被修饰的类成员能被**本包中其他类**、**不同包中该类子类**访问
-    * **public(公共访问级别)**：所有都能访问
-
-  * **访问控制级别**
-
-    | 访问范围 | private | default | protected | public |
-    | :------: | :-----: | :-----: | :-------: | :----: |
-    |  同一类  |    √    |    √    |     √     |   √    |
-    |  同一包  |         |    √    |     √     |   √    |
-    |   子类   |         |         |     √     |   √    |
-    |   全局   |         |         |           |   √    |
 
 
 
@@ -844,449 +1868,22 @@ tg.setMaxPriority(10);
 
 
 
-# 6 Java API
-
-* API（Application Programming Interface），应用程序编程接口
-
-## 6.1 Object
-
-- Object是所有类的父类，每个类的直接或间接继承自该类 ，有且只有一个无参构造方法。所以子类构造方法默认访问父类的构造是无参构造
-
-- **方法：**
-
-  1. `toString()`返回对象的字符串表示，默认是由类的全名+'@'+哈希值的十六进制表示，一般子类重写
-
-     ```
-     getClass().getName()+"@"toHexString(hashCode());
-     ```
-
-  2. `equals()`比较两个对象是否相同，默认情况下比较的是地址值是否相同，一般子类重写
-
-  3. `hashCode()`返回对象的哈希值，不是实际地址值，可以理解为地址值
-
-  4. `getClass()`返回对象的字节码文件对象，反射中讲解
-
-  5. `finalize()`垃圾回收，不确定时间，可以调用`System.gc()`立即回收
-
-  6. `clone()`实现对象克隆，包括成员变量的数据复制，但是它和两个引用指向同一个对象是有区别的 
-
-- **注意问题**
-
-  - 父类是抽象类，**子类不是抽象类**时才需要**重新**父类所有方法
-  - **直接输出** 一个对象名称，默认调用该对象的`toString()`方法
-  - **【面试】**==和equals()区别：
-    1. `==`：**基本类型**：比较值是否相等；**引用类型**：比较地址值是否相等
-    2. `equals()`：只能比较**引用类型**，比较地址值是否相等，可以根据需要重写
-
-## 6.2 String
-
-* **特点**
-
-  1. String字符串是常量，一旦创建后内容和长度都无法改变（注意：这里指**new对象空间中的内容不能改变**，不是**引用**不**能改变**），其`overrid`了Object类的`equals()`方法。
-
-  2. **字面值**作为**字符串对象**和通过**构造方法**创建对象的不同
-
-     `String s = new String(char[] value,int offset,int count)`
-
-     `String s = new String("hello")`和`String s = "hello"`,前者创建两个对象，后者创建一个对象
-
-  3. 字符串若是**变量相加，先开空间再拼接**；若是**常量先加，然后在常量池中找**，有就返回，没有就创建
-
-     ```
-     String str1 = "hello";
-     String str2 = "hello";
-     System.out.println(str1.equals(str2));//true
-     System.out.println(str1==str2);//true
-     ```
-
-     ```
-     String s1 = "hello";
-     String s2 = "world";
-     String s3 = "helloworld";
-     System.out.println(s3.equals(s1+s2));//true
-     System.out.println(s3==s1+s2);//false
-     System.out.println(s3.equals("hello"+"world"));//true
-     System.out.println(s3=="hello"+"world");//true
-     ```
-
-* String常用方法(**不改变原String值**)
-
-  * **判断功能**
-
-    * `boolean isEmpty()`						       字符串长度是否为0
-
-    * `boolean contains(CharSwquence cs)`                      字符串中是否包含指定字符序列
-
-    * `boolean equals(Object anObject)`                          字符串与指定字符串是否相等(**内容**)
-
-      `boolean equalsIgnoreCase(String str)`                 字符串与指定字符串是否相等，忽略大小写
-
-    	`boolean startWith(String prefix)`	  	                字符串是否以prefix前缀开始
-
-      `boolean startWith(String prefix,int toffset)`  字符串从指定索引开始的子串是否以prefix开始
-
-    * `boolean endWith(String suffix)`                             字符串是否以suffix后缀结尾
-
-  * **获取功能**
-
-    * `int length()`								 获取字符串长度
-
-    * `char charAt(int index)`                                             获取指定索引的字符
-
-    * `int indexOf(int ch/String str)`    获取指定字符/字符串第一次/出现的索引
-
-    * `int indexOf(int ch/String str,int fromIndex)`   获取指定~~从**[指定索引开始**第一次出现的索引
-
-      `ch`是`int`类型原因：'a'和97都能代表'a'。  (`lastIndexOF(...)`表示最后一次出现的索引)
-
-    * `String substring(int startIndex,int endIndex)`  获取从**[start到end)**的子串,没有end时到结尾
-
-  * **转换功能**
-
-    * **`static`**`String valueOf(int i/char[] chs)`             **静态方法**将int型和**字符数组型**数据转为字符串
-    * `String toLowerCase() /toUpperCase()`                     将所有字符都转换为小写/大写,本身不变
-    * `byte[] getBytes()`                                                        将字符串转换为字节数组
-    * `char[] toCharArray()`                                                  将字符串转换为字符数组
-    * `String concat(String str)`                                         将字符串拼接
-
-  * **其他功能**
-
-    * **替换**(将所有old字符或字符串替换为新~~)
-
-      `String replace(char/String old,char/String new)`
-
-    * **去空格**(去掉字符串**首尾**空格)
-
-      `String trim()`
-
-    * **按字典比较**(按字典顺序比较，在str前返回负数，在str后返回正数，否则返回0)
-
-      `int compareTo(String str)/compareIgnoreCase(String str)`
-
-    * **拆分**(根据给定正则表达式regex的匹配拆分)，返回字符串数组，不包括regex字符串
-
-      `String[] split(String regex)`
-
-## 6.3 StringBuffer(StringBuilder)
-
-* `StringBuffer`(字符串缓冲区)，表示字符容器，其**内容和长度可变**，同步，线程安全。没有`override`Object类的`equals()`方法，不能像String类对象可以用操作符+进行连接。
-
-  ```
-  StringBuffer sb = new StringBuffer();
-  ```
-
-* StringBuffer常用方法(**在原StringBuffer对象中改变并返回本身**，原对象也改变)
-
-  * **添加**
-    * `StringBuffer append(String str)`                                   将**指定参数**添加到Stringbuffer对象**末端**
-    * `StringBuffer insert(int offset,String str)`               在字符串中的**offset位置**插入**指定参数**
-  * **删除**
-    * `StringBuffer deleteCharAt(int index)`                           删除指定位置字符
-    * `StringBuffer delete(int start,int end)`                       删除从**[start到end)**的字符串
-  * **替换**
-    * `StringBuffer replace(int start,int end,String s)`    从**[start到end)**的对象替换为指定字符串
-    * `void setCharAt(int index,char ch)`                                  **替换指定位置的字符**
-  * **反转**
-    * `StringBuffer reverse()`                                                       反转
-  * **截取(返回值类型不再是StringBuffer本身)**
-    * `String substring(int start,int end)`                               截取子串，没有end参数时截取到尾部
-  * **其他**
-    * `void setLength(int newLength)`                                          设置StringBuffer长度
-
-* **String和StringBuffer转换**
-
-  1. **String ---> StringBuffer**			通过构造函数传入或构造好之后append()
-
-  2. **StringBuffer ---> String**                     调用`toString()`或String类的`valueOf()`静态方法
-
-     ```
-     String str1 = sb.toString();
-     String str2 = String.valueOf(sb);
-     ```
-
-* **【面试】**
-
-  1. **String、StringBuffer、StringBuilder区别**
-
-     * **String内容、长度不可变，后两个可变**
-     * **StringBuffer是同步的，数据安全，效率低；StringBuilder是不同步的，数据不安全，效率高**
-
-  2. **StringBuffer和数组的区别**
-
-     * **二者都可以看做装其他数据的容器，但是StringBuffer的数据最终是一个字符串数据，而数组可以存放多种类型的数据，但必须是同一种数据类型的**
-
-  3. **参数传递问题**
-
-     * 基本数据类型：形式参数的改变不影响实际参数
-
-     * 引用数据类型：形式参数的改变影响实际参数
-
-     * 注意：**String作为引用数据类型，但在参数传递时效果和基本类型一样**
-
-       	    **StringBuffer、StringBuilder在赋值时不改变内容，调用方法时改变**
-
-       **【重点】在于String内容不可变并且变量相加需要开空间再拼接，StringBuffer等内容可以变**
-
-       ```
-       String s1 = "hello";
-       String s2 = "world";
-       System.out.println(s1+"---"+s2);//hello---world
-       change(s1,s2);
-       System.out.println(s1+"---"+s2);//hello---world
-       
-       StringBuffer sb1 = new StringBuffer("hello");
-       StringBuffer sb2 = new StringBuffer("world");
-       System.out.println(sb1+"---"+sb2);//hello---world
-       change(sb1,sb2);
-       System.out.println(sb1+"---"+sb2);//hello---worldworld
-       
-       public static void change(String s1, String s2) {
-       	s1 = s2;
-       	s2 = s1+s2;
-       }
-       public static void change(StringBuffer sb1, StringBuffer sb2) {
-       	sb1 = sb2;
-       	sb2 = sb1.append(sb2);
-       }
-       ```
-
-       ![](D:\Typora\photo\形参实参问题.png)
-
-## 6.4 包装类
-
-- 为了让基本类型的数据进行更多的操作，Java就为每种基本类型提供了对应的包装类类型 
-
-  | 基本数据类型 | 引用数据类型 |
-  | :----------: | :----------: |
-  |     byte     |     Byte     |
-  |     char     |  Character   |
-  |    short     |    Short     |
-  |     int      |   Integer    |
-  |     long     |     Long     |
-  |    float     |    Float     |
-  |    double    |    Double    |
-  |   boolean    |   Boolean    |
-
-- **装箱与拆箱**
-
-  - 装箱：将基本数据类型的值转为引用数据类型
-  - 拆箱：将引用数据类型的值转为基本数据类型 `intValue()`将Integer转为int
-  - JDK 5.0后支持自动拆装箱
-
-- String和int的转换
-
-  - String--->int        `Integer.parseInt("100")` 或  `Integer.valueof("100")`包装类型再转int
-  - int--->String        `Integer.toString(100)` 或 `String.valueOf(100)`
-
-- **进制转换**
-
-  - `static String toString(int num,int radix)`               十进制到其他进制`toString`
-  - `static int parseInt(String s,int radix)`                   其他进制到十进制`parseInt`
-
-- **【面试】Integer数据直接赋值时，注意-128~127之间的数据缓冲池问题**
-
-- **注意：**
-
-  1. 包装类都重写Object类中的`toString()` 方法，以**字符串**形式返回包装类的基本数据类型的值
-  2. 除了Character外，包装类都有`valueOf(String s)`方法，根据String类型参数创建包装类对象
-  3. 除了Character外，包装类都有`parseXXX(String s)`的静态方法，将字符串转为基本类型数据
-
-## 6.5 System
-
-- System定义了一些与系统相关的属性和方法，并且都是静态的
-- 常用方法
-  - `void exit(int status)`                     退出当前运行的JVM，status表示状态码，非0表示异常终止
-  - `void gc()`                                            运行垃圾回收器并立即回收垃圾
-  - `long currentTimeMillis()`                获取当前时间戳，东八区应加8个小时
-  - `arraycopy(arr1, 1, arr2, 3, 2)`    复制数组，从arr1的1开始长度为2的数据复制到arr2从3开始的地方
-
-## 6.6 Arrays
-
-* Arrays工具类是针对数组进行操作的工具类，包括排序和查找等功能
-* 常用方法
-  * `Arrays.toString(int[] arr)`                           将数组转为字符串
-  * `Arrays.sort(int[] arr)`                                   给数组排序
-  * `Arrays.binarySearch(int[] arr,int key)`    二分查找 
-  * `Arrays.asList(int/String等[] arr)`              数组转集合，**长度不能变**
-
-## 6.7 Math
-
-* 针对数学运算进行操作的类
-
-* 常用方法
-
-  * 绝对值**abs**                               `abs(int/long/float/double a)`
-  * 向上取整，取大的**ceil**            `ceil(double a)`
-  * 向下取整，取小的**floor**          `floor(double a)`
-  * 两数据中大着                           `max(int a,int b)`
-  * a的b次幂**pow**                          `double pow(double a,double b)`
-  * 随机数[0,1)**random**                `double random()`
-  * 四舍五入**round**                        `long/int round(double a/float a)`-4.9四舍五入后为-5
-  * 平方根**sqrt**                                `double sqrt(double a)`
-
-* 任意**整数**范围的随机数 
-
-  ```
-  return (int)(Math.random()*(end-start+1))+start; //+1是为了包括右极限
-  ```
-
-## 6.8 Random
-
-* 生成随机数的两个构造方法
-  * `Random()`                          创建一个伪随机数生成器，因为种子随机所以每个对象产生**随机数不同**
-  * `Random(long seed)`         创建一个伪随机数生成器，因为种子一定，每个对象产生**随机数序列相同**
-* Random类的方法
-  * `int nextInt()/nextLong()/nextFloat()/nextDouble()/nextBoolean()`  随机生成~类型范围内的随机数
-  * `int nextInt(int n)`   **随机生成[0,n)之间的随机数**
-
-## 6.9 BigInteger
-
-* 针对大整数的运算
-
-## 6.10 BigDecimal
-
-* 浮点数据做运算，会丢失精度。所以，针对浮点数据的操作建议采用BigDecimal(**金融相关的项目**)
-
-## 6.11 Date/Calendar/DateFormat
-
-* java.util.**Date**用于表示日期和时间，可以精确到毫秒
-
-  * **构造方法**（只有两个没过时）
-
-    * `Date()`                      用于创建**当前**日期时间的Date对象
-
-    * `Date(long date)`     用于创建**指定**时间的Date对象，date为时间戳
-
-      ```
-      Date d = new Date();
-      System.out.println(d);
-      		
-      long date = System.currentTimeMillis();
-      Date dd = new Date(date);
-      System.out.println(dd);
-      ```
-
-  * **成员方法**
-
-    * `setTime()`          设置此对象的**时间戳**
-    * `getTime()`          返回此对象的**时间戳**
-
-* java.util.**Calendar**用于完成日期和时间字段的操作，通过特定方法设置和读取日期的特定部分，是**抽象类**
-
-  * **调用静态方法获取一个Calendar对象**
-
-    ```
-    Calendar calendar = Calendar.gerInstance();
-    ```
-
-  * **常用方法**(注意，MONTH从0开始)
-
-    * **获取指定日历字段**的值(Calendar.YEAR/MONTH/DATE/HOUR_OF_DAY/MINUTE/SECOND等)
-
-      `int get(int field)`
-
-    * **设置指定日历字段**的值(Calendar.YEAR/MONTH/DATE/HOUR_OF_DAY/MINUTE/SECOND等)
-
-      `void set(int field,int value)`
-
-    * **设置日历字段的值(年月日时分秒等)**
-
-      `void set(int year,int month,int date,int hourofday,int minute,int second)`
-
-    * **根据日历规则，为指定日历字段加上或减去指定时间量**
-
-      `void add(int field,int amount)`
-
-  * **Date和Calendar之间转换**(利用Calendar对象的方法)
-
-    * Date--->Calendar     接收一个Date对象并将其表示时间值**赋值给Calendar对象**
-
-    * Calendar--->Date     **返回**表示Calendar时间值的**Date对象**
-
-      ```
-      Date d = new Date(9532418005450l);
-      calendar.setTime(d);
-      System.out.println(calendar.get(Calendar.YEAR));//2272
-      
-      System.out.println(calendar.getTime());//Mon Jul 24 15:49:16 CST 2018
-      ```
-
-  * 来世界多少天
-
-    ```
-    System.out.println("enter your birthday:(year/month/date)");
-    Scanner sc = new Scanner(System.in);
-    int year = sc.nextInt();
-    int month = sc.nextInt();
-    int date = sc.nextInt();
-    
-    Calendar calendar = Calendar.getInstance();
-    calendar.set(year, month, date, 0, 0, 0);
-    Date d = calendar.getTime();
-    long bMillis = d.getTime();
-    long nMillis = System.currentTimeMillis();
-    long value = nMillis - bMillis;
-    System.out.println("你来这个世界"+value/86400000+"天了");
-    ```
-
-  * 计算任意二月有多少天
-
-    ```
-    public static void howManyDays(int year) {
-    	Calendar cal = Calendar.getInstance();
-    	cal.set(year, 2, 1);
-    	cal.add(Calendar.DATE, -1);
-    	System.out.println(cal.get(Calendar.DATE));
-    }
-    ```
-
-* java.text.**DateFormat**针**对日期进行格式化**和针**对字符串进行解析**的抽象类，使用其子类`SimpleDateFormat` 
-
-  * 构造方法(无参构造为默认格式)
-
-    * 指定格式构造`SimpleDateFormat sdf = new SimpleDateFormat(String pattern)`
-
-      * Date--->String     **格式化**`format(Date d)`
-
-        ```
-        Date d = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-        String s = sdf.format(d);//对日期格式化为字符串
-        System.out.println(s);
-        ```
-
-      * String--->Date     **解析**`parse(String str)`
-
-        ```
-        String str = "2018-07-24 16:48:54";
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd- HH:mm:ss");
-        d = sdf2.parse(str);//try...catch处理
-        System.out.println(d);
-        ```
-
-* **【面试】**
-
-  * Date类用来表示某个特定的瞬间，能够精确到毫秒。而在实际应用中，往往需要把一个日期中的年、月、日等信息单独返回进行显示或处理，这个类中的大部分方法都已被标记过时。Calendar类基本取代了Date类，该类中定义了一系列用于完成日期和时间字段操作的方法。 
-    Calendar的`getTime()`方法)返回一个表示Calendar时间值的Date对象，同时Calendar有一个`setTime(Date date)`方法接收一个Date对象，将Date对象表示的时间值设置给Calendar对象，通过这两个方法就可以完成Date和Calendar对象之间的转换。
-
-
-
 
 
 # 7 容器 
 
-* **对象数组：**既可以存储基本数据类型和引用类型，存储引用类型的数组就叫**对象数组**
+* **对象数组：**数组可以存储基本数据类型和引用类型，存储引用类型的数组就叫**对象数组**
 
 * **容器(container)**
   * **由来**  Java-->面向对象-->操作很多对象-->存储-->容器
   * **区别**
-    1. **长度**     数组固定，集合可变
-    2. **内容**     数组可以是基本类型和引用类型，集合只能是引用类型
-    3. **元素内容**     数组只能存储同一类型，集合可以存储不同类型(一般也是同一种类型)
+    1. **长度**     数组固定，容器（集合）可变
+    2. **内容**     数组可以是基本类型和引用类型，容器（集合）只能是引用类型
+    3. **元素内容**     数组只能存储同一类型，容器（集合）可以存储不同类型(一般也是同一种类型)
 
 * **继承体系结构**
 
-  ![](D:\Typora\photo\容器.png)
+  ![](F:\GitHub\Studying\Java\images\容器.png)
 
 ## 7.1 Collection
 
@@ -1343,7 +1940,7 @@ tg.setMaxPriority(10);
   
             3.删除元素时并跟上break语句，或利用Iterator的remove方法
 
-## 7.2 List
+### 7.1.1 List
 
 * **元素有序(存入和取出顺序一致)**，通过索引来访问指定元素，允许出现重复元素
 * **特有方法**
@@ -1361,13 +1958,13 @@ tg.setMaxPriority(10);
     * `Object set(int index,Object o)`
 * **List集合特有遍历功能**get()和size()结合
 
-### 7.2.1 ArrayList
+#### ArrayList（java.util）
 
 * **底层是数组，查询快，增删慢，线程不安全，效率高**
 
 * **常用方法：没有特殊方法**
 
-### 7.2.2 LinkedList
+#### LinkedList
 
 * **底层是双向循环链表，查询慢，增删快，线程不安全，效率高**
 
@@ -1382,7 +1979,7 @@ tg.setMaxPriority(10);
     * `Object getFirst()`
     * `Objcet getLast()`
 
-## 7.3 泛型
+### 7.1.2 泛型
 
 * **概述：**泛型是一种把明确类型的工作推迟到创建对象或者调用方法时才去明确的特殊的类型
 
@@ -1408,11 +2005,11 @@ tg.setMaxPriority(10);
   ```
 
 
-## 7.4 Set
+### 7.1.3 Set
 
 * **特点：无序，唯一**
 
-### 7.4.1 HashSet
+#### HashSet
 
 * 底层数据结构是**哈希表**(**元素为链表的数组**)
 
@@ -1432,11 +2029,11 @@ tg.setMaxPriority(10);
 
 * **元素唯一性：由`hashCode()`和`equals()`保证**
 
-### 7.4.2 LinkedHashSet
+#### LinkedHashSet
 
 * 底层数据结构是**链表和哈希表，元素迭代顺序和存入顺序一致**
 
-### 7.4.3 TreeSet
+#### TreeSet
 
 * 底层数据结构是**红黑树(是一个自平衡二叉树)**
 
@@ -1467,7 +2064,7 @@ tg.setMaxPriority(10);
   ```
 
 
-## 7.5 Map
+## 7.2 Map
 
 * **将键映射到值的对象**。一个映射不能包含重复的键，每个键最多只能映射到一个值（**键唯一，值可重复**）
 
@@ -1529,18 +2126,18 @@ tg.setMaxPriority(10);
     }
     ```
 
-### 7.5.1 HashMap
+### 7.2.1 HashMap
 
 * 底层是哈希表，迭代出的元素顺序和存入顺序不一致
 * HashMap和Hashtable区别
   * HashMap：线程不安全，效率高，允许null键和null值
   * Hashtable：线程安全，效率低，不允许null键和null值
 
-### 7.5.2 LinkedHashMap
+### 7.2.2 LinkedHashMap
 
 * 底层是链表和哈希表，迭代出的元素顺序和存入顺序**一致**
 
-### 7.5.3 TreeMap
+### 7.2.3 TreeMap
 
 * **底层是红黑树(自平衡二叉树)**
 
@@ -1556,7 +2153,7 @@ tg.setMaxPriority(10);
 
      **s1-s2升序，s2-s1降序**
 
-## 7.6 Collections
+## 7.3 Collections
 
 * 针对集合进行操作的**工具类**
 
@@ -1578,7 +2175,7 @@ tg.setMaxPriority(10);
   ```
 
 
-## 7.7 斗地主洗牌发牌看牌
+## 7.4 斗地主洗牌发牌看牌
 
 ```
 public static void main(String[] args) {
@@ -1639,7 +2236,7 @@ public static void main(String[] args) {
 	}
 ```
 
-## 7.8 Properties
+## 7.5 Properties
 
 * 是一个集合类，**Hashtable的子类** （游戏进度保存加载）
 
@@ -1713,7 +2310,7 @@ public static void main(String[] args) {
   ```
 
 
-## 7.9 总结
+## 7.6 总结
 
 * **容器分类**
 

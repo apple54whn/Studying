@@ -2090,7 +2090,7 @@ public class Application {
     public @interface EnableAutoConfiguration {...}
     ```
 
-    * @**AutoConfigurationPackage**：自动配置包，**如下注解的简写**
+    * @**AutoConfigurationPackage**：**自动配置包**，**如下注解的简写**
 
       * @**Import**(AutoConfigurationPackages.Registrar.class)
 
@@ -2406,6 +2406,931 @@ public class Person {
 
 
 
+### 2.4 配置文件占位符
+
+* 随机数
+
+  ```yaml
+  ${random.value}
+  ${random.int}
+  ${random.long}
+  ${random.int(10)}
+  ${random.int[1024,65536]}
+  ```
+
+* **占位符获取之前配置的值**，如果没有可以使用**:**指定**默认值**
+
+  ```properties
+  person.last-name=张三${random.uuid}
+  person.age=${random.int}
+  # 没有取到:后面是默认值
+  person.dog.name=${person.hello:hello}_dog
+  ```
+
+
+### 2.5 Profile
+
+* Profile是Spring对**不同环境（开发、测试、上线等）提供不同配置功能**的支持，可以通过激活、 指定参数等方式快速切换环境
+
+#### 2.5.1 多Profile文件
+
+* 我们在主配置文件编写的时候，文件名可以是 application-{profile}.properties/yml，{profile}名任起
+  * 默认使用application.properties的配置；
+
+
+
+#### 2.5.2 yml支持多文档块方式
+
+```yaml
+server:
+  port: 8081
+spring:
+  profiles:
+    active: prod  #指定激活哪个环境，不设置则为这个默认的
+
+---
+server:
+  port: 8083
+spring:
+  profiles: dev  #指定属于哪个环境
+
+---
+
+server:
+  port: 8084
+spring:
+  profiles: prod  #指定属于哪个环境
+```
+
+* 若文档块都没有指定环境，则默认使用最后一个
+
+* 若某个文档块没有指定环境，则默认使用那个，**一般第一个不指定环境**
+
+
+#### 2.5.3 激活指定profile
+
+* 在**默认配置文件中指定** spring.profiles.**active**=dev
+
+* **命令行参数**
+
+  ```shell
+  java -jar spring-boot-02-config-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+  ```
+
+* **虚拟机参数**
+
+  ```
+  -Dspring.profiles.active=dev
+  ```
+
+  在IDEA中也可以配置，以下三者任选其一，但权限 Program arguments > Active profiles > VM options
+
+  ![](F:\GitHub\Studying\Spring Boot\images\active_profile.png)
+
+
+
+### 2.6 配置文件加载位置
+
+* Spring Boot启动会扫描以下位置的application.properties/yml文件作为Spring boot的默认配置文件
+  * –file:./config/     ——项目目录下的config
+
+  * –file:./                ——项目目录下
+
+  * –classpath:/config/     ——resources目录下的config
+
+  * –classpath:/                ——resources目录下
+
+    **优先级由高到底**，**高**优先级的配置会**覆盖低**优先级的配置；SpringBoot会从这四个位置全部加载主配置文件；**互补配置**；
+
+* 我们还可以通过**spring.config.location**来**改变默认的配置文件位置**
+
+  * 用于运维时，**项目打包好以后，我们可以使用命令行参数的形式，启动项目的时候来指定配置文件的新位置；指定配置文件和默认加载的这些配置文件共同起作用形成互补配置；**
+
+    ```shell
+    java -jar spring-boot-02-config-02-0.0.1-SNAPSHOT.jar --spring.config.location=G:/application.properties
+    ```
+
+
+
+### 2.7 外部配置文件加载顺序
+
+> 所有支持的配置加载来源[查看这里](https://docs.spring.io/spring-boot/docs/2.0.6.RELEASE/reference/htmlsingle/#boot-features-external-config)第24节 Externalized Configuration
+
+**SpringBoot也可以从以下位置加载配置； 优先级从高到低；高优先级的配置覆盖低优先级的配置，所有的配置会形成互补配置**
+
+1. **命令行参数**：所有的配置都可以在命令行上进行指定。多个配置用空格分开； --配置项=值
+
+   ```shell
+   java -jar spring-boot-02-config-02-0.0.1-SNAPSHOT.jar --server.port=8087 --server.context-path=/abc
+   ```
+
+2. 来自java:comp/env的JNDI属性
+
+3. Java系统属性（System.getProperties()）
+
+4. 操作系统环境变量
+
+5. RandomValuePropertySource配置的random.*属性值
+
+==**由jar包外向jar包内进行寻找**==
+
+==**优先加载带profile**==
+
+6. **jar包外部的application-{profile}.properties或application.yml(带spring.profile)配置文件**
+
+7. **jar包内部的application-{profile}.properties或application.yml(带spring.profile)配置文件**
+
+==**再来加载不带profile**==
+
+8. **jar包外部的application.properties或application.yml(不带spring.profile)配置文件**
+
+9. **jar包内部的application.properties或application.yml(不带spring.profile)配置文件**
+
+10. @Configuration注解类上的@PropertySource
+
+11. 通过SpringApplication.setDefaultProperties指定的默认属性
+
+
+
+### <span name="autoConfigure">2.8 自动配置</span>
+
+> 配置文件到底能写什么？怎么写？参考文档[这里](https://docs.spring.io/spring-boot/docs/2.0.6.RELEASE/reference/htmlsingle/#common-application-properties)
+>
+
+#### 2.8.1 自动配置原理
+
+1. SpringBoot启动的时候**加载主配置类**（**@SpringBootApplication**），**开启了自动配置**功能 @EnableAutoConfiguration
+
+2. **@EnableAutoConfiguration 作用：**
+
+   1. @AutoConfigurationPackage
+
+      ==**主配置类**（@SpringBootApplication）所在**包及下面所有子包**里面的**所有组件扫描到Spring容器**==
+
+   2. @Import(AutoConfigurationImportSelector.class)
+
+      1. AutoConfigurationImportSelector**选择器**给容器中**导入一些组件**？
+
+      2. selectImports()方法的内容，**获取候选的配置**
+
+         ```java
+         List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+         ```
+
+      3. SpringFactoriesLoader.loadFactoryNames()方法，扫描所有jar包类路径下META-INF/spring.factories，把扫描到的这些文件的内容包装成properties对象，从properties中获取到EnableAutoConfiguration.class类（类名）对应的值，然后把他们添加在容器中
+
+      ==**将类路径下 META-INF/spring.factories 里面配置的所有EnableAutoConfiguration的值加入到了容器中**==
+
+      ```properties
+      # Auto Configure，省略大部分
+      org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+      org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\
+      org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\
+      org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\
+      org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
+      org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration,\
+      
+      org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration,\
+      org.springframework.boot.autoconfigure.websocket.WebSocketMessagingAutoConfiguration,\
+      org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
+      ```
+
+      每一个这样的**xxxAutoConfiguration**类都是容器中的一个组件；**用他们来做自动配置**；
+
+3. **每一个自动配置类进行自动配置功能**
+
+4. 以**HttpEncodingAutoConfiguration（Http编码自动配置）**为例解释自动配置原理
+
+   ```java
+   @Configuration   //表示这是一个配置类，以前编写的配置文件一样，也可以给容器中添加组件
+   @EnableConfigurationProperties(HttpEncodingProperties.class)  //启动指定类的ConfigurationProperties功能；将配置文件中对应的值和HttpEncodingProperties绑定起来；并把HttpEncodingProperties加入到ioc容器中
+   
+   @ConditionalOnWebApplication //Spring底层@Conditional注解（Spring注解版），根据不同的条件，如果满足指定的条件，整个配置类里面的配置就会生效；    判断当前应用是否是web应用，如果是，当前配置类生效
+   
+   @ConditionalOnClass(CharacterEncodingFilter.class)  //判断当前项目有没有这个类CharacterEncodingFilter；SpringMVC中进行乱码解决的过滤器；
+   
+   @ConditionalOnProperty(prefix = "spring.http.encoding", value = "enabled", matchIfMissing = true)  //判断配置文件中是否存在某个配置  spring.http.encoding.enabled；如果不存在，判断也是成立的
+   //即使我们配置文件中不配置pring.http.encoding.enabled=true，也是默认生效的；
+   public class HttpEncodingAutoConfiguration {
+   
+       //他已经和SpringBoot的配置文件映射了
+       private final HttpEncodingProperties properties;
+   
+       //只有一个有参构造器的情况下，参数的值就会从容器中拿
+       public HttpEncodingAutoConfiguration(HttpEncodingProperties properties) {
+           this.properties = properties;
+       }
+   
+       @Bean   //给容器中添加一个组件，这个组件的某些值需要从properties中获取
+       @ConditionalOnMissingBean(CharacterEncodingFilter.class) //判断容器没有这个组件？
+       public CharacterEncodingFilter characterEncodingFilter() {
+           CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
+           filter.setEncoding(this.properties.getCharset().name());
+           filter.setForceRequestEncoding(this.properties.shouldForce(Type.REQUEST));
+           filter.setForceResponseEncoding(this.properties.shouldForce(Type.RESPONSE));
+           return filter;
+       }
+   ```
+
+   根据当前不同的条件判断，决定这个配置类是否生效？
+
+   一但这个配置类生效；这个配置类就会给容器中添加各种组件；这些组件的属性是从**对应的properties类**中获取的，这些类里面的每一个属性又是和配置文件绑定的；
+
+5. 所有在配置文件中能配置的属性都是在**xxxxProperties类**中封装着；配置文件能配置什么就可以参照某个功能**对应的这个属性类**
+
+   ```java
+   @ConfigurationProperties(prefix = "spring.http.encoding")
+   public class HttpEncodingProperties {
+   
+   	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+   }
+   ```
+
+
+#### 2.8.2 精髓
+
+* **SpringBoot启动会加载大量的自动配置类**
+* **我们看我们需要的功能有没有SpringBoot默认写好的自动配置类；**
+* **我们再来看这个自动配置类中到底配置了哪些组件；（只要我们要用的组件有，我们就不需要再来配置了）**
+* **给容器中自动配置类添加组件的时候，会从properties类中获取某些属性。我们就可以在配置文件中指定这些属性的值；**
+* **自动配置类对应属性类**
+  * xxxxAutoConfigurartion：自动配置类；给容器中添加组件
+  * xxxxProperties:封装配置文件中相关属性；
+
+
+
+#### 2.8.3 @Conditional细节
+
+* **@Conditional派生注解（Spring注解版原生的@Conditional作用）**
+
+* 作用：必须是@Conditional**指定的条件成立**，才给容器中**添加组件**，**配置类**里面的所有内容才**生效**
+
+  | @Conditional扩展注解            | 作用（判断是否满足当前指定条件）                 |
+  | ------------------------------- | ------------------------------------------------ |
+  | @ConditionalOnJava              | 系统的java版本是否符合要求                       |
+  | @ConditionalOnBean              | 容器中存在指定Bean；                             |
+  | @ConditionalOnMissingBean       | 容器中不存在指定Bean；                           |
+  | @ConditionalOnExpression        | 满足SpEL表达式指定                               |
+  | @ConditionalOnClass             | 系统中有指定的类                                 |
+  | @ConditionalOnMissingClass      | 系统中没有指定的类                               |
+  | @ConditionalOnSingleCandidate   | 容器中只有一个指定的Bean，或者这个Bean是首选Bean |
+  | @ConditionalOnProperty          | 系统中指定的属性是否有指定的值                   |
+  | @ConditionalOnResource          | 类路径下是否存在指定资源文件                     |
+  | @ConditionalOnWebApplication    | 当前是web环境                                    |
+  | @ConditionalOnNotWebApplication | 当前不是web环境                                  |
+  | @ConditionalOnJndi              | JNDI存在指定项                                   |
+
+* 我们可以通过在**配置文件中启用 debug=true属性；来让控制台打印自动配置报告**，这样我们就可以很方便的知道哪些自动配置类生效；
+
+  ```java
+  =========================
+  AUTO-CONFIGURATION REPORT
+  =========================
+  
+  Positive matches:（自动配置类启用的）
+  -----------------
+  
+     DispatcherServletAutoConfiguration matched:
+        - @ConditionalOnClass found required class 'org.springframework.web.servlet.DispatcherServlet'; @ConditionalOnMissingClass did not find unwanted class (OnClassCondition)
+        - @ConditionalOnWebApplication (required) found StandardServletEnvironment (OnWebApplicationCondition)
+          
+      
+  Negative matches:（没有启动，没有匹配成功的自动配置类）
+  -----------------
+  
+     ActiveMQAutoConfiguration:
+        Did not match:
+           - @ConditionalOnClass did not find required classes 'javax.jms.ConnectionFactory', 'org.apache.activemq.ActiveMQConnectionFactory' (OnClassCondition)        
+  ```
+
+
+
+
+## 3 Spring Boot 日志
+
+> 也可查看Spring Boot 官方文档第26节，[这里](https://docs.spring.io/spring-boot/docs/2.0.6.RELEASE/reference/htmlsingle/#boot-features-logging)
+
+### 3.1 日志框架
+
+* 小张开发一个大型系统；
+
+​	1、System.out.println("")；将关键数据打印在控制台；去掉？写在一个文件？
+
+​	2、框架来记录系统的一些运行时信息；日志框架 ； zhanglogging.jar；
+
+​	3、高大上的几个功能？异步模式？自动归档？xxxx？ zhanglogging-good.jar；
+
+​	4、将以前框架卸下来？换上新的框架，重新修改之前相关的API；zhanglogging-prefect.jar；
+
+​	5、借鉴JDBC---数据库驱动；
+
+​		写了一个统一的接口层；日志门面（日志的一个抽象层）；logging-abstract.jar；
+
+​		给项目中导入具体的日志实现就行了；我们之前的日志框架都是实现的抽象层；
+
+* 市面上的日志框架
+  JUL、JCL、Jboss-logging、logback、log4j、log4j2、slf4j....
+
+  | 日志门面 （日志的抽象层）                                    | 日志实现                                                |
+  | ------------------------------------------------------------ | ------------------------------------------------------- |
+  | ~~JCL（Jakarta Commons Logging）~~  SLF4j（Simple Logging Facade for Java）~~**jboss-logging**~~ | Log4j     JUL（java.util.logging） Log4j2   **Logback** |
+
+* 左边选一个门面（抽象层）：SLF4J。右边来选一个实现：Logback；
+
+* SpringBoot：底层是Spring框架，Spring框架默认是用JCL；
+
+  * ==**SpringBoot选用 SLF4j和logback；**==
+
+
+
+### 3.2 SLF4j使用
+
+#### 3.2.1 如何在系统中使用SLF4j
+
+* 以后开发的时候，日志记录方法的调用，不应该来直接调用日志的实现类，而是**调用日志抽象层里面的方法**；
+
+  * 给系统里面导入slf4j的jar和 logback的实现jar
+
+  ```java
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
+  
+  public class HelloWorld {
+    public static void main(String[] args) {
+      Logger logger = LoggerFactory.getLogger(HelloWorld.class);
+      logger.info("Hello World");
+    }
+  }
+  ```
+
+![](F:\GitHub\Studying\Spring Boot\images\concrete-bindings.png)
+
+* 每一个日志的实现框架都有自己的配置文件。使用slf4j**配置文件还是做成日志实现框架自己本身的配置文件；**
+
+
+
+#### 3.2.2 遗留问题
+
+* a系统（slf4j+logback）: Spring（commons-logging）、Hibernate（jboss-logging）、MyBatis、xxxx
+
+* **统一日志记录**，即**如何让系统中所有的日志都统一到slf4j？**
+  * ==**将系统中其他日志框架先排除出去；**==
+  * ==**用中间包来替换原有的日志框架；**==
+  * ==**我们导入slf4j其他的实现**==
+
+![](F:\GitHub\Studying\Spring Boot\images\legacy.png)
+
+
+
+### 3.3 SpringBoot日志关系
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter</artifactId>
+</dependency>
+```
+
+SpringBoot使用它来做日志功能：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-logging</artifactId>
+</dependency>
+```
+
+**底层依赖关系如下**
+
+* Spring Boot 1.5.10如下：
+
+![](F:\GitHub\Studying\Spring Boot\images\底层依赖关系.png)
+
+* SpringBoot 2.0后底层依赖如下：
+
+![](F:\GitHub\Studying\Spring Boot\images\底层依赖关系2.png)
+
+* **总结 Spring Boot 1.5.10**
+
+  * SpringBoot底层也是使用slf4j+logback的方式进行日志记录
+
+  * SpringBoot也把其他的日志都替换成了slf4j
+
+  * 中间替换包细节如下截取部分：
+
+    ```java
+    @SuppressWarnings("rawtypes")
+    public abstract class LogFactory {
+    
+        static String UNSUPPORTED_OPERATION_IN_JCL_OVER_SLF4J = "http://www.slf4j.org/codes.html#unsupported_operation_in_jcl_over_slf4j";
+    
+        static LogFactory logFactory = new SLF4JLogFactory();
+    ```
+
+    Spring Boot 1.5.10中的中间转换包如下，2.0后改了名字，实现的名称也不同，不放图了
+
+    ![](F:\GitHub\Studying\Spring Boot\images\中间替换包.png)
+
+  * **若要引入其他框架**？一定要把这个框架的**默认日志依赖移除**掉。例如Spring框架用的是commons-logging。但是Spring Boot2.0后的没有这个，因为底层不再依赖它
+
+    ```xml
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    ```
+
+==**SpringBoot能自动适配所有的日志，而且底层使用slf4j+logback的方式记录日志，引入其他框架的时候，只需要把这个框架依赖的日志框架排除掉即可；**==
+
+* Spring Boot 2.0开始使用 Commons Logging 进行所有内部日志记录，但保留底层日志实现。 为Java Util Logging，Log4J2，和 Logback提供了默认配置。默认情况下，如果使用“Starters”，则使用Logback进行日志记录
+
+### 3.4 日志使用
+
+#### 3.4.1 默认配置
+
+* SpringBoot默认帮我们配置好了日志
+
+  ```java
+  //记录器
+  Logger logger = LoggerFactory.getLogger(getClass());
+  
+  @Test
+  public void contextLoads() {
+  
+      //日志的级别；由低到高 
+        trace<debug<info<warn<error
+      //可以调整输出的日志级别；日志就只会在这个级别以以后的高级别生效
+      logger.trace("系统详细信息, 主要开发人员用, 一般来说线上系统可以认为是临时输出, 而且随时可以通过开关将其关闭");
+      logger.debug("主要给开发人员看,开发环境中使用");
+      //SpringBoot默认给我们使用的是info级别的，没有指定级别的就用SpringBoot默认规定的级别；root级别
+      logger.info("重要的业务逻辑处理完成. 在理想情况下, INFO的日志信息要能让高级用户和系统管理员理解, 并从日志信息中能知道系统当前的运行状态");
+      logger.warn("系统能继续运行, 但是必须引起关注");
+      logger.error("系统发生了严重的错误, 必须马上进行处理, 否则系统将无法继续运行");
+  
+  }
+  ```
+
+  ```java
+  日志输出格式：
+  		%d表示日期时间，
+  		%thread表示线程名，
+  		%-5level：级别从左显示5个字符宽度
+  		%logger{50} 表示logger名字最长50个字符，否则按照句点分割。 
+  		%msg：日志消息，
+  		%n是换行符
+  
+  %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n
+  ```
+
+* SpringBoot修改日志的默认配置
+
+  ```properties
+  #指定某个包的日志记录级别
+  logging.level.com.itcast=trace
+  
+  # 不指定路径在当前项目下生成springboot.log日志
+  # 可以指定完整的路径；
+  logging.file=G:/springboot.log
+  
+  # 在当前磁盘的根路径下创建spring文件夹和里面的log文件夹；使用 spring.log 作为默认文件
+  logging.path=/spring/log
+  
+  # 在控制台输出的日志的格式
+  logging.pattern.console=%d{yyyy-MM-dd} [%thread] %-5level %logger{50} - %msg%n
+  # 指定文件中日志输出的格式
+  logging.pattern.file=%d{yyyy-MM-dd} === [%thread] === %-5level === %logger{50} ==== %msg%n
+  ```
+
+  | logging.file               | logging.path | Example  | Description                        |
+  | -------------------------- | ------------ | -------- | ---------------------------------- |
+  | (none)                     | (none)       |          | 只在控制台输出                     |
+  | 指定文件名，可指定完整路径 | (none)       | my.log   | 输出日志到my.log文件               |
+  | (none)                     | 指定目录     | /var/log | 输出到指定目录的 spring.log 文件中 |
+
+#### 3.4.2 指定配置
+
+* 给**类路径**下放上**每个日志框架自己的配置文件**即可；SpringBoot就不使用他默认配置的了
+
+  | Logging System         | Customization                                                |
+  | ---------------------- | ------------------------------------------------------------ |
+  | Logback                | `logback-spring.xml`, `logback-spring.groovy`, `logback.xml` or `logback.groovy` |
+  | Log4j2                 | `log4j2-spring.xml` or `log4j2.xml`                          |
+  | JDK(Java Util Logging) | `logging.properties`                                         |
+  * logback.xml：直接就被日志框架识别了；
+
+    **logback-spring.xml**：**推荐！**日志框架就不直接加载日志的配置项，**由SpringBoot解析日志配置**，可以使用SpringBoot的高级Profile功能
+
+    ```xml
+    <springProfile name="staging">
+        <!-- configuration to be enabled when the "staging" profile is active -->
+      	可以指定某段配置只在某个环境下生效
+    </springProfile>
+    ```
+
+    如下：
+
+    ```xml
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <springProfile name="dev">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ----> [%thread] ---> %-5level %logger{50} - %msg%n</pattern>
+            </springProfile>
+            <springProfile name="!dev">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ==== [%thread] ==== %-5level %logger{50} - %msg%n</pattern>
+            </springProfile>
+        </layout>
+    </appender>
+    ```
+
+    如果使用logback.xml作为日志配置文件，还要使用profile功能，会有以下错误`no applicable action for [springProfile]`
+
+### 3.5 切换日志框架
+
+* 可以按照slf4j的日志适配图，进行相关的切换
+
+  * slf4j+log4j的方式（没意义）
+
+    ```xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <exclusions>
+            <exclusion>
+                <artifactId>logback-classic</artifactId>
+                <groupId>ch.qos.logback</groupId>
+            </exclusion>
+            <exclusion>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <groupId>org.slf4j</groupId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    ```
+
+  * 切换为log4j2
+
+    ```xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <exclusions>
+            <exclusion>
+                <artifactId>spring-boot-starter-logging</artifactId>
+                <groupId>org.springframework.boot</groupId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-log4j2</artifactId>
+    </dependency>
+    ```
+
+
+
+## 4 Web开发
+
+### 4.1 简介
+
+* 使用SpringBoot
+  1. **创建SpringBoot应用，选中我们需要的模块**
+  2. **SpringBoot已经默认将这些场景配置好了，只需要在配置文件中指定少量配置就可以运行起来**
+  3. **自己编写业务代码**
+
+* 最根本需要理解**自动配置原理？**<a href="#autoConfigure">见2.8节</a>
+  * 这个场景SpringBoot帮我们配置了什么？能不能修改？能修改哪些配置？能不能扩展？xxx
+    * xxxxAutoConfiguration：帮我们给容器中自动配置组件
+    * xxxxProperties:配置类来封装配置文件的内容；
+
+
+
+### 4.2 SpringBoot对静态资源的映射规则
+
+```java
+@ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
+public class ResourceProperties implements ResourceLoaderAware {
+  //可以设置和静态资源有关的参数，缓存时间等
+```
+
+* **WebMvcAuotConfiguration.java**： SpringMVC相关配置都在这个类中
+
+```java
+//org\springframework\boot\autoconfigure\web\servlet\WebMvcAutoConfiguration.java
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			if (!this.resourceProperties.isAddMappings()) {
+				logger.debug("Default resource handling disabled");
+				return;
+			}
+            //webjars/映射
+			Integer cachePeriod = this.resourceProperties.getCachePeriod();
+			if (!registry.hasMappingForPattern("/webjars/**")) {
+				customizeResourceHandlerRegistration(
+						registry.addResourceHandler("/webjars/**")
+								.addResourceLocations(
+										"classpath:/META-INF/resources/webjars/")
+						.setCachePeriod(cachePeriod));
+			}
+			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
+          	// 静态资源文件夹映射
+			if (!registry.hasMappingForPattern(staticPathPattern)) {
+				customizeResourceHandlerRegistration(
+						registry.addResourceHandler(staticPathPattern)
+								.addResourceLocations(
+										this.resourceProperties.getStaticLocations())
+						.setCachePeriod(cachePeriod));
+			}
+		}
+
+         // 配置欢迎页映射
+		@Bean
+		public WelcomePageHandlerMapping welcomePageHandlerMapping(
+				ResourceProperties resourceProperties) {
+			return new WelcomePageHandlerMapping(resourceProperties.getWelcomePage(),
+					this.mvcProperties.getStaticPathPattern());
+		}
+
+         // 配置喜欢的图标
+		@Configuration
+		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
+		public static class FaviconConfiguration {
+
+			private final ResourceProperties resourceProperties;
+
+			public FaviconConfiguration(ResourceProperties resourceProperties) {
+				this.resourceProperties = resourceProperties;
+			}
+
+			@Bean
+			public SimpleUrlHandlerMapping faviconHandlerMapping() {
+				SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+				mapping.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+              	 // 所有  **/favicon.ico 
+				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
+						faviconRequestHandler()));
+				return mapping;
+			}
+
+			@Bean
+			public ResourceHttpRequestHandler faviconRequestHandler() {
+				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
+				requestHandler
+						.setLocations(this.resourceProperties.getFaviconLocations());
+				return requestHandler;
+			}
+
+		}
+```
+
+
+
+* ==所有**/webjars/\****访问 ，都去 **classpath:/META-INF/resources/webjars/** 找资源==
+
+     * `webjars`：以jar包的方式引入静态资源；[进官网查看详细信息](<http://www.webjars.org/>)
+
+     * 引入依赖
+
+       ```xml
+       <!--引入jquery-webjar;在访问的时候只需要写webjars下面资源的名称即可-->
+       <dependency>
+           <groupId>org.webjars</groupId>
+           <artifactId>jquery</artifactId>
+           <version>3.3.1-1</version>
+       </dependency>
+       ```
+
+       ![](F:\GitHub\Studying\Spring Boot\images\jquery.png)
+
+     * 访问：localhost:8080/webjars/jquery/3.3.1-1/jquery.js
+
+
+* =="/**" 访问当前项目的任何资源，都去（静态资源的文件夹里）找映射==
+
+  ```java
+  "classpath:/META-INF/resources/", 
+  "classpath:/resources/",
+  "classpath:/static/", 
+  "classpath:/public/" 
+  "/"：当前项目的根路径
+  ```
+
+  * 访问：localhost:8080/abc === 去静态资源文件夹里面找abc
+
+* ==**欢迎页**：静态资源文件夹下的所有index.html页面；被"/**"映射==
+
+  * 访问：localhost:8080/，找index页面
+* ==**图标**：所有的 **/favicon.ico 都是在静态资源文件下找==
+
+
+
+### 4.3 模板引擎
+
+JSP、Velocity、Freemarker、Thymeleaf（Spring推荐，语法更简单，功能更强大）
+
+![](F:\GitHub\Studying\Spring Boot\images\template-engine.png)
+
+#### 4.3.1 引入Thymeleaf
+
+* [官网查看更详细内容](https://www.thymeleaf.org/)
+
+  ```xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+  </dependency>
+  ```
+
+
+
+#### 4.3.2 Thymeleaf使用
+
+```java
+@ConfigurationProperties(prefix = "spring.thymeleaf")
+public class ThymeleafProperties {
+
+    private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
+
+    private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
+
+    public static final String DEFAULT_PREFIX = "classpath:/templates/";
+
+    public static final String DEFAULT_SUFFIX = ".html";
+```
+
+* 只要我们把HTML页面**放在classpath:/templates/**，thymeleaf就能自动渲染；
+
+* 使用：
+
+  * 导入thymeleaf的名称空间，才能有语法提示
+
+    ```html
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+    ```
+
+  * 使用thymeleaf语法
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+        </head>
+        <body>
+            <h1>成功！</h1>
+            <!--th:text 将div里面的文本内容设置为 -->
+            <div th:text="${hello}">这是显示欢迎信息</div>
+        </body>
+    </html>
+    ```
+
+#### 4.3.3 Thymeleaf语法
+
+* th:text：改变当前元素里面的文本内容
+  * **th:任意html属性**：来替换原生属性的值
+
+![](F:\GitHub\Studying\Spring Boot\images\2018-02-04_123955.png)
+
+* **表达式**
+
+  ```properties
+  Simple expressions:（表达式语法）
+  a. Variable Expressions: ${...}：获取变量值；OGNL；
+  	1）、获取对象的属性、调用方法
+  	2）、使用内置的基本对象：
+      #ctx : the context object.
+      #vars: the context variables.
+      #locale : the context locale.
+      #request : (only in Web Contexts) the HttpServletRequest object.
+      #response : (only in Web Contexts) the HttpServletResponse object.
+      #session : (only in Web Contexts) the HttpSession object.
+      #servletContext : (only in Web Contexts) the ServletContext object.
+  	${session.foo}
+      3）、内置的一些工具对象：
+          #execInfo : information about the template being processed.
+          #messages : methods for obtaining externalized messages inside variables expressions,
+          #          in the same way as they would be obtained using #{…} syntax.
+          #uris : methods for escaping parts of URLs/URIs
+          #conversions : methods for executing the configured conversion service (if any).
+          #dates : methods for java.util.Date objects: formatting, component extraction, etc.
+          #calendars : analogous to #dates , but for java.util.Calendar objects.
+          #numbers : methods for formatting numeric objects.
+          #strings : methods for String objects: contains, startsWith, prepending/appending, etc.
+          #objects : methods for objects in general.
+          #bools : methods for boolean evaluation.
+          #arrays : methods for arrays.
+          #lists : methods for lists.
+          #sets : methods for sets.
+          #maps : methods for maps.
+          #aggregates : methods for creating aggregates on arrays or collections.
+          #ids : methods for dealing with id attributes that might be repeated (for example, as a result of an iteration).
+  
+  b. Selection Variable Expressions: *{...}：选择表达式：和${}在功能上是一样；
+      	补充：配合 th:object="${session.user}：
+          <div th:object="${session.user}">
+          <p>Name: <span th:text="*{firstName}">Sebastian</span>.</p>
+          <p>Surname: <span th:text="*{lastName}">Pepper</span>.</p>
+          <p>Nationality: <span th:text="*{nationality}">Saturn</span>.</p>
+          </div>
+      
+  c. Message Expressions: #{...}：获取国际化内容
+  d. Link URL Expressions: @{...}：定义URL；
+      		@{/order/process(execId=${execId},execType='FAST')}
+  f. Fragment Expressions: ~{...}：片段引用表达式
+      		<div th:insert="~{commons :: main}">...</div>
+      		
+  Literals（字面量）
+      Text literals: 'one text' , 'Another one!' ,…
+      Number literals: 0 , 34 , 3.0 , 12.3 ,…
+      Boolean literals: true , false
+      Null literal: null
+      Literal tokens: one , sometext , main ,…
+  Text operations:（文本操作）
+      String concatenation: +
+      Literal substitutions: |The name is ${name}|
+  Arithmetic operations:（数学运算）
+      Binary operators: + , - , * , / , %
+      Minus sign (unary operator): -
+  Boolean operations:（布尔运算）
+      Binary operators: and , or
+      Boolean negation (unary operator): ! , not
+  Comparisons and equality:（比较运算）
+      Comparators: > , < , >= , <= ( gt , lt , ge , le )
+      Equality operators: == , != ( eq , ne )
+  Conditional operators:条件运算（三元运算符）
+      If-then: (if) ? (then)
+      If-then-else: (if) ? (then) : (else)
+      Default: (value) ?: (defaultvalue)
+  Special tokens:
+      No-Operation: _ 
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2582,113 +3507,117 @@ public class TvSeriesController {
               font-weight: bold;
               color: black;
               font-family: consolas;
+      </style>
+  </head>
+      <body>
+          <table border="3">
+      <caption>注解说明表</caption>
+      <tr style="background-color:#90CAF9">
+         <td style="color: rgb(76, 78, 47);font-weight: normal;">注解</td>
+         <td>说明</td>
+         <td>支持的数据类型</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@Null</td>
+         <td>被注释的元素必须为 null</td>
+         <td rowspan="2">所有类型</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@NotNull</td>
+         <td>被注释的元素必须不为 null</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@NotEmpty</td>
+         <td>被注释的元素非null且非空（字符串是不是空格无所谓）</td>
+         <td>CharSequence, Collection, Map and arrays</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@NotBlank</td>
+         <td>被注释的元素非null，且必须包含至少一个非空格字符</td>
+         <td>CharSequence</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@Pattern(regex=, flags=)</td>
+         <td>被注释的字符串是否与给定的正则表达式匹配</td>
+         <td>CharSequence</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@Email</td>
+         <td>检查指定的字符序列是否是有效的电子邮件地址。 可选参数regexp和flags允许指定电子邮件必须匹配的附加正则表达式（包括正则表达式标志）</td>
+         <td>CharSequence</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@AssertTrue</td>
+         <td>被注释的元素必须为 true</td>
+         <td rowspan="2">Boolean、boolean</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@AssertFalse</td>
+         <td>被注释的元素必须为 false</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@DecimalMin(value=, inclusive=)</td>
+         <td>当inclusive = false时，检查带注释的值是否大于指定的最小值；否则该值是否大于或等于指定的最小值。参数值是根据BigDecimal字符串表示形式的最大值的字符串表示形式</td>
+         <td rowspan="3">BigDecimal，BigInteger，CharSequence，byte，short，int，long和原始类型相应包装类型</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@DecimalMax(value=, inclusive=)</td>
+         <td>与上相反</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@Digits(integer=, fraction=)</td>
+         <td>整数位数，小数位数必须在设置的范围内</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@Size(min=, max=)</td>
+         <td>被注释元素的大小是否在最小值和最大值（包括）之间</td>
+         <td>CharSequence, Collection, Map and arrays</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@Min(value=)</td>
+         <td>被注释值是否大于或等于指定的最小值</td>
+         <td rowspan="6">BigDecimal，BigInteger，byte，short，int，long和原始类型相应包装类型; 另外由HV支持：任何子类型的CharSequence（由字符序列表示的数值被评估），任何子类型的Number和javax.money.MonetaryAmount </td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@Max(value=)</td>
+         <td>与上相反</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@Negative</td>
+         <td>检查元素是否为负数，0为无效</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@NegativeOrZero</td>
+         <td>检查元素是否为负数或0</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@Positive</td>
+         <td>检查元素是否为正数，0为无效</td>
+      </tr>
+      <tr style="background-color:#90CAF9">
+         <td>@PositiveOrZero</td>
+         <td>检查元素是否为正数或0</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@Past</td>
+         <td>被注释的元素必须是一个过去的日期</td>
+         <td rowspan="4">java.util.Date、java.util.Calendar、java.time和java.time.chrono两个包下的一些类</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@PastOrPresent</td>
+         <td>过去或现在</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@Future</td>
+         <td>被注释的元素必须是一个将来的日期</td>
+      </tr>
+      <tr style="background-color:#69F0AE">
+         <td>@FutureOrPresent</td>
+         <td>现在或将来</td>
+      </tr>
+   </table>
+      </body>
 
-      <table border="3">
-          <caption>注解说明表</caption>
-          <tr style="background-color:#90CAF9">
-             <td style="color: rgb(76, 78, 47);font-weight: normal;">注解</td>
-             <td>说明</td>
-             <td>支持的数据类型</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@Null</td>
-             <td>被注释的元素必须为 null</td>
-             <td rowspan="2">所有类型</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@NotNull</td>
-             <td>被注释的元素必须不为 null</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@NotEmpty</td>
-             <td>被注释的元素非null且非空（字符串是不是空格无所谓）</td>
-             <td>CharSequence, Collection, Map and arrays</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@NotBlank</td>
-             <td>被注释的元素非null，且必须包含至少一个非空格字符</td>
-             <td>CharSequence</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@Pattern(regex=, flags=)</td>
-             <td>被注释的字符串是否与给定的正则表达式匹配</td>
-             <td>CharSequence</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@Email</td>
-             <td>检查指定的字符序列是否是有效的电子邮件地址。 可选参数regexp和flags允许指定电子邮件必须匹配的附加正则表达式（包括正则表达式标志）</td>
-             <td>CharSequence</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@AssertTrue</td>
-             <td>被注释的元素必须为 true</td>
-             <td rowspan="2">Boolean、boolean</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@AssertFalse</td>
-             <td>被注释的元素必须为 false</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@DecimalMin(value=, inclusive=)</td>
-             <td>当inclusive = false时，检查带注释的值是否大于指定的最小值；否则该值是否大于或等于指定的最小值。参数值是根据BigDecimal字符串表示形式的最大值的字符串表示形式</td>
-             <td rowspan="3">BigDecimal，BigInteger，CharSequence，byte，short，int，long和原始类型相应包装类型</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@DecimalMax(value=, inclusive=)</td>
-             <td>与上相反</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@Digits(integer=, fraction=)</td>
-             <td>整数位数，小数位数必须在设置的范围内</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@Size(min=, max=)</td>
-             <td>被注释元素的大小是否在最小值和最大值（包括）之间</td>
-             <td>CharSequence, Collection, Map and arrays</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@Min(value=)</td>
-             <td>被注释值是否大于或等于指定的最小值</td>
-             <td rowspan="6">BigDecimal，BigInteger，byte，short，int，long和原始类型相应包装类型; 另外由HV支持：任何子类型的CharSequence（由字符序列表示的数值被评估），任何子类型的Number和javax.money.MonetaryAmount </td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@Max(value=)</td>
-             <td>与上相反</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@Negative</td>
-             <td>检查元素是否为负数，0为无效</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@NegativeOrZero</td>
-             <td>检查元素是否为负数或0</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@Positive</td>
-             <td>检查元素是否为正数，0为无效</td>
-          </tr>
-          <tr style="background-color:#90CAF9">
-             <td>@PositiveOrZero</td>
-             <td>检查元素是否为正数或0</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@Past</td>
-             <td>被注释的元素必须是一个过去的日期</td>
-             <td rowspan="4">java.util.Date、java.util.Calendar、java.time和java.time.chrono两个包下的一些类</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@PastOrPresent</td>
-             <td>过去或现在</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@Future</td>
-             <td>被注释的元素必须是一个将来的日期</td>
-          </tr>
-          <tr style="background-color:#69F0AE">
-             <td>@FutureOrPresent</td>
-             <td>现在或将来</td>
-          </tr>
-       </table>
   * 以上**每个注解都有groups、message、payload三个参数**可选
   * 除表中特别说明的外，null值都是合法的
   * 每个注解都还有一个名字后面跟.List的注解，例如@Null.List，推荐在标记一组同样注解时使用；还有.Iterable、.Map等
