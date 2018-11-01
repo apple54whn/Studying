@@ -817,7 +817,7 @@
   ![](F:\GitHub\Studying\Java\images\06-笔记本电脑案例分析.png)
 
 
-## 2.4 final 关键字
+## <span name="final">2.4 final 关键字</span>
 
 * **ﬁnal**：用于**修饰不可改变内容**。可以用于修饰类、方法和变量。 
   * **类**：被修饰的类，**不能被继承**。 
@@ -1000,19 +1000,18 @@
 
 - **方法：**
 
-  1. **`toString()`**返回对象的字符串表示，直接打印对象也是调用这个方法。
+  1. **`toString()`**返回对象的字符串表示。直接打印输出一个对象名称，默认调用该方法
 
      - **默认打印的地址值**是由类的全名+'@'+哈希值的十六进制表示，没意义所以一般由**子类重写**
 
        `getClass().getName()+"@"toHexString(hashCode());`
 
-       `Scanner`和`ArrayList`都重写了该方法
-
-  2. **`equals()`**比较两个对象是否相同，底层用的是**`==`**
+  2. **`equals()`**比较两个对象是否相同，底层用的是**`==`**。`String`重写了该方法
 
      - **默认**情况下**比较的是对象地址值**是否相同，没意义所以一般由**子类重写**，注意多态向下转型问题
-     - 1、与自身比较；2、null或不属同一类；3、向下转型比较（基本类型用==，引用类型用**Objects类**）
-     - `String`重写了该方法
+       - 与自身比较；
+       - null或不属同一类；
+       - 向下转型比较（基本类型用==，引用类型用**`Objects.equals()`**）
 
   3. **`hashCode()`**返回**对象的哈希值**，十进制整数，不是实际地址值，是**逻辑地址值**
 
@@ -1024,21 +1023,33 @@
 
   6. `clone()`实现对象克隆，包括成员变量的数据复制，但是它和两个引用指向同一个对象是有区别的 
 
-- **`Objects工具类`**：在**JDK7**添加的，它提供了一些方法来操作对象，它由一些静态的实用方法组成，这些方法是null-save（空指针安全的）或null-tolerant（容忍空指针的），用于计算对象的hashcode、返回对象的字符串表示形式、比较两个对象。
+- **【面试】**==和equals()区别：
 
-  ```java
-  public static boolean equals(Object a, Object b) {  //equals源码
-      return (a == b) || (a != null && a.equals(b));  
-  }
-  ```
+  1. `==`：**基本类型**：比较值是否相等；**引用类型**：比较地址值是否相等
+  2. `equals()`：只能比较**引用类型**，比较地址值是否相等，可以根据需要重写
 
-- **注意问题**
+### <span name="Objects">3.1.1 Objects工具类</span>
 
-  - 父类是抽象类，**子类不是抽象类**时才需要**重新**父类所有方法
-  - **直接输出** 一个对象名称，默认调用该对象的`toString()`方法
-  - **【面试】**==和equals()区别：
-    1. `==`：**基本类型**：比较值是否相等；**引用类型**：比较地址值是否相等
-    2. `equals()`：只能比较**引用类型**，比较地址值是否相等，可以根据需要重写
+在**JDK7**添加的，它提供了一些静态方法来**操作对象**，这些方法是null-save（空指针安全的）或null-tolerant（容忍空指针的），计算对象的`toString`、`hashCode`、`equals`、`requireNonNull`等等。
+
+```java
+public static String toString(Object o) {  //Objects.toString()源码
+    return String.valueOf(o);
+}
+public static int hashCode(Object o) {    //Objects.hashCode()源码
+    return o != null ? o.hashCode() : 0;
+}
+public static boolean equals(Object a, Object b) {  //Objects.equals()源码
+    return (a == b) || (a != null && a.equals(b));  
+}
+public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requireNonNull()源码
+    if (obj == null)
+        throw new NullPointerException([message]);
+    return obj;
+}
+```
+
+
 
 ## 3.2 Scanner（java.util）
 
@@ -1183,11 +1194,9 @@
 
       `boolean equalsIgnoreCase(String str)`                 ==字符串与指定字符串是否相等，忽略大小写==
 
-      `boolean startWith(String prefix)`	  	          字符串是否以prefix前缀开始
+      `boolean startsWith(String prefix[,int toffset])` 从指定索引开始的子串是否以prefix开始
 
-      `boolean startWith(String prefix,int toffset)`  字符串从指定索引开始的子串是否以prefix开始
-
-    - `boolean endWith(String suffix)`                             字符串是否以suffix后缀结尾
+    - `boolean endsWith(String suffix)`                             字符串是否以suffix后缀结尾
 
   - **获取功能**
 
@@ -1312,7 +1321,7 @@
 
      - 注意：（==以下画图即可理解，如下图==）
 
-       **====包装类、String、数组作为引用数据类型，但在参数传递时效果和基本类型一样。**==
+       **包装类、String、数组作为引用数据类型，但在参数传递时效果和基本类型一样。**
 
        **StringBuffer、StringBuilder在赋值时不改变内容，调用方法时改变**
 
@@ -1520,11 +1529,11 @@
 
   - 基本类型—>字符串：
     - **`基本类型的值+""`**：最简单方法，常用
-    - **包装类的静态方法`toString(参数)`**方法，不是Object类的`toString()`方法，重载
     - **String类的静态方法`valueOf(参数)`**
+    - **包装类的静态方法`toString(参数)`**方法，不是Object类的`toString()`方法，重载
   - 字符串—>基本类型：
-    - **包装类的静态方法`parseXxx()`**
     - **包装类的静态方法`valueOf(参数)`转包装类后再转基本类型**
+    - **包装类的静态方法`parseXxx()`**
 
 - **进制转换**
 
@@ -1694,7 +1703,7 @@
       ```
 
       ```java
-      //JDK7后lambda改写
+      //lambda改写
       Collections.sort(list, (o1, o2) -> {
           int result = o1.getAge() - o2.getAge();
           result = result == 0 ? o1.getName().compareTo(o2.getName()) : result;
@@ -1955,8 +1964,6 @@
     - `Object getFirst()`
     - `Objcet getLast()`
 
-### 
-
 ## 4.6 Set
 
 * ==元素**唯一**==。与`Collection`方法一致，**==没有索引，只可以迭代器或for each==**
@@ -1965,7 +1972,7 @@
 
 ### 4.6.1 HashSet
 
-- ==底层数据结构是**哈希表**(**元素为链表或红黑树的数组**，实际上是一个HashMap实例)，**查询快。元素无序**==
+- ==底层数据结构是**哈希表**(**元素为链表或红黑树的数组**，实际上是一个HashMap实例)，查询快。**自动按HashCode排序**，但迭代出的元素顺序和存入顺序**不一致**。==
 
   - 哈希表：在**JDK1.8之前**，哈希表底层采用**数组+链表**实现，即使用链表处理冲突，同一hash值的链表都存储在一个链表里。但是当位于一个桶中的元素较多，即hash值相等的元素较多时，通过key值依次查找的效率较低。而**JDK1.8中**，哈希表存储采用**数组+链表+红黑树**实现，当链表长度超过阈值（8）时，将链表转换为红黑树，这样大大减少了查找时间。
 
@@ -1985,9 +1992,7 @@
 
 ### 4.6.3 TreeSet
 
-- 底层数据结构是**==红黑树(是一个自平衡二叉树)，并且有序==**
-
-- ==使用TreeSet保存元素，这个元素**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
+- 底层数据结构是==**红黑树(是一个自平衡二叉树)，并且有序**，使用TreeSet保存自定义元素，这个元素**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
 
   - 元素唯一性通过红黑树存储时确定，相同元素丢弃， **根据比较的返回值是否是0来决定**
   - 元素的顺序通过红黑树存储，并通过**中（根）序遍历展示**
@@ -2078,7 +2083,7 @@
 
 ### 4.7.1 HashMap
 
-- ==底层是**哈希表（数组+链表/红黑树）**，迭代出的元素顺序和存入顺序**不一致**==
+- ==底层是**哈希表（数组+链表/红黑树）**，迭代出的元素顺序和存入顺序**不一致**。**自动按Key的HashCode排序**==
 - HashMap和Hashtable区别
   - HashMap：线程不安全，效率高，允许null键和null值
   - Hashtable：线程安全，效率低，不允许null键和null值
@@ -2089,9 +2094,7 @@
 
 ### 4.7.3 TreeMap
 
-- ==底层是**红黑树(自平衡二叉树)**==
-
-- ==使用TreeMapt保存元素，Key**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
+- ==底层是**红黑树(自平衡二叉树)，**基本对象自动排序，若使用TreeMapt保存自定义元素，Key**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
 
   - 元素唯一性通过红黑树存储时确定，相同元素丢弃， **根据比较的返回值是否是0来决定**
   - 元素的顺序通过红黑树存储，并通过**中（根）序遍历展示**
@@ -2112,88 +2115,49 @@
 
 ## 4.8 Properties
 
-- 是一个集合类，**Hashtable的子类** （游戏进度保存加载）
-
-- **特有功能**
-
+- `java.util.Properties ` 继承自` Hashtable` ，来表示一个持久的**属性集**。它使用**键值结构**存储数据，每个键及其对应值都是一个**字符串**。`Properties`可以**保存在流中或从流中加载**。
+- ==**特有功能**==
   - `Object setProperty(String key,String value)`   添加元素，调用的父类的put方法
   - `String getProperty(String key)`   获取元素
   - `Set<String> stringPropertyNames()`   获取所有键的集合
-
-- **和IO流结合的方法**
-
+- ==**和IO流结合的方法**==
   - 把**键值对形式的文本**文件内容**加载**到集合中
-
-    ```
-    `void load(Reader reader)`
-      
-    `void load(InputStream inStream)`
-    
-    
-    ```
-
+    - `void load(InputStream inStream)`：不能读取含有中文的键值对
+    - `void load(Reader reader)`：能读取含有中文的键值对，**所以一般用字符流**
   - 把集合中的数据**存储**到文本文件中
+    - `void store(OutputStream out,String comments)`：不能写中文
+    - `void store(Writer writer,String comments)`：**可以写中文**
+      - comments说明保存文字的用途，不能使用中文会乱码，默认是Unicode编码。一般空串`""`
 
-    ```
-    `void store(Writer writer,String comments)`
-      
-    `void store(OutputStream out,String comments)`
-    
-    
-    ```
+> 文本中的数据，必须是键值对形式，默认就是字符串，不用加双引。可使用=、空格等分隔。#为注释。
 
-  ```
-  public static void myLoad() throws IOException {
-  	BufferedInputStream bis = new BufferedInputStream(new FileInputStream("prop.txt"));
-  	Properties prop = new Properties();
-  	prop.load(bis);
-  	Set<String> set = prop.stringPropertyNames();
-  	for (String key : set) {
-  		if (key.equals("lisi")) {
-  			prop.setProperty(key, "100");
-  			break;
-  		}
-  	}
-  	bis.close();
-  }
-  
-  public static void myStore() throws IOException {
-  	Properties prop = new Properties();
-  	prop.setProperty("zhangsan", "3");
-  	prop.setProperty("lisi", "4");
-  	prop.setProperty("wangwu", "5");
-  	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("prop.txt"));
-  	prop.store(bos, "mystore");
-  	bos.close();
-  }
-  
-  
-  ```
+```java
+public static void myLoad() throws IOException {
+	BufferedInputStream bis = new BufferedInputStream(new FileInputStream("prop.txt"));
+	Properties prop = new Properties();
+	prop.load(bis);
+	Set<String> set = prop.stringPropertyNames();
+	for (String key : set) {
+		if (key.equals("lisi")) {
+			prop.setProperty(key, "100");//还需要保存到指定文件，略。方法同下方myStore()。
+			break;
+		}
+	}
+	bis.close();
+}
 
-- **利用配置文件限制玩游戏次数**
+public static void myStore() throws IOException {
+	Properties prop = new Properties();
+	prop.setProperty("zhangsan", "3");
+	prop.setProperty("lisi", "4");
+	prop.setProperty("wangwu", "5");
+	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("prop.txt"));
+	prop.store(bos, "mystore");
+	bos.close();
+}
+```
 
-  ```
-  Properties prop = new Properties();
-  InputStream is = new BufferedInputStream(new FileInputStream("prop.txt"));
-  prop.load(is);
-  is.close();
-  String s = prop.getProperty("count");
-  int count = Integer.parseInt(s);//prop.txt中从0开始
-  		
-  if(count>=3) {
-  	System.out.println("付费！");
-  	System.exit(0);
-  }else {
-  	count++;
-  	prop.setProperty("count", String.valueOf(count));
-  	OutputStream os = new BufferedOutputStream(new FileOutputStream("prop.txt"));
-  	prop.store(os, null);
-  	os.close();
-  	System.out.println("nihao!");
-  }
-  
-  
-  ```
+
 
 
 
@@ -2215,7 +2179,7 @@
   >
   > 1、of()方法只是Map，List，Set这三个接口的静态方法，其父类接口和子类实现并没有这类方法，比如    HashSet，ArrayList等等；
   >
-  > 2、返回的集合是不可变的；
+  > 2、返回的集合是不可变的；List不能使用Collections遍历
   >
   > 3、Set和Map接口在调用of方法时，不能有重复的元素，否则会抛出异常
 
@@ -2319,7 +2283,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 * **Throwable中的常用方法：**
   * `public void printStackTrace()`打印异常的**详细信息**。
 
-    包含了异常的类型,异常的原因,还包括异常出现的位置,在开发和调试阶段,都得使用printStackTrace
+    包含了异常的类型，异常的原因 ，还包括异常出现的位置，在开发和调试阶段，都得使用printStackTrace
 
   * `public String getMessage()`获取发生异常的**原因**。提示**给用户**的时候,就提示错误原因。
 
@@ -2338,7 +2302,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 ## 5.3 异常的处理
 
-### 5.3.1 throw
+### 5.3.1 抛出异常throw
 
 在编写程序时，我们必须要考虑程序出现问题的情况。比如，在**定义方法**时，方法需要**接受参数**。那么，当调用方法使用接受到的参数时，首先需要**先对参数数据进行合法的判断**，数据若**不合法**，就应该**告诉调用者**，传递合法的数据进来。这时需要使用**抛出异常**的方式来告诉调用者。
 
@@ -2361,529 +2325,640 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
     * throw关键字后边创建的是**RuntimeException**或是**其子类对象**,**可以不处理**,默认交给JVM处理
     * throw关键字后边创建的是**编译异常**(写代码的时候报错),我们就**必须处理**,要么throws,要么try...catch
 
-* **异常捕获**
+### 5.3.2 Objects非空判断
 
-  ```
-  try {
-  	int result = 4/0;
-  	System.out.println(result);
-  } catch (Exception e) {
-  	System.out.println("捕获的异常信息："+e.getMessage());
-  } finally {
-  	System.out.println("finally语句");
+Objects工具类提供的判断对象是否合法`Objects.requireNonNull`，为空则抛异常，否则返回该对象。<a href="#Objects">详见此</a>
+
+
+
+### 5.3.3 声明异常 throws
+
+==关键字**throws**运用于**方法声明之上**,用于**表示当前方法不处理异常**,而是**提醒**该方法的**调用者来处理异常**(抛出异常).==
+
+```java
+修饰符 返回值类型 方法名(参数) throws 异常类名1,异常类名2…{   }
+```
+
+* 注意：
+  * throws关键字必须写在**方法声明处**
+  * throws关键字后边声明的异常必须是**Exception或者是Exception的子类**
+  * 方法内部如果**抛出了多个异常对象**,那么throws后边必须也**声明多个异常**
+    * 如果抛出的多个异常对象有**子父类关系**,那么**直接声明父类异常即可**
+  * **调用**了一个声明**抛出异常的方法**,我们就必须的**处理**声明的异常
+    * 要么继续使用**throws**声明抛出,交给方法的调用者处理,最终交给JVM
+    * 要么**try...catch**自己处理异常
+
+
+
+### 5.3.4 捕获异常 try…catch
+
+**捕获异常**：Java中对异常有针对性的语句进行捕获，可以对出现的异常进行指定方式的处理。
+
+```java
+try {
+    //可能产生异常的代码
+} catch (异常类名  变量名) {
+    //异常的处理逻辑,异常异常对象之后,怎么处理异常对象
+    //记录日志/打印异常信息/继续抛出异常
+}
+...
+catch (异常类名 变量名) {
+
+}
+```
+
+* 注意：
+  * try中可能会抛出多个异常对象,那么就可以使用多个catch来处理这些异常对象
+    * 如果try中产生了异常，那么就会执行catch中的异常处理逻辑，执行完毕catch中的处理逻辑,继续执行try...catch之后的代码
+    * 如果try中没有产生异常，那么就不会执行catch中异常的处理逻辑，执行完try中的代码,继续执行try...catch之后的代码
+* 多个异常使用捕获该如何处理
+  * 多个异常分别处理
+  * ==多个异常**一次捕获，多次处理**（若捕获的异常**有子父类关系**，**父类放下面**；**没有**可以放在**一个catch中**）==
+  * 多个异常一次捕获一次处理
+* **运行时异常**被抛出**可以不处理**。即不捕获也不声明抛出。
+
+
+
+### 5.3.5 finally 代码块
+
+**finally**：`try`中异常语句后的代码不被执行，**必须要执行的**可以放在`finally`中，如**释放系统资源**。但是当在`try...catch...`中**执行`System.exit(0)`**(表示**==退出当前Java虚拟机==**)，**`finally`==才不会执行==**
+
+语法：`try...catch....finally`，不能单独使用
+
+* ==如果**finally有return语句**，将**覆盖**原始的返回值，永远返回finally中的值。一般应避免该情况==
+
+  ```java
+  public static int fin() {
+      int a = 10;
+      try {
+          return a;
+      } catch (Exception e) {
+          System.out.println(e.getMessage());
+      } finally {
+          a = 40;
+          return a; //最终返回40
+      }
   }
-  System.out.println("继续执行。。。");
   ```
 
-  * `try`中异常语句后的代码不被执行，必须要执行的可以放在`finally`中，如**释放系统资源**。但是当在`try…catch`中执行`System.exit(0)`(表示退出当前Java虚拟机)，任何代码都不会执行
 
-* **自定义异常**
+### 5.3.6 子父类异常注意事项
 
-  * 继承自Exception或RuntimeException，只要提供无参构造和一个带参构造即可
+* ==父类的方法**抛出或不抛出**异常，子类重写的方法抛出的异常必须**小于等于父类抛出的异常**==
+  * 父类的方法**没有异常抛出**，子类重写的方法**不能有异常抛出**。若产生异常则捕获处理
+  * 父类的方法**抛出**一个或多个**异常**，**子类**重写的方法**抛出的异常**必须**与父类相同**或是**其子类**或**不抛**
 
-* **注意**
 
-  * 运行时异常和编译时异常区别？
-    * RuntimeException可以处理也可以不处理
-    * 编译时异常编译器会对其进行检查，出现异常必须处理，否则无法通过编译
-  * 父类的方法有异常抛出，子类重写的方法在抛出异常时必须要小于等于父类的异常
-  * 父类的方法没有异常抛出，子类重写的方法不能有异常抛出
-  * 父类的方法抛出多个异常，子类重写的方法必须比父类少或者小
+
+## 5.4 自定义异常
+
+- 自定义的异常类**继承`Exception`或`RuntimeException`**
+
+- 定义**空参构造**方法和**带异常信息的构造**方法
+
+  ```java
+  public class MyException extends Exception/*RuntimeException*/ {
+      public MyException() {
+      }
+  
+      public MyException(String message) {
+          super(message);
+      }
+  }
+  ```
+
+
+
+
+## 练习
 
 * **【面试】**
 
   1. `throw`和`throws`区别
 
-     - throw：在方法体中，后面跟异常对象名，并且只能是一个，方法体内处理
+     - throw：在方法体中，并且抛出一个异常对象。程序执行到t此时立即停止，它后面的语句都不执行。
 
-       		 抛出的是**异常对象** ，说明这里**肯定有异常**产生。一般用于自定义异常，体现在选择语句中
-
-       	         `throw new MyException();`
+          抛出的是**异常对象** ，说明这里**肯定有异常**产生。一般用于自定义异常，体现在选择语句中
 
      - throws：在方法声明上，后面跟异常的类名，可以是多个，调用者处理
 
-       		 **声明方法有异常**，是一种**可能性**，这个异常不一定会产生
-
-                     `public static void main(String[] args) throws Exception{}`
+          **声明方法有异常**，是一种**可能性**，这个异常不一定会产生
 
   2. `final`,`finally`,`finallize`区别
 
-     - `final`：最终意思，可以修饰类、成员变量、成员方法
-
-       	    修饰类：类不可被继承
-            
-               修饰成员变量：变量是常量
-            
-               修饰成员方法：不能被重写
+     - `final`：最终意思，可以修饰类、成员变量、成员方法。<a href="#final">详见此</a>
 
      - `finally`：异常处理，用于释放资源，finally中的代码一定会被执行，除非执行之前jvm退出
 
      - `finalize`：Object类的一个方法，用于垃圾回收
 
-  3. 如果`catch`里有`return`，请问`finally`还执行吗？如果执行，在`return`前还是后
-
-     * 会执行，在return前，其实在中间
-
-       ```
-       public static int fin() {
-       	int a = 10;
-       	try {
-       		System.out.println(a/0);//执行到此转catch
-       		a = 20;
-       	} catch (Exception e) {
-       		a = 30;
-       		return a;//形成return 30路径，当finally执行完，执行return 30
-       	} finally {
-       		a = 40;
-       		//return a;理论上最终值为40，因为只能通过一个return返回，但是eclipse异常提醒
-       	}
-       	return a;
-       }
-       ```
-
-  4. **多catch时，父类catch放在最下面**
 
 
 
+# 6 多线程（并发）
 
-# 5 并发
+## 6.1 并发与并行
 
-## 5.1 多线程及实现
+* **并发**：指两个或多个事件在**同一个时间段内**发生，**逻辑上**同时发生
 
-- **进程**：正在运行的程序（直译）。进程是系统进行资源分配和调用的独立单位，每一个进程都有它自己的内存空间和系统资源。一个进程中至少有一个线程。**多进程提高CPU使用率**。
-
-
-- **线程**：进程中一个负责程序执行的控制单元（执行路径），是程序使用CPU的最基本单位。
-
-
-- **多线程**：一个进程中可以有多执行路径（不是提高程序执行速度，**提高程序的使用率**）。
-
-    	好处：解决多部分同时运行的问题
-
-    	弊端：线程太多效率降低
-
-- **并行和并发**
-
-    **并行：逻辑上**同时发生，指在某一个**时间内**同时运行多个程序。
-    **并发：物理上**同时发生，指在某一个**时间点**同时运行多个程序。
-
-- **应用程序的执行都是CPU在做着快速切换完成的，这个切换是随机的**。
-
-- **线程调度模型**
-
-    1. **分时调度模型**   所有线程轮流使用CPU的使用权，平均分配每个线程占用CPU的时间片
-    2. **抢占式调度模型**   优先让优先级高的线程使用CPU，如果线程的优先级相同，那么会随机选择一个，优先级高的线程获取的CPU 时间片相对多一些（Java使用）
+* **并行**：指两个或多个事件在**同一时刻**发生（同时发生），**物理上**同时发生
 
 
 
-- **Java程序运行原理（多线程）**
+## 6.2 进程与线程
 
-    由Java命令启动JVM（相当于启动了一个进程），接着由该进程创建启动多个线程，至少两个线程可以分析出来：**执行main()函数的主线程**，该线程的任务代码都定义在main函数中，**负责垃圾回收的线程**。
+* ==**进程**：是指**内存中运行的一个应用程序**==，每个进程都有一个独立的内存空间，一个应用程序可以同时运行多个进程；**进程也是程序的一次执行过程，是系统运行程序的基本单位**；系统运行一个程序即是一个进程从创建、运行到消亡的过程。
 
+* ==**线程**：**线程是进程中的一个执行单元**==，负责当前进程中程序的执行，一个进程中至少有一个线程。 **是程序使用CPU的最基本单位**。
 
-- **多线程的实现方式**:（目的：**开启一条执行路径，去运行指定的代码和其他代码实现同时运行**。运行的指定代码就是这个执行路径的任务，**jvm创建的主线程任务定义在主函数中**。自定义线程任务在哪？Thread类用于描述线程，线程是需要任务的，所以Thread类也是对任务的描述。**这个任务就是通过Thread类中的run方法来体现**。也就是说，**run方法就是封装自定义线程运行任务的函数**）
+  * **多线程**：**一个进程中有多个线程**的应用程序也可以称之为多线程程序。**提高程序运行效率、CPU使用率**。
+    * 好处：效率高，多个线程间互不影响
+    * 弊端：线程太多效率降低
 
-  - **继承Thread类**
+  简而言之：一个程序运行后至少有一个进程，一个进程中可以包含多个线程 。应用程序的执行都是**CPU在多个线程间快速切换**完成的，这个切换是随机的。
 
-    1. 继承Thread类
-    2. 覆盖(override)Thread类的run方法，将线程的任务代码封装到run方法中
-    3. 创建Thread类的子类对象
-    4. 调用***start***方法开启线程并调用线程任务的***run***方法执行
+* **线程调度模型**
 
-  - **实现Runnable接口（常用）**
-
-    1. 定义类实现Runnable接口
-    2. 覆盖(override)接口中的run方法，将线程的任务代码封装到run方法中
-    3. 通过Thread类创建线程对象，并将Runnable接口的子类对象作为Thread类的构造函数的参数进行传递。***因为线程的任务都封装在Runnable接口子类对象的run方法中，所以要在线程对象创建时就必须明确要运行的任务***
-    4. 调用start方法开启线程并调用线程任务的run方法执行
-
-  - **区别（实现Runnable接口的好处）**
-    1. 避免了java单继承的局限性
-    2. 适合多个相同程序的代码去处理同一个资源的情况，将线程的任务从线程的子类中分离出来，进行了单独的封装，按照面向对象的思想将任务封装成对象
-
-    ```
-    public class Demo extends Thread{
-    	private String name;
-    	Demo(String name){
-    		super(name);//改线程名称
-    		//this.name = name;
-    	}
-    	public void run() {
-    		for(int i=0;i<10;i++) {
-    			//int[] arr =arr[3];
-    			//arr[3];//异常
-    			System.out.println(i+Thread.currentThread.getName());//
-    		}
-    	}
-    }
-    public class duoxiancheng {
-    	public static void main(String[] args) {
-    		Demo d1 = new Demo("旺财");
-    		Demo d2 = new Demo("hehe");
-    		d1.start();
-    		d2.start();
-    		//System.out.println(4/0);//异常
-    		for(int i=0;i<10;i++) {
-    			System.out.println(i+Thread.currentThread.getName());//
-    		}
-    	}
-    }
-    ```
-
-    可以通过`Thread的getName()`获取线程名(如：Thread-0)
-
-    通过`Thread.currentThread.getName()`获取当前运行线程
-
-    通过`super(name)`改线程名称,也可以通过`setName()`修改
-
-    ```
-    public class Ticket implements Runnable{
-    	
-    	private int num = 100;
-    	public void run() {
-    		sale();
-    	}
-    	public void sale() {
-    		while(true) {
-    			if(num>0)
-    				System.out.println(Thread.currentThread().getName()+" "+num--);
-    		}
-    	}
-    }
-    public class duoxianchengDemo {
-    	public static void main(String[] args) {
-             Ticket t = new Ticket();
-    		new Thread(t).start();
-    		new Thread(t).start();
-    		new Thread(t).start();
-    		new Thread(t).start();
-    	}
-    }
-    ```
-
-- **匿名内部类实现多线程**
-
-  * **继承Thread类**
-
-    ```
-    new Thread() {
-    	@Override
-    	public void run() {
-    		for (int i = 0; i < 100; i++) {
-    			System.out.println(getName() + "---" + i);
-    		}
-    	}
-    }.start();
-    ```
-
-  * **实现Runnable接口**
-
-    ```
-    new Thread(new Runnable() {
-    	@Override
-    	public void run() {
-    		for (int i = 0; i < 100; i++) {
-    			System.out.println(Thread.currentThread().getName() + "---" + i);
-    		}
-    	}
-    }).start();
-    ```
+    1. **分时调度模型**：所有线程轮流使用CPU的使用权，平均分配每个线程占用CPU的时间片
+    2. ==**抢占式调度模型**==：优先让优先级高的线程使用CPU，如果线程的优先级相同，那么会随机选择一个，优先级高的线程获取的CPU时间片相对多一些（Java使用）
 
 
 
-## 5.2 线程调度
+## 6.3 多线程的实现
 
-- 线程**优先级**	
+### 6.3.1 多线程的原理
 
-  Java线程默认优先级是5(1-10低到高,Thread的**静态**常量NORM_PRIORITY(MIN/MAX))。通过`getPriority()`获取，通过`setPriority()`设置。
+> **Java程序运行原理（多线程）**：由Java命令启动JVM（相当于启动了一个进程），接着由该进程创建启动多个线程，至少两个线程可以分析出来：**执行main()函数的主线程**，该线程的任务代码都定义在main函数中，**负责垃圾回收的线程**。
 
-- 线程**休眠**（暂停执行，是**静态方法**，控制**当前运行的线程**休眠，**阻塞该线程**，休眠结束回到就绪状态）
+* ==多线程执行时，其实**每一个执行线程**都有一片自己**所属的栈内存**空间。进行**方法的压栈和弹栈**。==
 
-  通过`Thread.sleep(long millis)`设置(静态方法)
+![](F:\GitHub\Studying\Java\images\栈内存原理图.png)
 
-- 线程**让步**（暂停当前正在执行的线程对象，不会阻塞该线程，**转为就绪状态**，调度器重新调度）
+### 6.3.2 Thread（java.lang）
 
-  通过`Thread.yield()`设置
+==**构造方法**==
 
-- 线程**插队**（等待该线程终止）
+- **`Thread()`**：分配一个新的线程对象。
+- **`Thread(String name)`**：分配一个指定名字的新的线程对象
+- **`Thread(Runnable target)`**：分配一个带有指定目标新的线程对象。
+- **`Thread(Runnable target,String name)`**：分配一个带有指定目标新的线程对象并指定名字
 
-  线程调用方法`th_1.join()`，只有th_1该线程执行完毕，其他线程才可以抢占资源。
+**常用方法**
 
-- **后台线程（守护线程，如坦克大战）**（当前正在运行的线程都是后台线程时，JVM退出，该方法必须**在启动线程前调用**）
+- `void run()`：**此线程要执行的任务在此处定义代码**
+- `void start()`：**此线程开始执行**；Java虚拟机调用此线程的run方法
+- `static Thread currentThread()`：返回对当前**正在执行的线程对象的引用**
 
-  通过`th.setDaemon(true)`设置
+- `String getName()`：**获取当前线程名称**
 
-- **中断**线程（把线程的状态终止，并抛出一个InterruptedException）
+- `void setName()`：**设置当前线程名称**，或通过线程**类的有参构造设置**
 
-  通过`th.interrupt()`设置
+- `static void sleep(long millis)`：使**当前正在执行的线程**以指定的毫秒数**暂停**
+
+
+### 6.3.3 多线程的实现方式
+
+- **继承Thread类**
+
+  1. 继承Thread类。可以写无参和带参构造以便直接定义线程名称。
+  2. @Override重写Thread类的`run()`方法，将线程的任务代码封装到`run()`方法中
+  3. 创建Thread类的子类对象
+  4. 调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
+- **实现Runnable接口（常用）**
+
+  1. 定义类实现Runnable接口
+  2. @Override重写接口中的`run()`方法，将线程的任务代码封装到`run()`方法中
+  3. 通过Thread类创建线程对象，并将Runnable接口的子类对象作为Thread类的构造函数的参数进行传递。**线程的任务都封装在Runnable接口实现类对象的run方法中，所以要在线程对象创建时就必须明确要运行的任务**
+  4. 调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
+- ==**区别（实现Runnable接口的好处）**==
+  1. 避免了java**单继承的局限性**
+  2. 适合多个相同程序的代码去**处理同一个资源**
+  3. 增加程序的健壮性，实现**解耦**操作，代码可以被多个线程共享，**代码和线程独立**
+  4. **线程池**只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类 
+- ==**run()和start()的区别**==
+  - run()：仅仅是封装被线程执行的代码，直接调用是普通方法。
+  - start()：首先启动了线程，然后再由jvm去调用该线程的run()方法。
+
+
+### 6.3.4 匿名内部类实现多线程
+
+* **继承Thread类**
+
+  ```java
+  new Thread() {
+  	@Override
+  	public void run() {
+  		for (int i = 0; i < 100; i++) {
+  			System.out.println(getName() + "---" + i);
+  		}
+  	}
+  }.start();
+  ```
+
+* **实现Runnable接口**
+
+  ```java
+  //lambda表达式实现
+  new Thread(() -> {
+      for (int i = 0; i < 100; i++) {
+          System.out.println(Thread.currentThread().getName() + "---" + i);
+      }
+  }).start();
+  //普通实现
+  new Thread(new Runnable() {
+  	@Override
+  	public void run() {
+  		for (int i = 0; i < 100; i++) {
+  			System.out.println(Thread.currentThread().getName() + "---" + i);
+  		}
+  	}
+  }).start();
+  ```
 
 
 
-## 5.3 同步
+## 6.4 线程安全
+
+### 6.4.1 线程安全问题
 
 * **买票问题**
-  1. 相同的票出现多次：CPU的一次操作必须是原子性的
-  2. 出现负数的票：随机性和延迟导致
 
+  * 相同的票出现多次：CPU的一次操作必须是原子性的
+  * 出现负数的票：随机性和延迟导致
 
 * **线程安全问题产生原因**
 
-  1. 多个线程在操作共享数据
-  2. 操作共享数据的代码有多条
+  - 多个线程在操作共享数据
 
-     **当一个线程在执行操作共享数据的多条代码过程中，其他线程参与了运算，就会导致**
+  - 操作共享数据的代码有多条
 
-* **线程安全问题解决思路**
+    **当一个线程在执行操作共享数据的多条代码过程中，其他线程参与了运算，就会导致**
 
-          **将多条操作共享数据的线程代码封装起来**，当有线程执行这些代码时，其他线程不可以参与运算，必须要当前线程把这些代码都执行完毕后，其他线程才可以参与运算
+
+
+### 6.4.2 线程同步
+
+要解决上述多线程并发访问一个资源的安全性问题：也就是解决重复票与不存在票问题，Java中提供了**同步机制 (synchronized)**来解决。有三种方式完成同步操作：**同步代码块**、**同步方法**、**锁机制**。
 
 * **同步的优缺点：**
+  * **好处**：解决线程的安全问题
+  * **弊端**：相对**降低效率**，因为同步外的线程都会判断同步锁；若有同步嵌套容易产生**死锁**
 
-  - **好处**：解决线程的安全问题
-  - **弊端**：相对降**低效率**，因为同步外的线程都会判断同步锁；若有同步嵌套容易产生**死锁**
+#### (1) 同步代码块
 
-* **同步代码块**
+* `synchronized`关键字可以用于**方法中的某个区块中**，表示只对这个区块的**资源实行互斥访问**
 
+  * **同步锁**：也称对象锁或对象**监视器**
+    * 锁对象可以是**任意类型**
+    * 多个线程对象要使用**同一把锁**
 
-  * 在java中，**建议使用同步代码块**解决，(**前提**：必须有**多个线程并使用同一锁**)
-
-    ```
-    public class Ticket implements Runnable {
-    	private int ticket = 100;
-    	Object obj = new Object();
-    	
-    	@Override
-    	public void run() {
-    		while(true) { //循环要同步执行的代码
-    			synchronized(对象)//锁可使用Object obj = new Object();
-    				try {
-    					Thread.sleep(10);
-    				} catch (InterruptedException e) {
-    					e.printStackTrace();
-    				}
-    				if(ticket>0) {
-    				   System.out.println(Thread.currentThread().getName()+"---"+ticket--);
-    				}
-    				else
-    					break;
-    			}
-    		}
-    	}
-    }
-    ```
-
-* **同步方法**
-
-  * **同步方法和同步方法的锁(this)**
-
-    ```
-    public synchronized void sale() {
-    	if(num>0)
-    		System.out.println(Thread.currentThread().getName()+" "+num--);
-    }
-    ```
-
-  * **静态同步方法**使用的锁是**该方法所属类的字节码文件对象**。可以用`getClass`方法获取，也可以用`类名.class`
-
-* **Lock对象**（jdk5之后提供的新的锁对象，是个接口，用其实现类`Reentrant`）
-
-  `void lock()`:获取锁
-
-  `void unlock()`:释放锁
-
-  ```
-  private int count = 100;
-  private Lock lock= new ReentrantLock();
-  
+  ```java
   @Override
   public void run() {
-  	while(true) {
-  		try {
-  			lock.lock();
-  			if(count>0) {
-  			System.out.println(Thread.currentThread().getName()+" 正在卖第" + count-- + "张票" );
-  			}
-  		} finally {
-  			lock.unlock();
-  		}
+      while (true) { //卖票窗口一直开着
+          synchronized (this) {
+              if (ticket > 0) { //有票才卖
+                  try {
+                      Thread.sleep(10);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+                  System.out.println(Thread.currentThread().getName() + "-->正在卖第" + ticket + "张票");
+                  ticket--;
+  ...
+  ```
+
+#### (2) 同步方法
+
+* 使用`synchronized`修饰的方法就叫做同步方法，保证A线程执行该方法的时候其他线程只能在方法外等着。
+
+  * **同步锁是谁**?
+    * 对于**非static方法**，同步锁就是**this**
+    * 对于**static方法**，我们使用当前方法所在类的字节码对象(**类名.class**)
+
+  ```java
+  public synchronized void sellTicket(){
+       if (ticket > 0) { ....  }
+  }
+  ```
+
+
+
+#### (3) Lock锁
+
+* `java.util.concurrent.locks.Lock` **接口**机制提供了比synchronized代码块和synchronized方法更广泛的锁定操作，同步代码块/同步方法具有的功能Lock都有，除此之外更强大，更体现面向对象。 
+
+* **Lock接口的实现类`ReentrantLock`**
+
+* **Lock锁也称同步锁**，加锁与释放锁方法化了，如下：
+
+  * public void **lock**()：**加同步锁**
+
+  * public void **unlock**()：**释放同步锁**
+
+    ```java
+    private int count = 100;
+    private Lock lock= new ReentrantLock();
+    
+    @Override
+    public void run() {
+        while(true) {
+            lock.lock(); //加同步锁
+            if (ticket > 0) { 
+                try {
+                    Thread.sleep(10);
+                    System.out.println(Thread.currentThread().getName() + "-->正在卖第" + ticket + "张票");
+                    ticket--; 
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    lock.unlock(); //无论程序是否异常，都会释放锁
+                }
+    ...
+    ```
+
+
+
+#### 死锁问题(哲学家就餐)
+
+- 指两个或两个以上的线程在执行的过程中，因**争夺资源**产生的一种**互相等待**现象
+
+  ```java
+  public class DieLock implements Runnable{
+  	private boolean flag;
+  	public DieLock(boolean flag) {
+  		this.flag = flag;
   	}
-  }
-  ```
-
-
-
-* **死锁问题(哲学家就餐)**
-
-  * 指两个或两个以上的线程在执行的过程中，因**争夺资源**产生的一种**互相等待**现象
-
-    ```
-    public class DieLock implements Runnable{
-    	private boolean flag;
-    	public DieLock(boolean flag) {
-    		this.flag = flag;
-    	}
-    	@Override
-    	public void run() {
-    		if(flag) {
-    			synchronized(MyLock.obja) {
-    				System.out.println("if obja");
-    				synchronized (MyLock.objb) {
-    					System.out.println("if objb");
-    				}
-    			}
-    		}
-    		else {
-    			synchronized (MyLock.objb) {
-    				System.out.println("else objb");
-    				synchronized (MyLock.obja) {
-    					System.out.println("else obja");
-    				}
-    			}
-    		}
-    	}
-    }
-    ```
-
-
-## 5.4 多线程通信
-
-* **生产者消费者问题**（不同种类的线程对**同一资源**的操作）
-
-* **当要求设置和获取线程的资源是同一个，在外界把资源创建出来，通过构造方法传递给其他类**
-
-* **等待唤醒机制**
-
-  Object类中提供了三个方法：（这些方法必须通过**锁对象调用**，由于任意锁所以定义在Object）
-
-  * `wait():`等待并立即释放锁，将来唤醒是从这里唤醒
-  * `notify():`唤醒单个线程，并不立即执行，还是得抢处理机资源
-  * `notifyAll():`唤醒所有线程
-
-  ```
-  synchronized (s) {
-  		if(!s.flag)
-  			try {
-  				s.wait();
-  			} catch (InterruptedException e) {
-  						e.printStackTrace();
+  	@Override
+  	public void run() {
+  		if(flag) {
+  			synchronized(MyLock.obja) {
+  				System.out.println("if obja");
+  				synchronized (MyLock.objb) {
+  					System.out.println("if objb");
+  				}
   			}
-  		System.out.println(s.name+"---------"+s.age);
-  				
-  		s.flag = false;
-  		s.notify();
-  }
-  
-  synchronized (s) {
-  		if(s.flag)
-  			try {
-  				s.wait();
-  			} catch (InterruptedException e) {
-  				e.printStackTrace();
-  			}
-  				
-  		if(count%2==0) {
-  			s.name = "张三";
-  			s.age = 3;
   		}
   		else {
-  			s.name = "李四";
-  			s.age = 4;
-  		}
-  		count++;
-  		s.flag = true;
-  		s.notify();
-  				
-  }
+  			synchronized (MyLock.objb) {
+  				System.out.println("else objb");
+  				synchronized (MyLock.obja) {
+  					System.out.println("else obja");
+  ...
   ```
 
-* **优化后的等待唤醒代码**
 
+
+
+
+
+## 6.5 线程状态
+
+### 6.5.1 线程状态概述
+
+当线程被创建并启动以后，它既不是一启动就进入了执行状态，也不是一直处于执行状态。在线程的生命周期中， 有几种状态呢？在API中 **`java.lang.Thread.State`** **这个枚举中给出了六种线程状态**：
+
+| 线程状态                    |                       导致状态发生条件                       |
+| --------------------------- | :----------------------------------------------------------: |
+| **NEW**(新建)               |       线程刚被创建，但是并未启动。还没调用start方法。        |
+| **Runnable**(可运行)        | 线程可以在java虚拟机中运行的状态，可能正在运行自己代码，也可能没有，这取决于操作系统处理器。 |
+| **Blocked**(锁阻塞)         | 当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状 态；当该线程持有锁时，该线程将变成Runnable状态。 |
+| **Waiting**(无限等待)       | 一个线程在等待另一个线程执行一个（唤醒）动作时，该线程进入Waiting状态。进入这个 状态后是不能自动唤醒的，必须等待另一个线程调用notify或者notifyAll方法才能够唤醒。 |
+| **Timed Waiting**(计时等待) | 同waiting状态，有几个方法有超时参数，调用他们将进入Timed Waiting状态。这一状态将一直保持到超时期满或者接收到唤醒通知。带有超时参数的常用方法有Thread.sleep(1000) 、 Object.wait。 |
+| **Terminated**(被终止)      | 因为run方法正常退出而死亡，或者因为没有捕获的异常终止了run方法而死亡。 |
+
+![](F:\GitHub\Studying\Java\images\线程状态.png)
+
+
+
+### 6.5.2 线程调度
+
+- 线程**优先级**：通过`getPriority()`获取，通过`setPriority()`设置。
+
+  Java线程默认优先级是5(1-10低到高,Thread的**静态**常量NORM_PRIORITY(MIN/MAX))。
+
+- 线程**让步**：通过静态方法`Thread.yield()`设置
+
+  **暂停**当前正在执行的线程对象（系统指定的毫秒数），并执行其他线程。**转为就绪状态**，该线程不会失去任何监视器的所有权（不释放锁），不会阻塞该线程。不确保真正让出，很少用。
+
+- ==线程**休眠**==：通过静态方法`Thread.sleep(long millis)`设置
+
+  让当前正在执行的线程**休眠**（**暂停**执行）系统指定的毫秒数，该线程不丢失任何监视器的所属权（**不释放锁**），休眠结束回到**就绪状态**
+
+- ==线程**插队**==：线程调用方法`th.join()`
+
+  **等待该线程终止**，其他线程才可以抢占资源。
+
+- **后台线程（守护线程，如坦克大战）**：通过`th.setDaemon(true)`设置
+
+  当前正在运行的线程都是后台线程时，JVM退出，该方法必须**在启动线程前调用**
+
+- ==**中断**线程==：通过`th.interrupt()`设置
+
+  **请求终止线程**，仅设置了一个标志位，中断一个不在活动状态（阻塞）的线程没意义并会抛异常
+
+  * 静态方法interrupted()-->**会清除中断标志位**
+  * 普通方法isInterrupted()-->**不会清除中断标志位**
+
+
+
+
+
+
+
+## 6.6 线程间通信
+
+**多个线程在处理==同一个资源==，但是处理的动作（线程的任务）却不相同**。
+
+多个线程在处理同一个资源，并且任务不同时，需要线程通信来帮助解决线程之间对同一个变量的使用或操作。 就 是多个线程在操作同一份数据时， 避免对同一共享变量的争夺。也就是我们需要通过一定的手段使各个线程能有效 的利用资源。而这种手段即—— 等待唤醒机制。
+
+### 6.6.1 等待唤醒机制
+
+就是在一个线程进行了规定操作后，就进入等待状态（wait()）， 等待其他线程执行完他们的指定代码过后 再将 其唤醒（notify()）;在有多个线程进行等待时， 如果需要，可以使用 notifyAll()来唤醒所有的等待线程。 wait/notify 就是线程间的一种协作机制。
+
+* **Object类**（由于任意锁）中提供了三个方法：（这些方法必须通过**同一个锁对象在同步中调用**）
+  * `wait([long timeout])`：==**等待**并立即**释放锁**，线程被阻塞。**被唤醒并获得锁后从这里执行后续代码**==
+  * `notify()`：==随机唤醒单个线程，被通知线程不能立即恢复执行线程，**重新请求同步锁**==
+  * `notifyAll()`：唤醒所有线程
+
+> 哪怕只通知了一个等待的线程，被通知线程也不能立即恢复执行，因为它当初中断的地方是在同步块内，而 此刻它已经不持有锁，所以她需要再次尝试去获取锁（很可能面临其它线程的竞争），成功后才能在当初调 用 wait 方法之后的地方恢复执行。
+> 总结如下：
+> 如果能获取锁，线程就从 WAITING 状态变成 RUNNABLE 状态； 否则，从 wait set 出来，又进入 entry set，线程就从 WAITING 状态又变成 BLOCKED 状态 
+
+
+
+### 6.6.2 生产者消费者问题
+
+> 包子铺线程生产包子，吃货线程消费包子。当包子没有时（包子状态为false），吃货线程等待，包子铺线程生产包子 （即包子状态为true），并通知吃货线程（解除吃货的等待状态）,因为已经有包子了，那么包子铺线程进入等待状态。 接下来，吃货线程能否进一步执行则取决于锁的获取情况。如果吃货获取到锁，那么就执行吃包子动作，包子吃完（包 子状态为false），并通知包子铺线程（解除包子铺的等待状态）,吃货线程进入等待。包子铺线程能否进一步执行则取决于锁的获取情况
+
+```java
+public static void main(String[] args) {
+    BaoZi baoZi = new BaoZi();
+	//消费者
+    new Thread(() -> {
+        while (true) {
+            synchronized (baoZi) {
+                System.out.println("老板，买10个包子。");
+                if (!baoZi.flag) {
+                    try {
+                        baoZi.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("包子真好吃，吃完了。");
+                baoZi.flag = false;
+                baoZi.notify();
+                System.out.println("===================");
+            }
+        }
+    }).start();
+	//生产者
+    new Thread(() -> {
+        while (true) {
+            synchronized (baoZi) {
+                if (baoZi.flag) {
+                    try {
+                        baoZi.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("新包子出炉了！！！");
+                baoZi.flag = true;
+                baoZi.notify();
+            }
+        }
+    }).start();
+}
+```
+
+
+
+
+
+## 6.7 线程池
+
+* **线程池**：其实就是一个**容纳多个线程的容器**，其中的**线程可以反复使用**，省去了频繁创建线程对象的操作， 无需反复创建线程而消耗过多资源。
+
+  Java里面线程池的顶级接口是 `java.util.concurrent.Executor `，但是严格意义上讲它只是一个执行线程的工具。真正的线程池接口是 `java.util.concurrent.ExecutorService` 。
+
+* 官方建议**使用`java.util.concurrent.Executors `线程池工厂类**来创建线程池对象
+
+  * `static ExecutorService newFixedThreadPool(int nThreads)`：**返回线程池对象**。(创建的是有界线程池,也就是池中的线程个数可以指定最大数量)
+
+  * `Future<?> submit(Runnable task)`：**获取**线程池中的某个**线程对象**，**并执行run()**。
+
+    ```java
+    ExecutorService pool = Executors.newFixedThreadPool(2);//创建一个线程池对象，2个线程
+    //可以执行Runnable对象或者Callable对象代表的线程
+    pool.submit(new MyRunnable()); //pool-1-thread-1创建了一个新的线程执行
+    //线程池会一直开启,使用完了线程,会自动把线程归还给线程池,线程可以继续使用
+    pool.submit(new MyRunnable()); //pool-1-thread-1创建了一个新的线程执行
+    pool.submit(new MyRunnable()); //pool-1-thread-2创建了一个新的线程执行
+    pool.shutdown() ////结束线程池,不建议执行
+    ```
+
+    * **实现Callable来实现多线程**（有返回值，可以抛异常）
+
+
+
+
+
+# 7 函数式编程
+
+在数学中，函数就是有输入量、输出量的一套计算方案，也就是“拿什么东西做什么事情”。相对而言，**面向对象**过分强调“必须**通过对象的形式来做事情**”，而**函数式思想**则尽量忽略面向对象的复杂语法——**强调做什么及结果，而不是以什么形式做**。
+
+面向对象的思想：做一件事情,找一个能解决这个事情的对象,调用对象的方法,完成事情.
+
+函数式编程思想：只要能获取到结果,谁去做的,怎么做的都不重要,重视的是结果,不重视过程
+
+* 冗余的Runnable代码分析
+  * Thread 类需要 Runnable 接口作为参数，其中的抽象 run 方法是用来指定线程任务内容的核心；
+  * 为了指定 run 的方法体，不得不需要 Runnable 接口的实现类； 
+  * 为了省去定义一个 RunnableImpl 实现类的麻烦，不得不使用匿名内部类； 
+  * 必须覆盖重写抽象 run 方法，所以方法名称、方法参数、方法返回值不得不再写一遍，且不能写错； 
+  * 而实际上，似乎只**有方法体才是关键所在**。 
+
+* 匿名内部类的好处与弊端
+
+  - 一方面，匿名内部类可以帮我们省去实现类的定义；
+  - 另一方面，匿名内部类的语法——确实太复杂了！ 
+
+* 编程思想转换
+
+  **做什么**，而不是怎么做，只要能够更好地达 到目的，过程与形式其实并不重要。2014年3月Oracle所发布的Java 8中，加入了Lambda表达式的重量级新特性，为我们打开了新世界的大门。 
+
+
+
+## 7.1 Lambda标准格式
+
+* Lambda表达式的标准格式为
+
+  ```java
+  (参数类型 参数名称) ‐> { 代码语句 }
   ```
-  	private String name;
-  	private int age;
-  	private boolean flag;
-  	
-  	public synchronized void set(String name,int age) {
-  		if(flag) {
-  			try {
-  				this.wait();//有就等待
-  			} catch (InterruptedException e) {
-  				e.printStackTrace();
-  			}
-  		}
-  		this.name = name;
-  		this.age = age;
-  		
-  		this.flag = true;//设置完改标志位
-  		this.notify();//唤醒
+
+  * 小括号内的语法与传统方法**参数列表一致**：无参数则留空；多个参数则用逗号分隔。 
+  * -> 是新引入的语法格式，代表**指向动作**。 
+  * 大括号内的语法与传统**方法体**要求基本一致。 
+
+* 无参数返回值
+
+  ```java
+  new Thread( () ‐> {
+      	System.out.println("多线程任务执行！")).start(); // 启动线程
   	}
-  	
-  	public synchronized void get() {
-  		if(!flag) {
-  			try {
-  				this.wait();//没有就等待
-  			} catch (InterruptedException e) {
-  				e.printStackTrace();
-  			}
-  		}
-  		System.out.println(this.name+"---"+this.age);
-  		this.flag = false;//输出完就没有了，改标志位
-  		this.notify();//并唤醒
-  
-  	}
+  ).start();	
   ```
 
-  ​
+* 有参数和返回值
 
-## 5.5 线程组（ThreadGroup）
+  ```java
+  Arrays.sort(students,(s1, s2)->{ //参数类型可以从students推导出，so可以省略
+      return s1.getAge()-s2.getAge();
+  });
+  ```
 
-* 批量操作线程，线程默认情况下属于main线程组
+  ```java
+  Collections.sort(students, (o1, o2) -> o1.getAge()-o2.getAge()); //{}内只有一行表达式，可以省略{}和return
+  ```
 
-```
-ThreadGroup tg = new ThreadGroup("新的线程组");
-MyThread mt = new MyThread();
-		
-Thread t1 = new Thread(tg,mt,"线程1");
-Thread t2 = new Thread(tg,mt,"线程2");
-System.out.println(t1.getThreadGroup().getName()+"--"+t2.getThreadGroup().getName());
-tg.setDaemon(true);
-tg.setMaxPriority(10);
-```
-
-## 5.6 线程池
-
-* 程序启动一个新线程成本是比较高的，以为它要涉及到与操作系统进行交互，而使用线程池可以很好的提高性能，尤其是当程序中要创建大量生存期很短的线程时。（一开始产生一些线程，用完回收）
-
-* **Executors工厂类产生线程池**
-
-  `public static ExecutorService newFixedThreadPool(int nThread)`//静态方法
-
-```
-		ExecutorService pool = Executors.newFixedThreadPool(2);//一个线程池对象，2个线程
-		//可以执行Runnable对象或者Callable对象代表的线程
-		pool.submit(new MyRunnable());
-		pool.submit(new MyRunnable());
-		//结束线程池
-		pool.shutdown()
-```
-
-* **实现Callable来实现多线程**（有返回值，可以抛异常）
-
-## 5.7 定时器
+  ```java
+  Arrays.sort(students, Comparator.comparingInt(Student::getAge)); //更简洁的写法,但{}中语句多时不能简写 
+  ```
 
 
+## 7.2 省略格式
 
-## 面试题
+* **可推导可省略**：Lambda强调的是“做什么”而不是“怎么做”，凡可以根据上下文推导得知的信息，都可以省略。
+  * **小括号内参数的类型**可以省略
+  * 如果**小括号内有且仅有一个参**，则**小括号可以省略**
+  * 如果**大括号内有且仅有一个语句**，则无论是否有返回值，都可以省略大括号、return关键字及语句分号。
 
-- **run()和start()的区别?**
+## 7.3 使用前提
 
-  	run():仅仅是封装被线程执行的代码，直接调用是普通方法。
+* Lambda的语法非常简洁，完全没有面向对象复杂的束缚。但是使用时有几个问题需要特别注意： 
+  * 使用Lambda必须具==**有接口，且要求接口中有且仅有一个抽象方法**==。
 
-  	start():首先启动了线程，然后再由jvm去调用该线程的run()方法。
+    无论是JDK内置的 Runnable 、 Comparator 接口还是自定义的接口，只有当接口中的抽象方法存在且唯一 时，才可以使用Lambda。 
 
-- **线程的生命周期**
+  * 使用Lambda必须==**具有上下文推断**==。
 
-  ![](D:\Typora\photo\线程状态.PNG)
+    方法的参数或局部变量类型必须为**Lambda对应的接口类型**，才能使用Lambda作为该接口的实例。
+
+> 备注：有且仅有一个抽象方法的接口，称为“函数式接口”
 
 
 
@@ -2893,54 +2968,107 @@ tg.setMaxPriority(10);
 
 
 
-# 8 IO流
+# 8 IO
 
 * 流，代表任何有能力产出数据的数据源对象或有能力接收数据的接收端对象，屏蔽了实际I/O设备处理细节
-* **读入、写出**
 
 ## 8.1 File
 
-* **FilePath(文件路径)**对这个类描述更确切
+* File类是==**文件和目录路径名**==的抽象表示，主要用于文件和目录的创建、查找和删除等操作。
 
-* 构造方法
+  File类时与系统无关的类，所有操作系统都可以使用。file(文件)、directory(文件夹/目录)、path(路径)
 
-  - `File filePath = new File(String pathname)`   根据路径创建File对象
-  - `File filePath = new File(File/String parent,String child)`   根据目录/父File和子文件创建File对象
+  * 路径（不区分大小写，在Windows中使用反斜杠，由于它又是转义字符，所以使用**两个反斜杠**表示）
+    * **绝对路径**：**完整的路径，以盘符开始**
+    * **相对路径**：简化的路径，相对**当前项目**的**根目录**
 
-* 常用方法
+### 8.1.1 静态成员变量
 
-  * **创建creatNewFile/mkdir/mkdirs**
-    * `boolean creatNewFile()`     **创建文件**，返回创建与否，若存在则不创建返回false
-    * `File creatTempFile(String prefix,String suffix)`     **创建临时文件**
-    * `boolean mkdir()`     创建**文件路径**，若存在则不创建
-    * `boolean mkdirs()`     创建**文件路径，若父路径不存在自动创建出来**
-  * **删除delete**
-    * `boolean delete()`
-      1. 如果创建文件或者文件夹没写盘符路径，默认在项目路径下(相对路径)
-      2. 删除一个文件夹，文件夹中不能有内容 
-      3. Java中的删除不走回收站
-  * **重命名renameTo**
-    * `boolean renameTo(File dest)`     **路径相同为改名，路径不同为改名并剪切**
-  * **判断**
-    * `boolean exists()/isFile()/isDirectory`     **判断是否存在/是文件/是目录**
-    * `boolean canRead()/canWrite()/isHidden()`     **判断是否可读/可写/隐藏**
-  * **获取**
-    * `String getPath()/getAbsolutePath()/getName()`     **获取相对路径/绝对路径/文件名**
-    * `long length()/lastModified()`     **获取长度(字节数)/最后一次修改时间(毫秒值)**
-  * **高级获取(带参为文件名过滤器，需匿名内部类实现)**
-    * `String[] list(FilenameFilter filter)`     获取指定目录下所有文件或文件夹**名称**的**字符串数组**
-    * `File[] listFile(FilenameFilter filter)`     获取指定目录下所有文件或文件夹的**File数组**
+* `static String pathSeparator` 与系统有关的==**路径分隔符**==，为了方便，它被表示为一个字符串。
+* `static char pathSeparatorChar` 与系统有关的路径分隔符。
+  * Windows中是分号“`;`”；Linux中是冒号“`:`” 
+* `static String separator` 与系统有关的默认==**文件名称分隔符**==，为了方便，它被表示为一个字符串。
+* `static char separatorChar` 与系统有关的默认名称分隔符。
+  * Windows中是反斜杠“`\`”；Linux中是正斜杠“`/`” 
+
+### 8.1.2 构造方法
+
+- `File(String pathname)` 
+  - `pathname`可以以**文件**或**文件夹**结尾；**相对**或**绝对**路径；**存在**或**不存在**；
+- `File(File/String parent,String child)` 
+
+### 8.1.3 常用方法
+
+* **获取**
+  - `String getAbsolutePath()`：返回此File的==**绝对路径名**==
+  - `String getPath()`：将此**File转换为路径名**，==**构造中传递的路径**==。`toString`底层是`getPath`
+  - `String getName()`：返回由此**File表示的文件或目录**的名称，==**构造中结尾部分文件或文件夹**==
+  - `long length()`：返回由此**File表示的文件的长度**，==**构造中指定的文件的大小(字节)**==
+    - 若构造给出的**路径不存在**或**路径为文件夹**，这个方法**返回0**
+  - `long lastModified()`：返回此抽象路径名表示的==**文件最后一次被修改的时间(毫秒值)**==
+  - `String getParent()`：==**父目录**==（除最后一个名称外）的路径名字符串；若没有指定父目录则返回 null。 
+* **判断**
+  - `boolean exists()/isFile()/isDirectory`：**判断路径是否==存在==/是否以==文件==结尾/是否以==目录==结尾**
+    - 若路径不存在，直接调用后俩方法（这俩方法互斥）则都返回false，所以一般先判断路径是否存在。
+  - `boolean canRead()/canWrite()/isHidden()`     **判断是否可读/可写/隐藏**
+* **创建**
+  * `boolean creatNewFile()`：当且仅当具有该名称的==**文件不存在时创建一个新的空文件**==
+    * 文件路径必须存在，否则抛异常；只能创建文件；创建成功返回true，否则返回false
+  * `File creatTempFile(String prefix,String suffix)`     **创建临时文件**
+  * `boolean mkdir()`：**目录不存在时创建由此File表示的目录**。**单级目录**，创建时检查父目录存在否
+  * `boolean mkdirs()`：==**目录不存在时创建由此File表示的目录，包括父目录**==。**单/多级目录**
+* ==**删除文件或目录**==
+  * `boolean delete()`
+    1. 如果构造中没**写盘符路径**，默认在项目路径下(**相对路径**)
+    2. 如果构造中路径不存在，不会删除
+    3. 删除一个文件夹，文件夹中不能有内容 
+    4. 不走回收站
+* ==**重命名renameTo**==
+  * `boolean renameTo(File dest)`     **路径相同为改名，路径不同为改名并剪切**
+* ==**遍历目录**(带参为**文件名过滤器**，需匿名内部类实现)==
+  * 遍历的是构造中的路径。若**路径不存在**或**不是目录结尾**，则抛出**空指针异常**
+  * `String[] list([File[name]Filter filter])`：获取指定所有文件或文件夹**名称**的**字符串数组**
+  * `File[] listFiles([File[name]Filter filter])`：获取指定所有文件或文件夹的**File数组**
+
+### 8.1.4 文件过滤器
+
+* `java.io.FileFilter`接口
+  * `boolean accept(File pathname)  ` ：测试指定抽象路径名是否应该包含在某个路径名列表中。
+    * `File pathname`：要测试的**抽象路径名(File对象)**
+* `java.io.FilenameFilter`接口
+  * `boolean accept(File dir, String name)`：测试指定文件是否应该包含在某一文件列表中。
+    * `dir`：被找到的文件**所在的目录**。
+    * `name`：**文件的名称**。
+* 分析：`FileFilter`、`FilenameFilter`都是只有一个方法的接口，因此可以用**lambda表达式**简写。
 
 * **批量修改文件名**
 
-  ```
+  ```java
   File srcFilePath = new File("D:\\lol");
+  
+  //以下4选1
+  //FileFilter接口匿名内部类实现
+  File[] files = file.listFiles(new FileFilter() {
+      @Override
+      public boolean accept(File f) {
+          return f.isFile() && f.getName().endsWith(".txt");
+      }
+  });
+  //FileFilter接口lambda实现
+  File[] files = file.listFiles(f -> f.isFile() && f.getName().endsWith(".txt"));
+  
+  
+  
+  //FilenameFilter接口匿名内部类实现
   File[] fileList = srcFilePath.listFiles(new FilenameFilter() {
   	@Override
   	public boolean accept(File dir, String name) {
   		return new File(dir, name).isFile() && name.endsWith(".txt");
   	}
   });
+  //FilenameFilter接口lambda实现
+  File[] files = file.listFiles((dir, name) -> new File(dir,name).isFile()&&name.endsWith(".txt"));
+  
   
   File destFilePath = new File("D:\\lol\\new");
   destFilePath.mkdirs();
@@ -2951,19 +3079,22 @@ tg.setMaxPriority(10);
   }
   ```
 
-## 8.2 递归
 
-* **方法定义中调用方法本身的现象** 
+### 8.1.5 递归
+
+* **方法定义中调用方法本身的现象**。还分有直接递归和间接递归(a调b，b调c，c调a)。
 
 * **注意：**
 
-  1. 要**有出口**，否则就是死递归
+  1. 要**有出口**可以停止，否则就是死递归
   2. **次数不能过多**，否则内存溢出
   3. **构造方法不能**递归使用
 
+* ==递归使用**前提**：**当调用方法的时候，方法主体不变，每次调用方法的参数不同**==
+
 * **递归输出指定目录下指定文件的绝对路径**
 
-  ```
+  ```java
   public static void getFile(File srcFilePath) {
   	File[] fileList = srcFilePath.listFiles();
   	for (File file : fileList) {
@@ -2979,7 +3110,7 @@ tg.setMaxPriority(10);
 
 * **递归删除指定目录及其包含所有文件、文件夹**
 
-  ```
+  ```java
   public static void deleteDir(File srcFilePath) {
   	File[] fileList = srcFilePath.listFiles();
   	for(File file:fileList) {
@@ -2994,151 +3125,297 @@ tg.setMaxPriority(10);
 
 
 
-## 8.2 InputStream、OutputStream
 
-* **FileInputStream**
 
-  - **操作步骤：**
-    1. **创建字节输入流对象**
-       - `FileInputStream fis = new FileInputStream(File file/String name)`
-    2. **调用`read()`方法**
-       - `int read()`   一次读取一个**字节**
-       - `int read(byte[] b)`   一次读取一个**字节数组**
-    3. **释放资源**(关闭流对象。垃圾回收、通知系统释放跟该文件相关资源)
+## 8.2 IO分类
 
-* **FileOutputStream**
+Java中I/O操作主要指使用`java.io`包下的内容进行输入、输出操作。**输入**叫做**读取**数据，**输出**叫做作**写出**数据。
 
-  * **操作步骤**
-    1. **创建字节输出流对象(第二个参数可选)**
-       * `FileOutputStream fos = new FileOutputStream(File file/String name,boolean append)`
-    2. **调用`write()`方法(将字符串转为字节数组，`getBytes()`)**
-       * `void write(int b)`     一次写一个**字节**
-       * `void write(byte[] bytes)`     一次写一个**字节数组**
-       * `void write(byte[] b,int offset,int len)`     一次写一个**字节数组的一部分**
-         * `int len`中**len代表实际读取字节的长度**，每次读取替换上次字节数组
-    3. **释放资源**(关闭流对象。垃圾回收、通知系统释放跟该文件相关资源)
+根据数据的流向分为：
 
-* 注意**数据的换行**：使用**\n**高级记事本换行但是记事本不换行，需使用**\r\n**
+- **输入流** ：把数据从**`其他设备`**上读取到**`内存`**中的流。 
+- **输出流** ：把数据从**`内存` **中写出到**`其他设备`**上的流。
 
-* **计算机是如何识别什么时候该把两个字节转换为一个中文呢?**
+根据数据的类型分为：
 
-  	在计算机中中文的存储分两个字节：
+- **字节流** ：以字节为单位，读写数据的流。
+- **字符流** ：以字符为单位，读写数据的流。
 
-         		第一个字节肯定是负数。
-        
-         		第二个字节常见的是负数，可能有正数。但是没影响。
+![](F:\GitHub\Studying\Java\images\IO流.PNG)
 
-* **字节缓冲区流**（java自带的带缓冲区的字节类（称为缓冲区类或高效类） ，用法同上
 
-* **复制文件**
+
+## 8.3 InputStream、OutputStream
+
+字节流可以传输任意文件数据。无论使用什么样的流对象，底层传输的始终为二进制数据，使用字节流。
+
+`java.io.InputStream `**抽象类**是表示字节输入流的所有类的超类，可以读取字节信息到内存中。
+
+`java.io.OutputStream `**抽象类**是表示字节输出流的所有类的超类，将指定的字节信息写出到目的地。
+
+**`System.in 和 System.out`也分别是`InputStream、OutputStream`**，可作为参数传递
+
+### 8.3.1 FileInputStream、FileOutputStream
+
+**FileInputStream：文件输入流**
+
+1. **创建字节输入流对象**
+
+   - `FileInputStream fis = new FileInputStream(File file/String name)`
+
+     > 当你创建一个流对象时，**必须传入一个文件路径**，如果没有该文件会抛出`FileNotFoundException` 
+
+2. **调用`read()`方法**
+
+   - `int read()`：一次读取一个**字节**，提升为int类型，读取到文件末尾，返回`-1`
+   - `int read(byte[] b)`：一次读取b字节长的**字节数组(缓冲）**，返回读取到的有效字节个数，读取到末尾时返回`-1` 
+
+3. **`close()`释放资源**(关闭流对象。垃圾回收、通知系统释放跟该文件相关资源)
+
+   > 流的关闭原则：先开后关，后开先关
+
+**FileOutputStream：文件输出流**
+
+1. **创建字节输出流对象(第二个参数可选)**
+
+   - `FileOutputStream fos = new FileOutputStream(File file/String name,boolean append)`
+
+     > 如果**没有**这个文件**会创建**该文件。如果**有**这个文件，根据**append**变量的值决定（**true为追加**，**false为清空**），若**构造不提供**这个参数，默认会**清空**这个文件的数据。
+
+2. **调用`write()`方法(将字符串转为字节数组，`getBytes()`)**
+
+   - `void write(int b)`：一次写一个**字节**，虽然参数为int类型，但是只会保留一个字节的信息写出
+   - `void write(byte[] bytes)`：一次写一个**字节数组**。也可以使用`String`类的**`getBytes()`**
+   - `void write(byte[] b,int offset,int len)`： 一次写一个**字节数组的一部分**
+     - `int len`中**len代表实际读取字节的长度**，每次读取替换上次字节数组
+
+3. **`close()`释放资源**(由于流会占用内存所以关闭流对象。垃圾回收、通知系统释放跟该文件相关资源)
+
+   > 流的关闭原则：先开后关，后开先关
+
+> - 回车符`\r`和换行符`\n` ：
+>   - 回车符：回到一行的开头（return）。
+>   - 换行符：下一行（newline）。
+> - 系统中的换行：
+>   - Windows系统里，每行结尾是 `回车+换行` ，即`\r\n`；
+>   - Unix系统里，每行结尾只有 `换行` ，即`\n`；
+>   - Mac系统里，每行结尾是 `回车` ，即`\r`。从 Mac OS X开始与Linux统一。
+> - 在计算机中中文的存储分两个字节
+>   - 如果写的第一个字节是正数(0-127),那么显示的时候会查询ASCII表
+>   - 如果写的第一个字节是负数，那第一个和第二个字节组成一个中文显示，查询系统默认码表(GBK)
+
+
+
+### 8.3.2 BufferedInputStream、BufferedOutputStream
+
+* **缓冲流**的基本原理是在创建流对象时，会**创建一个内置的默认大小的==缓冲区数组==**，**通过缓冲区读写**，减少系统IO次数，从而提高读写的效率。可以调用`flush`，或`close`自动刷新并关闭
+* 构造方法（可以指定缓冲区大小，但一般不指定）
+  * `BufferedInputStream(InputStream in[,int size])`：参数可以`FileInputStream`
+  * `BufferedOutputStream(OutputStream out[,int size])`： 参数可以是`FileOuputStream`
+
+
+
+
+## 8.4 Reader、Writer
+
+`java.io.Reader`**抽象类**是表示用于读取字符流的所有类的超类，可以读取字符信息到内存中。
+
+`java.io.Writer `**抽象类**是表示用于写出字符流的所有类的超类，将指定的字符信息写出到目的地。
+
+### 8.4.1 字符编码
+
+**字符编码`Character Encoding`** : 就是一套自然语言的字符与二进制数之间的对应规则。
+
+- ==**编码**（人能看懂的变成看不懂的）**字符** --> **字节**==
+- ==**解码**（人看不懂的变成看得懂的）**字节** --> **字符**==
+
+**字符集`Charset`**：编码表。是系统支持的所有字符的集合，包括各国家文字、标点符号、图形符号、数字等。
+
+* 当指定了**编码**，它所对应的**字符集**自然就指定了，所以**编码**才是我们最终要关心的
+
+  ![](F:\GitHub\Studying\Java\images\1_charset.jpg)
+
+- ==**ASCII字符集**==
+  - ASCII（American Standard Code for Information Interchange，美国信息交换标准代码）是基于拉丁字母的一套电脑编码系统，用于显示现代英语，主要包括控制字符（回车键、退格、换行键等）和可显示字符（英文大小写字符、阿拉伯数字和西文符号）。
+  - 基本的ASCII字符集，使用**7位（bits）表示一个字符**，**共128字符**。ASCII的**扩展字符集使用8位**（bits）表示一个字符，共256字符，方便支持欧洲常用字符。
+- **ISO-8859-1字符集**
+  - 拉丁码表，别名Latin-1，用于显示欧洲使用的语言，包括荷兰、丹麦、德语、意大利语、西班牙语等。
+  - ISO-8859-1使用单字节编码，兼容ASCII编码。
+- **GBxxx字符集**
+  - GB就是国标的意思，是为了显示中文而设计的一套字符集。
+  - **GB2312**：简体中文码表。一个小于127的字符的意义与原来相同。但两个大于127的字符连在一起时，就表示一个汉字，这样大约可以组合了包含7000多个简体汉字，此外数学符号、罗马希腊的字母、日文的假名们都编进去了，连在ASCII里本来就有的数字、标点、字母都统统重新编了两个字节长的编码，这就是常说的"全角"字符，而原来在127号以下的那些就叫"半角"字符了。
+  - ==**GBK**==：最常用的中文码表。是在GB2312标准基础上的扩展规范，使用了**双字节**编码方案，共收录了21003个汉字，完全兼容GB2312标准，同时支持繁体汉字以及日韩汉字等。
+  - **GB18030**：最新的中文码表。收录汉字70244个，采用多字节编码，每个字可以由**1个、2个或4个字节**组成。支持中国国内少数民族的文字，同时支持繁体汉字以及日韩汉字等。
+- ==**Unicode字符集**==
+  - Unicode编码系统为表达任意语言的任意字符而设计，是业界的一种标准，也称为统一码、标准万国码。
+  - 它**最多使用4个字节**的数字来表达每个字母、符号，或者文字。有三种编码方案，UTF-8、UTF-16和UTF-32。最为常用的UTF-8编码。
+  - **UTF-8编码**，可以用来表示Unicode标准中任何字符，它是电子邮件、网页及其他存储或传送文字的应用中，优先采用的编码。互联网工程工作小组（IETF）要求所有互联网协议都必须支持UTF-8编码。所以，我们开发Web应用，也要使用UTF-8编码。它使用**一至四个字节**为每个字符编码，编码规则：
+    1. 128个US-ASCII字符，只需一个字节编码。
+    2. 拉丁文等字符，需要二个字节编码。 
+    3. 大部分**常用字（含中文），使用三个字节**编码。
+    4. 其他极少使用的Unicode辅助字符，使用四字节编码。
+
+
+
+### 8.4.2 InputStreamReader、OutputStreamWriter
+
+**转换流**：为了方便操作中文数据，将**字节**流**转**为**字符**流使用，它也是个字符流。==唯一可以**指定字符集**的流==
+
+**InputStreamReader**
+
+* 构造方法
+  * `InputStreamReader(InputStream is)`：默认编码，IDE中默认为UTF-8
+  * `InputStreamReader(InputStream is,String charsetName)`：指定字符集，不区分大小写
+* 成员方法方法
+  * `int read()`:一次读取一个字符
+  * `int read(char[] chs)`:一次读取一个字符数组
+
+**OutputStreamWriter**
+
+* 构造方法
+  * `OutputStreamWriter(OutputStream os)`：默认编码，IDE中默认为UTF-8
+  * `OutputStreamWriter(OutputStream os,String charsetName)`：指定字符集，不区分大小写
+* 成员方法
+  * `void write(int c)`:写一个字符
+  * `void write(char[] chs)`:写一个字符数组
+  * `void write(char[] chs,int off,int len)`:写一个字符数组的一部分
+  * `void write(String str)`:写一个字符串
+  * `void write(String str,int off,int len)`:写一个字符串的一部分
 
 ```java
-public static void main(String[] args) throws IOException  {
-	FileInputStream fis = new FileInputStream("test_1.txt");
-	FileOutputStream fos = new FileOutputStream("tes_2.txt");
-	//BufferedInputStream bis = new BufferedInputStream(new FileInputStream("test_1.txt"));
-	//BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("text_2.txt"));
-	int b = 0;
-	while((b=fis.read())!=-1) { //bis
-		fos.write(b);           //bos
-	}
-	fis.close();                //bis
-	fos.close();                //bos 
+InputStreamReader isr = new InputStreamReader(new FileInputStream("test_1.txt"), "UTF-8");
+OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("test_2.txt"), "UTF-8");
+char[] chs = new char[1024];
+int len = 0;
+while ((len = isr.read(chs)) != -1) {
+	osw.write(chs, 0, len);
 }
-```
-
-```java
-public static void main(String[] args) throws IOException  {
-	FileInputStream fis = new FileInputStream("test_1.txt");
-	FileOutputStream fos = new FileOutputStream("test_2.txt");
-	//BufferedInputStream bis = new BufferedInputStream(new FileInputStream("test_1.txt"));
-	//BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("text_2.txt"));
-	byte[] bytes = new byte[1024];
-	int len =0 ;
-	while((len=fis.read(bytes))!=-1) {   //bis
-		fos.write(bytes,0,len);          //bos
-	}
-	fis.close();                         //bis
-	fos.close();                         //bos
-}
+isr.close();
+osw.close();
 ```
 
 
 
-## 8.3 Reader、Writer
+### 8.4.3 FileReader、FileWriter
 
-* **转换流**：为了方便操作中文数据，将字节流转为字符流使用，它也是个字符流
+**简化构造方法编写**，但只能**读取系统默认编码**格式（IDEA中设置为UTF-8）的文件
 
-* **字符流 = 字节流 + 编码表**
+**FileReader**
 
-* **编码表：由字符和对应的数值组成的一张表**
+* 构造方法
+  * `FileReader(File file/String fileName)`
+* 成员方法
+  * `int read(char ch)`：每次读取一个字符的数据，提升为int类型，读取到文件末尾，返回`-1`
+  * `int read(char[] chs)`：每次读取`chs`的长度个字符到数组中，**返回读取到的有效字符个数**，读取到末尾时，返回`-1` 
 
-  * Unicode（国际标准码，所有文字都用两个表示。Java就使用的是这个）
-  * UTF-8（最多用三个字节表示一个字符，能用一个用一个，然后两个，三个）
-  * ASCII（最高位符号位，其余七位为数值位） 
-  * GBK（中国的中文编码表升级，融合更多的中文文字符号）
-  * GB18030（GBK的取代版本）
+**FileWriter**
 
-* **编码**（看懂的变成看不懂的）String -- byte[]
+* 构造方法
+  * `FileWriter(File file/String fileName[, boolean append])`：默认编码，不能指定。是否续写
+* 成员方法
+  * `void write(int c)`:写一个字符
+  * `void write(char[] chs)`:写一个字符数组
+  * `void write(char[] chs,int off,int len)`:写一个字符数组的一部分
+  * `void write(String str)`:写一个字符串
+  * `void write(String str,int off,int len)`:写一个字符串的一部分
 
-  **解码**（看不懂的变成看得懂的）byte[] -- String
 
-* **InputStreamReader**
 
-  * 构造方法
-    * `InputStreamReader(InputStream is)`:默认编码，GBK
-    * `InputStreamReader(InputStream is,String charsetName)`:指定编码
-  * 方法
-    * `void write(int c)`:写一个字符
-    * `void write(char[] chs)`:写一个字符数组
-    * `void write(char[] chs,int off,int len)`:写一个字符数组的一部分
-    * `void write(String str)`:写一个字符串
-    * `void write(String str,int off,int len)`:写一个字符串的一部分
+### 8.4.4 BufferedReader、BufferedWriter
 
-* **OutputStreamWriter**
+* 缓冲流的基本原理是在创建流对象时，会**创建一个内置的默认大小的缓冲区数组**，**通过缓冲区读写**，减少系统IO次数，从而提高读写的效率。
 
-  * 构造方法
-    * `OutputStreamWriter(OutputStream os)`:默认编码，GBK
-    * `OutputStreamWriter(OutputStream os,String charsetName)`:指定编码。
-  * 方法
-    * `int read()`:一次读取一个字符
-    * `int read(char[] chs)`:一次读取一个字符数组
+* 构造方法（可以指定缓冲区大小，但一般不指定）
 
-  ```
-  InputStreamReader isr = new InputStreamReader(new FileInputStream("test_1.txt"));
-  OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("test_2.txt"));
-  char[] chs = new char[1024];
-  int len = 0;
-  while ((len = isr.read(chs)) != -1) {
-  	osw.write(chs, 0, len);
-  }
-  isr.close();
-  osw.close();
-  ```
+  * `BufferedReader(Reader in[,int size])`
+  * `BufferedWriter(Writer out[,int size])`
 
-* **FileReader、FileWriter**继承自**InputStreamReader**、**OutputStreamWriter**，简化编写
+* 特有成员方法
 
-* **BufferedReader**
-
-  * `String readLine()`:一次**读取一行字符串**，包含该行内容的字符串，**不包含任何行终止符**，如果已到达流末尾，则返回 null 
-
-* **BufferedWriter**
+  * `String readLine()`:一次**读取一行字符串**，包含该行内容的字符串，**不包含任何行终止符**，如果已到达流末尾，则返回`null` 
 
   * `void newLine()`:写一个**换行符**，根据系统来决定换行符
-  * `void write(String line)`:一次写一个字符串
 
 
 
-* **【面试】close()和flush()的区别?**
-  * close()关闭流对象，但是先刷新一次缓冲区。关闭之后，流对象不可以继续再使用了
-  * flush()仅仅刷新缓冲区,刷新之后，流对象还可以继续使用。
 
 
-## 8.4 总结
+
+### 8.4.5 关闭和刷新
+
+因为字符流是先写入**内存缓冲区**的原因，如果不关闭输出流，无法写出字符到文件中。但是关闭的流对象，是无法继续写出数据的。如果我们既想写出数据，又想继续使用流，就需要`flush` 方法了。
+
+- `flush` ：刷新缓冲区，流对象可以继续使用。
+- `close `:先刷新缓冲区，然后通知系统释放资源。流对象不可以再被使用了。
+
+
+
+## 8.5 IO异常的处理
+
+### 8.5.1 JDK7之前的处理
+
+使用`try...catch...finally` 代码块，处理异常部分
+
+```java
+public class HandleException1 {
+    public static void main(String[] args) {
+        // 声明变量
+        FileWriter fw = null;
+        try {
+            //创建流对象
+            fw = new FileWriter("fw.txt");
+            // 写出数据
+            fw.write("黑马程序员"); //黑马程序员
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fw != null) { //若不做判断，有可能fw为null，就不能调用方法，抛空指针异常
+                    fw.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+### 8.5.2 JDK7的处理
+
+使用JDK7优化后的**`try-with-resource` **语句（即**try后可以跟括号“()”**），该语句确保了==**每个资源在语句结束时自动关闭**==。所谓的资源（resource）是指在程序完成后，必须关闭的对象。格式如下：
+
+```java
+try (创建流对象语句，如果有多个使用';'隔开) {
+	// 读写数据
+} catch (IOException e) {
+	e.printStackTrace();
+}
+```
+
+### 8.5.3 JDK9的处理
+
+JDK9中`try-with-resource` 的改进，对于**引入对象**的方式，支持的更加简洁。被引入的对象，同样可以自动关闭，无需手动close，我们来了解一下格式：(但是外部new的流对象/资源还得异常处理，此时用JDK7的即可)
+
+```java
+// 被final修饰的对象
+final Resource resource1 = new Resource("resource1");
+// 普通对象
+Resource resource2 = new Resource("resource2");
+
+// 引入方式：直接引入
+try (resource1; resource2) {
+     // 使用对象
+}
+```
+
+
+
+## 8.6 习题
 
 1. **复制文本文件的5种方式(采用字符流)**
 
-   ```
+   ```java
    //基本字符流一次读写一个字符
    private static void method1(String srcFilePath, String destFilePath) throws IOException {
    	FileReader fr = new FileReader(srcFilePath);
@@ -3206,7 +3483,7 @@ public static void main(String[] args) throws IOException  {
 
 2. **复制图片(二进制流数据) 4种方式(字节流)**
 
-   ```
+   ```java
    //字节流一次读写一个字节
    private static void method1(String srcFilePath, String destFilePath) throws IOException {
    	FileInputStream fis = new FileInputStream(srcFilePath);
@@ -3259,7 +3536,7 @@ public static void main(String[] args) throws IOException  {
 
 3. **把集合中的数据存储到文本文件中**
 
-   ```
+   ```java
    ArrayList<Student> arrayList = new ArrayList<>();
    arrayList.add(new Student("zhangsan", 23));
    arrayList.add(new Student("lisi", 24));
@@ -3275,7 +3552,7 @@ public static void main(String[] args) throws IOException  {
 
 4. **把文本文件中的数据读取到集合并遍历集合**
 
-   ```
+   ```java
    BufferedReader br = new BufferedReader(new FileReader("test_1.txt"));
    ArrayList<String> arrayList = new ArrayList<>();
    String line = null;
@@ -3288,7 +3565,7 @@ public static void main(String[] args) throws IOException  {
 
 5. **在一个存储人名的文件中随机输出一个人名** 
 
-   ```
+   ```java
    ArrayList<String> arrayList = new ArrayList<>();
    BufferedReader br = new BufferedReader(new FileReader("name.txt"));
    String line = null;
@@ -3303,42 +3580,39 @@ public static void main(String[] args) throws IOException  {
 
 6. **复制单级文件夹中指定的文件并修改名称**
 
-   ```
-   File srcFilePath = new File("java");
-   File destFilePath = new File("copy_jad");
-   if(!destFilePath.exists())
-   	destFilePath.mkdirs();
-   File[] fileList = srcFilePath.listFiles();
-   for(File file:fileList) {
-   	if(file.isFile()&&file.getName().endsWith(".java")) {
-   		String newName = file.getName().replace(".java", ".jad");
-   		File newFile = new File(destFilePath,newName);
-   		copyFile(file,newFile);
-   	}
+   ```java
+   File srcPath = new File("day19-code\\src\\abc");
+   File destPath = new File("day19-code\\src\\copy_abc");
+   if (!destPath.exists())
+       destPath.mkdirs();
+   File[] fileList = srcPath.listFiles(f -> f.isFile() && f.getName().endsWith(".java"));
+   for (File file : fileList) {
+       String newName = file.getName().replace(".java", ".jad");
+       File newFile = new File(destPath, newName);
+       copyFile(file, newFile);//看下题
    }
    ```
 
 7. **复制多级文件夹(整个文件夹复制到目的文件夹目录下**
 
-   ```
+   ```java
    public static void main(String[] args) throws IOException {
-   	File srcFilePath = new File("duo_java");
-   	File destFilePath = new File("copy_duo_java");
-   	copyFloder(srcFilePath, destFilePath);
+       File srcPath = new File("day19-code\\src\\abc");
+       File destPath = new File("day19-code\\src\\copy_abc");
+       copyDirectory(srcPath,destPath);
    }
    
-   private static void copyFloder(File srcFilePath, File destFilePath) throws IOException {
-   	if(srcFilePath.isDirectory()) {
-   		File newFloder = new File(destFilePath,srcFilePath.getName());
-   		newFloder.mkdirs();
-   		File[] fileList = srcFilePath.listFiles();
-   		for(File file:fileList) 
-   			copyFloder(file, newFloder);
-   	
-   	}else {
-   		File newFile = new File(destFilePath,srcFilePath.getName());
-   		copyFile(srcFilePath,newFile);
-   	}
+   private static void copyDirectory(File srcPath, File destPath) throws IOException {
+       if (srcPath.isDirectory()) {
+           File newDirectory = new File(destPath, srcPath.getName());
+           newDirectory.mkdirs();
+           File[] files = srcPath.listFiles();
+           for (File f : files) {
+               copyDirectory(f, newDirectory);
+           }
+       } else {
+           copyFile(srcPath, new File(destPath, srcPath.getName()));
+       }
    }
    
    private static void copyFile(File srcFilePath, File destFilePath) throws IOException {
@@ -3354,9 +3628,9 @@ public static void main(String[] args) throws IOException  {
    }
    ```
 
-8. **将一个文件中的字符串排序后写入另一个文件中**
+8. **将一个文件中的字符串每一行排序后写入另一个文件中**
 
-   ```
+   ```java
    BufferedReader br = new BufferedReader(new FileReader("StringDemo.txt"));
    BufferedWriter bw = new BufferedWriter(new FileWriter("newStringDemo.txt"));
    String line = null;
@@ -3372,13 +3646,87 @@ public static void main(String[] args) throws IOException  {
    ```
 
 
-## 8.5 其他流
 
-### 8.5.1 LineNumberReader
+## 8.7 序列化、反序列化
+
+### 8.7.1 概述
+
+Java 提供了一种对象**序列化**的机制。用一个字节序列可以表示一个对象，该字节序列包含该`对象的数据`、`对象的类型`和`对象中存储的属性`等信息。字节序列写出到文件之后，相当于文件中**持久保存**了一个对象的信息。 
+
+反之，该字节序列还可以从文件中读取回来，重构对象，对它进行**反序列化**。`对象的数据`、`对象的类型`和`对象中存储的数据`信息，都可以用来在内存中创建对象。
+
+![](F:\GitHub\Studying\Java\images\3_xuliehua.jpg)
+
+
+
+### 8.7.2 ObjectOutputStream、ObjectInputStream
+
+**ObjectOutputStream：**把**对象**按照流的方式写入文本文件保存或者在网络中传输。对象的**序列化流**
+
+* 构造方法
+  * `public ObjectOutputStream(OutputStream out) `
+* 成员方法
+  * `final void writeObject (Object obj)`：**将指定的对象写出**
+
+**ObjectInputStream：**把文本文件中或网络中的流对象数据还原成**对象**。对象的**反序列化流**
+
+* 构造方法
+  * `ObjectInputStream(InputStream in)`
+* 成员方法
+  * `final Object readObject ()`：**读取一个对象**
+
+==一个**对象要想序列化**，必须满足两个条件==
+
+* 该类必须**实现`java.io.Serializable ` 接口**，`Serializable` 是一个**标记接口（没有要实现的方法）**，不实现此接口的类将不会使任何状态序列化或反序列化，会抛出`NotSerializableException` 。
+* **该类的所有属性必须是可序列化的**。如果**有一个属性不需要被序列化**的，则该属性必须注明是**瞬态**的，使**用`transient` 关键字修饰**。被static修饰的不能被序列化，不需要添加transient关键字。
+
+**注意：**
+
+> 对于JVM==可以**反序列化对象**，它必须是**能够找到class文件的类**==。如果找不到该类的class文件，则抛出异常 **`ClassNotFoundException`**。
+>
+> 另外，当JVM反序列化对象时，能找到class文件，但是==**class文件在序列化对象之后发生了修改**==，那么反序列化操作也会失败，**抛出一个`InvalidClassException`异常**。发生这个异常的原因如下：
+>
+> * 该类的序列版本号与从流中读取的类描述符的版本号不匹配 
+> * 该类包含未知数据类型 
+> * 该类没有可访问的无参数构造方法 
+>
+> `Serializable` 接口给==需要序列化的类，提供了一个**序列版本号**==。**`serialVersionUID` **该版本号的目的在于**验证序列化的对象和对应类是否版本匹配**。类型必须是`static final long  serialVersionUID ` 
+
+
+
+
+
+## 8.8 PrintStream
+
+平时我们在控制台打印输出，是调用`print`方法和`println`方法完成的，这两个方法都来自于`java.io.PrintStream`类，该类能够方便地打印各种数据类型的值，是一种便捷的输出方式。
+
+- 只负责数据的输出，不负责数据的读取
+- 永远不会抛出`IOException`
+- 有特有方法`print`、`println`，输出任意类型值，以字符串显示，不会查询字符集
+
+**构造方法**
+
+* `public PrintStream(String fileName)`： 使用指定的文件名创建一个新的打印流。
+
+**改变打印流向**
+
+* `System.out`就是`PrintStream`类型的，只不过它的流向是系统规定的，打印在控制台上。不过，既然是流对象，我们就可以玩一个"小把戏"，改变它的流向。
+
+* 使用`System.setOut`方法改变输出语句的目的地改为参数中传递的打印流的目的地
+
+  `static void setOut(PrintStream out)`：重新分配“标准”输出流。
+
+  ​          
+
+
+
+## 8.9 其他流
+
+### LineNumberReader
 
 * **LineNumberReader使用**(行号从setLineNumber+1开始)
 
-  ```
+  ```java
   LineNumberReader lnr = new LineNumberReader(new FileReader("name.txt"));
   lnr.setLineNumber(-1);
   String line = null;
@@ -3388,27 +3736,7 @@ public static void main(String[] args) throws IOException  {
   lnr.close();
   ```
 
-### 8.5.2 打印流（printStream、printWriter）
-
-* 字节打印流(printStream)，字符打印流(printWriter)
-* 特点：
-  1. 只有写数据，没有读数据；只操作目的地,不操作数据源 
-  2. 可以操作任意类型的数据
-  3. 如果启用了**自动刷新**，在调用`println()`方法的时候，能够换行并刷新
-  4. 可以直接操作文件（基本流）（基本上File前缀的都可以，只要构造方法有String和File就支持）
-
-```
-BufferedReader br = new BufferedReader(new FileReader("a.txt"));
-PrintWriter pw = new PrintWriter(new FileWriter("b.txt"),true);
-String line = null;
-while((line=br.readLine())!=null) {
-	pw.println(line);
-}
-pw.close();
-br.close();
-```
-
-### 8.5.3 标准输入输出流(System.in、System.out)
+### 标准输入输出流(System.in、System.out)
 
 * System类下面有这样的两个字段
 
@@ -3419,11 +3747,13 @@ br.close();
 
   * A:main方法的args接收参数
 
-  *  B:System.in通过BufferedReader进行包装
+  * B:**System.in通过BufferedReader进行包装**
 
-     `BufferedReader br = new BufferedReader(new InputStreamReader(System.in))`
+     ```java
+     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+     ```
 
-  *  C:Scanner
+  * C:Scanner
 
      `Scanner sc = new Scanner(System.in)`
 
@@ -3431,24 +3761,26 @@ br.close();
 
   * 原理
 
-    ```
+    ```java
     System.out.println("helloworld");
                  
     PrintStream ps = System.out;
     ps.println("helloworld");   
     ```
 
-  *  把System.out用字符缓冲流包装一下使用
+  * **把System.out用字符缓冲流包装一下使用**
 
-          `BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out))`
+      ```java
+      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+      ```
 
-### 8.5.4 随机访问流(RandomAccessFile)
+### 随机访问流(RandomAccessFile)
 
 * 可以按照文件指针的位置写数据和读数据 入流
 
 * 构造方法
 
-  ```
+  ```java
   RandomAccessFile raf = new RandomAccessFile(File file/String name,String mode)//mode可以使rw
   ```
 
@@ -3458,7 +3790,7 @@ br.close();
   * 读数据
   * 获取和改变文件指针的位置
 
-### 8.5.5 合并流(SequenceInputStream)
+### 合并流(SequenceInputStream)
 
 * 把多个输入流的数据写到一个输出流中。
 
@@ -3468,47 +3800,10 @@ br.close();
 
   `SequenceInputStream(Enumeration<? extends InputStream> e)`
 
-### 8.5.6 序列化流ObjectOutputStream
-
-* 序列化流：把对象按照流的方式写入文本文件或者在网络中传输    对象——流数据
-
-  ```
-  ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(File file/String name))
-  ```
-
-  ```
-  ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("oos.txt"));
-  Student s = new Student("张三", 33);
-  oos.writeObject(s);
-  oos.close();
-  ```
-
-* 反序列化流：把文本文件中或网络中的流对象数据还原成对象         流数据——对象
-
-  ```
-  ObjectInputStream ois = new ObjectInputStream(new FileInputStream("oos.txt"));
-  Object o = ois.readObject();
-  ois.close();
-  System.out.println(o);
-  ```
-
-* **实现序列化：**
-
-  * 让被序列化对象所属类实现序列化接口(java.io.**Serializable**)，为标记接口，没有需要重写的方法
-
-    ```
-    public class Student implements Serializable{...}
-    ```
-
-  * 让对象成员**不被序列化**：用`transient`修饰（最后显示为默认值）
-
-* **注意：**
-
-  * 把数据写到文件后，**再去修改类**会产生问题 （在类文件中，**给出一个固定或自动变化的序列化id值**）
-
-## 8.6 NIO
+## 8.10 NIO（暂时未完成）
 
 - **Java7中新加的类**
+
   - **Path接口**表示路径
 
   - **Paths类**中`Paths.get()`接收一个或多个字符串，表示路径，**可以不存在**
@@ -3517,7 +3812,7 @@ br.close();
 
     - `public static long copy(Path source,OutputStream out)throws IOException`   **复制文件**
 
-      ```
+      ```java
       Files.copy(Paths.get("数据库.txt"), new BufferedOutputStream(new 			                   FileOutputStream("copy数据库.txt")));
       ```
 
@@ -3526,6 +3821,10 @@ br.close();
 
 
 # 9 网络编程
+
+* **软件结构**
+  * **C/S结构** ：全称为Client/Server结构，是指客户端和服务器结构。常见程序有ＱＱ、迅雷等软件。
+  * **B/S结构** ：全称为Browser/Server结构，是指浏览器和服务器结构。常见浏览器有谷歌、火狐等。
 
 ## 9.1 网络编程概述
 
@@ -3544,12 +3843,22 @@ br.close();
 
   ![](D:\Typora\photo\网络参考模型.png)
 
+  - 链路层：链路层是用于定义物理传输通道，通常是对某些**网络连接设备的驱动协议**，例如针对光纤、网线提供的驱动。
+  - 网络层（互联网层）：网络层是整个TCP/IP协议的**核心**，它主要用于将传输的**数据进行分组**，将分组数据**发送到目标**计算机或者网络。
+  - 传输层：主要使网络程序进行通信，在进行**网络通信**时，可以采用**TCP**协议，也可以采用**UDP**协议。
+  - 应用层：主要负责**应用程序的协议**，例如HTTP协议、FTP协议等。
 
 ## 9.2 网络编程三要素
 
 ### 9.2.1 IP地址
 
-- （网络中**计算机唯一标识**，点分十进制）
+- 指**互联网协议地址**（Internet Protocol Address）（网络中**计算机唯一标识**，**点分十进制**）
+
+- 分类
+
+  - IPv4：是一个**32位**的二进制数，通常被分为4个字节，表示成`a.b.c.d` 的形式，例如`192.168.65.100` 。其中a、b、c、d都是0~255之间的十进制整数，那么最多可以表示42亿个。
+
+  - IPv6：由于互联网的蓬勃发展，IP地址的需求量愈来愈大，但是网络地址资源有限，使得IP的分配越发紧张。为了扩大地址空间，拟通过IPv6重新定义地址空间，采用**128位**地址长度，**每16个字节一组，分成8组十六进制数**，表示成`ABCD:EF01:2345:6789:ABCD:EF01:2345:6789`，号称可以为全世界的每一粒沙子编上一个网址，这样就解决了网络地址资源数量不够的问题。
 
   - **组成：网络号段+主机号段**
 
@@ -3562,23 +3871,23 @@ br.close();
 
   - **分类：**
 
-    A类	1.0.0.1---127.255.255.254		(1)10.X.X.X是私有地址(在互联网上不使用，在局域网络中的地址)
+    A类	`1.0.0.1---127.255.255.254`(1)10.X.X.X是私有地址(在互联网上不使用，在局域网络中的地址)
 
-       		  						(2)127.X.X.X是保留地址，用做循环测试用的。
+       		  					   (2)127.X.X.X是保留地址，用做循环测试用的。
 
-    B类	128.0.0.1---191.255.255.254	172.16.0.0-172.31.255.255是私有地址。169.254.X.X是保留地址。
-    C类	192.0.0.1---223.255.255.254	192.168.X.X是私有地址
-    D类	224.0.0.1---239.255.255.254 	
-    E类	240.0.0.1---247.255.255.254
+    B类	`128.0.0.1---191.255.255.254`  172.16.0.0-172.31.255.255私有地址。169.254.X.X保留地址。
+    C类	`192.0.0.1---223.255.255.254`	192.168.X.X是私有地址
+    D类	`224.0.0.1---239.255.255.254`
+    E类	`240.0.0.1---247.255.255.254`
 
   - **两个DOS命令：**
-    ipconfig 查看本机IP地址
-    ​		ping 后面跟IP地址。测试本机与指定的IP地址间的通信是否有问题
+    `ipconfig` 查看本机IP地址等信息
+    `ping` 后面跟IP地址。测试本机与指定的IP地址间的通信是否有问题
 
   - **特殊的IP地址：**
-    127.0.0.1 回环地址(表示本机)
-    ​	x.x.x.255 广播地址
-    ​	x.x.x.0 网络地址
+    `127.0.0.1`、`localhost` 回环地址(表示本机)
+    `x.x.x.255` 广播地址
+    `x.x.x.0` 网络地址
 
   - `InetAddress类`**的概述和使用**（方便对IP地址的获取和操作）
 
@@ -3592,13 +3901,13 @@ br.close();
 
   - **InetAddress/getByName/getHostName/getHostAddress使用**
 
-    `public static InetAddress getByName(String host)`:根据**主机名**或者**IP地址**的字符串得到IP地址**对象**
+    `public static InetAddress getByName(String host)`:根据**主机名**或**IP地址**字符串得到IP地址**对象**
 
     `public String getHostName()`：返回主机名
 
     `public String getHostAddress()`:返回IP地址字符串
 
-    ```
+    ```java
     InetAddress address = InetAddress.getByName("Conanan");//或"192.168.1.6"
     		
     String name = address.getHostName();
@@ -3608,36 +3917,42 @@ br.close();
 
 
 
-### 9.2.2 端口号
+### 9.2.2 端口号（逻辑端口）
 
-* 正在运行的**程序的标识**
+* **正在运行的程序的标识**
 
-- **有效端口**：0~65535，其中0~1024系统使用或保留端口。
-
-- **物理端口**：网卡口
-
-- **逻辑端口**：我们指的就是逻辑端口
+- **有效端口**：两个字节组成，0~ 65535，其中0~1024系统使用或保留端口。
   1. 每个网络程序都会至少有一个逻辑端口
   2. 用于标识进程的逻辑地址，不同进程的标识
-  3. 有效端口：0~65535，其中0~1024系统使用或保留端口。
+  3. 有效端口：0~ 65535，其中0~ 1024系统使用或保留端口。
+
+
+> **物理端口**：网卡口
+
+* 常用端口号：
+  * 网络端口号：`80`
+  * 数据库：MySQL`3306`、Oracle`1521`
+  * Tomcat：`8080`
 
 
 
 ### 9.2.3 传输协议
 
+**数据报**(Datagram):网络传输的基本单位 
+
 * 通信的规则
 
-- **UDP**（将数据源和目的封装成数据包中，不需要建立连接；每个数据报的大小在限制在64k；因无连接，是不可靠协议；不需要建立连接，速度快）（聊天留言，在线视频，视频会议，发短信，邮局包裹）
-  1. 把数据打包
-  2. 数据有限制
-  3. 不建立连接
-  4. 速度快
-  5. 不可靠
-- **TCP**（建立连接，形成传输数据的通道；在连接中进行大数据量传输；通过三次握手完成连接，是可靠协议；必须建立连接，效率会稍低）（下载，打电话，QQ聊天(你在线吗,在线,就回应下,就开始聊天了)
-  1. 建立连接通道
-  2. 数据无限制
-  3. 速度慢
-  4. 可靠
+- **UDP**：**用户数据报协议**(User Datagram Protocol)。UDP是**无连接通信协议**，即在数据传输时，数据的发送端和接收端不建立逻辑连接。由于使用UDP协议**消耗资源小，通信效率高**，所以通常都会用于音频、视频和普通数据的传输。但在使用UDP协议传送数据时，由于UDP的**面向无连接性，不能保证数据的完整性，不可靠**，因此在传输重要数据时不建议使用UDP协议。特点:**数据打包被限制在64kb以内**，超出这个范围就不能发送了。（聊天留言，在线视频，视频会议。发短信，邮局包裹）
+
+- **TCP**：**传输控制协议** (Transmission Control Protocol)。TCP协议是**面向连接的通信协议**，即传输数据之前，在发送端和接收端建立逻辑连接，然后再传输数据，它提供了两台计算机之间**可靠无差错**的数据传输。（下载，浏览网页。打电话，QQ聊天(你在线吗,在线,就回应下,就开始聊天了)
+
+  在TCP连接中必须要明确客户端与服务器端，由客户端向服务端发出连接请求，每次连接的创建都需要经过“三次握手”。
+
+  - **三次握手**：TCP协议中，在发送数据的准备阶段，客户端与服务器之间的三次交互，以保证连接的可靠。
+    - 第一次握手，客户端向服务器端发出连接请求，等待服务器确认。
+    - 第二次握手，服务器端向客户端回送一个响应，通知客户端收到了连接请求。
+    - 第三次握手，客户端再次向服务器端发送确认信息，确认连接。
+  - 完成三次握手，连接建立后，客户端和服务器就可以开始进行数据传输了
 
 ### 9.2.4 Socket
 
@@ -3660,7 +3975,7 @@ br.close();
   4. 解析数据包，并显示在控制台
   5. 释放资源(接收端应该一直开着)
 
-  ```
+  ```java
   DatagramSocket ds = new DatagramSocket(10086);
   
   byte[] bys = new byte[1024];
@@ -3682,7 +3997,7 @@ br.close();
   3. 调用Socket对象的发送方法发送数据包（`ds.send(dp)`）
   4. 释放资源
 
-  ```
+  ```java
   DatagramSocket ds = new DatagramSocket();
   
   byte[] bys = "helloworld".getBytes();
@@ -3696,7 +4011,7 @@ br.close();
 
 * **多线程实现聊天室**
 
-  ```
+  ```java
   //主线程
   public class MainDemo {
   	public static void main(String[] args) throws IOException {
@@ -3759,14 +4074,38 @@ br.close();
 
 ### 9.3.2 TCP(Socket、ServerSocket)
 
+* **java.net.ServerSocket**：这个类**实现了服务器套接字**，该对象等待通过网络的请求。
+
+  * `ServerSocket(int port)` 使用该构造方法在**创建ServerSocket对象**时，就可以将其绑定到一个指定的端口号上，参数port就是端口号。
+  * `Socket accept()` ：**侦听并接受连接**，返回一个新的Socket对象，用于和客户端实现通信。==**该方法会一直阻塞直到建立连接**==。 
+  * `void close()` ：**关闭此套接字**。详细介绍如Socket中`close`方法
+
+* **java.net.Socket**：该类**实现客户端套接字**，套接字指的是两台设备之间通讯的端点。
+
+  - `Socket(String host, int port)`：**创建套接字对象**并将其连接到**指定主机**上的**指定端口号**
+  - `InputStream getInputStream()` ： 返回此**套接字的输入流**。
+    - 如果此Scoket具有相关联的通道，则生成的InputStream 的所有操作也关联该通道。
+    - 关闭生成的InputStream也将关闭相关的Socket。
+  - `OutputStream getOutputStream()` ： 返回此**套接字的输出流**。
+    - 同上两条
+  - `void close()` ：**关闭此套接字**。
+    - 一旦一个socket被关闭，它不可再使用。
+    - 关闭此socket也将关闭相关的InputStream和OutputStream 。 
+  - `void shutdownOutput()` ： **禁用此套接字的输出流**。   
+    - **任何先前写出的数据将被发送**，并且后跟 TCP 的正常连接**终止序列**。 
+
+  > ==**服务器使用客户端的流和客户端交互**==
+  >
+  > ==IO流中各**read**方法在**没有输入可用时将阻塞**，并且**在通道中输入流是读不到结束标记**的，所以需要**shutdownOutput**方法来发送数据并**带上终止序列**。==
+
 * **服务器端接收数据(ServerSocket)**
 
   1. 创建TCP服务器端的Socket对象
   2. 监听客户端连接
-  3. 获取**通道**的输入流，读取数据
+  3. 获取**套接字**的输入流，读取数据
   4. 释放资源
 
-  ```
+  ```java
   ServerSocket ss = new ServerSocket(60001);
   		
   Socket s = ss.accept();
@@ -3782,10 +4121,10 @@ br.close();
 * **客户端发送数据(Socket)**
 
   1. 创建TCP客户端的Socket对象
-  2. 获取**通道**的输出流，写数据
+  2. 获取**套接字**的输出流，写数据
   3. 释放资源
 
-  ```
+  ```java
   Socket s = new Socket("192.168.81.1", 60001);
   		
   OutputStream os = s.getOutputStream();
@@ -3794,247 +4133,102 @@ br.close();
   s.close();
   ```
 
-#### 9.3.2.1 客户端键盘录入服务器写到文本文件并从通道有反馈
+* **文件上传优化**
 
-```
-//Server
-ServerSocket ss = new ServerSocket(6789);
-Socket s = ss.accept();
+  * **文件名称写死的问题**：建议使用系统时间优化，保证文件名称唯一
 
-BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-BufferedWriter bw = new BufferedWriter(new FileWriter("test1.txt"));
-		
-String line = null;
-while((line=br.readLine())!=null) {
-	bw.write(line);
-	bw.newLine();
-	bw.flush();
-}
-	
-BufferedWriter buw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-buw.write("写入完毕");
-buw.newLine();
-buw.flush();
-		
-s.close();
-bw.close();
+    ```java
+    FileOutputStream fis = new FileOutputStream(System.currentTimeMillis()+".jpg")
+    ```
 
-//Client
-Socket s = new Socket("192.168.81.1", 6789);
+  * **循环接收的问题**：服务端不应保存一个文件就关闭，需要不断的接收不同用户的文件，使用**循环**改进
 
-BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+    ```java
+    // 让服务器一致处于监听状态。每次接收新的连接,创建一个Socket
+    while（true）{
+        Socket accept = serverSocket.accept();
+        ......
+    }
+    ```
 
-String line = null;
-while ((line = br.readLine()) != null) {
-	if (line.equals("over"))
-		break;
-	bw.write(line);
-	bw.newLine();
-	bw.flush();
-}
+  * **效率问题**：服务端，在接收大文件时耗费时间长，此时不能接收其他用户上传，使用**多线程**技术优化
 
-s.shutdownOutput();//标记，禁用此套接字的输出流
+    ```java
+    while（true）{
+        Socket accept = serverSocket.accept();
+        // accept 交给子线程处理.
+        new Thread(() -> {
+            ......
+                InputStream bis = accept.getInputStream();
+            ......
+        }).start();
+    }
+    //并且由于接口中没有抛异常，所以实现类中也不能抛异常，只能try...catch
+    ```
 
-BufferedReader bur = new BufferedReader(new InputStreamReader(s.getInputStream()));
-String msg = bur.readLine();
-System.out.println(msg);
-
-s.close();
-```
-
-#### 9.3.2.2 客户端读取文本文件服务器控制台输出
+#### 上传文件带反馈（多线程）
 
 ```java
-//ServerSocket
-ServerSocket ss = new ServerSocket(8888);
-Socket s = ss.accept();
-
-BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-String line = null;
-while ((line = br.readLine()) != null) {
-	bw.write(line);
-	bw.newLine();
-	bw.flush();
-}
-s.close();
-
-//Socket
-Socket s = new Socket(InetAddress.getByName("Conanan").getHostAddress(), 8888);
-
-BufferedReader br = new BufferedReader(new FileReader("test.java"));
-BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-
-String line = null;
-while ((line = br.readLine()) != null) {
-	bw.write(line);
-	bw.newLine();
-	bw.flush();
-}
-br.close();
-s.close();
-```
-
-#### 9.3.2.3 上传文本文件带反馈
-
-```
 //Server
-ServerSocket ss = new ServerSocket(8888);
-Socket s = ss.accept();
+ServerSocket socket = new ServerSocket(8888);
+while (true) { //服务端循环接收不同客户端请求
+    Socket s = socket.accept(); //监听到客户端请求并建立连接
+    new Thread(() -> {  //利用lambda实现多线程，让每个用户的线程不受其他线程影响。并由于接口没有抛异常，所以以下用try捕获
+        BufferedOutputStream bos = null;
+        try {
+            BufferedInputStream bis = new BufferedInputStream(s.getInputStream());
+            File file = new File("F:\\upload"); //检查上传文件的目录是否存在
+            if (!file.exists())
+                file.mkdirs();
+            String name = System.currentTimeMillis() + ".jpg"; //解决文件名写死问题
+            bos = new BufferedOutputStream(new FileOutputStream(file+"\\"+name));
+            //将从网络通道中的文件读取并写入磁盘
+            byte[] bytes = new byte[1024];
+            int len = 0;
+            while ((len = bis.read(bytes)) != -1) {
+                bos.write(bytes, 0, len);
+            }
+		   //回应客户端上传完毕
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+            bw.write("上传完毕");
+            bw.newLine();
+            bw.flush();
 
-BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-BufferedWriter bw = new BufferedWriter(new FileWriter("上传文件.java"));
-
-String line = null;
-while ((line = br.readLine()) != null) {
-	bw.write(line);
-	bw.newLine();
-	bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bos.close();
+                s.close(); //close本身也抛异常。由于是多线程，每个线程使用的不同socket，所以socket可以关闭
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
 }
-
-BufferedWriter buw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-buw.write("上传成功！");
-buw.newLine();
-buw.flush();
-
-bw.close();
-s.close();
 
 //Client
-Socket s = new Socket("192.168.81.1", 8888);
+Socket s = new Socket("127.0.0.1",8888);
 
-BufferedReader br = new BufferedReader(new FileReader("test.java"));
-BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-
-String line = null;
-while ((line = br.readLine()) != null) {
-	bw.write(line);
-	bw.newLine();
-	bw.flush();
-}
-
-s.shutdownOutput();
-BufferedReader bur = new BufferedReader(new InputStreamReader(s.getInputStream()));
-String msg = bur.readLine();
-System.out.println(msg);
-
-s.close();
-br.close();
-```
-
-#### 9.3.2.4 上传其他文件带反馈
-
-```
-//Server
-ServerSocket ss = new ServerSocket(8888);
-Socket s = ss.accept();
-
-BufferedInputStream bis = new BufferedInputStream(s.getInputStream());
-BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("上传图片.bmp"));
-
-byte[] bys = new byte[1024];
-int len = 0;
-while ((len = bis.read(bys)) != -1) {
-	bos.write(bys, 0, len);
-	bos.flush();
-}
-
-BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-bw.write("图片上传完毕");
-bw.newLine();
-bw.flush();
-
-bos.close();
-s.close();
-
-//Client
-Socket s = new Socket("192.168.81.1", 8888);
-BufferedInputStream bis = new BufferedInputStream(new FileInputStream("test.bmp"));
+BufferedInputStream bis = new BufferedInputStream(new FileInputStream("day22-code\\src\\666.jpg"));
 BufferedOutputStream bos = new BufferedOutputStream(s.getOutputStream());
-
-byte[] bys = new byte[1024];
+//将本地磁盘文件读取并写入网络通道中
+byte[] bytes = new byte[1024];
 int len = 0;
-while ((len = bis.read(bys)) != -1) {
-	bos.write(bys, 0, len);
-	bos.flush();
+while ((len=bis.read(bytes))!=-1){
+    bos.write(bytes,0,len);
 }
-
-s.shutdownOutput();
-
+s.shutdownOutput();//发送数据并带上终止序列，以便服务器读取时可以读到终止序列
+//读取网络通道中服务器回应的数据并打印
 BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-String msg = br.readLine();
-System.out.println(msg);
+String line = br.readLine();
+System.out.println(line);
 
 bis.close();
 s.close();
 ```
 
-#### 9.3.2.5 多客户上传文件(多线程)
 
-* **需要多线程修改服务器中复制文件部分**
-
-```
-//Server
-ServerSocket ss = new ServerSocket(8888);
-while (true) {
-	Socket s = ss.accept();
-	new Thread(new UseServerThread(s)).start();
-}
-
-//UseServerThread
-public class UseServerThread implements Runnable {
-	private Socket s;
-	public UseServerThread(Socket s) {
-		this.s = s;
-	}
-	@Override
-	public void run() {
-		try {
-			BufferedInputStream bis = new BufferedInputStream(s.getInputStream());
-			String newName = System.currentTimeMillis() + ".bmp";
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(newName));
-
-			byte[] bys = new byte[1024];
-			int len = 0;
-			while ((len = bis.read(bys)) != -1) {
-				bos.write(bys, 0, len);
-				bos.flush();
-			}
-
-		   BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-			bw.write("上传完毕");
-			bw.newLine();
-			bw.flush();
-
-			bos.close();
-			s.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-//Client
-Socket s = new Socket("192.168.81.1", 8888);
-BufferedInputStream bis = new BufferedInputStream(new FileInputStream("要上传的文件.txt"));
-BufferedOutputStream bos = new BufferedOutputStream(s.getOutputStream());
-
-byte[] bys = new byte[1024];
-int len = 0;
-while ((len = bis.read(bys)) != -1) {
-	bos.write(bys, 0, len);
-	bos.flush();
-}
-
-s.shutdownOutput();
-BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-String msg = br.readLine();
-System.out.println(msg);
-
-bis.close();
-s.close();
-```
 
 
 
