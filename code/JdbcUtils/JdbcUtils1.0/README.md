@@ -1,1 +1,0 @@
-* 利用dbconfig.properties提供的四大参数来创建Connection对象并返回

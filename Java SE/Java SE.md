@@ -155,7 +155,7 @@
     System.out.println(str+a+b);//hello1020
     ```
 
-  * ==**取余和取模**（C、C++、java中%是取余，Python中%是取模），只对于整数有意义==
+  * ==**取余和取模**（C、C++、java、JavaScript中%是取余，Python中%是取模），只对于整数有意义==
 
     ==区别在于第一步的商**趋于0(取余)**、**趋于负无穷(取模)**，**取余和取模同符号数结果相同**==
 
@@ -286,7 +286,7 @@
 
 * **循环语句**
 
-  * for（三角形图形，上右，下左）
+  * for：==无论布尔表达式是否满足，**步进表达式都会执行**==（三角形图形，上右，下左）
 
     ```java
     for(初始化表达式; 布尔表达式; 步进表达式){
@@ -375,7 +375,7 @@
 
 * 数组内存图
 
-  ![](F:\GitHub\Studying\Java\images\04-两个引用指向同一个数组的内存图.png)
+  ![](images\04-两个引用指向同一个数组的内存图.png)
 
 * 数组反转
 
@@ -525,19 +525,19 @@
 
   对象调用方法时，根据对象中方法标记（地址值），去类中寻找方法信息。这样哪怕是多个对象，方法信息 只保存一份，节约内存空间。 
 
-  ![](F:\GitHub\Studying\Java\images\02-两个对象使用同一个方法的内存图.png)
+  ![](images\02-两个对象使用同一个方法的内存图.png)
 
 * **两个引用指向同一对象**的内存图
 
-  ![](F:\GitHub\Studying\Java\images\03-两个引用指向同一个对象的内存图.png)
+  ![](images\03-两个引用指向同一个对象的内存图.png)
 
 * **引用类型作为参数传递到方法中，传递的是地址值**
 
-  ![](F:\GitHub\Studying\Java\images\04-使用对象类型作为方法的参数.png)
+  ![](images\04-使用对象类型作为方法的参数.png)
 
 * **使用引用类型作为方法的返回值，返回值就是对象的地址值**
 
-  ![](F:\GitHub\Studying\Java\images\05-使用对象类型作为方法的返回值.png)
+  ![](images\05-使用对象类型作为方法的返回值.png)
 
 ## 2.2 成员变量与局部变量
 
@@ -631,7 +631,7 @@
 
 - 静态内存图
 
-  ![](F:\GitHub\Studying\Java\images\03-静态的内存图.png)
+  ![](images\03-静态的内存图.png)
 
 
 
@@ -685,7 +685,7 @@
 
   * **函数名**和**参数列表**要**一模一样**。 
 
-    ![](F:\GitHub\Studying\Java\images\方法重写.PNG)
+    ![](images\方法重写.PNG)
 
   虽然在子类中可以存在与父类中**private**和**static**方法相同名称的方法，和类相关，所以并**不是重写**
 
@@ -693,7 +693,7 @@
 
   父类空间优先于子类对象产生。在每次创建子类对象时，先初始化父类空间，再创建其子类对象本身。目的在于子类对象中包含了其对应的父类空 间，便可以包含其父类的成员，如果父类成员非private修饰，则子类可以随意使用父类成员。代码体现在子类的构 造方法调用时，一定先调用父类的构造方法。
 
-  ![](F:\GitHub\Studying\Java\images\03-super与this的内存图.png)
+  ![](images\03-super与this的内存图.png)
 
 * Java中**继承的特征**
 
@@ -818,7 +818,7 @@
 
 * 笔记本USB接口案例
 
-  ![](F:\GitHub\Studying\Java\images\06-笔记本电脑案例分析.png)
+  ![](images\06-笔记本电脑案例分析.png)
 
 ### 2.3.7 一个对象的实例化过程
 
@@ -829,7 +829,7 @@
 2. 在用构造器**创建对象**时，在**堆中为对象分配空间**，执行构造器初始化
 
    1. 先根据隐藏的第一行**`super()`**来到**根基类**的无参构造器
-   2. 执行根基类的**非静态成员变量的默认、显式初始化**和**构造代码块的初始化**（<u>按其定义顺序执行</u>）
+   2. 执行根基类的**非静态成员变量的默认初始化，显式初始化**和**构造代码块的初始化**（<u>后俩按其定义顺序执行</u>）
    3. 然后执行根基类**构造器定义的初始化**
    4. 然后执行下一个派生类的`super()`后的以上操作
 
@@ -1306,7 +1306,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
      System.out.println(s3.equals(s1+s2));//true
      ```
 
-     ![](F:\GitHub\Studying\Java\images\01-字符串的常量池.png)
+     ![](images\01-字符串的常量池.png)
 
   3. 字符串效果上相当于char[]字符数组，但是==**底层原理被final修饰的byte[]字节数组**==。
 
@@ -1494,7 +1494,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
        }
      ```
 
-     ![](F:\GitHub\Studying\Java\images\形参实参问题.png)
+     ![](images\形参实参问题.png)
 
 
 
@@ -1729,7 +1729,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 - **继承体系结构**
 
-  ![](F:\GitHub\Studying\Java\images\容器.png)
+  ![](images\容器.png)
 
 ## 4.1 数据结构
 
@@ -1741,7 +1741,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
   * **栈的入口、出口的都是栈的顶端位置**。
 
-    ![](F:\GitHub\Studying\Java\images\堆栈.png)
+    ![](images\堆栈.png)
 
 * **压栈**：就是**存**元素。
 
@@ -2122,13 +2122,13 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
     - "重地"和""通话""元素不同，但哈希值相同，**哈希冲突**
 
-    ![](F:\GitHub\Studying\Java\images\哈希表.png)
+    ![](images\哈希表.png)
 
 - ==**哈希表元素唯一性**底层依赖两个方法==：**`hashCode()`和`equals()`**。
 
   - 要使用HashSet**存储自定义类型对象**，必须**==重写==**这两方法来建立属于当前对象的比较方式
 
-![](F:\GitHub\Studying\Java\images\哈希流程图.png)
+![](images\哈希流程图.png)
 
 ### 4.6.2 LinkedHashSet
 
@@ -2422,7 +2422,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 * 异常的根类是`java.lang.Throwable`，其下有两个子类：`java.lang.Error`与`java.lang.Exception`，平常所说的异常指`java.lang.Exception`。
 
-  ![](F:\GitHub\Studying\Java\images\异常体系.png)
+  ![](images\异常体系.png)
 
 * **Throwable中的常用方法：**
   * `public void printStackTrace()`打印异常的**详细信息**。
@@ -2440,7 +2440,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 - **编译时期异常**：checked异常。在编译时期就会检查，如果没有处理异常则编译失败。(IO、日期格式化异常)
 - **运行时期异常**：runtime异常。在编译时期运行异常不会被检测(不报错)。在运行时期检查异常。(数学异常)
 
-![](F:\GitHub\Studying\Java\images\异常的分类.png)
+![](images\异常的分类.png)
 
 ​	
 
@@ -2653,7 +2653,7 @@ catch (异常类名 变量名) {
 
 * ==多线程执行时，其实**每一个执行线程**都有一片自己**所属的栈内存**空间。进行**方法的压栈和弹栈**。==
 
-![](F:\GitHub\Studying\Java\images\栈内存原理图.png)
+![](images\栈内存原理图.png)
 
 ### 6.3.2 Thread（java.lang）
 
@@ -2888,7 +2888,7 @@ catch (异常类名 变量名) {
 | **Timed Waiting**(计时等待) | 同waiting状态，有几个方法有超时参数，调用他们将进入Timed Waiting状态。这一状态将一直保持到超时期满或者接收到唤醒通知。带有超时参数的常用方法有Thread.sleep(1000) 、 Object.wait。 |
 | **Terminated**(被终止)      | 因为run方法正常退出而死亡，或者因为没有捕获的异常终止了run方法而死亡。 |
 
-![](F:\GitHub\Studying\Java\images\线程状态.png)
+![](images\线程状态.png)
 
 
 
@@ -3210,7 +3210,7 @@ Java中I/O操作主要指使用`java.io`包下的内容进行输入、输出操�
 - **字节流** ：以字节为单位，读写数据的流。
 - **字符流** ：以字符为单位，读写数据的流。
 
-![](F:\GitHub\Studying\Java\images\IO流.PNG)
+![](images\IO流.PNG)
 
 
 
@@ -3302,7 +3302,7 @@ Java中I/O操作主要指使用`java.io`包下的内容进行输入、输出操�
 
 * 当指定了**编码**，它所对应的**字符集**自然就指定了，所以**编码**才是我们最终要关心的
 
-  ![](F:\GitHub\Studying\Java\images\1_charset.jpg)
+  ![](images\1_charset.jpg)
 
 - ==**ASCII字符集**==
   - ASCII（American Standard Code for Information Interchange，美国信息交换标准代码）是基于拉丁字母的一套电脑编码系统，用于显示现代英语，主要包括控制字符（回车键、退格、换行键等）和可显示字符（英文大小写字符、阿拉伯数字和西文符号）。
@@ -3724,7 +3724,7 @@ Java 提供了一种对象**序列化**的机制。用一个字节序列可以�
 
 反之，该字节序列还可以从文件中读取回来，重构对象，对它进行**反序列化**。`对象的数据`、`对象的类型`和`对象中存储的数据`信息，都可以用来在内存中创建对象。
 
-![](F:\GitHub\Studying\Java\images\3_xuliehua.jpg)
+![](images\3_xuliehua.jpg)
 
 
 
@@ -3910,7 +3910,7 @@ Java 提供了一种对象**序列化**的机制。用一个字节序列可以�
   - OSI（Open System Interconnection开放系统互连）参考模型
   - TCP/IP参考模型
 
-  ![](D:\Typora\photo\网络参考模型.png)
+  ![](images\网络参考模型.png)
 
   - 链路层：链路层是用于定义物理传输通道，通常是对某些**网络连接设备的驱动协议**，例如针对光纤、网线提供的驱动。
   - 网络层（互联网层）：网络层是整个TCP/IP协议的**核心**，它主要用于将传输的**数据进行分组**，将分组数据**发送到目标**计算机或者网络。
@@ -4924,7 +4924,7 @@ list.stream()
 
 整体来看，流式思想类似于工厂车间的“**生产流水线**”。当需要**对多个元素进行操作（特别是多步操作）**的时候，考虑到性能及便利性，我们应该**首先拼好一个“模型”步骤方案**，然后再按照方案去**执行**它。
 
-![](F:\GitHub\Studying\Java\images\拼接流式模型.PNG)
+![](images\拼接流式模型.PNG)
 
 这张图中展示了过滤、映射、跳过、计数等多步操作，这是一种**集合元素的处理方案**，而方案就是一种“**函数模 型**”。图中的**每一个方框都是一个“流”**，调用指定的方法，可以**从一个流模型转换为另一个流模型**。而右侧的数字 3是终结果。
 
@@ -5471,7 +5471,7 @@ public static void main(String[] args) throws Exception {
 * 优点：客户端不需要负责对象的创建，从而明确了各个类的职责
 * 缺点：这个静态工厂类负责所有对象的创建，如果有新的对象增加，或者某些对象的创建方式不同，就需要不断的修改工厂类，不利于后期的维护
 
-```
+```java
 public abstract class Animal {
 	public abstract void eat();
 }
@@ -5502,7 +5502,7 @@ public class AnimalFactory {
 * **优点**：客户端不需要负责对象的创建，从而明确了各个类的职责，如果有新的对象增加，只需要增加一个具体的类和具体的工厂类即可，不影响已有的代码，后期维护容易，增强了系统的扩展性
 * **缺点**：需要额外的编写代码，增加了工作量
 
-```
+```java
 public abstract class Animal {
 	public abstract void eat();
 }
@@ -5548,7 +5548,7 @@ public static void main(String[] args) {
 
     * **饿汉式**（类一加载就创建对象）（开发用，是不会出问题的单例模式）
 
-      ```
+      ```java
       private static Student s = new Student();
       private Student() {}
       public static Student getStudent() {
@@ -5558,7 +5558,7 @@ public static void main(String[] args) {
 
     * **懒汉式**（用的时候才创建）（面试用，可能会出问题的单例模式）
 
-      ```
+      ```java
       private static Teacher t = null;
       private Teacher() {}
       public static Teacher getTeacher() {
@@ -5573,12 +5573,12 @@ public static void main(String[] args) {
 
     `public Process exec(String command) throws IOException`在单独的进程中执行指定的字符串命令
 
-    ```
-    		Runtime r = Runtime.getRuntime();
-    		r.exec("calc");
-    		r.exec("notepad");
-    		r.exec("shutdown -s -t 10000");//10000秒后关机
-    		r.exec("shutdown -a");//取消关机
+    ```java
+    Runtime r = Runtime.getRuntime();
+    r.exec("calc");
+    r.exec("notepad");
+    r.exec("shutdown -s -t 10000");//10000秒后关机
+    r.exec("shutdown -a");//取消关机
     ```
 
 ### 12.2.4 模板设计模式
@@ -5622,5 +5622,3 @@ public static void main(String[] args) {
   ```
 
 
-
-* * 
