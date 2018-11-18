@@ -190,7 +190,7 @@
 
     - **hidden**：隐藏域(**指定name属性**，**value**)：页面看不到但数据会被提交
 
-    - **submit**：提交按钮
+    - **submit**：提交按钮。还可以通过获取form，使用**form的`submit()`方法**，和事件不同！
 
       ```html
       <input type="submit"/> <!--默认为提交（中文环境）、submit（英文环境）-->
@@ -571,9 +571,9 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
   - 一元运算符(同Java)：`++`(自增)、`--`(自减)、`+`(正号)、`-`(负号)
     - ==注意：在JS中，如果**运算数不是运算符所要求的类型**，那么js引擎会**自动的将运算数进行类型转换**==
-              ​    ​    ​    * 其他类型转`number`：
-              ​    ​    ​        * `string`转`number`：**按照字面值转换**。如果字面值不是数字，则转为**NaN**（不是数字的数字）
-              ​    ​    ​        * `boolean`转`number`：`true`转为**1**，`false`转为**0**
+      ​    ​    ​    ​    ​    * 其他类型转`number`：
+      ​    ​    ​    ​    ​        * `string`转`number`：**按照字面值转换**。如果字面值不是数字，则转为**NaN**（不是数字的数字）
+      ​    ​    ​    ​    ​        * `boolean`转`number`：`true`转为**1**，`false`转为**0**
   - 算术运算符(同Java)：`+`、`-`、`*`、`/`、`%`(取余)
   - 三元运算符(同Java)：`表达式? 值1:值2;`
   - 赋值运算符：`=`、`+=`、`-+`
@@ -744,11 +744,11 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
          - `*`：表示出现0次或多次
          - `+`：出现1次或多次
          - `{m,n}`：表示 m<= 数量 <= n
-            ​    - m如果缺省： `{,n}`最多n次
+            - m如果缺省： `{,n}`最多n次
                - n如果缺省：`{m,}`最少m次
   3. **开始结束符号**
-    * ^：开始
-    * $：结束
+    * `^`：开始
+    * `$`：结束
 
 - **正则对象**：
 
@@ -955,11 +955,11 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 ### 3.4.4 HTML DOM
 
-- **标签体**的设置和获取：**`innerHTML`**
+- **标签体**的设置和获取：**`innerHTML`**，开始、闭合标签中的内容，包括子标签的所有内容
+
+  - 区别于**`value`**属性：代表的是元素的值，一般用于**`input`标签值的获取**
 
 - 使用html**元素**对象的**属性**
-
-  - **`value`**属性：代表的是元素的值，与开始、闭合标签中的文本节点不同
 
 - **控制元素样式**
 
@@ -1868,7 +1868,7 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 **组件**
 
 * 导航条
-* 分页
+* 分页：！！！
 
 **插件**
 
@@ -1880,457 +1880,330 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 
 
 
-
+# 第二部分 Web后端
 
 # 1 XML
 
-## 1.1 表单提交方式
+## 1.1 XML简介（了解）
 
-- form与submit提交
+- XML（EXtensible Markup Language）：**可扩展标记型语言**。
+  - **可扩展**：xml中标签可以**自定义**，可以写中文的标签 `<person></person`
+- 功能：**存储数据**
+    - 配置文件
+   - 在网络中传输，跨平台
+ - xml与html的区别（都是w3c万维网联盟发布的）
+    - xml标签都是自定义的，html标签是预定义
+    - xml的语法严格，html语法松散
+    - xml主要用于存储数据的，html是展示数据
 
-- form与button提交
+## 1.2 XML的语法
 
-  ```javascript
-  var form1 = function(){
-      var form1 = document.getElementById("form1");
-      form1.action = "hello.html";
-      form1.submit();
-  }
-  
-  ```
+**基本语法（严格！）**
 
-- 使用超链接提交
+* xml文档的后缀名`.xml`
+* xml**第一行（顶格）**必须定义为文档声明
+* xml文档中有且仅有**一个根标签**
+* **属性值**必须使用**引号**（单双都可）引起来
+* **标签**必须**正确关闭**
+* xml**标签名**称**区分大小写**
 
-  ```html
-  <a href="hello.html?username=123456">使用超链接提交</a>
-  ```
+**1、文档声明**
 
-## 1.2 XML简介（了解）
-
-- eXtensible Markup Language：**可扩展标记型语言**。
-  - 标记型语言：html是标记型语言；xml也使用标签来操作
-  - 可扩展：html里面的标签是固定，每个标签都有特定的含义；标签可以自己定义,可以写中文的标签 `<person></person`、`<猫></猫>`
-  - html是用于显示数据，xml也可以显示数据，xml主要功能，为了**存储传输数据**
-  - 使用都是1.0版本，（1.1版本不能向下兼容）
-- **XML的应用**
-  - **不同的系统之间传输数据**
-  - 用来表示生活中**有关系的数据**
-  - 经常用在**配置文件**
-
-## 1.3 **XML的语法**
-
-### 1.3.1 **xml的文档声明**
-
-- 必须**第一行第一列**
-
-  ```xml
-  <?xml version="1.0" encoding="utf-8"?>
-  ```
-
-- 属性：version（版本）、encoding（gbk  utf-8  iso8859-1(不包含中文)）
-
-  	    standalone：是否需要依赖其他文件 yes/no
-
-- **xml的中文乱码问题解决**：保存时候的编码和设置打开时候的编码一致
-
-### 1.3.2 **定义元素（标签）**
-
-- 标签定义有开始必须要有结束`<person></person>`
-- 标签没有内容，可以在标签内结束`<aa/>`
-- 标签可以嵌套，必须要合理嵌套 `<aa><bb></bb></aa>`
-- 一个xml中，只能有**一个根标签**，其他标签都是这个标签下面的标签
-- 在xml中把**空格和换行都当成内容**来解析，与HTML区别
-- xml标签**可以是中文**
-- xml中标签的名称规则
-  1. xml代码**区分大小写**
-  2. xml的标签不能以数字和下划线(_)开头
-  3. xml的标签不能以xml、XML、Xml等开头
-  4. xml的标签不能包含空格和冒号
-
-### 1.3.3 **定义属性**
-
-```
-<person id1="aaa" id2="bbb"></person>
-
+```xml
+<?xml version="1.0" encoding="utf-8"?>
 ```
 
-- 属性定义的要求：
-  1. 一个标签上可以有多个属性
-  2. 属性名称不能相同
-  3. 属性名称和属性值之间使用= ，属性值使用引号包起来 （可以是单引号，也可以是双引号 ）
-  4. xml属性的名称规范和元素的名称规范一致
+- 格式：**第一行第一列**（顶格）：`<?xml 属性列表 ?>`
+- 属性列表：
+  - `version`：版本号，必须的属性。虽然有1.1版本，但不向下兼容，所以大多使用1.0版本
+  - `encoding`：编码方式。告知解析引擎当前文档使用的字符集，默认值：`ISO-8859-1`，可设置`gbk`、`utf-8`等
+  - `standalone`：是否独立。取值如下：
+      * yes：不依赖其他文件
+      * no：依赖其他文件
 
-### 1.3.4 **注释**
+**2、标签定义规则**
 
-```
-<!-- xml的注释,不能嵌套 -->
-```
+* 名称可以包含字母、数字以及其他的字符 
+* 名称不能以数字或者标点符号开始 
+* 名称不能以字母 xml（或者 XML、Xml 等等）开始 
+* 名称不能包含空格
 
-### 1.3.5 **特殊字符（转义字符）**
+**3、属性**
 
-- `&lt;` `&gt;` `&amp;`
+* id属性值唯一
 
-### 1.3.6 CDATA区（了解）
+**4、特殊字符**
 
-- 解决多个字符都需要转义的操作 ，把特殊字符，当做文本内容，而不是标签
-- 写法：`<![CDATA[内容]]>`，例如，`<![CDATA[ <b>if(a<b && b<c && d>f) {}</b> ]]>`
+* 转义字符：`&lt;` `&gt;` `&amp;`等
 
-### 1.3.7 PI指令（处理指令）（了解）
+**5、CDATA区（了解）**
 
-- 可以在xml中设置样式，只能对英文标签名称起作用，对于中文的标签名称不起作用的
-- 写法：`<?xml-stylesheet type="text/css" href="css的路径"?>`
+   * 解决多个字符都需要转义的操作 ，把特殊字符，当做文本内容，而不是标签
+   * 格式：`<![CDATA[ 内容 ]]>`。例如，`<![CDATA[ <b>if(a<b && b<c && d>f) {}</b> ]]>`
+
+**6、PI指令（了解）**
+
+* 结合CSS，写法：`<?xml-stylesheet type="text/css" href="css的路径"?>`。给xml设置样式，但只对英文标签起作用
+
+**7、注释**
+
+* 同html：`<!--注释-->`
+
+
+
+## 1.3 XML的约束（看懂）
+
+> 浏览器只负责校验xml的语法，不负责校验约束
+
+- 约束：**规定xml文档的书写规则**
+- 作为框架的使用者（程序员）：
+   1. 能够在xml中引入约束文档
+   2. 能够简单的读懂约束文档
+
+- 分类：
+  1. DTD：一种简单的约束技术
+  2. Schema：一种复杂的约束技术
+
+### 1.3.1 DTD约束
+
+- **引入**
+
+  * 内部dtd：将约束规则定义在xml文档中
+
+      ```dtd
+      <!DOCTYPE 根标签名  [
+      	<!ELEMENT person (name,age)>
+      	<!ELEMENT name (#PCDATA)>
+      	<!ELEMENT age (#PCDATA)>
+      ]>
+      ```
+
+  * 外部dtd：将约束的规则定义在外部的dtd文件中
+      * 本地：`<!DOCTYPE 根标签名 SYSTEM "dtd文件的位置">`
+      * 网络：`<!DOCTYPE 根标签名 PUBLIC "dtd文件名字" "dtd文件的位置URL">`
+
+- 定义步骤：
+
+  1. 创建一个文件 **后缀名 .dtd**
+
+  2. 看xml中有多少个元素 ，有几个元素，在dtd文件中写几个 `<!ELEMENT>`
+
+  3. 定义元素
+
+     - 简单元素：没有子元素  **`<!ELEMENT 元素名称 约束>`**，约束取值如下
+       - `(#PCDATA)`：约束name是字符串类型
+       - `EMPTY`：元素为空（没有内容），如`<sex></sex>`
+       - `ANY`：任意
+     - 复杂元素：有子元素的元素  **`<!ELEMENT 元素名称 (子元素)>`**
+       - 子元素直接使用**逗号进行隔开**：表示**元素出现的顺序**
+       - 子元素直接使用**|隔开**：表示元素**只能出现其中的任意一个**
+       - 子元素出现次数如下
+         - `?`：表示出现0次或1次
+         - `*`：表示出现0次或多次
+         - `+`：出现1次或多次
+
+  4. 定义属性
+
+     - 语法
+
+       ```dtd
+       <!ATTLIST 元素名称
+       		属性名称 属性类型 属性的约束
+       >
+       ```
+
+       * 属性类型如下：
+         * `CDATA`：字符串
+         * `枚举`：表示只能在一定的范围内出现值，但是只能每次出现其中的一个；(aa|bb|cc)，红绿灯
+         * `ID`：值只能是字母或者下划线开头，且使用时这个属性的值不能重复
+       * 属性的约束如下：
+         - `#REQUIRED`：属性必须存在
+         - `#IMPLIED`：属性可有可无
+         - `#FIXED`: 表示一个固定值 #FIXED "AAA"
+         - `直接值`：不写属性，使用直接值；写了属性，使用设置那个值
+
+  5. 定义实体
+
+     - 语法：` <!ENTITY 实体名称 "实体的值">`
+
+     - 使用实体：&实体名称;（比如 &TEST;）
+
+     - 注意：定义实体需要写在内部dtd里面，如果写在外部的dtd里面，有某些浏览器下，内容得不到
 
 
 
 
+### 1.3.2 schema约束
 
-## 1.4 XML的约束（dtd、schema看懂）
+> schema**符合xml的语法**，xml语句
+>
+> 一个xml中可以**有多个schema**，多个schema使用**名称空间**区分（类似于java包名）
+>
+> dtd里面有PCDATA类型，但是在schema里面可以支持**更多的数据类型**，比如年龄只能是整数
 
-- 定义一个**person的xml文件**，只想要这个文件里面保存人的信息，比如name age等，但是如果在xml文件中
-  写了一个**标签<猫>**，发现可以正常显示，因为符合语法规范。但是猫肯定不是人的信息，xml的标签是自定义的，需要技术来规定xml中只能出现的元素，这个时候需要约束
-- **xml的约束的技术：** **dtd约束** 和 **schema约束** （看懂）
+* **引入**
+  1. 填写xml文档的根元素：`<students`
+  2. 引入xsi前缀，如：`xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"`，表示xml是一个被约束文件
+  3. 为每一个xsd约束声明一个前缀，作为标识：`xmlns:name="http://www.itcast.cn/xml"`
+  4. 引入xsd文件地址路径：`xsi:schemaLocation="http://www.itcast.cn/xml  student.xsd">`
 
-### 1.4.1 dtd约束
 
-- 浏览器只负责校验xml的语法，不负责校验约束
 
-- **步骤：**
+* 定义步骤
+  1. 创建一个schema文件 后缀名是 **.xsd**，根节点 `<schema>`，有如下属性：
 
-  - 创建一个文件 **后缀名 .dtd**
+     - `xmlns`：表示当前xml文件是一个约束文件
+     - `targetNamespace`：使用schema约束文件，直接通过这个地址引入约束文件
+     - `elementFormDefault="qualified"`
 
-  1. 看xml中有多少个元素 ，有几个元素，在dtd文件中写几个 <!ELEMENT>
-
-  2. 判断元素是简单元素还是复杂元素
-
-     - 复杂元素：有子元素的元素  **<!ELEMENT 元素名称 (子元素)>**
-     - 简单元素：没有子元素  **<!ELEMENT 元素名称 (#PCDATA)>**
-
-  3. 需要在xml文件中引入dtd文件
-
-     1. 引入外部的dtd文件
-
-        `<!DOCTYPE 根元素名称 SYSTEM "dtd文件的路径">`
-
-     2. 使用内部的dtd文件
-
-        ```
-        <!DOCTYPE 根元素名称 [
-        	<!ELEMENT person (name,age)>
-        	<!ELEMENT name (#PCDATA)>
-        	<!ELEMENT age (#PCDATA)>
-        ]>
-        
-        ```
-
-     3. 使用外部的dtd文件（网络上的dtd文件）
-
-        `<!DOCTYPE 根元素 PUBLIC "DTD名称" "DTD文档的URL">`
-
-### 1.4.2 **使用dtd定义元素**
-
-- **语法**： **<!ELEMENT 元素名 约束>**
-- **简单元素**：没有子元素的元素  **<!ELEMENT 元素名称 (#PCDATA)>**
-  - (#PCDATA): 约束name是字符串类型
-  - EMPTY : 元素为空（没有内容）`<sex></sex>`
-  - ANY:任意
-- **复杂元素**：**<!ELEMENT 元素名称 (子元素)>**，子元素只能出现一次
-  - **表示子元素出现的次数**：
-    - +：表示一次或者多次
-    - ?：表示零次或者一次
-    - *：表示零次或者多次
-  - 子元素直接使用**逗号进行隔开**：表示**元素出现的顺序**
-  - 子元素直接使用**|隔开**：表示元素**只能出现其中的任意一个**
-
-### 1.4.3 使用dtd定义属性
-
-- **语法：** 
-
-  ```
-  <!ATTLIST 元素名称
-  			属性名称 属性类型 属性的约束
-  >
-  
-  ```
-
-- **属性类型:**
-
-  - CDATA: 字符串
-  - 枚举 ： 表示只能在一定的范围内出现值，但是只能每次出现其中的一个；(aa|bb|cc)，红绿灯
-  - ID: 值只能是字母或者下划线开头
-
-- **属性的约束:**
-
-  - `#REQUIRED`：属性必须存在
-  - `#IMPLIED`：属性可有可无
-  - `#FIXED`: 表示一个固定值 #FIXED "AAA"
-  - 直接值：不写属性，使用直接值；写了属性，使用设置那个值
-
-### 1.4.4 实体的定义
-
-- 语法： <!ENTITY 实体名称 "实体的值">
-- 使用实体：&实体名称;（比如 &TEST;）
-- 注意：定义实体需要写在内部dtd里面，如果写在外部的dtd里面，有某些浏览器下，内容得不到
-
-### 1.4.5 schema约束
-
-- schema**符合xml的语法**，xml语句
-
-- 一个xml中可以**有多个schema**，多个schema使用**名称空间**区分（类似于java包名）
-
-- dtd里面有PCDATA类型，但是在schema里面可以支持**更多的数据类型**
-
-  比如 年龄 只能是整数，在schema可以直接定义一个整数类型
-
-- schema**语法更加复杂**，schema目前不能替代dtd
-
-### 1.4.6 schema快速入门
-
-- 创建一个schema文件 后缀名是 **.xsd**，根节点 `<schema>`
-
-- 在schema根节点有如下属性：
-
-  - xmlns：表示当前xml文件是一个约束文件
-  - targetNamespace：使用schema约束文件，直接通过这个地址引入约束文件
-  - elementFormDefault="qualified"
-
-- **步骤：**
-
-  1. 看xml中有**多少个元素**，写几个`<element>`
-
-  2. 看简单元素和复杂元素：
+  2. 看xml中有**多少个元素**，写几个`<element>`
 
      - **复杂元素**
 
-       ```
+       ```xml
        <element name="person">
        	<complexType>
        		<sequence>
        			<element name="name" type="string"></element>
        			<element name="age" type="int"></element>
        		</sequence>
+                <attribute name="id1" type="int" use="required"></attribute>
+       		- name: 属性名称
+       		- type：属性类型 int stirng
+       		- use：属性是否必须出现 required
        	</complexType>
        </element>
-       
-       
        ```
+
+       - 复杂元素指示器：
+         - `sequence`：表示元素的出现的顺序
+         - `all`: 元素只能出现一次
+         - `choice`：元素只能出现其中的一个
+         - `maxOccurs="unbounded"`： 表示元素的出现的最多次数；同理有min~
+         - `any`:表示任意元素
+       - 可以约束属性：写在复杂元素里面，`</complexType>`之前
 
      - **简单元素写在复杂元素里**，如上
 
-  3. 在xml中引入约束文件
-
-     ```
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"//表示xml是一个被约束文件
-     xmlns="http://www.example.org/1"//是约束文档里面 targetNamespace
-     xsi:schemaLocation="http://www.example.org/1 1.xsd">//targetNamespace 约束文档的地址路径
-     
-     ```
-
-- 复杂元素指示器：
-
-  - sequence：表示元素的出现的顺序
-  - all: 元素只能出现一次
-  - choice：元素只能出现其中的一个
-  - maxOccurs="unbounded"： 表示元素的出现的次数
-  - any:表示任意元素
-
-- 可以约束属性：写在复杂元素里面，`</complexType>`之前
-
-  ```
-  <attribute name="id1" type="int" use="required"></attribute>
-  	- name: 属性名称
-  	- type：属性类型 int stirng
-  	- use：属性是否必须出现 required
-  
-  ```
 
 
 
 
-## * 1.5 XML的解析（dom、sax）
+## 1.4 XML的解析
 
-- js使用dom解析标记型文档？
+* 操作xml文档
+  1. 解析(读取)：将文档中的数据读取到内存中
+  2. 写入：将内存中的数据保存到xml文档中。持久化的存储
+* ==**解析xml的方式：**==
+  1. ==**DOM**：将标记语言文档**一次性加载**进内存，在内存中形成一颗**dom树**==，如下图
+    * 优点：操作方便，可以对文档进行**CRUD**的所有操作
+    * 缺点：文件过大，造成**内存溢出**
+  2. ==**SAX**：**逐行读取**，基于**事件驱动**的==，如下图
+    * 优点：文件过大，**不会造成内存溢出**
+    * 缺点：**只能读取**，不能增删改
+* xml常见的解析器：
+  - JAXP：sun公司提供的解析器，支持dom和sax两种思想。不用
+  - DOM4J：一款非常优秀的解析器
+  - **Jsoup**：jsoup 是一款Java 的HTML解析器，可直接解析某个URL地址、HTML文本内容。它提供了一套非常省力的API，可通过DOM，CSS以及类似于jQuery的操作方法来取出和操作数据。
+  - PULL：Android操作系统内置的解析器，sax方式的。
 
-  根据html的层级结构，在**内存中**分配一个树形结构，把html的标签，属性和文本都封装成对象
-  document对象、element对象、属性对象、文本对象、Node节点对象
+![](images\dom解析过程.PNG)
 
-- **xml的解析方式**（技术）：**dom 和 sax**
+![](images\sax解析过程.PNG)
 
-- **DOM方式解析：**
+### 1.4.1 Jsoup
 
-  - 根据xml的层级结构在内存中分配一个树形结构，把xml的标签，属性和文本都封装成对象
-  - 缺点：如果文件过大，造成内存溢出
-  - 优点：很方便实现增删改操作
+* 快速入门步骤：
+    1. 导入jar包，记得`add as library`
+    2. 获取Document对象
+    3. 获取对应的标签Element对象
+    4. 获取数据
+* **Jsoup**：工具类，可以解析html或xml文档，返回Document
+    * parse：解析html或xml文档，返回Document
+        * `parse(File file, String charsetName)`：解析xml或html文件的。
+        * `parse(String html)`：解析xml或html字符串
+        * `parse(URL url, int timeoutMillis)`：通过网络路径获取指定的html或xml的文档对象，**爬虫**
+* **Document**：文档对象。代表内存中的dom树。继承自Element对象
+    * 获取Element对象
+        * `getElementsByTag(String tagName)`：根据**标签名称**获取元素对象集合
+        * `getElementsByAttribute(String key)`：根据**属性名称**获取元素对象集合
+        * `getElementsByAttributeValue(String key, String value)`：根据对应的**属性名和属性值**获取元素对象集合
+        * `getElementById(String id)`：根据**id**属性值获取唯一的element对象，用得不多
+* **Elements**：元素Element对象的集合。可以当做 `ArrayList<Element>`来使用
+* **Element**：元素对象
+    * 获取**子元素对象**
+        * `getElementsByTag(String tagName)`：根据标签名称获取元素对象集合
+        * `getElementsByAttribute(String key)`：根据属性名称获取元素对象集合
+        * `getElementsByAttributeValue(String key, String value)`：根据对应的属性名和属性值获取元素对象集合
+        * `getElementById(String id)`：根据id属性值获取唯一的element对象
+    * 获取**属性值**
+      * `String attr(String key)`：根据属性名称获取属性值
+    * 获取**文本**内容
+      * `String text()`：获取文本内容
+      * `String html()`：获取标签体的所有内容(包括字标签的字符串内容)
+* **Node**：节点对象，是Document和Element的父类
 
-  ![](D:\Typora\photo\dom解析过程.PNG)
+* **快捷查询方式**：
 
-- **sax方式解析：**
+  * selector：通过`Document`或`Element`来调用即可，一般用前者
+       * 使用的方法：`Elements select(String cssQuery)`
 
-  - 采用事件驱动，边读边解析。从上到下，一行一行的解析，解析到某一个对象，返回对象名称
-  - 缺点：不能实现增删改操作
-  - 优点：如果文件过大，不会造成内存溢出，方便实现查询操作
+       * 语法：参考`Selector`类中定义的语法，和CSS选择器语法一致
 
-  ![](D:\Typora\photo\sax解析过程.PNG)
+         ```java
+         //1.获取student.xml的path
+         String path = JsoupDemo5.class.getClassLoader().getResource("student.xml").getPath();
+         //2.获取Document对象
+         Document document = Jsoup.parse(new File(path), "utf-8");
+         
+         //3.查询name标签
+         Elements elements = document.select("name");
+         System.out.println(elements);
+         //4.查询id值为itcast的元素
+         Elements elements1 = document.select("#itcast");
+         System.out.println(elements1);
+         //5.获取student标签并且number属性值为heima_0001的直接age子标签
+         //5.1.获取student标签并且number属性值为heima_0001
+         Elements elements2 = document.select("student[number=\"heima_0001\"]");
+         System.out.println(elements2);
+         //5.2获取student标签并且number属性值为heima_0001的直接age子标签
+         Elements elements3 = document.select("student[number=\"heima_0001\"] > age");
+         System.out.println(elements3);
+         ```
 
-- 想要解析xml，首先需要解析器，不同的公司和组织通过api方式提供
+  * XPath：XPath即为XML路径语言，它是一种用来确定XML（标准通用标记语言的子集）文档中某部分位置的语言
+    * 使用Jsoup的Xpath需要额外导入jar包。
 
-  - sun公司提供了针对dom和sax解析器  **jaxp**
-  - dom4j组织，针对dom和sax解析器    **dom4j**（**实际开发中使用**）
-  - jdom组织，针对dom和sax解析器     jdom
+    * 查询w3cshool参考手册，使用xpath的语法完成查询
 
-## * 1.6 jaxp
-
-- jaxp是javase的一部分，在jdk的javax.xml.parsers包里有四个类
-
-### 1.6.1 **dom**
-
-- **DocumentBuilderFactory**： 解析器工厂（抽象类）
-
-  通过**newInstance()**方法 获取 DocumentBuilderFactory 的实例
-
-- **DocumentBuilder**  : 解析器类（抽象类）
-
-  从 DocumentBuilderFactory.**newDocumentBuilder()** 方法获取
-
-  - **方法** ：**parse("xml路径")**，可以解析xml ，返回是 Document 整个文档，也是一个接口，父节点是Node，如果在document里面找不到想要的方法，到Node里面去找
-
-    - **document里面方法：**
-
-      - getElementsByTagName(String tagname) ：得到标签，返回集合 NodeList
-
-      - createElement(String tagName)：创建标签
-
-      - createTextNode(String data) ：创建文本
-
-      - appendChild(Node newChild) ：把文本添加到标签下面
-
-      - removeChild(Node oldChild) ：删除节点
-
-      - getParentNode() ：获取父节点
-
-      - getChildNodes()：获取子节点，java中没有兼容问题
-
-      - getTextContent()：得到标签里面的内容
-
-      - **NodeList list**：getLength()、item(int index)
-
-        ```
-        for(int i=0;i<list.getLength();i++) {
-        	list.item(i)
-        }
-        
-        ```
-
-- **查询操作**
-
-  查询xml中所有的name元素的值、第一个name的值
-
-  ```
-  //创建解析器工厂
-  DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-  //根据解析器工厂创建解析器
-  DocumentBuilder builder = builderFactory.newDocumentBuilder();
-  //解析xml返回document
-  Document document =  builder.parse("src\\cn\\itcast\\jaxp\\1.xml");
-  
-  
-  //得到所有的name元素
-  NodeList list = document.getElementsByTagName("name");
-  //返回集合，遍历集合，得到每一个name元素
-  for(int i=0;i<list.getLength();i++) {
-  	Node node = list.item(i);
-  	System.out.println(node.getTextContent());
-  }
-  //第一个name的值
-  Node node = list.item(0);
-  System.out.println(node.getTextContent());
-  
-  ```
-
-- **添加节点（回写）**
-
-  在第一个p1下面（末尾）添加 `<sex>nv</sex>`
-
-  ```
-  //......
-  Node node = document.getElementsByTagName("p1").item(0);
-  Element element =  document.createElement("sex");//创建sex标签
-  Text text = document.createTextNode("nv");//创建文本
-  element.appendChild(text);
-  node.appendChild(element);
-  
-  //回写xml
-  TransformerFactory factory = TransformerFactory.newInstance();
-  Transformer transformer = factory.newTransformer();
-  transformer.transform(new DOMSource(document), new StreamResult("1.xml"));
-  
-  ```
-
-- **修改节点内容**
-
-  ```
-  //......
-  Node node = document.getElementsByTagName("sex").item(0);
-  node.setTextContent("man");
-  //......
-  
-  ```
-
-- **删除节点(通过父节点)**
-
-  ```
-  //......
-  Node sex = document.getElementsByTagName("sex").item(0);
-  Node parentnode = sex.getParentNode();
-  parentnode.removeChild(sex);
-  //......
-  
-  ```
-
-- **遍历节点**
-
-  ```
-  //......
-  private static void loop(Node node) {
-  	if (node.getNodeType() == Node.ELEMENT_NODE) {//判断是否是标签
-  		System.out.println(node.getNodeName());
-  	}
-  	NodeList list = node.getChildNodes();
-  	for (int i = 0; i < list.getLength(); i++) {
-  		loop(list.item(i));
-  	}
-  }
-  
-  ```
+      ```java
+      //1.获取student.xml的path
+      String path = JsoupDe mo6.class.getClassLoader().getResource("student.xml").getPath();
+      //2.获取Document对象
+      Document document = Jsoup.parse(new File(path), "utf-8");
+      //3.根据document对象，创建JXDocument对象
+      JXDocument jxDocument = new JXDocument(document);
+      
+      //4.结合xpath语法查询
+      //4.1查询所有student标签
+      List<JXNode> jxNodes = jxDocument.selN("//student");
+      //4.2查询所有student标签下的name标签
+      List<JXNode> jxNodes2 = jxDocument.selN("//student/name");
+      //4.3查询student标签下带有id属性的name标签
+      List<JXNode> jxNodes3 = jxDocument.selN("//student/name[@id]");
+      //4.4查询student标签下带有id属性的name标签 并且id属性值为itcast
+      List<JXNode> jxNodes4 = jxDocument.selN("//student/name[@id='itcast']");
+      
+      //可以通过
+      getElement() //将JXNode转为Element对象;
+      getTextVal() //获取文本
+      ......
+      ```
 
 
-### 1.6.2 sax
+### 1.4.2 dom4j
 
-- **SAXParserFactory**: 解析器工厂（抽象类）
-
-  通过**newInstance()**方法获取
-
-- **SAXParser**：解析器类（抽象类）
-
-  通过SAXParserFactory.**newSAXParser()** 方法获得
-
-  - **方法**：**parse(File f, DefaultHandler dh)**    参数：xml的路径；事件处理器
-    - **DefaultHandler**：创建一个类，继承事件处理器的类，重写里面的三个方法
-
-- **查询操作**（sax方式不能实现增删改操作）
-
-  1. **获取到所有的name元素的值**
-     - 定义一个成员变量 **flag= false**
-     - 判断开始方法是否是name元素，如果是name元素，把flag值设置成true
-     - 如果flag值是true，在characters方法里面打印内容
-     - 当执行到结束方法时候，把flag值设置成false
-  2. **获取第一个name元素的值**
-     - 定义一个成员变量 **index=1**
-     - 在结束方法时候，index++
-     - 在characters方法里面判断，判断flag=true 并且 index===1，再打印内容
-
-## * 1.7 dom4j
-
-- dom4j，是一个组织，针对xml解析，提供解析器 dom4j，不是javase的一部分，需要导入dom4j提供jar包
+- dom4j是一个组织针对xml解析，提供的解析器 dom4j，需要导入dom4j提供jar包。eclipse操作如下：
 
   1. 创建一个文件夹 lib
   2. 复制jar包到lib下面
@@ -2349,25 +2222,25 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 
   - document的父接口是Node，如果在document里面找不到想要的方法，到Node里面去找
 
-  - document里面的方法 **getRootElement**() ：获取根节点 返回的是Element接口，父接口也是Node
+  - document里面的方法 `getRootElement()` ：获取根节点 返回的是Element接口，父接口也是Node
 
   - element和Node里的方法：
 
-    - **getParent**()：获取父节点
+    - `getParent()`：获取父节点
 
-    - **addElement**()：添加标签
+    - `addElement()`：添加标签
 
-    - **element(qname)**：表示获取标签下面的**第一个子标签**，qname为标签名称
+    - `element(qname)`：表示获取标签下面的**第一个子标签**，qname为标签名称
 
-    - **elements(qname)**：获取标签下面是这个**名称的所有子标签**（一层），返回**List集合**
+    - `elements(qname)`：获取标签下面是这个**名称的所有子标签**（一层），返回**List集合**
 
-    - **elements()**：获取标签下面的**所有一层子标签**，，返回**List集合**
+    - `elements()`：获取标签下面的**所有一层子标签**，，返回**List集合**
 
       **解析是从上到下解析**
 
-### 1.7.1 **查询操作**
+* **查询操作**
 
-- 查询所有/第一个/第二个name元素里面的值(**getText**())：
+  查询所有/第一个/第二个name元素里面的值(**getText**())：
 
   ```java
   SAXReader reader = new SAXReader();
@@ -2391,9 +2264,9 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
   
   ```
 
-### 1.7.2 **添加操作**
+- **添加操作**
 
-- 在第一个p1标签**末尾添加**一个元素 `<sex>nv</sex>`
+  在第一个p1标签**末尾添加**一个元素 `<sex>nv</sex>`
 
   ```java
   SAXReader reader = new SAXReader();
@@ -2412,7 +2285,7 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
   
   ```
 
-- 在**特定位置添加**元素。第一个p1下面的age标签之前添加 `<school>ecit.edu.cn</schlool>`
+  在**特定位置添加**元素。第一个p1下面的age标签之前添加 `<school>ecit.edu.cn</schlool>`
 
   ```java
   SAXReader reader = new SAXReader();
@@ -2435,15 +2308,13 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 
   可以对得到document的操作和 回写xml的操作，封装成方法；把传递的文件路径，封装成一个常量；可以提高开发速度，可以提交代码可维护性；比如想要修改文件路径（名称），这个时候只需要修改常量的值就可以。
 
-### 1.7.3 **修改节点**
+- **修改节点**
 
-- 修改第一个p1下面的age元素的值 `<age>30</age>`
+  修改第一个p1下面的age元素的值 `<age>30</age>`。age.**setText**("value")
 
-  age.**setText**("value")
+- **删除节点**
 
-### 1.7.4 **删除节点**
-
-- 删除第一个p1下面的`<school>ecit</school>`元素
+  删除第一个p1下面的`<school>ecit</school>`元素
 
   1. 利用elements方法返回**List**集合的**remove**(index)方法删除
 
@@ -2461,9 +2332,9 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
      p1.remove(school);
      ```
 
-### 1.7.5 **获取属性**
+- **获取属性**
 
-- 获取第一个p1里面的属性为id1的**值**
+  获取第一个p1里面的属性为id1的**值**
 
   ```java
   Element p1 = root.element("p1");
@@ -2472,28 +2343,28 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 
 
 
-### 1.7.6 XPath
+- **XPath**：可以**直接获取到某个元素**
 
-- **可以直接获取到某个元素** 
+- * AAA：选取 AAA元素的**所有子节点**
+  * /AAA：选取**根元素AAA**。假如路径起始于正斜杠( / )，则此路径始终代表到某元素的绝对路径！
+  * AAA/BBB：选取属于 **AAA的子元素的所有 BBB元素**
+  * //AAA：选取**所有 AAA子元素**，而不管它们在文档中的位置
+  * AAA//BBB：选择属于 bookstore 元素的后代的所有 book 元素，而不管它们位于 bookstore 之下的什么位置。
 
-  1. **/AAA/DDD/BBB**： 表示**一层一层**的，AAA下面 DDD下面的BBB
+  - **/***：这层所有元素
 
-  2. **//BBB**：表示和这个名称相同，表示只要名称是BBB，都得到
+    **//***：所有元素
 
-  3. **/***：这层所有元素
+  - **BBB[1]**：　表示第一个BBB元素
+    **BBB[last()]**：表示最后一个BBB元素
 
-     **//***：所有元素
+  - **//BBB[@id]**： 表示只要BBB元素上面有id属性，都得到
 
-  4. **BBB[1]**：　表示第一个BBB元素
-     **BBB[last()]**：表示最后一个BBB元素
-
-  5. **//BBB[@id]**： 表示只要BBB元素上面有id属性，都得到
-
-  6. **//BBB[@id='b1']** 表示元素名称是BBB,在BBB上面有id属性，并且id的属性值是b1
+  - **//BBB[@id='b1']** 表示元素名称是BBB,在BBB上面有id属性，并且id的属性值是b1
 
 - 使用dom4j支持XPath具体操作*
 
-  默认的情况下，dom4j不支持，引入支持XPath的jar包，lib中使用 **jaxen**-1.1-beta-6.jar并导入
+  默认的情况下，dom4j不支持，引入支持XPath的jar包，lib中使用` jaxen-1.1-beta-6.jar`并导入
 
 - **方法：**
 
@@ -2522,254 +2393,318 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
     System.out.println(p1Name.getText());
     ```
 
-### 1.7.7 实现简单的学生管理系统
 
 
+### 1.4.3 jaxp
 
+- jaxp是javase的一部分，在jdk的javax.xml.parsers包里有四个类
 
+#### 1、DOM
 
-# 2 软件体系结构、Tomcat、Web应用、HTTP
+- **DocumentBuilderFactory**： 解析器工厂（抽象类），通过**`newInstance()`**方法获取实例
 
-* 
+- **DocumentBuilder**  : 解析器类（抽象类），通过`DocumentBuilderFactory.newDocumentBuilder()`方法获取
 
-### 2.1.3 Web服务器
+  - **方法** ：**`parse("xml路径")`**，解析xml ，返回` Document 对象，也是一个接口，父节点是Node
 
-* Web服务器的作用是接收客户端的请求，给客户端作出响应。对于JavaWeb程序，还需要有JSP/Servlet容器，JSP/Servlet容器的基本功能是把动态资源转换成静态资源 
-* 我们需要使用的是**Web服务器**和**JSP/Servlet容器**，通常这两者会集于一身
-* **Tomcat**（Apache）：当前应用最广的JavaWeb服务器 
+  - **Document里面方法：**
 
-## 2.2 Tomcat
+    - `getElementsByTagName(String tagname)` ：得到标签，返回集合 NodeList
 
-* Tomcat**服务器**由Apache提供，开源免费。由于Sun和其他公司参与到了Tomcat的开发中，所以最新的JSP/Servlet规范总是能在Tomcat中体现出来，**是JSP/Servlet容器**。我们课程中使用Tomcat7。Tomcat7支持Servlet3.0，而Tomcat6只支持Servlet2.5！ 
-  * 安装版：一台电脑上只能安装一个Tomcat
-  * 解压版：无需安装，解压即可用，解压多少份都可以
-* **启动和关闭Tomcat:**
-  * 在启动Tomcat之前，我们必须要配置环境变量 JAVA_HOME、CATALANA_HOME(安装板Tomcat路径) 
-  * 启动：%CATALANA_HOME%\bin中**startup.bat**
-  * 关闭：%CATALANA_HOME%\bin中**shutdown.bat**
-* 配置端口号：打开%CATALANA_HOME%\conf\server.xml文件，默认为8080
-* 进入Tomcat主页：http://localhost:8080或http://127.0.0.1:8080
-* **目录结构：**
-  * bin：二进制可执行文件。startup.bat、shutdown.bat
-  * conf：4个配置文件
-    * server.xml：配置整个服务器信息。例如修改端口号，添加虚拟主机等
-    * tomcatusers.xml：存储tomcat用户的文件，保存用户名及密码，以及用户的角色信息 
-    * web.xml：部署描述符文件，这个文件中注册了很多MIME类型，即文档类型
-    * context.xml：对所有应用的统一配置，通常我们不会去配置它
-  * lib：类库，jar包
-  * logs：日志
-  * temp：临时文件
-  * webapps：项目存放
-  * work：运行时生成的文件，最终运行的文件都在这里。通过webapps中的项目生成的，java，class等
+    - `createElement(String tagName)`：创建标签
 
-## 2.3 Web应用（有重点）
+    - `createTextNode(String data)` ：创建文本
 
-* **静态网站（*****）：
+    - `appendChild(Node newChild)`：把文本添加到标签下面
 
-  * 在webapps目录下创建一个目录（命名必须不包含中文和空格），这个目录称之为**项目目录**
-  * 在项目目录下创建一个**html文件**
+    - `removeChild(Node oldChild)` ：删除节点
 
-* **动态网站（*****）：
+    - `getParentNode()` ：获取父节点
 
-  * |—webapps
+    - `getChildNodes()`：获取子节点，java中没有兼容问题
 
-    	|—hello   应用目录
+    - `getTextContent()`：得到标签里面的内容
 
-    		|—index.html   **应用资源**，可以放在文件夹中
-	​		
-    		|—WEB-INF   大写，这个目录下的东西是**无法通过浏览器直接访问**
-	​		
-    			|—web.xml   应用程序的部署描述符文件，可以在该文件中对应用进行**配置** 
-	​		
-    			|—classes   存放**class文件**的目录
-	​		
-    			|—lib   存放**jar包**的目录
+    - **NodeList list**：`getLength()`、`item(int index)`
 
-* 配置外部应用（了解）
+      ```java
+      for(int i=0;i<list.getLength();i++) {
+      	list.item(i)
+      }
+      ```
 
-  原来我们的项目放到webapps下，现在我放到外面，也希望tomcat可以找到它 
+- **查询操作**
 
-  * conf/server.xml：打开server.xml文件，找到`<Host>`元素，在其中添加`<Context>`元素 
+  查询xml中所有的name元素的值、第一个name的值
 
-    ```xml
-    <Context path="hello1" docBase="C:/hello"/>   //应用名称和应用绝对地址
-    ```
+  ```java
+  //创建解析器工厂
+  DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+  //根据解析器工厂创建解析器
+  DocumentBuilder builder = builderFactory.newDocumentBuilder();
+  //解析xml返回document
+  Document document =  builder.parse("src\\cn\\itcast\\jaxp\\1.xml");
+  
+  //得到所有的name元素
+  NodeList list = document.getElementsByTagName("name");
+  //返回集合，遍历集合，得到每一个name元素
+  for(int i=0;i<list.getLength();i++) {
+      Node node = list.item(i);
+      System.out.println(node.getTextContent());
+  }
+  //第一个name的值
+  Node node = list.item(0);
+  System.out.println(node.getTextContent());
+  ```
 
-  * conf/catalana/localhost：在该目录下创建hello1.xml文件
+- **添加节点（回写）**
 
-    ```xml
-    <Context docBase="C:/hello"/>     //文件名为应用名称
-    ```
+  在第一个p1下面（末尾）添加 `<sex>nv</sex>`
 
-* 映射虚拟主机（了解）
+  ```java
+  //......
+  Node node = document.getElementsByTagName("p1").item(0);
+  Element element =  document.createElement("sex");//创建sex标签
+  Text text = document.createTextNode("nv");//创建文本
+  element.appendChild(text);
+  node.appendChild(element);
+  
+  //回写xml
+  TransformerFactory factory = TransformerFactory.newInstance();
+  Transformer transformer = factory.newTransformer();
+  transformer.transform(new DOMSource(document), new StreamResult("1.xml"));
+  ```
 
-  我们的目标是，在浏览器中输出：<http://www.hello.cn>就可以访问我们的项目
+- **修改节点内容**
 
-  1. 修改Tomcat端口号为80
+  ```java
+  //......
+  Node node = document.getElementsByTagName("sex").item(0);
+  node.setTextContent("man");
+  //......
+  ```
 
-  2. 在本机上可以解析域名为127.0.0.1，这需要修改C:\WINDOWS\system32\drivers\etc\hosts文件，添加对<http://www.hello.cn>和127.0.01的绑定关系
+- **删除节点(通过父节点)**
 
-  3. 在server.xml文件中添加一个`<Host>`（主机）
+  ```java
+  //......
+  Node sex = document.getElementsByTagName("sex").item(0);
+  Node parentnode = sex.getParentNode();
+  parentnode.removeChild(sex);
+  //......
+  ```
 
-     ```xml
-     <Host name="www.hello.cn" appBase="F:/hello" unpackWARs="true" autoDeploy="true">
-     </Host>
-     //1.虚拟主机名 2.当前虚拟主机的应用程序存放目录 
-     //3.目录下创建名为ROOT的应用，因为一个主机只可以有一个名为ROOT的应用,访问是可以不给出应用名称
-     ```
+- **遍历节点**
 
-* 理解server.xml（了解）
+  ```java
+  //......
+  private static void loop(Node node) {
+      if (node.getNodeType() == Node.ELEMENT_NODE) {//判断是否是标签
+          System.out.println(node.getNodeName());
+      }
+      NodeList list = node.getChildNodes();
+      for (int i = 0; i < list.getLength(); i++) {
+          loop(list.item(i));
+      }
+  }
+  ```
 
-  |—Server：根元素，表示整个**服务器的配置信息**
-    	|—Service：在Server中只能有一个，表示**服务** 
-  ​    		|—Connector：可以有N个，它表示**连接**
-  ​    		|—Engine：只能有一个，表示**引擎**，它是Service组件的核心
-  ​      			|—Host：可以有N个，每个表示一个**虚拟主机** 
-  ​        			|—Context：可以有N个，每个表示一个**应用**，外部应用必须配置
 
+#### 2、SAX
 
+- **SAXParserFactory**: 解析器工厂（抽象类），通过**`newInstance()`**方法获取实例
 
+- **SAXParser**：解析器类（抽象类），通过`SAXParserFactory.newSAXParser()` 方法获得
+  - **方法**：**`parse(File f, DefaultHandler dh)`**，参数：xml的路径；事件处理器
+    - **`DefaultHandler`**：创建一个类，继承事件处理器的类，重写里面的三个方法
 
+- **查询操作**（sax方式不能实现增删改操作）
+  1. **获取到所有的name元素的值**
+     - 定义一个成员变量 **flag= false**
+     - 判断开始方法是否是name元素，如果是name元素，把flag值设置成true
+     - 如果flag值是true，在characters方法里面打印内容
+     - 当执行到结束方法时候，把flag值设置成false
+  2. **获取第一个name元素的值**
+     - 定义一个成员变量 **index=1**
+     - 在结束方法时候，index++
+     - 在characters方法里面判断，判断flag=true 并且 index===1，再打印内容
 
-## * 2.4 HTTP协议（重点）
 
-* HTTP协议是Hyper Text Transfer Protocol（超文本传输协议）的缩写,是用于从万维网（WWW:World Wide Web ）服务器传输超文本到本地浏览器的传送协议。
-* HTTP是一个基于TCP/IP通信协议来传递数据（HTML 文件, 图片文件, 查询结果等） 
-* **注意：**
-  1. HTTP是**无连接**：无连接的含义是限制每次连接只处理一个请求
-  2. HTTP是**媒体独立**的：这意味着，只要客户端和服务器知道如何处理的数据内容，任何类型的数据都可以通过HTTP发送。客户端以及服务器指定使用适合的**MIME**-type内容类型 
-  3. HTTP是**无状态**：HTTP协议是无状态协议。无状态是指协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时它的应答就较快 
 
-### * 2.4.1 请求协议
 
-1. **请求行（request line）**
 
-2. **请求头（header）**
 
-3. **空行**
 
-4. **请求体**
+# 2 Tomcat服务器
 
+* **服务器**：**安装**了**服务器软件**的**计算机**
 
-* **GET请求**
+  * **服务器软件**：接收用户的请求，处理请求，做出响应
+  * **web服务器软件**：接收用户的请求，处理请求，做出响应。
+    * 在web服务器软件中，可以**部署web项目**，让用户通过浏览器来访问这些项目
+    * web容器（动态资源的容器）
 
-——————————————————————————————————————————————————
+* 常见与Java相关的web服务器软件：
 
-**GET /index.jsp HTTP/1.1**    //请求首行，GET请求，无请求体，请求服务器路径为/index.jsp，协议为1.1
+  * webLogic：oracle公司，大型的JavaEE服务器，支持所有的JavaEE规范，收费的。
 
-**Host: localhost:8080** //请求的主机名为localhost、端口号为8080
+  * webSphere：IBM公司，大型的JavaEE服务器，支持所有的JavaEE规范，收费的。
 
-**User-Agent**: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+  * JBOSS：JBOSS公司的，大型的JavaEE服务器，支持所有的JavaEE规范，收费的。
 
-        Chrome/70.0.3514.0 Safari/537.36 //OS、浏览器相关信息
+  * **Tomcat**：Apache基金组织，中小型的JavaEE服务器，仅仅支持少量的JavaEE规范如servlet/jsp。开源的，免费的。
 
-**Accept-Language**: zh-CN,zh;q=0.9,en-GB;q=0.8,en;q=0.7,ja-JP;q=0.6,ja;q=0.5 //当前客户端支持的语言 
+    > JavaEE：Java语言在企业级开发中使用的技术规范的总和，一共规定了13项大的规范
 
-Connection: keep-alive //客户端支持的链接方式，保持一段时间链接，默认为3000ms
+* **Tomcat服务器**
 
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+  1. 下载：[Tomcat官网](https://tomcat.apache.org/)，下载二进制文件中核心文件解压版。（以8.0为例）
 
-Accept-Encoding: gzip, deflate, br //告诉服务器，当前客户端可以接收的文档类型,`*/*`表示都可以
+  2. 安装：解压安装，目录建议不要有中文和空格
 
-Cookie: Idea-bc6d4892=fe76d3e6-e4aa-46b9-90ea-7af2596fd5f9; 
+  3. 卸载：删除目录即可
 
-        SESSIONID=11F5C9E6CC76B6DF6DB544432A0546FB
+     ![](F:\GitHub\Studying\Java Web\images\Tomcat.png)
 
-——————————————————————————————————————————————————
+  4. **启动**：**`startup.bat`**。访问：http://localhost:8080 或 http://127.0.0.1:8080 或 替换为服务器所在的IP
 
+     - 若出现启动时黑窗口一闪而过，则需要正确配置`JAVA_HOME`环境变量
+     - 若出现启动报错，如端口已被占用，
+       - 可以杀死占用的进程（`netstat -ano`查找PID）
+       - 在`server.xml`中的`<Connector>`标签修改自身的端口号。可将Tomcat端口号修改为80(HTTP协议默认)
 
+  5. **关闭**：**`shutdown.bat`或在启动窗口`Ctrl+C`**。不建议强制关闭窗口来关闭
 
-* **POST请求**
+  6. 配置
 
-——————————————————————————————————————————————————
+     - **部署项目的方式**
 
-**POST /index.jsp HTTP/1.1**
+       1. **直接将项目放到webapps目录下**；或打为**war包**后放入，war包会自动解压缩，删除war包后自动删除项目
 
-Host: localhost:8080
+          `/hello`：项目访问路径-->==**虚拟目录（IDEA中Application context，若为“/”则访问时不用写项目路径）**==
 
-**Content-Type**: application/x-www-form-urlencoded //**表单的数据类型**，说明会使用url格式编码数据；url编码的数据都是以“%”为前缀，后面跟随两位的16进制
+       2. 不用复制，**配置server.xml**，在`<Host>`元素中添加`<Context>`元素
 
-**Referer**: http://localhost:8080/login.html //请求来自哪个页面，例如你在百度上点击链接到了这里，那么Referer:http://www.baidu.com；如果你是在浏览器的地址栏中直接输入的地址，那么就没有Referer这个请求头了。可以用于防盗链，下载页面用的多
+          `<Context docBase="C:\hello" path="/hello" />`，分别为项目的绝对路径、虚拟目录
 
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3514.0 Safari/537.36
+       3. 在`conf/catalana/localhost`目录下创建`虚拟目录名称.xml`文件，也称**热部署**。
 
+          `<Context docBase="C:\hello">`
 
+* **静态项目和动态项目**
 
-username=apple54whn&password=asd123 //**请求体内容**
+  * 静态项目：如，在webapps目录下创建一个目录（项目目录），在目录中创建一个html文件
 
-——————————————————————————————————————————————————
+  * ==**动态项目**==：在webapps目录下放置如下：
 
+    |—hello   项目目录
 
+    ​	|—index.html   **应用资源**，可以放在文件夹中
+    ​		
+      	|—==WEB-INF==   大写，这个目录下的东西是**无法通过浏览器直接访问**
+    ​		
+      		|—**web.xml**   web项目的核心配置文件，对项目进行**配置**。可以用**注解替代**
+    ​		
+      		|—**classes**   存放**class字节码文件**的目录
+    ​		
+      		|—**lib**   放置依赖的**jar包**
 
-### * 2.4.2 响应协议
+* **IDEA与tomcat的相关配置**
 
-1. **响应行**
-2. **响应头**
-3. **空行**
-4. **响应体**
+  * IDEA会为每一个tomcat部署的项目**单独建立一份配置文件**
+    * 控制台的LOG：`Using CATALINA_BASE:"C:\Users\Conanan\.IntelliJIdea2018.2\system\tomcat\test"`
+  * 工作空间项目和tomcat部署的web项目
+    * tomcat真正访问的是“tomcat部署的web项目”，从上述目录配置文件中即可找到目录的配置，"tomcat部署的web项目"对应着"工作空间项目" 的web目录下的所有资源
+    * WEB-INF目录下的资源不能被浏览器直接访问。
+  * 断点调试：使用"小虫子"启动 dubug 启动
 
-——————————————————————————————————————————————————
 
-**HTTP/1.1 200 OK** //响应**协议**为HTTP1.1，**响应码**为200，表示请求成功，OK是对响应码的解释 
+> **理解server.xml（了解）**
+>
+> |—Server：根元素，表示整个**服务器的配置信息**
+>   	|—Service：在Server中只能有一个，表示**服务** 
+> ​    		|—Connector：可以有N个，它表示**连接**
+> ​    		|—Engine：只能有一个，表示**引擎**，它是Service组件的核心
+> ​      			|—Host：可以有N个，每个表示一个**虚拟主机** 
+> ​        			|—Context：可以有N个，每个表示一个**应用**，外部应用必须部署，也可以用如下第3种
 
-**Content-Type**: text/html;charset=UTF-8 //响应内容的MIME类型 
+> web.xml文件的继承（了解） 
+>
+> - 在${CATALINA_HOME}\conf\web.xml中，相当于写到了每个项目的web.xml中，它是所有web.xml的父文件
+>
+>   ```xml
+>   //它的优先级最低，如果一个请求没有人处理，那么它来处理！它显示404
+>   //当访问路径不存在时，会执行该Servlet！其实我们在访问index.html时也是在执行这个Servlet
+>   <servlet-name>default</servlet-name>
+>   <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+>   <servlet-name>default</servlet-name>
+>   <url-pattern>/</url-pattern>//匹配所有URL,优先级最低
+>   ```
+>
+>   ```xml
+>   //任何URL后缀为jsp的访问，都会执行名为jsp的Servlet
+>   <servlet-name>jsp</servlet-name>
+>   <url-pattern>*.jsp</url-pattern>
+>   <url-pattern>*.jspx</url-pattern>
+>   ```
+>
+>   ```xml
+>   <session-timeout>30</session-timeout>//session的默认超时时间为30分钟
+>   ```
+>
+>   ```xml
+>   //MIME类型用来标识网络上资源的媒体类型
+>   <mime-mapping>
+>       <extension>bmp</extension>
+>       <mime-type>image/bmp</mime-type>
+>   </mime-mapping>
+>   ```
+>
+>   ```xml
+>   //在应用的web.xml中如果没有对<welcome-file-list>进行覆盖，那么默认主页为...
+>   <welcome-file-list>
+>       <welcome-file>index.html</welcome-file>
+>       <welcome-file>index.htm</welcome-file>
+>       <welcome-file>index.jsp</welcome-file>
+>   </welcome-file-list>
+>   ```
 
-Server: Apache-Coyote/1.1 //服务器的版本信息
+> 映射虚拟主机（了解）：我们的目标是，在浏览器中输出：<http://www.hello.cn>就可以访问我们的项目
+>
+> 1. 修改Tomcat端口号为80
+>
+> 2. 在本机上可以解析域名为127.0.0.1，这需要修改C:\WINDOWS\system32\drivers\etc\hosts文件，添加对<http://www.hello.cn>和127.0.01的绑定关系
+>
+> 3. 在server.xml文件中添加一个`<Host>`（主机）
+>
+>    ```xml
+>    <Host name="www.hello.cn" appBase="F:/hello" unpackWARs="true" autoDeploy="true">
+>    </Host>
+>    //1.虚拟主机名 2.当前虚拟主机的应用程序存放目录 
+>    //3.目录下创建名为ROOT的应用，因为一个主机只可以有一个名为ROOT的应用,访问是可以不给出应用名称
+>    ```
 
-Content-Length: 106 //响应体为106字节 
 
-Set-Cookie: JSESSIONID=C97E2B4C55553EAB46079A4F263435A4; Path=/hello //响应给客户端的Cookie 
-
-Date: Thu, 16 Aug 2018 07:20:30 GMT //响应的时间，这可能会有8小时的时区差
-
-
-
-`<html>...</html>`
-
-——————————————————————————————————————————————————
-
-### 2.4.3 状态码
-
-* 200：请求成功，浏览器会把响应体内容（通常是html）显示在浏览器中
-* 404：请求的资源没有找到，说明客户端错误的请求了不存在的资源
-* 500：请求资源找到了，但服务器内部出现了错误
-* 302：**重定向**，当响应码为302时，表示服务器会发送一个响应头**Location**，它指定了新请求的URL地址。服务器要求浏览器重新再发一个请求。
-* 304：当用户第一次请求index.**html**时，服务器会添加一个名为**Last-Modified响应头**，这个头说明了index.html的最后修改时间，浏览器会把index.html内容，以及最后响应时间缓存下来。当用户第二次请求index.html时，在请求中包含一个名为**If-Modified-Since请求头**，它的值就是第一次请求时服务器通过Last-Modified响应头发送给浏览器的值，即index.html最后的修改时间，If-Modified-Since请求头就是在告诉服务器，我这里浏览器缓存的index.html最后修改时间是这个，您看看现在的index.html最后修改时间是不是这个，如果还是，那么您就不用再响应这个index.html内容了，我会把缓存的内容直接显示出来。而服务器端会获取If-Modified-Since值，与index.html的当前最后修改时间比对，如果相同，服务器会发响应码304，表示index.html与浏览器上次缓存的相同，无需再次发送，浏览器可以显示自己的缓存页面，如果比对不同，那么说明index.html已经做了修改，服务器会响应200。
-
-### 2.4.4 其他响应头
-
-* 告诉浏览器不要缓存的响应头：Expires: -1；Cache-Control: no-cache； l  Pragma: no-cache；
-
-* **自动刷新**响应头，浏览器会在3秒之后请求该url  Refresh: 3;url=http://www.itcast.cn 
-
-* HTML中指定响应头：
-
-  * 在HTML页面中可以使用`<meta http-equiv="" content="">`来指定响应头
-
-    ```html
-    <meta http-equiv="Refresh" content="3;url=http://www.itcast.cn">
-    ```
 
 
 
 # 3 Servlet
 
-* **Servlet是JavaWeb三大组件之一**（Servlet、Filter、Listener），是用来处理客户端请求的动态资源
-* Servlet的任务有：**接收请求数据、处理请求、完成响应**
-* 如何让**浏览器访问Servlet**？
+> Servlet（server applet）：运行在服务器端的小程序。是**JavaWeb三大组件之一**（Servlet、Filter、Listener），可以**接收请求数据、处理请求、完成响应**
 
-  给Servlet指定一个**Servlet路径**，浏览器通过访问Servlet路径来访问。一般写在**web.xml**中或直接**注解**
-
+* ==Servlet就是一个**接口**，定义了**Java类能被**浏览器访问到(**或者说被tomcat识别**)的**规则**。==
 
 ## 3.1 实现Servlet的方式
 
-1. 实现javax.servlet.Servlet接口
+> **浏览器访问Servlet**？给Servlet指定一个**路径**，浏览器通过访问路径来访问。一般写在**web.xml**中或直接**注解**
 
-2. 继承javax.servlet.GenericServlet抽象类
+1. 实现`javax.servlet.Servlet`接口
 
-3. 继承javax.servlet.http.HttpServlet抽象类 
+2. 继承`javax.servlet.GenericServlet`抽象类
 
-   通常我们会去继承HttpServlet类来完成我们的Servlet，但学习还要从javax.servlet.Servlet接口开始
+3. 继承`javax.servlet.http.HttpServlet`抽象类 
+
+   通常我们会去继承`HttpServlet`类来完成我们的Servlet，但学习还要从`javax.servlet.Servlet`接口开始
 
 ### 3.1.1 实现javax.servlet.Servlet接口
 
@@ -2778,24 +2713,23 @@ Date: Thu, 16 Aug 2018 07:20:30 GMT //响应的时间，这可能会有8小时�
 public void init(ServletConfig servletConfig) throws ServletException {
 	System.out.println("init...");
 }
+//获取Servlet配置信息,
+public ServletConfig getServletConfig() {
+	return null;
+}
 //服务，每次处理请求会被调用
 public void service(ServletRequest servletRequest, ServletResponse servletResponse) 
 		throws ServletException,  IOException {
 		System.out.println("service...");
-		servletResponse.getWriter().write("hello servlet.");
-		
+		servletResponse.getWriter().write("hello servlet.");	
 }
-//销毁，服务器关闭，在Servlet被销毁之前调用，只会被调用一次
-public void destroy() {
-	System.out.println("destroy...");
-}
-//获取Servlet配置信息
-public ServletConfig getServletConfig() {
+//获取Servlet信息，如版本，作者等。一般不会去实现
+public String getServletInfo() {
 	return null;
 }
-//获取Servlet信息
-public String getServletInfo() {
-    return "我是一个牛逼的Servlet";
+//销毁，服务器正常关闭，在Servlet被销毁之前调用，只会被调用一次
+public void destroy() {
+	System.out.println("destroy...");
 }
 ```
 
@@ -2803,63 +2737,77 @@ public String getServletInfo() {
 
 ```xml
 <servlet>
-    <servlet-name>daohao</servlet-name>//相同代号
-    <servlet-class>cn.itcast01.AServlet</servlet-class>//要访问的类
+    <servlet-name>name</servlet-name>//相同代号
+    <servlet-class>cn.itcast01.AServlet</servlet-class>//要访问的类，全类名
 </servlet>
-    
 <servlet-mapping>
-    <servlet-name>daohao</servlet-name>//相同代号
+    <servlet-name>name</servlet-name>//相同代号
     <url-pattern>/MyServlet</url-pattern>//设置URL
 </servlet-mapping>
-
-//访问时：http://localhost:8080/MyServlet
+<!--  访问时：http://localhost:8080/MyServlet ，前提是IDEA中Application context配置的是“/” -->
 ```
 
-* **生命周期方法**
+* ==**执行原理**==
 
-  void init(ServletConfig)：**创建Servlet对象后**立即执行初始化方法（1次）；
+  1. 当Tomcat服务器接受到客户端浏览器的请求后，会解析请求URL路径，获取访问的Servlet的资源路径
 
-  void service(ServletRequest request, ServletResponse response)：每次处理请求时都会被调用；
+  2. 查找web.xml文件，是否有对应的`<url-pattern>`标签体内容。
 
-  void destroy()：服务器关闭，**销毁Servlet对象前**执行释放资源的方法（1次）；
+  3. 如果有，则通过`<servlet-name>`找到对应的`<servlet-class>`全类名
 
-* **特性：单例**，一个类只有一个对象；当然可能存在**多个Servlet类**！**线程不安全**的，所以它的**效率高**！  
+  4. Tomcat会将字节码文件加载进内存，并且通过反射创建其对象，调用其方法
 
-* Servlet**类**由我们来写，但**对象由服务器来创建**，并且**由服务器来调用相应的方法**
+     ==即Servlet**类**由我们来写，但**对象由服务器来创建**，并且**由服务器来调用相应的方法**==
+
+* ==**生命周期方法**==
+
+  * `void init(ServletConfig)`：**创建Servlet对象==后==**立即执行初始化方法（只1次）；
+    * Servlet的`init`方法只执行一次，说明**一个Servlet在内存中只存在一个对象(==单例==)**
+      * 多用户同时访问可能存在线程安全问题
+      * 解决：尽量不要在Servlet中定义成员变量。即使定义了成员变量，也不要对其修改值
+    * Servlet什么时候被创建？
+      1. **默认**情况下，**第一次被访问时**，Servlet被创建。即`<load-on-startup>`的值默认为负数。
+      2. 可以**配置**执行Servlet的**创建时机**，在注解中配置`loadOnStartup`，给出一个**非负整数**即可，数字**越小优先级越高**。
+
+  * `void service(ServletRequest request, ServletResponse response)`：**每次处理请求**时都会被调用；
+
+  * `void destroy()`：服务器**正常关闭**，**销毁Servlet对象==前==**执行释放资源的方法（只1次）；
 
 ### 3.1.2 继承javax.servlet.GenericServlet抽象类
 
-* GenericServlet是Servlet接口的实现类，但它是一个**抽象类**，它**唯一的抽象方法就是service()方法**
-  *  GenericServlet实现了Servlet方法（4个）
+* `GenericServlet`是`Servlet`接口的**实现类**，但它是一个**抽象类**，它**唯一的抽象方法就是`service()`方法**，它将Servlet接口中的其他4个方法做了空实现。
 * GenericServlet**实现了ServletConfig接口**（4个方法）
-*  GenericServlet**添加了init()方法**
-  * 该方法会被init(ServletConfig)方法调用
-  * 如果希望对Servlet进行初始化，那么应该覆盖init()方法，而不是init(ServletConfig)方法
+* GenericServlet**添加了`init()`方法**，该方法会**被`init(ServletConfig)`方法调用**
+
+  如果希望对Servlet进行初始化，那么**应该重写`init()`方法**，而不是`init(ServletConfig)`方法
 
 ### 3.1.3 继承javax.servlet.http.HttpServlet抽象类
 
-* HttpServlet是GenericServlet接口的实现类，但它也是一个**抽象类**
+* `HttpServlet`是`GenericServlet`接口的实现类，但它也是一个**抽象类**。对HTTP协议的一种封装，简化操作
 
-* **HttpServlet时序**
-  * Tomcat**调用Servlet**生命周期方法service(ServletRequest sr, ServletResponse srr)对参数进行**强转**为HTTP协议相关的参数类型
-  * 然后**调用本类的service**(HttpServletRequest sr, HttpServletResponse srr)
-  * 获取请求方法，**根据请求方式**来调用doGet()或doPost()，需自己重写，否则调用到该方法时返回**405**
+* **HttpServlet处理请求顺序**
+  1. Tomcat**调用HttpServlet继承的**生命周期方法`service(ServletRequest sr, ServletResponse srr)`对参数进行**强转**为HTTP协议相关的参数类型
+  2. 然后**调用HttpServlet本类的`service(HttpServletRequest sr, HttpServletResponse srr)`**方法
+  3. 获取请求方法，**根据请求方式**来调用`doGet()`或`doPost()`或其他，需自己**==重写==**，否则调用到该方法时返回**`405`**
 
-```java
-//注解的方式直接配置web.xml
-@WebServlet(name = "ServletAuto" ,urlPatterns = "/") //访问时写全名字
-public class ServletAuto extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  ```java
+  //注解的方式直接配置web.xml
+  @WebServlet("/ServletAuto")
+  public class ServletAuto extends HttpServlet {
+  	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+       throws ServletException,IOException {
+  
+      }
+  
+      protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+          throws ServletException, IOException {
+          response.getWriter().write("hello auto");
+      }
+  }
+  ```
 
-    }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().write("hello auto");
-    }
-}
-```
-
-### 3.1.4 ServletConfig接口
+### 3.1.4 ServletConfig接口（了解）
 
 * ServletConfig是Servlet中的init()方法的参数类型，服务器会在调用init()方法时传递ServletConfig对象给init()
 
@@ -2887,223 +2835,428 @@ public class ServletAuto extends HttpServlet {
     * ServletContext **getServletContext**()：**获取ServletContext对象**，这个对象稍后介绍
     * String getServletName()：获取Servlet配置名，即`<servlet-name>`的值；不常用
 
-## 3.2 Servlet细节
+## 3.2 Servlet3.0
 
-### 3.2.1 Servlet与线程安全
+> JavaEE 6.0 版本及之后的新版本都支持
 
-* 因为一个类型的Servlet只有一个实例对象，那么就有可能会现时出一个Servlet同时处理多个请求，所以是线程不安全的
-* **不要在Servlet中创建成员！创建局部变量即可**（方法中创建即可）
-* **可以创建无状态成员**（成员方法就是）
-* **可以创建有状态的成员，但状态必须为只读的**（对成员变量只提供get方法）
+* 好处：
 
-### 3.2.2 让服务器在启动时就创建Servlet
+   * 支持**注解配置**。可以**不需要web.xml了**。
 
-* 在`<servlet>`中配置`<load-on-startup>`，其中给出一个**非负整数**即可，数字**越小优先级越高**
+* 步骤：
+  1. 创建JavaEE项目，选择Servlet的版本3.0以上，可以不创建web.xml
 
-### 3.2.3 url-pattern 
+  2. 定义一个类，实现Servlet接口并重写方法
 
-* `<url-pattern>`是`<servlet-mapping>`的子元素，用来指定Servlet的访问路径，即**URL**。必须以**“/”开头**！ 
+  3. 在类上使用**@WebServlet**注解，进行配置。**`@WebServlet("资源路径")`**，可以省略`value`或`urlPatterns`
 
-  1. 可以在`<servlet-mapping>`中给出多个`<url-pattern>`，无论访问哪个都是同一个
+     ```JAVA
+     @Target({ElementType.TYPE})
+     @Retention(RetentionPolicy.RUNTIME)
+     @Documented
+     public @interface WebServlet {
+         String name() default "";//相当于<Servlet-name>
+     
+         String[] value() default {};//代表urlPatterns()属性配置
+     
+         String[] urlPatterns() default {};//相当于<url-pattern>
+     
+         int loadOnStartup() default -1;//相当于<load-on-startup>
+         WebInitParam[] initParams() default {};
+         boolean asyncSupported() default false;
+         String smallIcon() default "";
+         String largeIcon() default "";
+         String description() default "";
+         String displayName() default "";
+     }
+     ```
 
-  2. 还可以在`<url-pattern>`中使用**通配符**(星号“*”)，星号可以匹配任何URL**前缀或后缀**，不能放在中间
+* **urlpartten**：**Servlet访问路径**，用**value**替代了，所以可以不写
 
-     **优先匹配具体的**`<url-pattern>` 
+     - **一个Servlet**可以定义**多个访问路径** ： `@WebServlet({"/d4","/dd4","/ddd4"})`
+     - 路径定义规则：
+         - `/xxx`：路径匹配
+         - `/xxx/xxx`：多层路径，称之为目录结构
+         - `*.do`：扩展名匹配，*前不能有/，否则报错
+         - `/*`：通配符，优先级低。其他都匹配不到才匹配
 
-### 3.2.4 web.xml文件的继承（了解） 
 
-* 在${CATALINA_HOME}\conf\web.xml中，相当于写到了每个项目的web.xml中，它是所有web.xml的父文件
 
-  ```xml
-  //它的优先级最低，如果一个请求没有人处理，那么它来处理！它显示404
-  //当访问路径不存在时，会执行该Servlet！其实我们在访问index.html时也是在执行这个Servlet
-  <servlet-name>default</servlet-name>
-  <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
-  <servlet-name>default</servlet-name>
-  <url-pattern>/</url-pattern>//匹配所有URL,优先级最低
-  ```
+## 3.3 ServletContext
 
-  ```xml
-  //任何URL后缀为jsp的访问，都会执行名为jsp的Servlet
-  <servlet-name>jsp</servlet-name>
-  <url-pattern>*.jsp</url-pattern>
-  <url-pattern>*.jspx</url-pattern>
-  ```
+* Java Web四大域对象（前三个为Servlet三大域对象）：
 
-  ```xml
-  <session-timeout>30</session-timeout>//session的默认超时时间为30分钟
-  ```
-
-  ```xml
-  //MIME类型用来标识网络上资源的媒体类型
-  <mime-mapping>
-      <extension>bmp</extension>
-      <mime-type>image/bmp</mime-type>
-  </mime-mapping>
-  ```
-
-  ```xml
-  //在应用的web.xml中如果没有对<welcome-file-list>进行覆盖，那么默认主页为...
-  <welcome-file-list>
-      <welcome-file>index.html</welcome-file>
-      <welcome-file>index.htm</welcome-file>
-      <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
-  ```
-
-## 3.3 ServletContext（重要）
-
-* 服务器会为每个应用/WEB站点创建一个ServletContext对象，**服务器启动时**完成，**销毁在服务器关闭时**完成
-* **一个项目只有一个ServletContext对象**，我们可以在N多个Servlet中来获取这个唯一的对象，以传递数据
-
-### 3.3.1 获取ServletContext
-
-* 在**Servlet**中，通过init传递的**ServletConfig**参数的**getServletContext()**方法获取
-* 在**GenericServlet**或**HttpServlet**中，GenericServlet有**getServletContext()**方法获取
-* 在ServletContextEvent中，有getServletContext()方法获取
-
-### 3.3.2 域对象功能(四大域对象)
-
-* Java Web四大域对象：
   * application(当前web应用)：**ServletContext**
+
   * session(一次会话)：**HttpSession**
+
   * request(一次请求)：**ServletRequest**
+
   * page(jsp有效)：**PageContext**
 
-* 所有域对象都有**存取数据**的功能，因为域对象内部有一个**Map**集合
-
-  * void **setAttribute**(String name, Object value)：**存储**一个域属性
-  * Object **getAttribute**(String name)：**获取**ServletContext中的数据
-  * void **removeAttribute**(String name)：移除ServletContext中的域属性，name指定域属性不存在不动
-  * Enumeration **getAttributeNames**()：获取所有域属性的名称
-
-* **<span style="background:yellow">获取应用/WEB站点初始化参数（getInitParameter()）</span>**
-
-  * Servlet也可以获取初始化参数，但它是局部的参数(一个Servlet只能获取自己的初始化参数，不能获取别人的，即初始化参数只为一个Servlet准备)
-
-  * 可以配置**应用的初始化参数**，为所有Servlet而用！这需要使用ServletContext才能使用
-
-  * 可以使用ServletContext来获取在web.xml文件中配置的**应用初始化参数**！注意，应用初始化参数与Servlet初始化参数不同（Spring中有使用）
-
-    ```xml
-    <context-param>
-        <param-name>name</param-name>
-        <param-value>zhangsan</param-value>
-    </context-param>
-    ```
-
-    ```java
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = this.getServletContext();
-        String msg =(String)servletContext.getInitParameter("name");
-        response.getWriter().write(msg);
-    }
-    ```
-
-* **获取资源相关方法**
-
-  * **获取真实路径（getRealPath(String path)）**
-
-    ```java
-    ServletContext servletContext = this.getServletContext();
-    String realPath = servletContext.getRealPath("index.jsp");
-    ```
-
-  * **通过类加载器获取资源**
-
-    * 类路径对一个JavaWeb项目而言，就是/WEB-INF/**classes**和/WEB-INF/lib/每个**jar**包！
-
-      由于src下的文件最终都会放在classes文件夹下，所以类加载器获取的**目录应根据classes判断**
-
-      ```java
-      ClassLoader cl = this.getClass().getClassLoader();
-      InputStream is = cl.getResourceAsStream("\\cn\\itcast01\\test.txt");
-      ```
-
-    * Class类的getResourceAsStream(String path)
-
-      ```java
-      InputStream is = this.getClass().getResourceAsStream("/../../index.jsp");
-      ```
-
-      1. 路径以“/”开头，相对classes路径
-      2. 路径不以“/”开头，相对当前class文件所有路径,例如在cn.itcast.servlet.MyServlet中执行，那么相对/classes/cn/itcast/servlet/路径
-
-  * 获取资源输入流
-
-    ```java
-    InputStream inputStream = servletContext.getResourceAsStream("index");
-    ```
-
-  * 获取指定目录下所有资源路径，必须加“**/**”
-
-    ```java
-    Set set = servletContext.getResourcePaths("/WEB-INF");
-    ```
-
-### 3.3.3 网站访问量
-
-```java
-ServletContext servletContext = this.getServletContext();
-Integer count = (Integer) servletContext.getAttribute("count");
-if(count==null){
-    servletContext.setAttribute("count",1);
-}else {
-    servletContext.setAttribute("count",count+1);
-}
-count = (Integer) servletContext.getAttribute("count");
-resp.getWriter().write("invite:"+count+"times");
-```
+* ServletContext：**代表整个web应用**，可以**和程序的容器**(服务器)来**通信**，服务器会为每个应用/WEB站点创建一个ServletContext对象。**创建在服务器启动后**完成，**销毁在服务器正常吃关闭前**完成。**一个项目只有一个ServletContext对象**，我们可以在N多个Servlet中来获取这个唯一的对象，以传递数据
+* 获取
+  * 通过**`HttpServlet`**或`GenericServlet`获取：`this.getServletContext();`
+  * 通过**`request`**对象获取：`request.getServletContext();`	
+* 功能：
+  1. **获取MIME类型**：`String getMimeType(String file)  `
+       * MIME类型：在互联网通信过程中定义的一种文件数据类型。格式：`大类型/小类型`，`text/html`、`image/jpeg`
+  2. **域对象**：**共享数据**。ServletContext对象范围是**所有用户所有请求的数据**
+     * `getAttribute(String name)`：**获取**域对象中的数据
+     * `setAttribute(String name,Object value)`：**存储**一个域属性
+     * `removeAttribute(String name)`：**移除**域对象中的域属性，name指定域属性不存在时不变化
+     * `Enumeration getAttributeNames()`：获取所有域属性的名称`
+  3. ==获取**文件的真实**(服务器)**路径**==：`String getRealPath(String path)`，即当前Web应用下的资源路径，例子如下：
+       - web目录下资源访问：`getRealPath("/b.txt")`
+       - WEB-INF目录下的资源访问：`getRealPath("/WEB-INF/c.txt")`
+       - src目录下的资源访问：`getRealPath("/WEB-INF/classes/a.txt")`，由于src中的文件最终都会放在classes下
 
 
+* ==**获取资源相关方法对比**==
 
+  * **获取真实(服务器)路径：`getRealPath(String path)`**，可查找范围最广泛
+  * **通过类加载器获取资源**：`getResourceAsStream(String path);`，根据classes或src来判断路径
+    * `/WEB-INF/classes`（src中的文件最终都会放在classes下）和`/WEB-INF/lib`每个**jar**包！
+  * **Class类获取资源**：`InputStream getResourceAsStream(String path)`，
+    * 路径以`/`开头，相对classes路径；路径不以`/`开头，相对当前class文件路径
 
-
-# <span style="color:white;background:black;">4 Response&Request&编码&路径</span>
-
-* 服务器处理请求的流程
-  * 服务器每次收到请求时，都会为这个请求开辟一个**新的线程**
-  * 服务器会把客户端的请求数据封装到request对象中，**request就是请求数据的载体**
-  * 服务器还会创建**response**对象，这个对象与客户端连接在一起，它可以**用来向客户端发送响应**
-
-## 4.1 Response
-
-* response**类型**为**HttpServletResponse**
-
-  ServletResponse-->与协议无关的类型；HttpServletResponse-->与http协议相关的类型
-
-### 4.1.1 响应行中状态码的方法(sendError、sendStatus)
-
-* **sendError(int sc)** --> 发送**错误状态码**，例如404、500
-* **sendError(int sc, String msg)** --> 也是发送错误状态码，还可以带一个错误信息！
-* **<span style="background:yellow">setStatus(int sc)</span>** --> **设置此响应的状态码**，可以用来发送302、200或者404等
-
-### 4.1.2 响应头（Content-Type、Refresh、Location等）
-
-* 头就是一个**键值对！**可能会存在一个头（一个名称，一个值），也可能会存在一个头（一个名称，多个值！）
-  * **<span style="background:yellow">setHeader(String n, String val)</span>**：适用于<span style="background:yellow">**单值**</span>的响应头，例如：response.setHeader("aaa", "AAA")
-  * addHeader(String name, String value)：适用于多值的响应头，为每个值分别调用
-  * setIntHeader(String name, int value)：适用于单值的int类型的响应头
-  * addIntHeader(String name, int value)：适用于多值的int类型的响应头
-  * setDateHeader(String name, long value)：适用于单值毫秒类型的响应头。expires过期时间
-  * addDateHeader(String name, long value)：适用于多值的毫秒类型的响应头
-
-* `<meta>`**标签代替响应头**
-
-  ```html
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  ```
-
-* **Location案例**
+* 网站访问量
 
   ```java
-  response.setStatus(302);
-  response.setHeader("Location","https://www.baidu.com");
-  //response.addHeader("Location","/AServlet");
-  
-  //利用sendRedirect()方法
-  response.sendRedirect("/AServlet");
+  ServletContext servletContext = this.getServletContext();
+  Integer count = (Integer) servletContext.getAttribute("count");
+  if(count==null){
+      servletContext.setAttribute("count",1);
+  }else {
+      servletContext.setAttribute("count",count+1);
+  }
+  count = (Integer) servletContext.getAttribute("count");
+  resp.getWriter().write("invite:"+count+"times");
   ```
+
+
+> 获取应用/WEB站点初始化参数（getInitParameter()）
+>
+> - Servlet也可以获取初始化参数，但它是局部的参数(一个Servlet只能获取自己的初始化参数，不能获取别人的，即初始化参数只为一个Servlet准备)
+>
+> - 可以配置**应用的初始化参数**，为所有Servlet而用！这需要使用ServletContext才能使用
+>
+> - 可以使用ServletContext来获取在web.xml文件中配置的**应用初始化参数**！注意，应用初始化参数与Servlet初始化参数不同（Spring中有使用）
+>
+>   ```xml
+>   <context-param>
+>       <param-name>name</param-name>
+>       <param-value>zhangsan</param-value>
+>   </context-param>
+>   ```
+>
+>   ```java
+>   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+>       ServletContext servletContext = this.getServletContext();
+>       String msg =(String)servletContext.getInitParameter("name");
+>       response.getWriter().write(msg);
+>   }
+>   ```
+
+​	
+
+
+
+
+
+# 4 HTTP
+
+- HTTP（Hyper Text Transfer Protocol）：**超文本传输协议**，是用于从万维网服务器传输超文本到本地浏览器的传送协议。
+
+  HTTP是一个基于**TCP/IP**通信协议来**传递数据**（HTML文件, 图片文件, 查询结果等），默认端口号为**80**
+
+- 注意：
+
+  1. HTTP是**无状态**：HTTP协议是无状态协议。无状态是指协议对于事务处理没有记忆能力。缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。另一方面，在服务器不需要先前信息时它的应答就较快
+  2. HTTP是**媒体独立**的：这意味着，只要客户端和服务器知道如何处理的数据内容，任何类型的数据都可以通过HTTP发送。客户端以及服务器指定使用适合的**MIME**-type内容类型 
+
+- 历史版本：
+
+  - 1.0：**每一次请求响应都会建立新的连接**
+  - 1.1：**复用连接**
+
+
+
+## 4.1 请求数据格式
+
+> HTTP协议有**7种**请求方式，常用的有2种
+>
+> - GET：
+>   1. **请求参数在请求行中**，在url后。相对不太安全
+>   2. 请求的url长度有限制的
+> - POST：
+>   1. **请求参数在请求体中**。相对安全
+>   2. 请求的url长度没有限制的
+
+1. **请求行**：`请求方式 请求url 请求协议/版本`
+2. **请求头**：`请求头名称: 请求头值`，客户端浏览器告诉服务器一些信息
+3. **空行**
+4. **请求体(POST有)**：：封装POST请求消息的请求参数
+
+`GET /login.html?name=zhangsan HTTP/1.1` **请求行**：GET请求，请求URL和请求参数，协议及版本
+
+`POST /login.html HTTP/1.1`  【POST】**请求行**：POST请求，请求URL，协议及版本
+
+`Host: localhost`  请求的主机IP，端口号
+
+`Connection: keep-alive`  复用连接，默认为3000ms
+
+`Upgrade-Insecure-Requests: 1`
+
+`Content-Type: application/x-www-form-urlencoded`【POST】表单的数据类型，会使用URL格式编码数据
+
+**`User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36` ** 浏览器告诉服务器，**本机的OS、浏览器相关信息**，解决浏览器的兼容性问题
+
+**`Referer: http://localhost/login.html` ** **请求来自哪里**，地址栏输入的没有这个参数。用于防盗链，统计工作
+
+`Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8`
+
+`Accept-Encoding: gzip, deflate, br` 告诉服务器，当前客户端可以接收的文档类型,`*/*`表示都可以；接收的压缩格式
+
+`Accept-Language: zh-CN,zh;q=0.9,en-GB;q=0.8,en;q=0.7,ja-JP;q=0.6,ja;q=0.5`  当前客户端支持的语言 
+
+`Cookie: Idea-bc6d4892=fe76d3e6-e4aa-46b9-90ea-7af2596fd5f9; `
+
+`JSESSIONID=BC49375C243D10410E648C0B736DD3B1`
+
+
+
+`name=zhangsan`   【POST】**请求体内容**
+
+
+
+## 4.2 响应数据格式
+
+1. **响应行**：`协议/版本 响应状态码 状态码描述`
+2. **响应头**：`头名称：值`
+3. **空行**
+4. **响应体**
+
+**`HTTP/1.1 200 OK`**   响应**协议**为HTTP1.1，**状态码**为200，表示请求成功，OK是对状态码的解释 
+
+**`Content-Type: text/html;charset=UTF-8`**   服务器告诉客户端 **响应体的MIME类型，编码格式** 
+
+**`Content-disposition:`**  服务器告诉客户端**以什么格式打开响应体数据**
+
+​          值可以是`in-line`：默认值，在**当前页面内打开**；`attachment:filename=xxx`：以**附件形式打开**响应体，**文件下载**
+
+`Server: Apache-Coyote/1.1` //服务器的版本信息
+
+`Content-Length: 106` //响应体为106字节 
+
+`Set-Cookie: JSESSIONID=C97E2B4C55553EAB46079A4F263435A4; Path=/hello` //响应给客户端的Cookie 
+
+`Date: Thu, 16 Aug 2018 07:20:30 GMT` //响应的时间，这可能会有8小时的时区差
+
+
+
+`<html>...</html>`等  **响应体，传输的数据**
+
+
+
+**状态码**：服务器告诉客户端浏览器本次请求和响应的一个状态。都是3位数字
+
+* 1xx：服务器接收客户端消息，但没有接受完成，等待一段时间后，发送1xx状态码。很少出现
+* **2xx**：**成功**。代表：**200**。很少出现，因为绝大部分都是成功，直接显示响应体内容
+* **3xx**：**重定向**。代表：**302(重定向)**，**304(访问缓存)**
+* 4xx：**客户端错误**。代表如下：
+     * **404**（请求路径**没有对应的资源**） 
+        * **405**：请求方式**没有对应的doXxx**方法
+* 5xx：**服务器端错误**。代表：**500**(**服务器内部出现异常**)
+
+> 302：**重定向**，当响应码为302时，表示服务器会发送一个响应头**Location**，它指定了新请求的URL地址，服务器要求浏览器重新再发一个请求。
+>
+> 304：当用户第一次请求index.**html**时，服务器会添加一个名为**Last-Modified响应头**，这个头说明了index.html的最后修改时间，浏览器会把index.html内容，以及最后响应时间缓存下来。当用户第二次请求index.html时，在请求中包含一个名为**If-Modified-Since请求头**，它的值就是第一次请求时服务器通过Last-Modified响应头发送给浏览器的值，即index.html最后的修改时间，而服务器端会获取If-Modified-Since值，与index.html的当前最后修改时间比对，如果相同，服务器会发响应码304，表示index.html与浏览器上次缓存的相同，无需再次发送，浏览器可以显示自己的缓存页面，如果比对不同，那么说明index.html已经做了修改，服务器会响应200。
+
+其他响应头
+
+- 告诉浏览器**不要缓存**的响应头：Expires: -1；Cache-Control: no-cache； l  Pragma: no-cache；
+
+- **自动刷新**响应头，浏览器会在3秒之后请求该url  Refresh: 3;url=http://www.itcast.cn 
+
+- HTML中指定响应头，使用`<meta http-equiv="" content="">`
+
+  ```html
+  <meta http-equiv="Refresh" content="3;url=http://www.itcast.cn">
+  ```
+
+
+
+# 5 Request、Response
+
+> 在`javax.servlet`和`javax.servlet.http`(主要用这个)包下
+
+* ==**服务器处理请求**的流程==
+  1. 服务器每次收到请求时，都会为这个请求开辟一个**新的线程**，并根据请求**URL中的资源路径**，**创建**对应的**Servlet对象**
+  2. 服务器会**创建request对象**并**封装客户端的请求数据**；还会**创建response对象**，用来**封装向客户端发送的响应数据 **
+  3. 服务器**将**request和response**对象传递给**Servlet对象的**`service(...)`方法**，并**调用**该方法
+
+## 5.1 Request
+
+### 5.1.1 Request继承体系
+
+​	`ServletRequest`           -- 接口
+​		|	继承
+​	`HttpServletRequest`	   -- 接口
+​		|	实现
+​	`org.apache.catalina.connector.RequestFacade`  --类  (Tomcat编写的)
+
+以上体系Response也适用
+
+### 5.1.2 获取请求消息数据
+
+* 获取**请求行**数据：如`GET /day14/login?name=zhangsan HTTP/1.1`
+
+  * 获取请求方式：`String getMethod()`，如`GET` 。HttpServlet已经在内部使用了，以后用不到
+  * 获取**请求URL**：`StringBuffer getRequestURL()`，如`http://localhost/day14/demo1`。**统一资源定位符**
+  * ==获取**请求URI**==：`String getRequestURI()`，如`/day14/login`。**统一资源标识符**，它**包括URL**
+  * ==获取**虚拟目录**==：`String getContextPath()`，如`/day14`
+  * 获取Servlet路径：`String getServletPath()`，如`/login`
+  * 获取get方式请求参数：`String getQueryString()`，如`name=zhangsan`，以后用不到
+  * 获取协议及版本：`String getProtocol()`，如`HTTP/1.1`
+  * 获取客户机的**IP地址**：`String getRemoteAddr()`
+
+* 获取**请求头**数据
+
+  * ==通过**请求头的名称获取请求头的值**==：`String getHeader(String name)`，不区分大小写。如User-Agent、Referer
+  * 获取所有的请求头名称：`Enumeration<String> getHeaderNames()`：
+
+* 获取**请求体**数据（只有POST请求方式，才有请求体，在请求体中封装了POST请求的请求参数）
+
+  * 步骤：
+
+    1. **获取流对象**
+
+       * `BufferedReader getReader()`：获取**字符输入流**，只能操作字符数据
+
+            *  `ServletInputStream getInputStream()`：获取**字节输入流**，可以操作所有类型数据。继承了InputStream
+               * 在**文件上传**知识点后讲解
+
+    2. **再从流对象中拿数据**
+
+### 5.1.3 获取**请求参数通用方**式
+
+* ==获取**请求参数通用方**式==（不论get还是post请求方式都可以使用）
+
+  * **`String getParameter(String name)`**：==根据**参数名称获取参数值**==    username=zs&password=123
+
+  * `String[] getParameterValues(String name)`：根据参数名称获取参数值的**数组** hobby=xx&hobby=game
+
+  * **`Map<String,String[]> getParameterMap()`**：==获取**所有参数的map集合**==
+
+  * `Enumeration<String> getParameterNames()`：获取所有请求的参数名称
+
+  * ==**中文乱码问题**：==
+
+    * GET方式：Tomcat 8及以上版本已经将get方式乱码问题解决了
+    * POST方式：会乱码。在获取参数前，**设置request的编码`request.setCharacterEncoding("utf-8");`**
+
+  * 获取的**参数封装为JavaBean**可以利用Apache提供的`commons-beanutils-1.8.0`工具类，**简化数据封装**
+
+      * JavaBean：标准的Java类，功能为封装数据。要求如下：
+
+          1. **类**必须被**public**修饰
+          2. 必须提供**公有的空参的构造器**
+          3. 属性一般使用private修饰
+          4. 对属性提供**公共get(或is)和set方法**，若只有get方法或set方法，那么这个属性是只读或只写属性！
+             * **属性**：**setter和getter方法截取后的产物，与成员变量名无关**。getName() --> Name--> name
+
+      * 方法
+
+        * `setProperty(Object bean, String propName)`
+
+        * `getProperty(Object bean,String propName,String propValue)`：操作的是**属性**
+
+        * **`populate(Object obj , Map map)`**：将**map**集合的键值对信息，封装到对应的**JavaBean**对象中
+
+          ```java
+          User user = new User();
+          Map<String, String[]> map = request.getParameterMap();
+          BeanUtils.populate(user,map); //populate需要try...catch
+          ```
+
+### 5.1.4 请求转发
+
+* ==**请求转发**：一种在服务器**内部**的资源跳转方式==
+
+  * 步骤：
+
+    1. **request获取请求转发器对象**：**`RequestDispatcher getRequestDispatcher(String path)`**，**Servlet路径**
+
+    2. 使用RequestDispatcher对象来进行**转发**：`forward(ServletRequest request, ServletResponse response) `
+
+         - 请求包含：`include(request,response)`
+
+              > 请求转发：由下一个Servlet完成响应体！当前Servlet可以设置响应头！（<span style="font-family:monaco;color:red;font-weight:bold">留头不留体</span>）
+              > 请求包含：由两个Servlet共同未完成响应体！（<span style="font-family:monaco;color:red;font-weight:bold">都留</span>）
+
+  * 特点：
+
+    1. 浏览器**地址栏路径不发生变化**
+    2. 转发是**一次请求一次响应**，使用同一个request和response！
+    3. 只能转发到**当前服务器内部资源**中。
+
+### 5.1.5 request域
+
+* 域对象：一个有作用范围的对象，可以在范围内共享数据
+* ==**request域**：代表**一次请求的范围**，一般用于**请求转发**的多个资源中**共享数据**==
+   * 方法：
+      1. **`void setAttribute(String name,Object obj)`**：存储数据
+      2. **`Object getAttitude(String name)`**：通过键获取值
+      3. **`void removeAttribute(String name)`**：通过键移除键值对
+
+### 5.1.6 获取ServletContext
+
+* `ServletContext getServletContext()`
+
+
+
+> 用户登录案例需求：
+>
+> 1.编写login.html登录页面：username & password 两个输入框
+>
+> * login.html中form表单的action路径的写法：**虚拟目录+Servlet的资源路径**
+>
+> 2.使用Druid数据库连接池技术,操作mysql，day14数据库中user表
+>
+> 3.使用JdbcTemplate技术封装JDBC
+>
+> 4.登录成功跳转到SuccessServlet展示：登录成功！用户名,欢迎您
+>
+> 5.登录失败跳转到FailServlet展示：登录失败，用户名或密码错误
+
+
+
+
+
+## 5.2 Response
+
+* response**类型**为**`HttpServletResponse`**
+
+  `ServletResponse`-->与协议无关的类型；`HttpServletResponse`-->与http协议相关的类型
+
+### 5.2.1 设置响应行中状态码
+
+* **<span style="background:yellow">setStatus(int sc)</span>** --> **设置此响应的状态码**，可以用来发送302、200或者404、500等
+  * sendError(int sc [,String msg]) --> 发送错误状态码，还可以带一个错误信息！
+
+### 5.2.2 设置响应头
+
+头就是一个**键值对！**可能会存在一个头（一个名称，一个值），也可能会存在一个头（一个名称，多个值！）
+* **<span style="background:yellow">setHeader(String n, String val)</span>**：适用于<span style="background:yellow">**单值**</span>的响应头，例如：response.setHeader("aaa", "AAA")
+
+  * addHeader(String name, String value)：适用于多值的响应头，为每个值分别调用
+
+  * `<meta>`**标签代替响应头**
+
+    ```html
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    ```
 
 * **Refresh案例**（3秒后跳转至另一个页面）也可以理解为定时重定向
 
@@ -3121,204 +3274,128 @@ resp.getWriter().write("invite:"+count+"times");
   response.setDateHeader("Expires", -1);//失效时间
   ```
 
-### 4.1.3 响应体（通常是html、也可以是图片）
+### 5.2.3 设置响应体
 
-* response的两个流（不能同时使用，否则抛**IllegalStateException**异常）
+> response的两个流，用来向客户端发送数据（不能同时使用，否则抛**IllegalStateException**异常）
+>
 
-  * **ServletOutputStream**，用来向客户端发送**字节数据**
+* **ServletOutputStream（字节输出流）：`resopnse.getOutputStream()`**
 
-    ```java
-    ServletOutputStream out = resopnse.getOutputStream()
-    ```
-
-  * **PrintWriter**，用来向客户端发送**字符数据**！需要**设置编码**
-
-    ```java
-    PrintWriter writer = response.getWriter()
-    ```
+* **PrintWriter（字符输出流，需要设置编码）：`response.getWriter()`**，不需要刷新缓冲区
 
 
+### 5.2.4 重定向
 
+* ==**重定向**：**资源跳转的方式**==
 
-
-## 4.2 Request
-
-* 封装了客户端所有的**请求数据**
-
-### 4.2.1 **获取常用信息**
-
-* **获取客户端IP**，用于封IP	<span style="font-family:monaco;color:red;font-weight:bold">String ip = request.getRemoteAddr();</span>
-* **获取请求方式**，GET、POST等    <span style="font-family:monaco;color:red;font-weight:bold">String Method = request.getMethod();</span>
-
-### 4.2.2 **获取(HTTP)请求头**
-
-* <span style="font-family:monaco;color:red">String getHeader(String name)</span>，适用于**单值头**
-
-  int getIntHeader(String name)，适用于单值int类型的请求头
-
-  long getDateHeader(String name)，适用于单值毫秒类型的请求头
-
-  Enumeration &lt;String&gt; getHeaders(String name)，适用于多值请求头
-
-* **通过User-Agent识别用户浏览器类型**
+* 设置**状态码**为302，设置**响应头**`Location`
 
   ```java
-  String ip = request.getRemoteAddr();
-  String method = request.getMethod();
-  String userAgent= request.getHeader("User-Agent");
-  if(userAgent.toLowerCase().contains("chrome")){
-      System.out.println("你好"+ip+"你用的是谷歌浏览器");
-  }else if (userAgent.toLowerCase().contains("firefox")) {
-      System.out.println("你好" + ip + "你用的是火狐浏览器");
-  }else if (userAgent.toLowerCase().contains("msie")){
-      System.out.println("你好"+ip+"你用的是ie浏览器");
-  }
+  response.setStatus(302);
+  response.setHeader("location","/day15/responseDemo2");
   ```
 
-* **防盗链**，若不是通过本站超链接发出的，发送错误状态码404。**Referer请求头吧表示请求的来源**
+* ==简单的重定向方法==：**`response.sendRedirect()`**
 
   ```java
-  String referer = request.getHeader("Referer");
+  response.sendRedirect("/day15/responseDemo2");
   ```
 
+* ==**forward和redirect的区别**==
 
-### 4.2.3 **获取请求URL**
-
-* http://localhost:8080/day10_2/AServlet?username=xxx&password=yyy
-
-* String getScheme()：获取协议，http
-  String getServerName()：获取服务器名，localhost
-  String getServerPort()：获取服务器端口，8080
-  String **getContextPath()**：获取**项目名**，/day10_2
-  String getServletPath()：获取Servlet路径，/AServlet
-  String getQueryString()：获取参数部分，即问号后面的部分。username=xxx&password=yyy
-  String getRequestURI()：获取请求URI，等于项目名+Servlet路径。/day10_2/AServlet
-  String getRequestURL()：获取请求URL，等于不包含参数的整个请求路径。
+  * 转发的特点：forward
+    1. **地址栏路径不变**
+    2. 转发是**一次请求**，可以**使用request域**来共享数据
+    3. 转发只能**访问当前服务器下的资源**
+  * 重定向的特点：redirect
+    1. **地址栏**发生**变**化
+    2. 重定向是**两次请求**。**不能使用request域**来共享数据
+    3. 重定向**可以访问其他站点**(服务器)的资源
 
 
+### 5.2.5 路径的写法
 
-### 4.2.4 获取请求参数
+* **相对路径**：通过相对路径不可以确定唯一资源，以**`./`开头路径**。如：`./index.html`
+     * 规则：找到当前资源所属目录和目标资源所属目录之间的相对位置关系。`./`：当前目录；`../`:后退一级目录
+* **绝对路径**：通过绝对路径可以确定唯一资源，以**`/`开头的路径**。如：`/day15/responseDemo2`
+  * 规则：判断定义的路径是**给谁用**的？**判断将来请求从哪儿发出**
+    * **给客户端浏览器使用**：需要**加虚拟目录**(项目的访问路径)，建议**动态获取：`request.getContextPath()`**
+      * `<a>`，`<form>`，`redirect路径`。。。
+    * **给服务器使用**：**不需要加虚拟目录**
+        * `forward路径`
 
-* 由客户端发送给服务器的！有可能是在请求体中（POST），也可能是在URL之后（GET）
+### 5.2.6 输出字符数据到浏览器
 
-  有一个参数一个值的，还有一个参数多个值
+> 由于浏览器默认使用GBK或GB2312，而服务器获取的**流**默认使用ISO8859-1，不支持中文。且编码解码不同，必乱码。
 
-* <span style="font-family:monaco;color:red;font-weight:bold">String getParameter(String name)</span>：获取指定名称的请求参数值，适用于单值请求参数
-  String[] getParameterValues(String name)：获取指定名称的请求参数值，适用于多值请求参数
-  Enumeration< String>getParameterNames()：获取所有请求参数名称
-  <span style="font-family:monaco;color:red;font-weight:bold">Map<String,String[]> getParameterMap()</span>：获取所有请求参数，key为参数名，value为参数值。
-
-* **案例**
-
-  ```html
-  <a href="/CServlet?username=hehe&password=haha">点击这里</a><br/>
-  
-  <form action="/CServlet", method="post">
-      username:<input type="text" name="username"><br/>
-      password:<input type="password" name="password"><br/>
-      hobby:<input type="checkbox" name="hobby" value="cf">吃饭
-      hobby:<input type="checkbox" name="hobby" value="sj">睡觉
-      hobby:<input type="checkbox" name="hobby" value="ddd">打豆豆
-      <br/><input type="submit" value="提交">
-  </form>
-  ```
+* **==获取字符输出流之前==**设置该**流的默认编码**，告诉浏览器**响应体使用的编码**。设置后一步代码时会自动执行上一步，所以可省略
 
   ```java
-  String username = request.getParameter("username");
-  String password = request.getParameter("password");
-  System.out.println(username+","+password);
+  response.setCharacterEncoding("utf-8");//可省略
+  response.setHeader("Content-type","text/html;charset=utf-8");//封装的简单方法如下
   ```
 
-  ```java
-  String username = request.getParameter("username");
-  System.out.println("username:"+username);
-  String password = request.getParameter("password");
-  System.out.println("password:"+password);
-  Map<String, String[]> map = request.getParameterMap();
-  Set<Map.Entry<String,String[]>> set = map.entrySet();
-  for(Map.Entry<String,String[]> entry:set){
-      System.out.println(entry.getKey()+":"+ Arrays.toString(entry.getValue()));
-  }
-  ```
+* **==简单方法==：`response.setContentType("text/html;charset=utf-8")`**
+
+### 5.2.7 输出字节数据到浏览器
+
+* `getBytes()`，获取字节输出流外，其他和输出字符数据没什么区别
+
+### 5.2.8 验证码
+
+> 本质：图片
+> 目的：**防止恶意表单注册**
+
+```java
+//1.创建验证码图片对象
+BufferedImage image = new BufferedImage(100,50,BufferedImage.TYPE_INT_RGB);
+
+//2.美化图片
+//2.1 填充背景色
+Graphics g = image.getGraphics();//画笔对象
+g.setColor(Color.PINK);//设置画笔颜色
+g.fillRect(0,0,width,height);
+
+//2.2画边框
+g.setColor(Color.BLUE);
+g.drawRect(0,0,width - 1,height - 1);
+
+String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789";
+//生成随机角标
+Random ran = new Random();
+for (int i = 1; i <= 4; i++) {
+    int index = ran.nextInt(str.length());
+    char ch = str.charAt(index);//随机字符
+    g.drawString(ch+"",width/5*i,height/2);//写验证码
+}
+
+//2.4画干扰线
+g.setColor(Color.GREEN);
+//随机生成坐标点
+for (int i = 0; i < 10; i++) {
+    int x1 = ran.nextInt(width);
+    int x2 = ran.nextInt(width);
+    int y1 = ran.nextInt(height);
+    int y2 = ran.nextInt(height);
+    g.drawLine(x1,y1,x2,y2);
+}
+
+//3.将图片输出到页面展示
+ImageIO.write(image,"jpg",response.getOutputStream());
+```
+
+```javascript
+//点击图片更换下一张
+document.getElementById("verifyCode").onclick = function () {
+    //加时间戳的毫秒值
+    var date = new Date().getTime();
+    this.src = "/day15/checkCodeServlet?" + date;
+}
+```
 
 
 
-### 4.2.5 请求转发和请求包含
-
-* 有时一个请求需要多个Servlet协作才能完成，所以需要在一个Servlet跳到另一个Servlet，与重定向不同
-* **<span style="font-family:monaco;color:red">一个请求</span>**跨多个Servlet，需要使用转发和包含。
-  请求转发：由下一个Servlet完成响应体！当前Servlet可以设置响应头！（<span style="font-family:monaco;color:red;font-weight:bold">留头不留体</span>）
-  请求包含：由两个Servlet共同未完成响应体！（<span style="font-family:monaco;color:red;font-weight:bold">都留</span>）
-  无论是请求转发还是请求包含，都在一个请求范围内！使用同一个request和response！
-
-* RequestDispatcher rd = <span style="font-family:monaco;color:red;font-weight:bold">request.getRequestDispatcher("/BServlet")</span>;  参数是被转发或包含的Servlet的路径，**不带项目名**
-
-  <span style="font-family:monaco;color:red;font-weight:bold">请求转发：rd.forward(request,response)</span>
-
-  请求包含：rd.include(request,response)
-
-  ```java
-  //OneServlet
-  response.setHeader("AAA","aaa");
-  request.getRequestDispatcher("/TwoServlet").forward(request,response);
-  
-  //TwoServlet
-  response.setHeader("Two","222");
-  response.getWriter().write("<h1>hello twoservlet</h1>");
-  ```
-
-* **请求转发和重定向的区别**
-
-  * 请求转发是**一个请求一次响应**，而重定向是**两次请求两次响应**
-  * 请求转发**地址栏不变化**，而重定向会显示**后一个请求的地址**
-  * 请求转发只能**转发到本项目其他Servlet**，而重定向不只能重定向到本项目的其他Servlet，还能定向到其他项目
-  * 请求转发是**服务器端行为**，只需给出转发的Servlet路径，而重定向需要给出requestURI，即包含项目名！
-
-* 请求转发和重定向效率是转发高！因为是一个请求！
-
-  * 需要地址栏发生变化，那么必须使用重定向！
-  * 需要在下一个Servlet中获取request域中的数据，必须要使用转发！
-
-
-
-
-
-## 4.3 编码
-
-* **常见字符编码**：iso-8859-1(不支持中文)、gb2312、gbk、gb18030(系统默认编码，中国的国标码)、utf-8(万国码，支持全世界的编码，所以我们使用这个)
-
-### 4.3.1 响应编码
-
-* 使用**response.getWriter()**来向客户端发送**字符数据**时，如果在之前没有设置编码，**默认使用iso-8859-1**，因为iso不支持中文，一定乱码
-* 使用<span style="font-family:monaco;color:red;font-weight:bold">response.setCharacterEncoding()</span>来**设置字符流的编码**为gbk或utf-8，当然我们通常会选择utf-8。这样使用response.getWriter()发送的字符就是使用utf-8编码的。但还是会出现乱码！因为浏览器并不知道服务器发送过来的是什么编码的数据！这时浏览器会使用gbk来解码，所以乱码！
-* 使用<span style="font-family:monaco;color:red;font-weight:bold">response.setHeader("Content-type","text/html;charset=utf-8")</span>来设置响应头，通知浏览器服务器这边使用的是utf-8编码，而且在调用setHeader()后，还会**自动执行setCharacterEncding()**方法。这样浏览器会使用utf-8解码，所以就不会乱码了！
-* **快捷方法是**：<span style="font-family:monaco;color:red;font-weight:bold">response.setContentType("text/html;charset=utf-8")</span>
-
-### 4.3.2 请求编码
-
-* 客户端发送给服务器的**请求参数**是什么编码：客户端首先要打开一个页面，然后在页面中提交表单或点击超链接！在请求**这个页面**时，服务器响应的**编码**是什么，那么客户端发送请求时的编码就是什么
-
-* **服务器端默认使用ISO-8859-1来解码**！所以这一定会出现乱码的！因为iso不支持中文
-
-* **请求编码处理**分为两种：GET和POST：GET请求参数不在请求体中，而POST请求参数在请求体中
-
-  * **GET请求编码处理**：
-
-    在server.xml中配置URIEncoding=utf-8（不能使用）
-
-    ```java
-    String username = request.getParameter("name");
-    byte[] bys = username.getBytes("ISO-8859-1");
-    username = new String(bys, "utf-8");
-    ```
-
-  * **POST请求编码处理：**
-
-    ```java
-    request.setCharacterEncoding("utf-8");//在获取参数之前调用,或同GET使用的方法
-    ```
-
-### 4.3.3 URL编码
+## 5.3 URL编码
 
 * 表单的类型：Content-Type: application/x-www-form-urlencoded，就是把中文转换成%后面跟两位的16进制
 
@@ -3337,327 +3414,325 @@ resp.getWriter().write("invite:"+count+"times");
 
   最后我们需要把链接中的中文参数，使用url来编码！学了jsp就可以
 
-### 4.3.4 路径
 
-* web.xml中< url-pattern>路径，（叫它Servlet路径！）
 
-  * 要么以“*”开关，要么为“/”开头
-* **转发和包含路径**
-  * **以“/”开头**：相对当前项目路径，例如：`http://localhost:8080/项目名/　request.getRequestdispacher("/BServlet").for...();`
-  * 不以“/”开头：相对当前Servlet路径。 `request.getRequestdispacher("/BServlet").for...();`，假如当前Servlet是：http://localhost:8080/项目名/servlet/AServlet
 
-* 重定向路径（客户端路径）
+## 5.4 文件下载
 
-  * 以“/”开头：相对当前主机，例如：http://localhost:8080/，所以需要自己手动添加项目名，例如；`response.sendRedirect("/day10_1/Bservlet");`
+* 文件下载需求：
 
-* 与重定向相同，都是客户端路径！需要添加项目名
+  1. 页面显示超链接
+  2. 点击超链接后弹出下载提示框
+  3. 完成图片文件下载
 
-  ```html
-  <form action="/day10_1/AServlet">
-  <a href="/day10_/AServlet"></a><!--如果不以“/”开头，那么相对当前页面所在路径-->
+* 分析：
+
+  1. 超链接指向的资源如果能够被浏览器解析，则在浏览器中展示，如果不能解析，则弹出下载提示框。不满足需求
+  2. 要求任何资源都必须弹出下载提示框
+  3. 使用响应头设置资源的打开方式：`content-disposition:attachment;filename=xxx`
+
+* 步骤：
+
+  1. 定义页面，编辑超链接href属性，指向Servlet，**传递资源名称`?filename=xxx`**
+  2. 定义Servlet
+    1. 获取文件名称
+    2. 使用字节输入流加载文件进内存
+    3. 指定response的响应头： `content-disposition:attachment;filename=xxx`
+    4. 将数据写出到response输出流
+
+* 中文文件名问题
+
+  * 解决思路：
+    1. 获取客户端使用的浏览器版本信息
+    2. 根据不同的版本信息，设置filename的编码方式不同
+
+  ```java
+  //1.获取请求参数，文件名称
+  String filename = request.getParameter("filename");
+  //2.使用字节输入流加载文件进内存
+  //2.1找到文件服务器路径
+  String realPath = this.getServletContext().getRealPath("/img/" + filename);
+  //2.2用字节流关联
+  FileInputStream fis = new FileInputStream(realPath);
+  
+  //3.设置response的响应头
+  //3.1设置响应头类型：content-type
+  String mimeType = servletContext.getMimeType(filename);//获取文件的mime类型
+  response.setHeader("content-type",mimeType);
+  //3.2设置响应头打开方式:content-disposition
+  
+  //解决中文文件名问题
+  //1.获取user-agent请求头、
+  String agent = request.getHeader("user-agent");
+  //2.使用工具类方法编码文件名即可
+  filename = DownLoadUtils.getFileName(agent, filename);
+  response.setHeader("content-disposition","attachment;filename="+filename);
+  
+  //4.将输入流的数据写出到输出流中
+  ServletOutputStream sos = response.getOutputStream();
+  byte[] buff = new byte[1024 * 8];
+  int len = 0;
+  while((len = fis.read(buff)) != -1){
+      sos.write(buff,0,len);
+  }
+  fis.close();
   ```
 
-* ServletContext获取资源路径
-
-  * 相对当前项目目录，即当然index.jsp所在目录
-
-* ClassLoader获取资源路径
-
-  * 相对classes目录
-
-* Class获取资源路径
-
-  * 以“/”开头相对classes目录
-  * 不以“/”开头相对当前.class文件所在目录。
 
 
 
 
 
-# 5 JSP（一种特殊的Servlet）
+# 6 会话技术
 
-## 5.1 JSP基础
+* 会话：一次会话中包含**多次请求和响应**
+  * ==一次会话：**浏览器第一次给服务器资源发送请求**，会话建立，**直到有一方断开为止**==
+* 功能：在一次会话的范围内的多次请求间，**共享数据**
+* 方式：
+  * **客户端会话**技术：**Cookie**
+   * **服务器端会话**技术：**Session**
 
-### 5.1.1 JSP的介绍
+## 6.1 Cookie
 
-* JSP其实就是Servlet
-  * Servlet：
-    * 优点：动态资源，可以编程
-    *  缺点：不适合设置html响应体，需要大量的response.getWriter().print("< html>")
-  * html：
-    * 优点：不用为输出html标签而发愁
-    * 缺点：html是静态页面，不能包含动态信息
-  * JSP(java server pages)：
-    * 优点：在原有html的基础上添加java脚本，构成jsp页面
+* **Cookie**：客户端会话技术，先由**服务器保存Cookie到浏览器**，在下次浏览器请求服务器时把Cookie再**归还**给服务器
 
-### 5.1.2 JSP和Servlet的分工
+* 使用步骤：
 
-* Servlet：作为请求中**处理数据**的环节
-* JSP：作为**请求发起页面**，例如显示表单、超链接。作为**请求结束页面**，例如显示数据
+  1. **创建**Cookie对象，绑定数据：`new Cookie(String name, String value)`
+      - 若Cookie名称相同，值会被覆盖。也可以修改值：`setValue(String value)`
+  2. **Respongse添加并发送**Cookie对象：`response.addCookie(Cookie cookie)`
+  3. **获取**Cookie，拿到数据：`Cookie[]  request.getCookies()`
 
-### 5.1.3 JSP的组成
+* 实现原理：基于响应头`set-cookie`和请求头`cookie`实现
 
-* <span style="font-family:monaco;color:red;font-weight:bold">JSP= html + Java脚本 + JSP标签(指令)</span>
-* JSP中无需创建即可使用的对象一共有9个，被称之为**9大内置对象**。例如：request对象、out对象
+* Cookie**细节**
 
-* 3种Java脚本：
-  * <span style="font-family:monaco;color:red;font-weight:bold"><%...%></span>：**java代码片段**(常用)，用于定义0~N条Java语句！**方法内能写什么**，它就可以放什么！
-  * <span style="font-family:monaco;color:red;font-weight:bold"><%=...%></span>：**java表达式**，用于输出(常用)，用于**输出一条表达式（或变量）的结果**。response.getWriter().print( ... );这里能放什么，它就可以放什么！
-  * <%!...%>：**声明**，用来创建类的成员变量和成员方法(**基本不用**，但容易被考到)，**类体中可以放什么**，它就可以放什么！
+  1. ==**一次**可不**可以发送多个Cookie**？==
 
-### 5.1.4 **JSP原理**
+    - 可以创建多个Cookie对象，使用response调用多次addCookie方法发送cookie即可。
 
-* **当客户端第一次访问JSP：**
-  * 当jsp页面第一次被访问时，<span style="font-family:monaco;color:red;font-weight:bold">服务器会把jsp编译成java文件</span>（这个java其实继承一个servlet类）
-  * 然后再<span style="font-family:monaco;color:red;font-weight:bold">把java编译成.class</span>
-  * 然后<span style="font-family:monaco;color:red;font-weight:bold">创建该类JSP(Servlet)对象</span>
-  * 最后<span style="font-family:monaco;color:red;font-weight:bold">调用它的service()方法</span>（第二次请求同一jsp时，直接调用service()方法）
+  2. ==Cookie在浏览器中**保存多长时间？**==
 
-### 5.1.5 JSP的注释
+    - **默认**情况下，**当浏览器关闭后，Cookie数据被销毁**
+    - ==**持久化存储**==：**`setMaxAge(int seconds)`**，单位为秒
+        - **负**数：**默认值**
+        - **零**：浏览器会**马上删除**这个Cookie
+        - **正**数：将Cookie数据写到硬盘的文件中，并**指定cookie存活时间**，时间到后，Cookie文件自动失效
 
-*  <span style="font-family:monaco;color:red;font-weight:bold"><%-- ... --%></span>：当服务器把jsp编译成java文件时已经忽略了注释部分！不会发送至客户端
+  3. Cookie**能不能存中文**？**用URL编解码**
 
-  但是HTML中注释会发送并可以从查看源代码中找到，虽然页面中不显示
+    * 在**tomcat 8及之后**，cookie**支持中文数据**。**特殊字符还是不支持**，建议使用**URL**编码存储，URL解码解析
 
-* JSP对应的Java文件：java脚本直接显示，html输出用write，变量输出用print
+    * 在tomcat 8 之前 cookie中不能直接存储中文数据。需要将中文数据转码，一般采用**URL编码**
 
+  4. ==Cookie**共享问题**？==
 
+    - 假设在**一个Tomcat服务器中**，部署了多个web项目，**哪些请求需要携带哪些Cookie给服务器呢**？
 
-## 5.2 Cookie
+      * **默认不设置path**情况下，只会在请求了 设置Cookie的Servlet的同级和子目录才会携带Cookie中存储的数据
 
-### 5.2.1 Http协议与Cookie（了解）
+         ```
+         aCookie.path = /day11_1; 
+         bCookie.path = /day11_1/jsps; 
+         访问：/day11_1/index.jsp时，携带：aCookie
+         访问：/day11_1/jsps/a.jsp时，携带：aCookie、bCookie
+         ```
 
-* Cookie是<span style="font-family:monaco;color:red;font-weight:bold">HTTP协议制定</span>的！先由**服务器保存Cookie到浏览器**，在下次浏览器请求服务器时把上一次请求得到Cookie再**归还**给服务器
+      * 如果**要共享**需设置Cookie的获取范围：**`setPath(String path)`，path设置为`/`**，代表当前Tomcat
 
-  * 由服务器创建保存到客户端浏览器的**一个键值对**！服务器保存Cookie的响应头：Set-Cookie: aaa=AAA  Set-Cookie: bbb=BBB
+    - **不同的Tomcat**服务器间Cookie**共享**问题？
 
-    ```java
-    response.addHeader("Set-Cookie","aaa=AAA");response.addHeader("Set-Cookie", "bbb=BBB");
-    ```
+      - **`setDomain(String path)`**：如果**设置一级域名相同**，那么**多个服务器之间cookie可以共享**
 
-  * 当浏览器请求服务器时，会把该浏览器保存的Cookie随请求发送给服务器。浏览器归还Cookie的请求头
+        `setDomain(".baidu.com")`，那么`tieba.baidu.com`和`news.baidu.com`中cookie可以共享
 
-    ```
-    Cookie: aaa=AAA; bbb=BBB
-    ```
+* Cookie的**特点**
 
-* Http协议规定（保证不给浏览器太大压力）
+  1. ==cookie**存储数据在客户端浏览器(不安全)，不能跨浏览器**==
 
-  * 1个Cookie最大4KB
-  * 1个服务器最多向1个浏览器保存**20**个Cookie
-  * 1个浏览器最多可以保存**300**个Cookie
+  2. HTTP协议规定：浏览器对于单个cookie 的大小限制(**4kb**) ，对同一个域名下的总cookie数量限制(**20个**)
 
-### 5.2.2 Cookie的用途（不能跨浏览器）
+* Cookie的作用
 
-* 服务器使用Cookie来跟踪客户端状态！
-  * 保存购物车(购物车中的商品不能使用request保存，因为它是一个用户向服务器发送的多个请求信息)
-  * 显示上次登录名(也是一个用户多个请求)
+  * Cookie一般用于存储**少量**的**不太敏感**的数据
 
-### 5.2.3 JavaWeb中使用Cookie
+  * 在**不登录的情况下**，完成服务器对客户端的身份识别。如关闭搜索提示框，显示上次登录名
 
-* 原始方式（了解）
+    * 上次访问时间案例
+      1. 访问一个Servlet，如果是第一次访问，则提示：您好，欢迎您首次访问
+      2. 如果不是第一次访问，则提示：欢迎回来，您上次访问时间为:显示时间字符串
 
-  * 使用response发送Set-Cookie响应头
-  * 使用request获取Cookie请求头
-
-* <span style="font-family:monaco;color:red;font-weight:bold">便捷方式（精通）</span>
-
-  * 使用<span style="font-family:monaco;color:red;font-weight:bold">repsonse.addCookie()</span>方法向浏览器**保存Cookie**
-  * 使用<span style="font-family:monaco;color:red;font-weight:bold">request.getCookies()</span>方法获取浏览器**归还的Cookie**，需要判断是否null
-
-* 一个jsp保存cookie,另一个jsp获取浏览器归还的cookie
-
-  ```jsp
-  <%
-      Cookie cookie1 = new Cookie("AAA","aaa");
-      response.addCookie(cookie1);
-      Cookie cookie2 = new Cookie("BBB","bbb");
-      response.addCookie(cookie2);
-  %>
-  ```
-
-  ```jsp
-  <%
+      ```java
+      response.setContentType("text/html;charset=utf-8");
       Cookie[] cookies = request.getCookies();
-      if(cookies!=null){
-          for(Cookie cookie:cookies){
-              out.print(cookie.getName()+"="+cookie.getValue()+"<br/>");
+      boolean flag = false;
+      
+      //URL编码时间
+      Date date = new Date();
+      SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+      String s = format.format(date);
+      s = URLEncoder.encode(s, "utf-8");
+      
+      for (Cookie cookie : cookies) {
+          //不是第一次访问
+          if ("last_time".equals(cookie.getName())){
+              //URL解码并显示
+              String value = URLDecoder.decode(cookie.getValue(), "utf-8");
+              response.getWriter().write("欢迎再次回来！您上次访问时间为："+value);
+              //修改last_time的cookie值，并发送
+              cookie.setValue(s);
+              response.addCookie(cookie);
+              flag = true;//不是第一次访问，设置标记
+              break;
           }
       }
-  %>
-  ```
-
-### 5.2.4 Cookie详解
-
-* Cookie不只有name和value两个属性
-
-* Cookie的<span style="font-family:monaco;color:red;font-weight:bold">maxAge</span>（掌握）：Cookie的最大生命，即Cookie可保存的最大时长。以**秒**为单位，例如：cookie.setMaxAge(60)表示这个Cookie会被浏览器保存到硬盘上60秒
-
-  * maxAge>0：浏览器会把Cookie保存到客户机硬盘上，有效时长为maxAge的值决定。
-  * maxAge<0：Cookie只在浏览器内存中存在，当用户关闭浏览器时，浏览器进程结束，Cookie也就死亡。
-  * maxAge=0：浏览器会马上删除这个Cookie！
-
-  ```jsp
-  <%
-  	Cookie cookie1 = new Cookie("AAA","aaa");
-  	cookie1.setMaxAge(60);
-      response.addCookie(cookie1);
-  %>
-  ```
-
-* Cookie的<span style="font-family:monaco;color:red;font-weight:bold">path</span>（理解）：
-
-  * Cookie的path并**不是设置这个Cookie在客户端的保存路径**！！！
-
-    * Cookie的path**由服务器创建Cookie时设置**
-  * 当浏览器访问服务器某个路径时，**需要归还哪些Cookie给服务器呢**？这**由Cookie的path决定**
-  * 浏览器<span style="font-family:monaco;color:red;font-weight:bold">访问服务器的路径如果包含(理解为字符串contains)某个Cookie的路径</span>，那么就会归还这个Cookie
-
-  * **例如：**
-
-    ```
-    aCookie.path=/day11_1/; 
-    bCookie.path=/day11_1/jsps/; 
-    cCookie.path=/day11_1/jsps/cookie/;
-    访问：/day11_1/index.jsp时，归还：aCookie
-    访问：/day11_1/jsps/a.jsp时，归还：aCookie、bCookie
-    访问：/day11_1/jsps/cookie/b.jsp时，归还：aCookie、bCookie、cCookie
-    ```
-
-  * Cookie的path默认值：**当前访问路径的父路径**。例如访问`/day11_1/jsps/a.jsp`时，响应的cookie，那么这个cookie的默认path为`/day11_1/jsps/`
-
-* Cookie的domain（域，了解）
-
-  * domain用来指定Cookie的域名！当多个二级域中共享Cookie时才有用。
-    * 例如；www.baidu.com、zhidao.baidu.com、news.baidu.com、tieba.baidu.com之间共享Cookie时可以使用domain
-      * 设置domain为：cookie.setDomain(".baidu.com");
-      * 设置path为：cookie.setPath("/");
-
-* **Cookie中不能存在中文**！！！在new对象时就出错
+      //第一次访问
+      if (!flag) {
+          //创建Cookie并设置存活时间，发送Cookie
+          Cookie time = new Cookie("last_time", s);
+          time.setMaxAge(30*24*60*60);
+          response.addCookie(time);
+          response.getWriter().write("欢迎您首次访问");
+      }
+      ```
 
 
+## 6.2 Session
 
+* Session：**服务器端会话技术**，在**一次会话的多次请求间共享数据**，将数据**保存在服务器端的对象**中。使用`HttpSession`类
 
+* ==Session的实现是**依赖于Cookie**==，或URL重写(了解)
 
-## 5.3 HttpSession
+* **获取**HttpSession对象：`HttpSession session = request.getSession();`
 
-### 5.3.1 HttpSession概述
+* **使用**HttpSession**域对象**
 
-* HttpSession是由<span style="font-family:monaco;color:red;font-weight:bold">JavaWeb提供</span>的，用来**会话跟踪**的类。session是<span style="font-family:monaco;color:red;font-weight:bold">服务器端对象</span>，保存在服务器端！！！
-* HttpSession是**Servlet三大域对象之一**(request、session、application(ServletContext))，所以它也有setAttribute()、getAttribute()、removeAttribute()方法
-* HttpSession**底层依赖Cookie**，**或是URL重写**！
+  * `Object getAttribute(String name)`
+  * `void setAttribute(String name, Object value)`
+  * `void removeAttribute(String name)`
 
-### 5.3.2 HttpSession的作用
+* Session细节
 
-* **会话范围**：会话范围是某个用户从首次访问服务器开始，到该用户关闭浏览器结束！
+  1. ==当**客户端关闭后**，**服务器不关闭**，两次获取Session**对象是否为同一个**？==
 
-  **会话**：一个用户对服务器的多次连贯性请求！所谓连贯性请求，就是该用户多次请求中间没有关闭浏览器！
+     - **默认情况下不是同一个**
 
-* 服务器会**为每个客户端创建一个session对象**，session就好比客户在服务器端的账户，它们被服务器保存到一个Map中，这个**Map被称之为session缓存**！
+     - **如果需要相同**，则可以**创建Cookie**，键为`JSESSIONID`，值为**`getId()`**，设置`setMaxAge()`，让Cookie持久化
 
-* Servlet中得到session对象：<span style="font-family:monaco;color:red;font-weight:bold">HttpSession session = request.getSession();</span>
+       ```java
+       HttpSession session = request.getSession();
+       Cookie c = new Cookie("JSESSIONID",session.getId());
+       c.setMaxAge(60*60);
+       response.addCookie(c);
+       ```
 
-   Jsp中得到session对象：<span style="font-family:monaco;color:red;font-weight:bold">session是jsp内置对象</span>，不用创建就可以直接使用！
+  2. ==**客户端不关闭**，**服务器关闭后**，两次获取的Session**对象是否为同一个**吗？==
 
-* session域相关方法：
-  * void **setAttribute**(String name, Object value);
-  * Object **getAttribute**(String name);
-  * void **removeAttribute**(String name);
+     - **不是同一个**，但是要**确保数据不丢失**。**Tomcat自动完成**以下工作
+       * Session的**钝化**：在服务器正常关闭之前，将Session对象系列化到硬盘上。Tomcat中**work**目录下
+           * IDEA会钝化到单独创建的配置文件中work目录，但是重启服务器后先删除work目录导致不能活化
+       * Session的**活化**：在服务器启动后，将Session文件转化为内存中的Session对象即可。
 
-### 5.3.3 HttpSession原理（理解）
+  3. ==Session什么时候被销毁？即**失效时间**==
 
-* 服务器不会马上给你创建session，在第一次获取session时，才会创建！request.getSession();
+     1. **服务器关闭**
 
-* request.getSession()方法：
-  * 获取Cookie中的JSESSIONID：
-    * 如果JSESSIONID不存在，创建session并保存起来，把新创建的JSESSIONID保存到Cookie中
-    * 如果JSESSIONID存在，通过JSESSIONID查找session对象，如果没有查找到，创建session并保存起来，把新创建的JSESSIONID保存到Cookie中
-    * 如果JSESSIONID存在，通过JSESSIONID查找到了session对象，那么就不会再创建session对象了
-    * 返回session
-  * 如果创建了新的session，**浏览器会得到一个包含了JSESSIONID的Cookie**，这个Cookie的生命为-1，即只在浏览器内存中存在，如果不关闭浏览器，那么Cookie就一直存在。
-  * 下次请求时，再次执行request.getSession()方法时，因为可以通过Cookie中的JSESSIONID找到session对象，所以与上一次请求使用的是同一session对象。
+     2. session对象调用**`invalidate()`**就失效。可以通过`isNew()`方法判断Session是否是新的，还没响应给客户端
 
-* request.getSession(false)、request.getSession(true)、request.getSession()，后两个方法效果相同
+     3. session默认失效时间 **30分钟**。Tomcat中web.xml配置修改如下
 
-  第一个方法：如果session缓存中(如果cookie不存在)，不存在session，那么返回null，不会创建session对象
+       ```xml
+       <session-config>
+            <session-timeout>30</session-timeout>
+        </session-config>
+       ```
+
+* Session的特点
+
+  * session用于**存储一次会话的多次请求的数据**，**存在服务器端**
+  * session可以存储**任意类型**，**任意大小**的数据
+
+* session与Cookie的**区别**：
+
+  1. session存储数据在服务器端，Cookie在客户端
+  2. session数据安全，Cookie相对于不安全
+  3. session没有数据大小限制，Cookie有限制
 
 
 
-### 5.3.4 HttpSession其他方法
-
-  * String **getId**()：获取sessionId（UUID）；
-
-  * int **getMaxInactiveInterval**()：获取session可以的最大不活动时间（秒），默认为**<span style="background:yellow">30分钟</span>**。当session在30分钟内没有使用，那么Tomcat会在session池中移除这个session；
-
-      * web.xml中配置session的最大不活动时间
-
-        ```xml
-            <session-config>
-                <session-timeout>30</session-timeout>
-            </session-config>
-        ```
-
-  * void **invalidate**()：让session失效！调用这个方法会被session失效，当session失效后，客户端再次请求，服务器会给客户端创建一个新的session，并在响应中给客户端新session的sessionId；**退出按钮**
-
-  * boolean **isNew**()：查看session是否为新。当客户端第一次请求时，服务器为客户端创建session，但这时服务器还没有响应客户端，也就是还没有把sessionId响应给客户端时，这时session的状态为新。
-
-    `request.getSession().isNew()`判断是新创建的还是返回的Session
-
-### 5.3.5 URL重写（理解）
-
-* 就是把所有的页面中的路径，都使用response.encodeURL("..")处理一下！
-
-  * session依赖Cookie，目的是让客户端发出请求时归还sessionId，这样才能找到对应的session
-  * 如果**客户端禁用了Cookie**，那么就无法得到sessionId，那么session也就无用了！
-  * 也可以**使用URL重写**来替代Cookie
-    * 让网站的所有超链接、表单中都添加一个特殊的请求参数，即sessionId
-    * 这样服务器可以通过获取请求参数得到sessionId，从而找到session对象。
-  * response.encodeURL(String url)
-    * 该方法会对url进行智能的重写：当请求中没有归还sessionid这个cookie，那么该方法会重写url，否则不重写！当然url必须是指向本站的url。
 
 
 
-### 例1 演示session中会话的多次请求中共享数据
 
-* AServlet：向session域中保存数据（利用JSP）
+> ### HttpSession原理（理解）
+>
+> - 服务器不会马上给你创建session，在第一次获取session时，才会创建！request.getSession();
+>
+> - request.getSession()方法：
+>
+>   - 获取Cookie中的JSESSIONID：
+>     - 如果JSESSIONID不存在，创建session并保存起来，把新创建的JSESSIONID保存到Cookie中
+>     - 如果JSESSIONID存在，通过JSESSIONID查找session对象，如果没有查找到，创建session并保存起来，把新创建的JSESSIONID保存到Cookie中
+>     - 如果JSESSIONID存在，通过JSESSIONID查找到了session对象，那么就不会再创建session对象了，返回session
+>   - 如果创建了新的session，**浏览器会得到一个包含了JSESSIONID的Cookie**，这个Cookie的生命为默认-1
+>   - 下次请求时，再次执行request.getSession()方法时，因为可以通过Cookie中的JSESSIONID找到session对象，所以与上一次请求使用的是同一session对象。
+>
+> - request.getSession(false)、request.getSession(true)、request.getSession()，后两个方法效果相同
+>
+>   第一个方法：如果session缓存中(如果cookie不存在)，不存在session，那么返回null，不会创建session对象
 
-* BServlet：从session域中获取数据（利用JSP）
+> ### URL重写（理解）
+>
+> - 就是把所有的页面中的路径，都使用response.encodeURL("..")处理一下！
+>   - session依赖Cookie，目的是让客户端发出请求时归还sessionId，这样才能找到对应的session
+>   - 如果**客户端禁用了Cookie**，那么就无法得到sessionId，那么session也就无用了！
+>   - 也可以**使用URL重写**来替代Cookie
+>     - 让网站的所有超链接、表单中都添加一个特殊的请求参数，即sessionId
+>     - 这样服务器可以通过获取请求参数得到sessionId，从而找到session对象。
+>   - response.encodeURL(String url)
+>     - 该方法会对url进行智能的重写：当请求中没有归还sessionid这个cookie，那么该方法会重写url，否则不重写！当然url必须是指向本站的url。
 
-  ```jsp
-  <%session.setAttribute("AAA","aaa");%>
-  ```
 
-  ```jsp
-  <%=session.getAttribute("AAA")%>
-  ```
 
-### * 例2 用户登录加验证码（精通）
+## 6.3 用户登录加验证码
 
-* 案例相关页面和Servlet
-  * login.jsp：登录页面
-  * succ1.jsp：只有登录成功才能访问的页面
-  * succ2.jsp：只有登录成功才能访问的页面 
-  * LoginServlet：校验用户是否登录成功！
+- 案例相关页面和Servlet
 
-* 各页面和Servlet内容
-  * login.jsp：提供登录表单，提交表单请求LoginServlet
-  * LoginServlet：获取请求参数，校验用户是否登录成功
-  * 失败：保存错误信息到request域，转发到login.jsp(login.jsp显示request域中的错误信息)
-  * 成功：保存用户信息到session域中，重定向到succ1.jsp页面，显示session域中的用户信息
-  * succ1.jsp：从session域获取用户信息，如果不存在，显示“您还没有登录”。存在则显示用户信息
-  * succ2.jsp：从session域获取用户信息，如果不存在，显示“您还没有登录”。存在则显示用户信息
+  - login.jsp：登录页面
+  - succ1.jsp：只有登录成功才能访问的页面
+  - succ2.jsp：只有登录成功才能访问的页面 
+  - LoginServlet：校验用户是否登录成功！
+
+- 各页面和Servlet内容
+
+  - login.jsp：提供登录表单，提交表单请求LoginServlet
+  - LoginServlet：获取请求参数，校验用户是否登录成功
+  - 失败：保存错误信息到request域，转发到login.jsp(login.jsp显示request域中的错误信息)
+  - 成功：保存用户信息到session域中，重定向到succ1.jsp页面，显示session域中的用户信息
+  - succ1.jsp：从session域获取用户信息，如果不存在，显示“您还没有登录”。存在则显示用户信息
+  - succ2.jsp：从session域获取用户信息，如果不存在，显示“您还没有登录”。存在则显示用户信息
 
   只要用户没有关闭浏览器，session就一直存在，那么保存在session中的用户信息也就一起存在！那么用户访问succ1和succ2就会通过
 
-* 添加图片验证码，利用VerifyCode.jar包来完成其Servlet
+- 添加图片验证码，利用VerifyCode.jar包来完成其Servlet，验证码只能使用一次
 
-  * VerifyCodeServlet：生成验证码
+  - VerifyCodeServlet：生成验证码
 
 ```java
+//VerifyCodeServlet.java
+VerifyCode verifyCode = new VerifyCode();
+BufferedImage bi = verifyCode.getImage();
+request.getSession().setAttribute("text",verifyCode.getText());
+VerifyCode.output(bi,response.getOutputStream());
+
 //LoginServlet.java
 //验证码
-String yanzhengma = request.getParameter("VerifyCode");
-String code = ((String) request.getSession().getAttribute("text"));
+String yanzhengma = request.getParameter("VerifyCode");//还应该判断值不为""
+//获取生成的验证码的文本值
+HttpSession session = request.getSession();
+String code = ((String) session.getAttribute("text"));
+//使用完立刻删除Session中的验证码文本值，保证验证码只能使用一次
+session.removeAttribute("text");
 if(!yanzhengma.equalsIgnoreCase(code)){
     request.setAttribute("message","验证码错误");
     request.getRequestDispatcher("/Login/login.jsp").forward(request,response);
@@ -3665,9 +3740,9 @@ if(!yanzhengma.equalsIgnoreCase(code)){
 }
 
 request.setCharacterEncoding("utf-8");//POST请求编码的解析采用utf-8
-String username = request.getParameter("username");//获取表单数据
+String username = request.getParameter("username");//获取表单数据，可以用map转bean的工具类
 String password = request.getParameter("password");//获取表单数据
-if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录
+if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录，可以改为数据库操作
     //保存Cookie，并发送至客户端；
     Cookie cookie = new Cookie("username",username);
     cookie.setMaxAge(60*60*24);
@@ -3681,13 +3756,6 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录
     request.setAttribute("message","用户名或密码错误");
     request.getRequestDispatcher("/Login/login.jsp").forward(request,response);
 }
-
-
-//VerifyCodeServlet.java
-VerifyCode verifyCode = new VerifyCode();
-BufferedImage bi = verifyCode.getImage();
-request.getSession().setAttribute("text",verifyCode.getText());
-VerifyCode.output(bi,response.getOutputStream());
 ```
 
 ```jsp
@@ -3712,19 +3780,18 @@ VerifyCode.output(bi,response.getOutputStream());
     <a href="javascript:change1();">换一张</a><br/>
     <input type="submit" value="登录">
 </form>
-<%
-    String message = "";
-    if (request.getAttribute("message") != null) {
-        message = (String) request.getAttribute("message");
-    }
-%>
-<p style="color: red;font-weight: bold"><%=message%></p>
 
-<!--改变验证码的Js代码-->
+<!--显示错误信息-->
+<p style="color: red;font-weight: bold">
+    <%=request.getAttribute("message")== null ? "" : request.getAttribute("message")%>
+</p>
+
+<!--改变验证码的Js代码，点击图片更换下一张-->
 <script>
-    var change1 = function () {
-        var imgId = document.getElementById("img1");
-        imgId.src="/VerifyCodeServlet?"+new Date().getTime();//改变请求参数，图片才会刷新
+    document.getElementById("img1").onclick = function () {
+        //加时间戳的毫秒值
+        var date = new Date().getTime();
+        this.src = "/VerifyCodeServlet?" + date;
     }
 </script>
 ```
@@ -3746,59 +3813,95 @@ VerifyCode.output(bi,response.getOutputStream());
 
 
 
+# 7 JSP及架构
 
+## 7.1 JSP
 
-## 5.4 JSP其他
+### 7.1.1 JSP简介
 
-### 5.4.1 JSP九大内置对象
+* JSP（java server pages）其实就是Servlet，用于简化Servlet的书写
+  - Servlet：
+    - 优点：动态资源，可以编程
+    - 缺点：不适合设置html响应体，需要大量的response.getWriter().print("< html>")
+  - html：
+    - 优点：不用为输出html标签而发愁
+    - 缺点：html是静态页面，不能包含动态信息
+  - JSP：
+    - 优点：在原有html的基础上添加java脚本，构成jsp页面
 
-- application（ServletContext）：即ServletContext类的对象
-- session（HttpSession）：即HttpSession类的对象，不是每个JSP页面中都可以使用，如果在某个JSP页面中设置<%@page session=”false”%>，说明这个页面不能使用session
-- request（HttpServletRequest）：即HttpServletRequest类的对象
-- response（HttpServletResponse）：即HttpServletResponse类的对象
-- pageContext（PageContext）：页面上下文对象，它是最后一个没讲的域对象
-- page（当前JSP的真身类型）：当前JSP页面的“this”，即当前对象；
+* **JSP原理**
+  * 当**jsp页面第一次被访问**时，**服务器会把jsp编译成java文件**（这个java其实**继承一个servlet**类）
+  * 然后再把**java编译成.class**
+  * 然后**创建该类JSP(Servlet)对象**
+  * 最后**调用它的service()方法**（第二次请求同一jsp时，直接调用service()方法）
+* JSP和Servlet的分工
+  - Servlet：作为请求中**处理数据**的环节
+  - JSP：作为**请求发起页面**，例如显示表单、超链接。作为**请求结束页面**，例如显示数据
+
+### 7.1.2 JSP的脚本
+
+* JSP= html + Java脚本 + JSP标签(指令)
+* 3种Java脚本：
+  * `<%...%>`：定义的java代码，在service方法中。**service方法**中可以定义什么，该脚本中就可以定义什么。
+  * `<%=...%>`：定义的java代码，会输出到页面上。**输出语句**中可以定义什么，该脚本中就可以定义什么
+  * `<%!...%>`：定义的java代码，在jsp转换后的java**类的成员位置**
+* `<%-- ... --%>`：**注释**，也可以注释HTML。当服务器把jsp编译成java文件时已经忽略了注释部分！**不会发送至客户端**
+  * 但是HTML中注释会发送并可以从查看源代码中找到，虽然页面中不显示
+* JSP对应的Java文件：java脚本直接显示，html输出用write，变量输出用print
+
+### 7.1.3 **JSP九大内置对象**
+
+- pageContext（PageContext）：当前页面共享数据。页面上下文对象，可以获取其他8个对象，一个顶9个！
+- application（ServletContext）：整个应用程序，所有用户间共享数据
+- session（HttpSession）：一次会话的多个请求间。在JSP页面中设置`<%@page session=”false”%>`就不能使用Session
+- request（HttpServletRequest）：一次请求访问的多个资源（请求转发）
+- response（HttpServletResponse）：响应对象
+- out（JspWriter）：用来向客户端发送文本数据。**先执行response.getWriter()，后执行out**
+- page（当前JSP的类型即Servlet对象）：当前JSP页面的“this”，即Servlet对象；
 - config（ServletConfig）：对应“真身”中的ServletConfig
-
-- out（JspWriter）：等同与response.getWriter()，用来向客户端发送文本数据
-- exception（Throwable）：只有在错误页面中可以使用这个对象
+- exception（Throwable）：只有在错误页面中可以使用这个对象，即`isErrorPage`为true
 
 
 
-- pageContext：一个顶9个！
+> Servlet中有三大域，而JSP中有四大域，它就是最后一个域对象！
+>
+> - ServletContext：整个应用程序
+> - session：整个会话(一个会话中只有一个用户)
+> - request：一个请求链！
+> - pageContext：一个jsp页面！这个域是在**当前jsp页面**和当前jsp页面中使用的**标签**之间共享数据！
 
-  Servlet中有三大域，而JSP中有四大域，它就是最后一个域对象！
+- PageContext域对象
 
-  - ServletContext：整个应用程序
-  - session：整个会话(一个会话中只有一个用户)
-  - request：一个请求链！
-  - pageContext：一个jsp页面！这个域是在**当前jsp页面**和当前jsp页面中使用的**标签**之间共享数据！
-    - 域对象
-    - **代理其他域**：pageContext.setAttribute("xxx", "XXX", PageContext.SESSION_SCOPE);
-    - **全域查找**：pageContext.findAttribute("xxx");**从小到大**，依次（四大域对象）查找！
-    - **获取其他8个内置对象**
+  - **代理其他域**：pageContext.setAttribute("xxx", "XXX", PageContext.SESSION_SCOPE);
+
+  - **全域查找**：pageContext.findAttribute("xxx")；**从小到大**，依次（四大域对象）查找！
 
 
 
-### 5.4.2 JSP三大指令
 
-**一个jsp页面中，可以有0~N个指令的定义！可以放在任意位置**
+### 7.1.4 JSP三大指令
 
-* **page**    最复杂    **<%@page language="java" info="xxx"...%>**
+作用：用于**配置JSP页面**，**导入资源文件**。一个jsp页面中，可以有0~N个指令的定义！可以放在任意位置
 
-  * pageEncoding和contentType
+格式：`<%@ 指令名称 属性名1=属性值1 属性名2=属性值2 ... %>`
 
-    * pageEncoding：它指定当前jsp页面的编码，只要不说谎，就不会有乱码！在服务器要把jsp编译成.java时需要使用pageEncoding!
-    * contentType：它表示添加一个响应头：Content-Type！等同与response.setContentType("text/html;charset=utf-8");
-      * 如果两个属性只提供一个，那么另一个的默认值为设置那一个。如果两个属性都没有，那么默认为iso
+- **page**
 
-  * import：导包！可以出现多次
+  - **`contentType`**和`pageEncoding`
 
-  * errorPage和isErrorPage
+    - `contentType`：**添加一个响应头，等同于**`response.setContentType("text/html;charset=utf-8");`
+    - `pageEncoding`：它指定当前jsp页面的编码，在服务器要把jsp编译成.java时需要使用`pageEncoding`!
+    - 如果两个属性只提供一个，那么另一个的默认值为设置那一个。如果两个属性都没有，那么默认为iso
 
-    * errorPage：当前页面如果抛出异常，那么要转发到哪一个页面，由errorPage来指定
+  - `import`：**导包**！可以出现多次
 
-    * isErrorPage：它指定当前页面是否为处理错误的页面！当该属性为true时，这个页面会设置状态码为500！而且这个页面可以使用9大内置对象中的**exception**!
+  - `language`：指定当前jsp编译后的语言类型，默认值为java。
+
+  - `errorPage`和`isErrorPage`
+
+    - `errorPage`：当前页面如果抛出异常，那么要转发到哪一个页面，由errorPage来指定
+
+    - `isErrorPage`：它指定当前页面是否为处理错误的页面！当该属性为true时，这个页面会设置状态码为500！而且这个页面可以使用9大内置对象中的**`exception`**!
 
       ```xml
       <error-page>
@@ -3815,769 +3918,308 @@ VerifyCode.output(bi,response.getOutputStream());
       </error-page>
       ```
 
-  * autoFlush和buffer
+  - 基本没用：
 
-    * autoFlush：指定jsp的输出流缓冲区满时，是否自动刷新！默认为true，如果为false，那么在缓冲区满时抛出异常！
-    * buffer：指定缓冲区大小，默认为8kb，通常不需要修改！
+    - autoFlush和buffer
+      - autoFlush：指定jsp的输出流缓冲区满时，是否自动刷新！默认为true，如果为false，那么在缓冲区满时抛出异常！
+      - buffer：指定缓冲区大小，默认为8kb，通常不需要修改！
+    - isELIgnored：是否忽略el表达式，默认值为false，不忽略，即支持！
 
-  * isELIgnored：是否忽略el表达式，默认值为false，不忽略，即支持！
+    - info：信息！
+    - isThreadSafe：当前的jsp是否支持并发访问！值为false，没人用
+    - session：当前页面是否支持session，如果为false，那么当前页面就没有session这个内置对象！
+    - extends：让jsp生成的servlet去继承该属性指定的类！
 
-  * 基本没用：
+- **include**：静态**包含**
 
-    * language：指定当前jsp编译后的语言类型，默认值为java。
-    * info：信息！
-    * isThreadSafe：当前的jsp是否支持并发访问！值为false，没人用
-    * session：当前页面是否支持session，如果为false，那么当前页面就没有session这个内置对象！
-    * extends：让jsp生成的servlet去继承该属性指定的类！
+  - 作用：把页面分解，使用包含的方式组合在一起，这样一个页面中不变的部分，就是一个独立jsp，而我们只需要处理变化的页面。
+  - 与RequestDispatcher的include()方法的功能相似！
+    - `<%@include%>`它是在jsp编译成java文件时完成的！他们共同生成一个java文件，然后再生成一个class！
+    - RequestDispatcher的`include()`是一个方法，包含和被包含的是两个servlet，即两个.class！他们只是把响应的内容在运行时合并了！
 
-* **include**    静态包含
+- **taglib**：导入标签库，`<%@taglib prefix="s" uri="/struts-tags"%> 前缀的用法< s:text>`
 
-  * 与RequestDispatcher的include()方法的功能相似！
-  * < %@include%> 它是在jsp编译成java文件时完成的！他们共同生成一个java(就是一个servlet)文件，然后再生成一个class！
-  * RequestDispatcher的include()是一个方法，包含和被包含的是两个servlet，即两个.class！他们只是把响应的内容在运行时合并了！
-  * 作用：把页面分解了，使用包含的方式组合在一起，这样一个页面中不变的部分，就是一个独立jsp，而我们只需要处理变化的页面。
+  - `prefix`：指定标签库在本页面中的**前缀**！自定义！
 
-* **taglib**    导入标签库，两个属性
+  - `uri`: 指定标签库的**位置**！
 
-  * prefix：指定标签库在本页面中的前缀！由我们自己来起名称！
 
-  * uri: 指定标签库的位置！
-
-    <%@taglib prefix="s" uri="/struts-tags"%> 前缀的用法< s:text>
-
-### 5.4.3 JSP动作标签
-
-* 这些jsp的动作标签，**与html提供的标签有本质的区别**
-
-  * 动作标签是由tomcat(服务器)来解释执行！它与java代码一样，都是在服务器端执行的！
-  * html由浏览器来执行！
-    * < jsp:forward>：**转发**！它与RequestDispatcher的forward方法是一样的，一个是在Servlet中使用，一个是在jsp中使用！
-    * < jsp:include>：**包含**：它与RequestDispatcher的include方法是一样的，一个是在Servlet中使用，一个是在jsp中使用！
-
-      * < %@include>和< jsp:include>有什么不同！
-
-    * < jsp:param>：它用来作为forward和include的子标签！用来给转发或包含的页面传递参数！
-
-### 5.4.4 JavaBean
-
-* JavaBean是一种规范，也就是对类的要求。
-
-* JavaBean的规范
-  1. 必须要有一个**默认构造器**（无参）
-  2. **提供get/set方法**，如果只有get方法，那么这个属性是只读属性！
-  3. 属性：有get/set方法的成员，还**可以没有成员**，只有get/set方法。**属性名称由get/set方法来决定**！而不是成员名称！
-  4. 方法名称满足一定的规范，那么它就是属性！boolean类型的属性，它的读方法可以是is开头，也可以是get开头！
-
-* 内省（了解）：目标是得到JavaBean属性的读、写**方法的反射对象**，通过反射对JavaBean属性**进行操作**的一组API
-
-  * 内省类 --> Bean信息 --> 属性描述符 --> 属性的get/set对应的Method！ --- > 可以反射了！
-
-* **commons-beanutils**，它是依赖内省完成！
-
-  * 导包：commons-beanutils.jar、commons-logging.jar
-
-    ```java
-    BeanUtils.getProperty(Object bean, String propertyName)
-    BeanUtils.setProperty(Object bean, String propertyName, String propertyValue)
-    ```
-
-    ```java
-    Class c = Class.forName("Person");
-    Object bean = c.newInstance();
-    BeanUtils.setProperty(bean,"name","张三");
-    System.out.println(BeanUtils.getProperty(bean,"name"));//张三
-    System.out.println(bean);//Person{name='张三', age=0, gender='null'}
-    ```
-
-* 将map中的数据封装到Bean中
-
-  ```java
-  BeanUtils.populate(Map map, Object bean)//map转为bean
-  //或自己封装的工具
-  CommontUtils.toBean(Map map, Class class)
-  ```
+> JSP动作标签
+>
+> 与html提供的标签有本质的区别，动作标签是由服务器来解释执行！它与java代码一样，都是在服务器端执行的！
+>
+> html由浏览器来执行！
+>
+> - `<jsp:forward>`：**转发**！它与RequestDispatcher的forward方法是一样的，一个在Servlet中使用，一个在jsp中使用
+> - `<jsp:include>`：**包含**：它与RequestDispatcher的include方法是一样的，一个在Servlet中使用，一个在jsp中使用
+>   - < %@include>和< jsp:include>有什么不同！
+> - `<jsp:param>`：它用来作为forward和include的子标签！用来给转发或包含的页面传递参数！
 
 
 
+### 7.1.5 EL表达式
 
-## 5.5 EL表达式
+1. 概念：**EL（Expression Language）** 表达式语言
+2. 作用：**替换**和**简化jsp页面**中**java代码的编写**。EL替代的是`<%= ... %>`，也就是说，**EL只能做输出**
+3. 语法：`${表达式}`
+4. 注意：
+  * **JSP默认支持EL表达式的**。如果要**忽略**EL表达式
+    1. 设置JSP中page指令中：`isELIgnored="true"` 忽略当前JSP页面中所有的EL表达式
+    2. `\${表达式}` ：忽略当前这个EL表达式
+5. 使用：
+   1. **运算**：
+     * 运算符：
+       1. 算数运算符： `+` `-` `*` `/(或div)` `%(或mod)`
+       2. 比较运算符： `>` `<` `>=` `<=` `==` `!=`
+       3. 逻辑运算符： `&&(或and)` `||(或or)` `!(或not)`
+       4. 空运算符： `empty`
+         * 功能：用于判断字符串、集合、数组对象是否为null或者长度是否为0
+         * `${empty list}`：判断字符串、集合、数组对象是否为null或者长度为0
+         * `${not empty str}`：表示判断字符串、集合、数组对象是否不为null 并且 长度>0
+   2. **获取值**
 
-### 5.5.1 EL是JSP内置的表达式语言
+     3. el表达式**只能**从**域对象**中获取值
 
-* JSP2.0开始，不让再使用java脚本，而是使用el表达式和动态标签来替代java脚本！
-* <span style="font-family:monaco;color:red;font-weight:bold">EL替代的是<%= ... %></span>，也就是说，**EL只能做输出**！
+     4. 语法：
 
-### 5.5.2 EL表达式读取四大域
+            1. `${域名称.键名}`：从指定域中获取指定键的值
 
-  * **${xxx}**，**全域查找**名为xxx的属性（从小到大），如果**不存在，输出空字符串**，而不是null。
-  * **${pageScope.xxx}**、 **${requestScope.xxx}**、**${sessionScope.xxx}**、**${applicationScope.xxx}**，指定域获取属性！
+                 * 域名称：
+                   1. `pageScope`		--> pageContext
+                   2. `requestScope` 	--> request
+                   3. `sessionScope` 	--> session
+                   4. `applicationScope` --> application（ServletContext）
+                 * 举例：在request域中存储了`name=张三`。获取：`${requestScope.name}`，没有就展示空串
+                    2. `${键名}`：表示**依次从最小的域中**查找是否有该键对应的值，直到找到为止。
+                    3. 获取对象、List集合、Map集合的值
+                  1. **对象**：`${域名称.键名.属性名}`
+                        * 本质上会去调用对象的`getter方法`。属性和成员变量不同，只有getter、setter方法的称**逻辑视图**
 
-### 5.5.3 JavaBean导航
+                  2. **List**集合：`${域名称.键名[索引]}`
 
-```jsp
-<%
-	Address address = new Address();
-	address.setCity("北京");
-	address.setStreet("西三旗");
-	
-	Employee emp = new Employee();
-	emp.setName("李小四");
-	emp.setSalary(123456);
-	emp.setAddress(address);
-	
-	request.setAttribute("emp", emp);
-  %>
+                  3. **Map**集合：`${域名称.键名["key名称"]}`或`${域名称.键名.key名称}`
 
-<h3>使用el获取request域的emp</h3>
-${requestScope.emp.address.street }
-```
+   5. 隐式对象：
+      * el表达式中有11个隐式对象
+          * **pageContext**：
+              * 获取其他9个内置对象，有个cookie它获取不到
+              * `${pageContext.request.contextPath}`：动态获取**虚拟目录**
 
-### 5.5.4 11个EL内置对象
+### 7.1.6 JSTL标签库
 
-* EL可以输出的东西都在11个内置对象中！11个内置对象，其中**10个是Map**！**pageContext**不是map，它就是PageContext类型，1个项9个。
-  * 我们已经学习了四个
+1. 概念：JavaServer Pages Tag Library  **JSP标准标签库**。是由Apache组织提供的开源的免费的jsp标签`<标签>`
 
-  * param：对应参数，它是一个Map，其中key参数名，value是参数值，适用于单值的参数。
+2. 作用：用于简化和替换jsp页面上的java代码
 
-  * paramValues：对应参数，它是一个Map，其中key参数名，value是多个参数值，适用于多值的参数。
+3. 使用步骤：
 
-  * header：对应请求头，它是一个Map，其中key表示头名称，value是单个头值，适用于单值请求头
+    1. 导入jstl相关jar包
+    2. 引入标签库，taglib指令：  `<%@ taglib %>`
+    3. 使用标签
 
-  * headerValues：对应请求头，它是一个Map，其中key表示头名称，value是多个头值，适用于多值请求头
+4. 常用的JSTL标签
 
-  * initParam：获取< context-param>内的参数！
+    1. `if`：相当于java代码的if语句
 
-    ```xml
-    <context-param>
-        <param-name>xxx</param-name>
-        <param-value>XXX</param-value>
-    </context-param>
-    <context-param>
-        <param-name>yyy</param-name>
-        <param-value>YYY</param-value>
-    </context-param>
-    ```
+        1. 属性：`test`必须属性，接受boolean表达式
+            1. 如果表达式为true，则显示if标签体内容，如果为false，则不显示标签体内容
+            2. 一般情况下，test属性值会**结合el表达式**一起使用
+        2. 注意：`c:if`标签**没有else**情况，想要else情况，则可以在定义一个`c:if`标签
+
+        ```jsp
+        <c:if test="${not empty list}">  <%-- number % 2 != 0 --%>
+            <p>遍历集合</p>
+        </c:if>
+        ```
+
+    2. `choose`：相当于java代码的switch语句
+
+        1. 使用choose标签声明         			相当于switch声明
+        2. 使用when标签做判断         			相当于case
+        3. 使用otherwise标签做其他情况的声明    	相当于default
+
+        ```jsp
+        <c:set var="score" value="${param.score }"/>
+        <c:choose>
+            <c:when test="${score > 100 || score < 0}">错误的分数：${score }</c:when>
+            <c:when test="${score >= 90 }">A级</c:when>
+            <c:when test="${score >= 80 }">B级</c:when>
+            <c:when test="${score >= 70 }">C级</c:when>
+            <c:when test="${score >= 60 }">D级</c:when>
+            <c:otherwise>E级</c:otherwise>
+        </c:choose>
+        ```
+
+    3. `foreach`：相当于java代码的for语句
+
+        ```jsp
+        <c:forEach var="i" begin="1" end="10" step="2">//循环变量、开始、结束、设置步长(默认1)
+            ${i}<br/>
+        </c:forEach>
+        //13579
+        
+        <c:forEach items="${strs }" var="str">//循环目标、变量
+            ${str }<br/>
+        </c:forEach>
+        
+        //可以使用varStatus来创建循环状态变量，用于遍历容器   
+        <c:forEach var="item" items="${ns }" varStatus="vs">
+            <c:if test="${vs.first }">第一行：</c:if>               <!--first：是否为第一个元素-->
+            <c:if test="${vs.last }">最后一行：</c:if>              <!--last：是否为最后一个元素-->
+            <c:out value="第${vs.count }行: "/>                     <!--count：循环的次数，从1开始-->
+            <c:out value="[${vs.index }]: "/>                      <!--index：循环元素的索引-->
+            <c:out value="name: ${vs.current }"/><br/>             <!--current：当前元素。或直接用var变量-->
+        </c:forEach>
+        ```
+
+  * 需求：在request域中有一个存有User对象的List集合。需要使用jstl+el将list集合数据展示到jsp页面的表格table中
 
     ```jsp
-    ${initParam.xxx}  
-    ```
-
-  * cookie：Map<**String,Cookie**>类型，其中key是cookie的name，value是cookie对象。 ${cookie.username.value}
-
-  * <span style="font-family:monaco;color:red;font-weight:bold">pageContext</span>：它是PageContext类型！<span style="font-family:monaco;color:red;font-weight:bold">${pageContext.request.contextPath}</span>获取项目名
-
-### 5.5.5 EL函数库（由JSTL提供的）
-
-* 导入标签库：<%@ tablib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
-  ```jsp
-  <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-  <%
-  String[] strs = {"a", "b","c"};
-  List list = new ArrayList();
-  list.add("a");
-  pageContext.setAttribute("arr", strs);
-  pageContext.setAttribute("list", list);
-  %>
-  
-  ${fn:length(arr) }<br/><!--3-->
-  ${fn:length(list) }<br/><!--1-->
-  ${fn:toLowerCase("Hello") }<br/> <!-- hello -->
-  ${fn:toUpperCase("Hello") }<br/> <!-- HELLO -->
-  ${fn:contains("abc", "a")}<br/><!-- true -->
-  ${fn:containsIgnoreCase("abc", "Ab")}<br/><!-- true -->
-  ${fn:contains(arr, "a")}<br/><!-- true -->
-  ${fn:containsIgnoreCase(list, "A")}<br/><!-- true -->
-  ${fn:endsWith("Hello.java", ".java")}<br/><!-- true -->
-  ${fn:startsWith("Hello.java", "Hell")}<br/><!-- true -->
-  ${fn:indexOf("Hello-World", "-")}<br/><!-- 5 -->
-  ${fn:join(arr, ";")}<br/><!-- a;b;c -->
-  ${fn:replace("Hello-World", "-", "+")}<br/><!-- Hello+World -->
-  ${fn:join(fn:split("a;b;c;", ";"), "-")}<br/><!-- a-b-c -->
-  
-  ${fn:substring("0123456789", 6, 9)}<br/><!-- 678 -->
-  ${fn:substring("0123456789", 5, -1)}<br/><!-- 56789 -->
-  ${fn:substringAfter("Hello-World", "-")}<br/><!-- World -->
-  ${fn:substringBefore("Hello-World", "-")}<br/><!-- Hello -->
-  ${fn:trim("     a b c     ")}<br/><!-- a b c -->
-  ${fn:escapeXml("<html></html>")}<br/> <!-- <html></html> -->
-  
-  ```
-
-* 自定义函数库
-
-  1. 写一个java类，类中可以定义0~N个方法，但必须是static，而且有返回值的！
-
-  2. 在WEB-INF目录下创建一个tld文件
-
-     ```tld
-     <function>
-     	<name>fun</name>
-     		<function-class>cn.itcast.fn.MyFunction</function-class>
-     		<function-signature>java.lang.String fun()</function-signature>
-     </function>
-     ```
-
-  3. 在jsp页面中导入标签库
-     <%@ taglib prefix="it" uri="/WEB-INF/tlds/itcast.tld" %>
-
-  4. 在jsp页面中使用自定义的函数：${it:fun() }
-
-## * 5.6 JSTL标签库
-
-### 5.6.1 JSTL概述
-
-  * JSP Standard Tag Library,**apache**的东西，依赖EL，对其进行了扩展
-
-  * 使用JSTL需要导入jstl1.2.jar
-
-  * 四大库：
-
-    <span style="font-family:monaco;color:red;font-weight:bold">core</span>：核心库，重点
-    **fmt**：格式化：日期、数字
-    sql：过时
-    xml：过时
-
-### 5.6.2 导入标签库
-
-* jar包
-* 在jsp页面中：<%@taglib prefix="前缀" uri="路径"%>
-
-### 5.6.3 core（c标签）
-
-* **< c:out>**：**输出（几乎不用）**`<c:out value="${AAA}"/>`
-  * value：可以是字符串常量，也可以是EL表达式
-  * default：当要输出的内容为null时，会输出default指定的值
-  * escapeXml：默认值为true，表示**转义**！防止攻击
-* **< c:set>**：**设置(创建域的属性)**`<c:set var="AAA" value="asd" scope="session"/>`
-  * var：变量名
-  * value：变量值，可以是EL表达式
-  * scope：域，默认为page，可选值：page、request、session、application
-
-  * **< c:remove>**：**删除域变量**`<c:remove var="AAA" scope="session"/>`
-    * var：变量名
-    * scope：如果**不给出scope，表示删除所有域**中的该名称变量；如果**指定了域**，只删除该域的变量。
-
-*  **< c:url>**
-    * **value**：指定一个路径！它会在**路径前面自动添加项目名**
-
-      * `<c:url value="/index.jsp"/>`，它会输出/day13_1/index.jsp
-
-    * **子标签**：**< c:param>**，用来**给url后面添加参数**，例如：
-
-      ```jsp
-      <c:url value="/index.jsp">
-        <c:param name="username" value="张三"/>  <!--可以对参数进行url编码！！-->
-      < /c:url>
-      //结果为：/day13_1/index.jsp?username=%ED%2C%3F%ED%2C%3F
-      ```
-
-    * var：指定变量名，一旦添加了这个属性，那么url标签就不会再输出到页面，而是把生成url保存到域中。
-
-    * scope：它与var一起使用，用来保存url。
-
-*  **< c:if>**：对应java中的if语句
-
-    * <c:if test="布尔类型">...< /c:if>，当test为值时，执行标签体内容！
-
-      ```jsp
-      <c:set var="a" value="hello"/>
-      <c:if test="${not empty a }">
-      	<c:out value="${a }"/>
-      </c:if>
-      ```
-
-* **< c:choose>**：它对应java中的if/else if/ ... /else
-
-  ```jsp
-  <c:set var="score" value="${param.score }"/>
-  <c:choose>
-  	<c:when test="${score > 100 || score < 0}">错误的分数：${score }</c:when>
-  	<c:when test="${score >= 90 }">A级</c:when>
-  	<c:when test="${score >= 80 }">B级</c:when>
-  	<c:when test="${score >= 70 }">C级</c:when>
-  	<c:when test="${score >= 60 }">D级</c:when>
-  	<c:otherwise>E级</c:otherwise>
-  </c:choose>
-  ```
-
-* **< c: forEach>**：它用来循环遍历数组、集合，计数方式来循环(for)！
-
-  ```jsp
-  <c:forEach var="i" begin="1" end="10" step="2">//循环变量、开始、结束、设置步长(默认1)
-      ${i}
-  </c:forEach>
-  //13579
-  ```
-
-  ```jsp
-  <c:forEach items="${strs }" var="str">//循环目标、变量
-   ${str }<br/>
-  </c:forEach>
-  ```
-
-  * **循环状态**：可以使用**varStatus**来创建循环状态变量
-
-    ```jsp
-    <c:forEach var="item" items="${ns }" varStatus="vs">
-    	<c:if test="${vs.first }">第一行：</c:if>
-    	<c:if test="${vs.last }">最后一行：</c:if>
-    	<c:out value="第${vs.count }行: "/>
-    	<c:out value="[${vs.index }]: "/>
-    	<c:out value="name: ${vs.current }"/><br/>
-    </c:forEach>
-    //count：循环元素的个数
-    //index：循环元素的下标
-    //first：是否为第一个元素
-    //last：是否为最后一个元素
-    //current：当前元素
+    <table border="1">
+        <tr>
+            <th>编号</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>生日</th>
+        </tr>
+        <c:forEach items="${list}" var="user" varStatus="s">
+            <tr>
+                <td>${s.count}</td>
+                <td>${user.name}</td>
+                <td>${user.age}</td>
+                <td>${user.birStr}</td>
+            </tr>
+        </c:forEach>
+    </table>
     ```
 
 
-### 5.6.4 I18N（fmt标签）
 
-* 格式化库
-
-  * <fmt:**formatDate** value="" pattern="">
-
-    * value：指定一个Date类型的变量
-
-    * pattern：用来指定输出的模板！例如：yyyy-MM-dd HH:mm:ss
-
-      ```jsp
-      <%
-      	Date date = new Date();
-      	pageContext.setAttribute("d", date);
-      %>
-      <fmt:formatDate value="${d }" pattern="yyyy-MM-dd HH:mm:ss"/>
-      ```
-
-  * <fmt:**formatNumber** value="${num1}" pattern="0.00">
-
-    *   保留小数点后2位，它会四舍五入！如果不足2位，以0补位！
-
-  * <fmt:**formatNumber** value="${num1}" pattern="#.##">
-
-    *   保留小数点后2位，它会四舍五入！如果不足2位，不补位！
-
-
-
-# 6 Listener(监听器)
-
-* 监听器：
-
-  * 它是一个**接口**，内容由我们来实现
-  * 它需要**注册**，例如注册在按钮上
-
-  * 监听器中的方法，会在特殊**事件发生时被调用**
-
-* 观察者模式：
-
-  * 事件源（被监听对象）：小偷
-
-  * 事件（事件源行为）：偷东西
-
-  * 监听器（用于监听事件源的对象）：警察，监听器中的方法：抓捕
-
-* Java Web中监听器（8大）：
-  * **ServletContext**
-
-    * 生命周期监听：<span style="background:yellow">**ServletContextListener**</span>，它有两个方法，一个在出生时调用，一个在死亡时调用
-      * void contextInitialized(ServletContextEvent sce)：创建Servletcontext时
-      * void contextDestroyed(ServletContextEvent sce)：销毁Servletcontext时
-    * 属性监听：**ServletContextAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
-      * void attributeAdded(ServletContextAttributeEvent event)：添加属性时
-      * void attributeReplaced(ServletContextAttributeEvent event)：替换属性时
-      * void attributeRemoved(ServletContextAttributeEvent event)：移除属性时
-
-  * **HttpSession**
-
-    * 生命周期监听：**HttpSessionListener**，它有两个方法，一个在出生时调用，一个在死亡时调用
-
-      * void sessionCreated(HttpSessionEvent se)：创建session时
-      * void sessionDestroyed(HttpSessionEvent se)：销毁session时
-
-    * 属性监听：**HttpSessioniAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
-
-      * void attributeAdded(HttpSessionBindingEvent event)：添加属性时
-      * void attributeReplaced(HttpSessionBindingEvent event)：替换属性时
-      * void attributeRemoved(HttpSessionBindingEvent event)：移除属性时
-
-    * **感知监听**：用来**添加到JavaBean上（需实现接口）**，**不需要在web.xml中注册**
-
-      * **HttpSessionBindingListener**：添加到javabean上，javabean就知道自己是否添加到session中
-
-      * **HttpSessionActivationListener**：监听JavaBean(实现序列化接口)是否随Session被钝化、活化
-
-        * Session的序列化：context.xml中打开被注释掉的Manager即可不允许Session序列化
-
-        * Tomcat会在session长时间不被使用时**钝化**session对象，所谓钝化session，就是把session通过序列化的方式**保存到硬盘文件中**。当用户再使用session时，Tomcat还会把钝化的对象再活化session，所谓活化就是把硬盘文件中的session在反序列化回内存
-
-          ```xml
-          <!--配置Tomcat钝化session参数;放到tomcat\conf\catalina\localhost\项目名-->
-          <Context>
-          	<Manager className="org.apache.catalina.session.PersistentManager" maxIdleSwap="1">
-          		<Store className="org.apache.catalina.session.FileStore" directory="mysession"/>
-          	</Manager>
-          </Context>
-          ```
-
-  * **ServletRequest**
-
-    * 生命周期监听：**ServletRequestListener**，它有两个方法，一个在出生时调用，一个在死亡时调用
-      * void requestInitialized(ServletRequestEvent sre)：创建request时
-      * void requestDestroyed(ServletRequestEvent sre)：销毁request时
-    * 属性监听：**ServletRequestAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
-      * void attributeAdded(ServletRequestAttributeEvent srae)：添加属性时
-      * void attributeReplaced(ServletRequestAttributeEvent srae)：替换属性时
-      * void attributeRemoved(ServletRequestAttributeEvent srae)：移除属性时
-
-* Java Web中完成编写监听器
-
-  * 写一个监听器类(实现某个监听器接口)；
-  * 注册，在web.xml中配置来完成注册
-
-* 事件对象
-
-  * ServletContextEvent：ServletContext getServletContext()
-
-  * ServletContextAttributeEvent：
-
-    - ServletContext getServletContext()；
-
-    - String getName()：获取属性名
-
-    - Object getValue()：获取属性值
-
-  * HttpSessionEvent：HttpSession getSession()
-
-  * HttpSessionBindingEvent：略
-
-  * ServletRequestEvent ：
-
-    * ServletContext getServletContext()；
-    * ServletRequest getServletRequest()；
-
-  * ServletRequestAttributeEvent ：略
-
-
-
-# 7 Filter(过滤器)
-
-* Java Web三大组件都需要在web.xml中进行配置
-
-  Servlet、Listener(2个感知监听器不需要配置)、Filter
-
-* 过滤器：它会在**一组资源**（jsp、servlet、.css、.html等等）**的前面执行**！它可以让请求得到目标资源，也可以不让请求达到！**过滤器有<span style="font-family:monaco;color:red;font-weight:bold">拦截请求</span>的能力**！
-
-* **过滤器如何编写：**（**单例**）
-
-  1. 写一个类**实现Filter接口**
-
-  2. 在web.xml中进行**配置**
-
-     ```xml
-     <filter>
-       <filter-name>xxx</filter-name>
-       <filter-class>cn.itcast.web.filter.AFitler</fitler-class>
-     </servlet>
-     <fitler-mapping>
-       <filter-name>xxx</filter-name>
-       <url-pattern>/*</url-pattern>
-     </filter-mapping>
-     ```
-
-* **Filter接口**
-
-  * void **init**(FilterConfig)：创建之后，马上执行；Filter会在服务器启动时就创建！
-  * void **destory**()：销毁之前执行！在服务器关闭时销毁
-  * void <span style="font-family:monaco;color:red;font-weight:bold">doFilter**(ServletRequest,ServletResponse,**FilterChain)</span>：每次过滤时都会执行
-
-* FilterConfig-->与ServletConfig相似
-    * 获取初始化参数：getInitParameter()
-    * 获取过滤器名称：getFilterName()
-    * 获取appliction：getServletContext()
-
-  * **FilterChain(Filter链)**
-
-      * <span style="font-family:monaco;color:red;font-weight:bold">doFilter(ServletRequest, ServletResponse)</span>：**放行**！**相当于调用了目标Servlet的service()方法**！
-
-
-
-* **多过滤器**
-
-  * **FilterChain#doFilter()方法：执行目标资源，或是执行下一个过滤器！**
-
-    如果没有下一个过滤器那么执行的是目标资源，如果有，那么就执行下一个过滤器！
-
-* 过滤器的四种拦截方式，在< filter-mapping>中进行配置!
-
-* < dispatcher>**REQUEST**< /dispatcher>默认的！拦截请求
-    < dispatcher>**FORWARD**< /dispatcher> 拦截转发
-    < dispatcher>**INCLUDE**< /dispatcher> 拦截包含
-    < dispatcher>**ERROR**< /dispatcher> 拦截错误
-
-* 多个过滤器的执行顺序
-
-  < filter-mapping>的**配置顺序决定了过滤器的执行顺序**！
-
-* 过滤器的应用场景：
-
-  * **执行目标资源之前做预处理工作**，例如设置编码，这种试通常都会**放行**，在目标资源执行前做准备工作
-  * **通过条件判断是否放行**，例如校验当前用户是否已经登录，或者用户IP是否已经被禁用
-  * **在目标资源执行后**，做一些**后续的特殊处理**工作，例如把目标资源输出的数据进行处理
-
-## 7.1 分IP统计网站访问次数
-
-* 统计工作需要在所有资源之前都执行，那么就可以放到**Filter**中了,不做拦截操作！**获取map并保存数据**
-* 用Map<String,Integer>来装载统计的数据,整个网站只需要一个**Map**即可！使用**ServletContextListener**，在服务器启动时完成创建，并保存到ServletContext中
-* 打印Map中的数据
-
-## 7.2 粗粒度权限控制（拦截是否登录、拦截用户名admin权限）
-
-* RBAC(基于角色的权限控制)细粒度权限控制
-
-  * tb_user
-  * tb_role
-  * tb_userrole
-  * tb_menu(增、删、改、查)
-  * tb_rolemenu
-
-* 我们给出三个页面：index.jsp、user.jsp、admin.jsp。
-
-  * index.jsp：谁都可以访问，没有限制；
-
-  * user.jsp：只有登录用户才能访问；
-
-  * admin.jsp：只有管理员才能访问。
-
-* 在Servlet中判断登录成功后保存信息到HTTPSession中，创建两个Filter，分别过滤user和admin的Session。Filter中Session的获取需将req强转为Http后才可以得到
-
-## 7.3 全站编码问题(增强request)
-
-```java
-//装饰Request
-public class EncodingRequest extends HttpServletRequestWrapper {
-	private HttpServletRequest req;
-	
-	public EncodingRequest(HttpServletRequest request) {
-		super(request);
-		this.req = request;
-	}
-	public String getParameter(String name) {
-		String value = req.getParameter(name);
-		// 处理编码问题
-		try {
-			value = new String(value.getBytes("iso-8859-1"), "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		return value;
-	}
-}
-```
-
-```java
-public void doFilter(ServletRequest request, ServletResponse response,
-                     FilterChain chain) throws IOException, ServletException {
-    request.setCharacterEncoding("utf-8");   // 处理post请求编码问题
-    
-    HttpServletRequest req = (HttpServletRequest) request;
-		/*
-		 * 调包request
-		 * 1. 写一个request的装饰类
-		 * 2. 在放行时，使用我们自己的request
-		 */
-    if(req.getMethod().equals("GET")) {
-        EncodingRequest er = new EncodingRequest(req);
-        chain.doFilter(er, response);
-    } else if(req.getMethod().equals("POST")) {
-        chain.doFilter(request, response);
-    }
-}
-```
-
-
-
-## 7.4 页面静态化(增强response)
-
-```java
-public class StaticResponse extends HttpServletResponseWrapper {
-	private PrintWriter pw;
-	//String path：html文件路径！
-	public StaticResponse(HttpServletResponse response, String path) 
-			throws FileNotFoundException, UnsupportedEncodingException {
-		super(response);
-		// 创建一个与html文件路径在一起的流对象
-		pw = new PrintWriter(path, "utf-8");
-	}
-	public PrintWriter getWriter() {
-		// 返回一个与html绑定在一起的printWriter对象
-		// jsp会使用它进行输出，这样数据都输出到html文件了。
-		return pw;
-	}
-}
-```
-
-```java
-public class StaticFilter implements Filter {
-	private FilterConfig config;
-	public void destroy() {}
-	public void init(FilterConfig fConfig) throws ServletException {
-		this.config = fConfig;
-	}
-	public void doFilter(ServletRequest request, 
-			ServletResponse response, FilterChain chain) 
-					throws IOException, ServletException {
-		HttpServletRequest req = (HttpServletRequest) request;
-		HttpServletResponse res = (HttpServletResponse) response;
-		/*
-		 * 1. 第一次访问时，查找请求对应的html页面是否存在，如果存在重定向到html
-		 * 2. 如果不存在，放行！把servlet访问数据库后，输出给客户端的数据保存到一个html文件中
-		 *   再重定向到html
-		 * 一、获取category参数！
-		 * category有四种可能：null --> null.html....
-		 * html页面的保存路径, htmls目录下
-		 * 判断对应的html文件是否存在，如果存在，直接重定向！
-		 */
-		String category = request.getParameter("category");
-		String htmlPage = category + ".html";//得到对应的文件名称
-		String htmlPath = config.getServletContext().getRealPath("/htmls");//得到文件目录
-		File destFile = new File(htmlPath, htmlPage);
-		if(destFile.exists()) {//如果文件存在
-			// 重定向到这个文件
-			res.sendRedirect(req.getContextPath() + "/htmls/" + htmlPage);
-			return;
-		}
-		/*
-		 * 二、如果html文件不存在，我们要生成html
-		 * * 调包response，让它的getWriter()与一个html文件绑定，那么show.jsp的输出就到了html中
-		 */
-		StaticResponse sr = new StaticResponse(res, destFile.getAbsolutePath());
-		chain.doFilter(request, sr);//放行，即生成了html文件
-		// 这时页面已经存在，重定向到html文件
-		res.sendRedirect(req.getContextPath() + "/htmls/" + htmlPage);
-	}
-}
-```
-
-
-
-
-
-
-
-
-
-# 9 国际化
-
-* 一般内容排版都不一样，尽量再写一份HTML页面
-
-* **ResourceBundle**类（**通过加载Local实例**来获取配置文件中的内容）
-
-  下面是两个配置文件内容：（配置文件名称：基本名称(都得相同)+Local部分+.properties）
-
-  * res_zh_CN.properties
-
-  * res_en_US.properties
-
-    ```java
-    ResourceBundle rb = ResourceBundle.getBundle("res", new Locale("zh", "CN" ));
-    String username = rb.getString("username");//姓名
-    ```
-
-* **Locale类**
-
-  * 创建Locale类对象，一个Locale对象表示的就是**语言和国家**
-
-    ```java
-    //zh、en表示语言，而CN、US表示国家
-    new Locale(“zh”, “CN”)；
-    new Locale(“en”, “US”)；
-    ```
-
-  * Local.getDefault：获得此Java虚拟机实例的当前默认语言环境
-
-* 
-
-# 10 MVC设计模式
-
-* 它不是java独有，所有的B/S结构的项目都在使用它！
-* M -- **model** 模型(自己写代码，JavaBean，完成具体业务工作，如开启、转账等)
-* V -- **View**  视图(jsp)
-* C -- **Controller** 控制器(Servlet)
-
-# 11 JavaWeb三层架构
-
-* Web层 --> 与Web相关的内容(Servlet，JSP，Servlet相关API：request、response、session、ServletContext)
-* 业务层 --> 业务对象(Service)
-* 数据层 --> 操作数据库(DAO Data Access Object，数据访问对象)(对数据库的操作，不能跳出到DAO之外)
-
-## 11.1 登录注册
-
-### 11.1.1 分析功能
-
-* **Domain**：
-  * User（对应数据库，还要对应所有表单）
-    * username、password、verifyCode
-* **Dao**：
+## 7.2 MVC框架
+
+- MVC框架
+  - M -- **Model** 模型(JavaBean)：具体业务操作
+  - V -- **View**  视图(JSP)：展示数据
+  - C -- **Controller** 控制器(Servlet)：获取客户端输入，调用模型，将数据交给视图
+- 优点：
+  1. 耦合性低，方便维护，可以利于分工协作 
+  2. 重用性高
+- 缺点：
+  1. 使得项目架构变得复杂，对开发人员要求高
+
+## 7.3 JavaWeb三层架构
+
+- 表示层（Web层） --> 与Web相关的内容。**Servlet充当Controller**
+- 业务层（Service层） --> 处理业务逻辑的
+- 数据层（DAO层） --> 操作数据库存储文件，不能跳出到DAO之外(Data Access Object，数据访问对象)
+
+### 7.3.1 用户信息管理
+
+- 登陆
+  1. `login.jsp`页面的验证码通过请求`VerifyCodeServlet`来获取，并通过JS点击更换（src后随机参数）
+  2. 提交并请求`LoginServlet`，获取`Session`域中的验证码与请求参数对比（随后删除`Session`确保验证码一次性）
+  3. 通过请求参数查询用户是否存在，存在将查询到的用户信息保存至`Request域`并`转发至index.jsp回显`用户信息
+  4. 用户不存在则保存提示信息至`Request域`并`转发至login.jsp回显`提示信息
+- 查
+  1. 查询所有（分页后可以删除这个）
+     1. 请求`ListUserServlet`，将所有用户保存至`Request域`中，并转发至`list.jsp`
+  2. **分页查询（将如下数据封装为PageBean）**
+     1. 客户端提供
+        1. `currentPage`：当前页码
+        2. `rows`：每页展示行数
+     2. 服务端提供
+        1. `totalCount`：总记录数
+        2. `totalPage`：总页数。`totalCount % rows == 0 ? totalCount/rows : totalCount/rows +1;`
+        3. `List<T> list`：查询的数据集合。需要提供`startCount = (currentPage-1)*rows`和`rows`
+     3. 前端页面（只显示10页）
+        1. 总页数小于等于10，直接显示
+        2. 否则根据currentPage-5，currentPage+4来规划
+        3. 注意头溢出、尾溢出时，要考虑必须显示10页，来规划另一端页码
+  3. **多条件查询**（where 1=1；like及%；判断有值才拼接；Mybatis会优化），添加在分页功能中
+- 增
+  1. `list.jsp`中增加按钮链接至`add.jsp`，提交数据并请求`AddUserServlet`
+  2. 编码，封装请求参数并在数据库中添加数据，重定向至`ListUserServlet`
+- 删
+  1. 单独删除（利用ID删除）
+     1. danhang删除按钮`绑定JS函数`并`传递用户ID`
+     2. 通过`confirm`提示并设置`Location.href`为`DeleteUserServlet?id=**`
+     3. 通过传递的ID在数据库中删除数据，重定向至`ListUserServlet`
+  2. **多选删除（form包裹，submit()，getParameterValues()）**
+     1. 用`form包裹CheckBox`，将CheckBox赋`name为ids`，`value为用户的ID`
+     2. 给`删除选中按钮添加JS函数`，先判断选中个数大于0，再提示并利用`form的submit()方法`提交action至`DeleteSelectServlet`
+     3. `DeleteSelectServlet`通过`getParameterValues`获取ids数组，并遍历删除，`重定向至ListUserServlet`
+     4. 全选/全不选参考JS中习题
+- **改（利用ID回显，利用ID更新）**
+  1. 修改按钮设置`href`，`传递用户ID`，请求`findUserByIdServlet`
+  2. 通过ID在数据库中查找用户，保存至`Request域`并`转发至update.jsp`，回显数据（`ID用隐藏input`），配合C标签
+  3. 提交数据并请求`UpdateUserServlet`，封装请求参数，并更新数据（根据ID），重定向至`ListUserServlet`
+
+
+
+### 7.3.2 登录注册
+
+#### 1、分析功能
+
+- **Domain**：
+  - User（对应数据库，还要对应所有表单）
+    - username、password、verifyCode
+- **Dao**：
   - UserDao --> 与用户相关的数据类
-* **Service**：
+- **Service**：
   - UserService --> 与用户相关的业务类
-* **Web.Servlet**：
+- **Web.Servlet**：
   - LoginServlet
   - RegistServlet
-
-* **JSP**：
-    * login.jsp  --> 登录表单
-    * regist.jsp --> 注册表单
-    * index.jsp -->  主页(只有登录成功才能看到)
-
-* Exception
+- **JSP**：
+  - login.jsp  --> 登录表单
+  - regist.jsp --> 注册表单
+  - index.jsp -->  主页(只有登录成功才能看到)
+- Exception
 
 
 
-* 数据库设计
-    * users.xml
+- 数据库设计
 
-      ```xml
-      <users>
-        <user username="xxx" password="xxx"/>
-        <user username="xxx" password="xxx"/>
-      </users>
-      ```
+  - users.xml
 
-### 11.1.2 注册
+    ```xml
+    <users>
+      <user username="xxx" password="xxx"/>
+      <user username="xxx" password="xxx"/>
+    </users>
+    ```
 
-* **regist.jsp**：完成regist.jsp的基本功能！
-* **RegistServlet**：封装表单数据到User对象中，调用service的regist()方法
-  * 如果这个方法没有出问题，输出“注册成功”
-  * 如果这个方法抛出了异常，把错误信息保存到request域，转发到regist.jsp（回显错误信息）
-* **UserService#regist()**：无返回值，注册失败抛出一个自定义异常。调用UserDao的findByUsername()方法
-  * 如果已被注册，抛出异常（“用户名已被注册！”）
-  * 没被注册则添加用户
-* **UserDao**：通过业务分析，得到结果：需要提供两个方法
-  * 按用户名查询用户对象：User findByUsername(String username)
-  * 插入一个用户到数据库中：void add(User user)
+#### 2、注册
 
-#### 11.1.2.1 给注册添加验证码
+- **regist.jsp**：完成regist.jsp的基本功能！
+- **RegistServlet**：封装表单数据到User对象中，调用service的regist()方法
+  - 如果这个方法没有出问题，输出“注册成功”
+  - 如果这个方法抛出了异常，把错误信息保存到request域，转发到regist.jsp（回显错误信息）
+- **UserService#regist()**：无返回值，注册失败抛出一个自定义异常。调用UserDao的findByUsername()方法
+  - 如果已被注册，抛出异常（“用户名已被注册！”）
+  - 没被注册则添加用户
+- **UserDao**：通过业务分析，得到结果：需要提供两个方法
+  - 按用户名查询用户对象：User findByUsername(String username)
+  - 插入一个用户到数据库中：void add(User user)
 
-* **VerifyCodeServlet**
+#### 3、给注册添加验证码
+
+- **VerifyCodeServlet**
   1. BufferedImage getImage()：获取随机验证码图片
   2. String getText()：把验证码图片上的文本保存到session中
   3. static output(BfferedImage, OutputStream)：把图片写入到response的outputStream中
-* **regist.jsp**
+- **regist.jsp**
   1. 添加< img src="指向Servlet"  />
   2. 添加一个文本框，用来输入验证码
   3. “看不清，换一张”，是一个超链接。把上面的< img>的src重新再次指向Servlet！为了处理浏览器的缓存，需要使用时间来做参数！
-* **修改RegistServlet**
-  * 校验验证码！
-    * 错误：保存表单数据到request域、保存错误信息到request域，转发回regist.jsp
-    * 正确：什么都不做，向下执行原来代码！
+- **修改RegistServlet**
+  - 校验验证码！
+    - 错误：保存表单数据到request域、保存错误信息到request域，转发回regist.jsp
+    - 正确：什么都不做，向下执行原来代码！
 
-#### 11.1.2.2 服务器端表单（输入）校验
+#### 4、服务器端表单校验
 
-* 我们把这段校验，放到获取表单数据之后，验证码校验之前！
+- 我们把这段校验，放到获取表单数据之后，验证码校验之前！
   1. 使用Map类型来装载错误信息！（那个字段出错，就给哪个字段添加错误信息）
      - key：表单项名称，例如：username、password、verifyCode
      - value：
@@ -4586,35 +4228,32 @@ public class StaticFilter implements Filter {
   2. 判断map是否为空（长度是否为0），如果不空，说明有错误存在，保存map到request域，保存form到request域（回显），转发回regist.jsp
   3. 在regist.jsp页面中，显示map中的错误信息。${map.username}
 
-### 11.1.3 登录
+#### 5、登录
 
-* login.jsp --> 登录表单！
-
-* LoginServlet --> 
+- login.jsp --> 登录表单！
+- LoginServlet --> 
   1. 获取表单数据，封装到User中
   2. 调用service的login()方法，传递form过去！
   3. 如果service的login()方法，没有抛出异常！返回一个User对象！
      - 有异常：获取异常信息，保存到request域，保存form，转发到login.jsp
      - 没异常：保存返回的user对象到session中！！！重定向到welcome.jsp(显示当前用户信息！)
-
-* UserService#login()
-  * public User login(User form) {...}
-  * 使用用户名查询数据库，得到返回的User
-    * 返回为null，抛出异常，异常信息为（用户名不存在）
-    * 返回不为null，获取查询出来的user的password与form的password进行比较！如果不同：抛出异常（密码错误！）；如果相同，返回查询结果！
-
-* UserDao
-  * 通过用户名查询用户！(已经存在了，不用再写了！)
+- UserService#login()
+  - public User login(User form) {...}
+  - 使用用户名查询数据库，得到返回的User
+    - 返回为null，抛出异常，异常信息为（用户名不存在）
+    - 返回不为null，获取查询出来的user的password与form的password进行比较！如果不同：抛出异常（密码错误！）；如果相同，返回查询结果！
+- UserDao
+  - 通过用户名查询用户！(已经存在了，不用再写了！)
 
 
 
-### 11.1.4 代码
+#### 6、代码
 
-#### 11.1.4.1 domain
+**domain**
 
-* javabean类，`User.java`
+- javabean类，`User.java`
 
-#### 11.1.4.2 dao
+**dao**
 
 ```java
 //UserDao.java
@@ -4665,7 +4304,7 @@ public void addUser(User user) {
 }
 ```
 
-#### 11.1.4.3 Service
+**Service**
 
 ```java
 //UserService
@@ -4689,7 +4328,7 @@ public User login(User user) throws MyException {
 }
 ```
 
-#### 11.1.4.4 Web.Servlet
+**Web.Servlet**
 
 ```java
 //LoginServlet.java
@@ -4767,7 +4406,7 @@ request.getSession().setAttribute("vcode",verifyCode.getText());
 VerifyCode.output(bi,response.getOutputStream());
 ```
 
-#### 11.1.4.5 JSP
+**JSP**
 
 ```jsp
 <h1>登录</h1>
@@ -4795,4 +4434,540 @@ VerifyCode.output(bi,response.getOutputStream());
     }
 </script>
 ```
+
+
+
+# 8 Filter、Listener
+
+## 8.1 Filter
+
+* web中的过滤器：当访问服务器的资源时，过滤器可以**拦截请求**，增强Request、Response
+* 过滤器的作用：一般用于完成**通用的操作**。如：**登录验证**、统一**编码处理**、**敏感字符过滤**……
+
+### 8.1.1 快速入门
+
+ 1. 定义一个类，**实现接口Filter**
+
+2. **复写方法**
+
+3. **配置拦截路径**
+
+  1. 注解
+
+     ```java
+     @WebFilter("/*")//访问所有资源之前，都会执行该过滤器。同Servlet一致，urlPatterns和value一致，可用value替代并省略
+     public class FilterDemo implements Filter {
+         @Override
+         public void init(FilterConfig filterConfig) throws ServletException { }
+     
+         @Override
+         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+             System.out.println("filterDemo被执行了....");
+             filterChain.doFilter(servletRequest,servletResponse);//放行
+         }
+     
+         @Override
+         public void destroy() {  }
+     }
+     ```
+
+  2. web.xml
+
+     ```xml
+     <filter>
+         <filter-name>demo</filter-name>
+         <filter-class>cn.itcast.web.filter.FilterDemo</filter-class>
+     </filter>
+     <filter-mapping>
+         <filter-name>demo</filter-name>
+         <url-pattern>/*</url-pattern>    <!-- 拦截路径 -->
+     </filter-mapping>
+     ```
+
+### 8.1.2 Filter细节
+
+1. ==过滤器**配置**详解==
+   1. **拦截路径配置**：`value[]`或`urlPatterns[]`属性
+      1. 具体资源路径：`/index.jsp`只有访问index.jsp资源时，过滤器才会被执行
+      2. 拦截目录：`/user/*`访问/user下的所有资源时，过滤器都会被执行
+      3. 后缀名拦截：`*.jsp`访问所有后缀名为jsp资源时，过滤器都会被执行
+      4. 拦截所有资源：`/*`访问所有资源时，过滤器都会被执行
+   2. **拦截方式配置**：**资源被访问的方式**，`dispatcherTypes[]`属性
+      - 注解配置：
+        1. `REQUEST`：默认值。浏览器**直接请求**资源
+        2. `FORWARD`：**转发**访问资源
+        3. `INCLUDE`：包含访问资源
+        4. `ERROR`：错误跳转资源
+        5. `ASYNC`：异步访问资源，a    synchronize
+      - web.xml配置
+        - 设置`<dispatcher></dispatcher>`标签即可
+2. ==过滤器**执行流程**==
+   1. 执行**过滤器**
+   2. 执行**放行后的资源**
+   3. 回来执行过滤器**放行代码后的代码**
+3. ==过滤器**生命周期方法**==
+   1. `init(FilterConfig)`：在**服务器启动后**，会创建Filter对象，然后调用`init`方法。**只执行一次**，用于加载资源
+   2. `doFilter(ServletRequest,ServletResponse,FilterChain)`：**每一次请求被拦截**时执行。可以执行多次
+     - 放行后的**`Request`和`Response`还是同一个**，类似转发
+   3. `destroy()`：在**服务器正常关闭前**，Filter对象被销毁。**只执行一次**，用于释放资源
+4. ==**过滤器链**（配置多个过滤器）==，如果没有下一个过滤器那么执行的是目标资源，否则就执行下一个过滤器！如净水器过滤
+   1. 执行顺序：如果有两个过滤器：过滤器1和过滤器2
+      1. 过滤器1
+      2. 过滤器2
+      3. 资源执行
+      4. 过滤器2
+      5. 过滤器1 
+   2. 过滤器先后顺序问题：
+     1. 注解配置：按照类名的字符串按每个字符比较规则比较，值小的先执行
+       * 如： AFilter 和 BFilter，AFilter就先执行了。
+     2. web.xml配置： `<filter-mapping>`谁定义在上边，谁先执行
+
+### 8.1.3 案例
+
+#### 1、登陆验证（权限控制）
+
+1. 需求：
+
+   1. 访问usermanagement案例的资源。验证其是否登录
+      2. 如果登录了，则直接放行。
+     3. 如果没有登录，则跳转到登录页面，提示"您尚未登录，请先登录"
+
+2. 分析
+
+   1. 将实现Filter接口的非HTTP相关**Request强转为HTTP相关**的，并获取`getRequestURI()`
+   2. 将包含了**登陆**相关的**资源放行**，要注意排除掉 **`css/js/图片/验证码`**等资源
+   3. 若不是登陆相关的资源，**获取`Session`域**中**登陆成功后保存的`user`属性**，**判断**它值不为`null`则放行
+   4. 否则在**`Request域`**中保存相关**提示信息并转发**至`login.jsp`
+
+   ```java
+   @WebFilter("/*")
+   public class LoginFilter implements Filter {
+       
+       public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
+           
+           HttpServletRequest request = (HttpServletRequest) req; //强制转换，否则没有如下方法
+           String uri = request.getRequestURI(); //获取资源请求路径
+           
+           //判断是否包含登录相关资源路径,要注意排除掉 css/js/图片/验证码等资源
+           if (uri.contains("/login.jsp") || uri.contains("/loginServlet") || uri.contains("/css/") || uri.contains("/js/") || uri.contains("/fonts/") || uri.contains("/checkCodeServlet")) {
+               chain.doFilter(req, resp);//包含，用户就是想登录。放行
+           } else {  //不包含，需要验证用户是否登录。从获取session中获取user
+               Object user = request.getSession().getAttribute("user");
+               if (user != null) { //登录了。放行
+                   chain.doFilter(req, resp);
+               } else { //没有登录。跳转登录页面            
+                   request.setAttribute("login_msg", "您尚未登录，请登录");
+                   request.getRequestDispatcher("/login.jsp").forward(request, resp);
+               }
+           }
+       }
+       public void init(FilterConfig config) throws ServletException {}
+       public void destroy() {}
+   }
+   ```
+
+
+
+#### 2、敏感词汇过滤（动态代理）
+
+* 需求：
+
+  * 对usermanagement案例录入的数据进行敏感词汇过滤
+  * 敏感词汇如笨蛋、傻瓜。如果是敏感词汇，替换为***
+
+* 分析：
+
+  1. 由于拦截的和放行的Request、Response为同一个，可以对getParameter()获取的参数修改后再保存至Request中，但是没有这种现有方法
+  2. 可以采用**动态代理**对Request对象进行增强，增强获取参数相关方法
+  3. 放行，传递代理对象
+
+  ```java
+  @WebFilter("/*")
+  public class SensitiveWordsFilter implements Filter {
+  
+      public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
+          //1.创建代理对象，增强getParameter方法
+          ServletRequest proxy_req = (ServletRequest) Proxy.newProxyInstance(req.getClass().getClassLoader(), req.getClass().getInterfaces(), new InvocationHandler() {
+              @Override
+              public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                  //增强getParameter方法
+                  //判断是否是getParameter方法
+                  if (method.getName().equals("getParameter")) {
+                      //增强返回值
+                      //获取返回值
+                      String value = (String) method.invoke(req, args);
+                      if (value != null) {
+                          for (String str : list) {
+                              if (value.contains(str)) {
+                                  value = value.replaceAll(str, "***");
+                              }
+                          }
+                      }
+                      return value;
+                  }
+                  //判断方法名是否是 getParameterMap
+                  //判断方法名是否是 getParameterValue
+                  //不是上述方法，则原样调用
+                  return method.invoke(req, args);
+              }
+          });
+          //2.放行
+          chain.doFilter(proxy_req, resp);
+      }
+  
+      private List<String> list = new ArrayList<String>();//敏感词汇集合
+      public void init(FilterConfig config) throws ServletException {
+  
+          try {
+              //1.获取文件真实路径
+              ServletContext servletContext = config.getServletContext();
+              String realPath = servletContext.getRealPath("/WEB-INF/classes/敏感词汇.txt");
+              //2.读取文件
+              BufferedReader br = new BufferedReader(new FileReader(realPath));
+              //3.将文件的每一行数据添加到list中
+              String line = null;
+              while ((line = br.readLine()) != null) {
+                  list.add(line);
+              }
+              br.close();           
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+      }
+      public void destroy() {}
+  }
+  ```
+
+- **增强对象的功能**：可以采用**设计模式（一些通用的解决固定问题的方式）**
+
+  - **装饰模式**：可参考后续两个例子的代码，此处不再详细介绍
+
+  - **代理模式**（两者区别在于代理对象的生成模式）
+
+    1. 静态代理：有一个类文件描述代理模式
+
+    2. ==**动态代理**==：**程序运行过程**，在**内存中**动态的为目标对象**创建**一个虚拟的代理对象
+
+       `java.lang.reflect`包下提供了一个`Proxy`类和一个`InvocationHandler`接口，通过使用这个类和接口就可以生成动态代理对象。JDK提供的代理**只能针对实现统一接口的类做代理**，我们有更强大的代理**cglib**
+
+       - 实现步骤：
+         1. 代理对象和真实对象实现相同的接口
+         2. `代理对象 = Proxy.newProxyInstance();`
+         3. 使用代理对象调用方法
+         4. 增强方法
+
+       - **创建指定接口的代理类对象实例**（类加载器，Class对象数组，调用处理器）
+
+         ```java
+         static Object newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHander hander)
+         //其中loader是与目标对象相同的类加载器
+         //interfaces是接口的字节码对象数组 new Class<?>[]{interface.class}
+         ```
+
+         其中第三个参数为**调用处理器**，是实现了`InvocationHandler`接口的类对象，重写`invoke`方法
+
+         ```java
+         public static void main(String[] args) {
+             public final Target target = new Target();//被代理的目标对象
+         
+             //动态创建代理对象
+             TargetInterface proxy = (TargetInterface) Proxy.newProxyInstance(
+                 target.getClass().getClassLoader(), 
+                 target.getClass().getInterfaces(), 
+                 new InvocationHandler() {
+                     @Override
+                     //被执行几次?---看代理对象调用方法几次;代理对象调用接口相应方法 都是调用该invoke方法
+                     /** proxy:是代理对象，不用
+         			 * method:代理对象调用的方法被封装为Method对象
+         			 * args:代理对象调用方法时传递的实际参数，封装为数组，即参数列表
+         			 */
+                     public Object invoke(Object proxy,Method method,Object[] args) throws Throwable{
+                         //反射知识点。使用目标对象调用目标方法并传递参数，返回目标方法的返回值
+                         Object obj = method.invoke(target, args);
+                         //retrun返回的值给代理对象
+                         return invoke;
+                     }
+                 }
+             );
+         	//调用代理对象
+             proxy.method1();//调用invoke---Method：目标对象的method1方法  args：null  返回值null
+             String method2 = proxy.method2();//调用invoke---Method:目标对象的method2方法 
+         }
+         ```
+
+       - 增强方式：（invoke方法中）
+         1. 增强**返回值**：通过**对`return`返回值的修改**
+         2. 增强**参数列**表：通过**`method.getName()`判断要增强的方法**，并对**参数`args[]`数组进行修改**
+         3. 增强**方法体**执行逻辑：**反射方法`invoke()`执行前后修改**
+
+
+
+#### 3、分IP统计网站访问次数
+
+- 统计工作需要在所有资源之前都执行，那么就可以放到**Filter**中了,不做拦截操作！**获取map并保存数据**
+- 用Map<String,Integer>来装载统计的数据,整个网站只需要一个**Map**即可！使用**ServletContextListener**，在服务器启动时完成创建，并保存到ServletContext中
+- 打印Map中的数据
+
+#### 4、全站编码问题(增强request)
+
+```java
+//装饰Request
+public class EncodingRequest extends HttpServletRequestWrapper {
+	private HttpServletRequest req;
+	
+	public EncodingRequest(HttpServletRequest request) {
+		super(request);
+		this.req = request;
+	}
+	public String getParameter(String name) {
+		String value = req.getParameter(name);
+		// 处理编码问题
+		try {
+			value = new String(value.getBytes("iso-8859-1"), "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		return value;
+	}
+}
+```
+
+```java
+public void doFilter(ServletRequest request, ServletResponse response,
+                     FilterChain chain) throws IOException, ServletException {
+    request.setCharacterEncoding("utf-8");   // 处理post请求编码问题
+    
+    HttpServletRequest req = (HttpServletRequest) request;
+		/*
+		 * 调包request
+		 * 1. 写一个request的装饰类
+		 * 2. 在放行时，使用我们自己的request
+		 */
+    if(req.getMethod().equals("GET")) {
+        EncodingRequest er = new EncodingRequest(req);
+        chain.doFilter(er, response);
+    } else if(req.getMethod().equals("POST")) {
+        chain.doFilter(request, response);
+    }
+}
+```
+
+#### 5、页面静态化(增强response)
+
+```java
+public class StaticResponse extends HttpServletResponseWrapper {
+	private PrintWriter pw;
+	//String path：html文件路径！
+	public StaticResponse(HttpServletResponse response, String path) 
+			throws FileNotFoundException, UnsupportedEncodingException {
+		super(response);
+		// 创建一个与html文件路径在一起的流对象
+		pw = new PrintWriter(path, "utf-8");
+	}
+	public PrintWriter getWriter() {
+		// 返回一个与html绑定在一起的printWriter对象
+		// jsp会使用它进行输出，这样数据都输出到html文件了。
+		return pw;
+	}
+}
+```
+
+```java
+public class StaticFilter implements Filter {
+	private FilterConfig config;
+	public void destroy() {}
+	public void init(FilterConfig fConfig) throws ServletException {
+		this.config = fConfig;
+	}
+	public void doFilter(ServletRequest request, 
+			ServletResponse response, FilterChain chain) 
+					throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		/*
+		 * 1. 第一次访问时，查找请求对应的html页面是否存在，如果存在重定向到html
+		 * 2. 如果不存在，放行！把servlet访问数据库后，输出给客户端的数据保存到一个html文件中
+		 *   再重定向到html
+		 * 一、获取category参数！
+		 * category有四种可能：null --> null.html....
+		 * html页面的保存路径, htmls目录下
+		 * 判断对应的html文件是否存在，如果存在，直接重定向！
+		 */
+		String category = request.getParameter("category");
+		String htmlPage = category + ".html";//得到对应的文件名称
+		String htmlPath = config.getServletContext().getRealPath("/htmls");//得到文件目录
+		File destFile = new File(htmlPath, htmlPage);
+		if(destFile.exists()) {//如果文件存在
+			// 重定向到这个文件
+			res.sendRedirect(req.getContextPath() + "/htmls/" + htmlPage);
+			return;
+		}
+		/*
+		 * 二、如果html文件不存在，我们要生成html
+		 * * 调包response，让它的getWriter()与一个html文件绑定，那么show.jsp的输出就到了html中
+		 */
+		StaticResponse sr = new StaticResponse(res, destFile.getAbsolutePath());
+		chain.doFilter(request, sr);//放行，即生成了html文件
+		// 这时页面已经存在，重定向到html文件
+		res.sendRedirect(req.getContextPath() + "/htmls/" + htmlPage);
+	}
+}
+```
+
+
+
+## 8.2 Listener
+
+> web的三大组件之一
+
+* 事件监听机制
+  * 事件源（被监听对象）：小偷
+  * 事件（事件源行为）：偷东西
+  * 监听器（用于监听事件源的对象）：警察，监听器中的方法：抓捕
+  * 注册监听：将事件、事件源、监听器绑定在一起。 当事件源上发生某个事件后，执行监听器中的方法
+
+* 监听器：
+
+  * 它是一个**接口**，内容由我们来实现
+  * 它需要**注册**，例如注册在按钮上
+  * 监听器中的方法，会在特殊**事件发生时被调用**
+
+* Java Web中完成编写监听器（以后写监听器机会很少！）
+
+  - 写一个监听器类(实现某个监听器接口)，重写方法
+
+  - 注册，即配置。
+
+  - 可以通过`getInitParameter()`获取初始化参数，加载资源文件
+
+    - 注解：`@WebListener`
+
+    - web.xml
+
+      ```xml
+      <listener>
+          <listener-class>cn.itcast.web.listener.ContextLoaderListener</listener-class>
+      </listener>
+      <!--还可以指定初始化参数-->
+      <context-param>
+          <param-name>contextConfig</param-name>
+          <param-value>/WEB-INF/classes/prop.xml</param-value>
+      </context-param>
+      ```
+
+* Java Web中监听器（8大）：
+  * **ServletContext**
+
+    * 生命周期监听：<span style="background:yellow">**ServletContextListener**</span>，有两个方法，一个在服务器启动后调用，一个在服务器正常关闭前调用
+      * `void contextInitialized(ServletContextEvent sce)`：**ServletContext对象创建后**会调用该方法
+      * `void contextDestroyed(ServletContextEvent sce)`：**ServletContext对象被销毁之前**会调用该方法
+    * 属性监听：**ServletContextAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
+      * void attributeAdded(ServletContextAttributeEvent event)：添加属性时
+      * void attributeReplaced(ServletContextAttributeEvent event)：替换属性时
+      * void attributeRemoved(ServletContextAttributeEvent event)：移除属性时
+
+  * **HttpSession**
+
+    * 生命周期监听：**HttpSessionListener**，它有两个方法，一个在出生时调用，一个在死亡时调用
+
+      * void sessionCreated(HttpSessionEvent se)：创建session时
+      * void sessionDestroyed(HttpSessionEvent se)：销毁session时
+
+    * 属性监听：**HttpSessioniAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
+
+      * void attributeAdded(HttpSessionBindingEvent event)：添加属性时
+      * void attributeReplaced(HttpSessionBindingEvent event)：替换属性时
+      * void attributeRemoved(HttpSessionBindingEvent event)：移除属性时
+
+    * **感知监听**：用来**添加到JavaBean上（需实现接口）**，**不需要在web.xml中注册**
+
+      * **HttpSessionBindingListener**：添加到javabean上，javabean就知道自己是否添加到session中
+
+      * **HttpSessionActivationListener**：监听JavaBean(实现序列化接口)是否随Session被钝化、活化
+
+        * Session的序列化：context.xml中打开被注释掉的Manager即可不允许Session序列化
+
+        * Tomcat会在session长时间不被使用时**钝化**session对象，所谓钝化session，就是把session通过序列化的方式**保存到硬盘文件中**。当用户再使用session时，Tomcat还会把钝化的对象再活化session，所谓活化就是把硬盘文件中的session在反序列化回内存
+
+          ```xml
+          <!--配置Tomcat钝化session参数;放到tomcat\conf\catalina\localhost\项目名-->
+          <Context>
+          	<Manager className="org.apache.catalina.session.PersistentManager" maxIdleSwap="1">
+          		<Store className="org.apache.catalina.session.FileStore" directory="mysession"/>
+          	</Manager>
+          </Context>
+          ```
+
+  * **ServletRequest**
+
+    * 生命周期监听：**ServletRequestListener**，它有两个方法，一个在出生时调用，一个在死亡时调用
+      * void requestInitialized(ServletRequestEvent sre)：创建request时
+      * void requestDestroyed(ServletRequestEvent sre)：销毁request时
+    * 属性监听：**ServletRequestAttributeListener**，它有三个方法，在添加、替换、移除属性时调用
+      * void attributeAdded(ServletRequestAttributeEvent srae)：添加属性时
+      * void attributeReplaced(ServletRequestAttributeEvent srae)：替换属性时
+      * void attributeRemoved(ServletRequestAttributeEvent srae)：移除属性时
+
+* 事件对象
+
+  * **ServletContextEvent**：`ServletContext getServletContext()`，**可以获取`ServletContext`**
+
+  * ServletContextAttributeEvent：
+
+    - ServletContext getServletContext()；
+
+    - String getName()：获取属性名
+
+    - Object getValue()：获取属性值
+
+  * HttpSessionEvent：HttpSession getSession()
+
+  * HttpSessionBindingEvent：略
+
+  * ServletRequestEvent ：
+
+    * ServletContext getServletContext()；
+    * ServletRequest getServletRequest()；
+
+  * ServletRequestAttributeEvent ：略
+
+
+
+
+
+
+
+
+
+# 9 国际化
+
+* 一般内容排版都不一样，尽量再写一份HTML页面
+
+* **ResourceBundle**类（**通过加载Local实例**来获取配置文件中的内容）
+
+  下面是两个配置文件内容：（配置文件名称：基本名称(都得相同)+Local部分+.properties）
+
+  * res_zh_CN.properties
+
+  * res_en_US.properties
+
+    ```java
+    ResourceBundle rb = ResourceBundle.getBundle("res", new Locale("zh", "CN" ));
+    String username = rb.getString("username");//姓名
+    ```
+
+* **Locale类**
+
+  * 创建Locale类对象，一个Locale对象表示的就是**语言和国家**
+
+    ```java
+    //zh、en表示语言，而CN、US表示国家
+    new Locale(“zh”, “CN”)；
+    new Locale(“en”, “US”)；
+    ```
+
+  * Local.getDefault：获得此Java虚拟机实例的当前默认语言环境
+
+
+
 

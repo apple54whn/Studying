@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 # 1 DataBase 简介
 
 - 数据库就是用来**存储和管理数据的仓库**，本质上是一个文件系统，以文件的方式存在服务器的电脑上的。所有的**关系型数据库**都可以使用通用的 SQL 语句进行管理。
@@ -1423,6 +1427,12 @@
                e.printStackTrace();
            }
        }
+       /**
+        * 获取数据源
+        */
+       public static DataSource getDataSource(){
+           return dataSource;
+       }
    
        /**
         * 获取连接
@@ -1464,10 +1474,6 @@
                }
            }
        }
-   
-       public static DataSource getDataSource(){
-           return dataSource;
-       }
    }
    ```
 
@@ -1483,14 +1489,15 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 * **调用JdbcTemplate的方法**来完成CRUD的操作
 
   * `update()`：执行**DML**语句。增、删、改语句
-  * `query()`：查询结果，将结果封装为==**JavaBean对象的List集合**==。JavaBean属性使用**包装类型**最好，可以存储null。
+  * `query()`：查询并将结果封装为==**JavaBean对象的List集合**==。JavaBean属性使用**包装类型**最好，可以存储null。
     - query的参数：RowMapper函数式接口
       - 一般我们使用BeanPropertyRowMapper实现类。可以完成数据到JavaBean的自动封装
       - **`new BeanPropertyRowMapper<>(类型.class)`**（不用在尖括号中添加泛型）
-  * `queryForObject()`：查询结果，将结果封装为==**对象**==，一般用于聚合函数的查询
+  * `queryForObject()`：查询并将结果封装为==**对象**==。
+    * 参数同`query()`的参数可封装为==**JavaBean对象**==；参数传**包装类型**，可用于聚合函数的查询。
   * `queryForMap()`：查询并将结果的列名作为key(String)、值作为value(Object)封装为一个==**Map**==集合
     * 注意：这个方法查询的结果集长度只能是1
-  * `queryForList()`：查询结果将结果集封装为==**List**==集合
+  * `queryForList()`：查询并将结果集封装为==**List**==集合
     * 注意：将每一条记录封装为一个Map集合，再将Map集合装载到List集合中
 
   ```java
@@ -1931,7 +1938,7 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 
 
 
-# 8.3 装饰者模式(Wrapper)
+## 8.3 装饰者模式(Wrapper)
 
 - 对象增强的手段：
 
