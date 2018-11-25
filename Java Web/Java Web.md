@@ -1,4 +1,4 @@
-# Java Web概述
+# Java Web 概述
 
 * JavaWeb：使用Java语言开发基于互联网的项目
 
@@ -190,7 +190,11 @@
 
     - **hidden**：隐藏域(**指定name属性**，**value**)：页面看不到但数据会被提交
 
-    - **submit**：提交按钮。还可以通过获取form，使用**form的`submit()`方法**，和事件不同！
+    - ==**submit**==：提交按钮，点击后跳转至指定action或本页
+
+      还可以获取==**form**==，使用**其`submit()`方法，返回false（true或无返回值都将跳转）**！用于Ajax提交表单
+
+      可以使用==**普通button**==，配合JS来使用Ajax提交表单
 
       ```html
       <input type="submit"/> <!--默认为提交（中文环境）、submit（英文环境）-->
@@ -315,7 +319,7 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 ### 2.3.1 属性选择器
 
-使用场景：input标签等
+使用场景：input标签等。值要加引号
 
 | 属性                    | 选择                                                         |
 | ----------------------- | ------------------------------------------------------------ |
@@ -513,6 +517,8 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
   - 跨平台性：能够支持js的浏览器，都可以运行
 - **组成**：==**ECMAScript** + **BOM** + **DOM**==
 
+> Chrome进入Console途径：1、`Ctrl + Shift + J`；2、`Ctrl + Shift + I`再选择Console面板
+
 
 
 ## 3.1 基本语法
@@ -527,7 +533,7 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
     </script>
     ```
 
-    - 在HTML标签中写入`<img src="img/1.jpg"  id="img1" onclick="javascript:fun2()">`
+    - 在HTML标签中写入`<img src="img/1.jpg"  id="img1" onclick="javascript:fun2();">`
 
   - **外部引入**
 
@@ -544,15 +550,35 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 - **数据类型**
 
-  - **原始类型（五种）**
-    - **`number`(数字)**：不区分整数和小数、**`NaN`**（not a number）
-    - **`string`(字符串)**：单引和双引都可以
-    - **`boolean`(布尔)**：true和false
-    - **`null`(空)**：一个对象为空的占位符
-    - **`undefined`(未定义)**：若变量未初始化，则默认赋值为undefined
-  - **对象类型**
+  - **`number`(数值)**：不区分整数和小数、**`NaN`**（not a number）
+  - **`string`(字符串)**：单引和双引都可以
+  - **`boolean`(布尔)**：true和false
+  - **`undefined`(未定义)**：若变量未初始化，则默认赋值为undefined
+  - **`null`(空)**：即此处的值为空。一个对象为空的占位符
 
-- **变量（弱类型）**：
+  - **`object`(对象)**：各种值组成的集合，可以分成三个子类型
+    - `object`(狭义的对象)
+    - `array`(数组)
+    - `function`(函数)
+
+  **`typeof()`**：查看当前变量的数据类型。
+
+  - 对**null返回Object**，Js最初的错误被ECMAScript沿用。现在，null 被认为是对象的占位符，从而解释了这一矛盾
+
+- **变量（弱类型）**：区分大小写，但是变量一般都用小写字母开头的驼峰表示法表示
+
+  - **变量提升**：JavaScript 引擎的工作方式是，**先**解析代码，**获取**所有**被声明的变量**，然后再一行一行地运行
+
+    ```javascript
+    //原本语句如下：
+    console.log(a); //不会报错，会输出undefined
+    var a = 1;
+    
+    //真正运行的代码如下：
+    var a;
+    console.log(a); //会输出undefined，表示a已经声明，但为赋值
+    a = 1;
+    ```
 
   - ==**JavaScript的全局变量和局部变量**==
     - **全局变量**：在**script标签里面**定义一个变量，这个变量在页面中js部分都可以使用
@@ -560,12 +586,11 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
       2. 给**全局对象**添加一个**属性**：`windows.foo = value;`
       3. 直接**使用未经声明**的变量(隐式全局变量)：`foo = value;`，不建议使用
     - **局部变量**：在**方法内部**定义一个变量，只能在方法内部使用：`var foo = value;`
-    - **块级作用域问题**
-      - JavaScript没有块级作用域，所以推荐在每个函数开头部分声明所有变量
-      - ES6提供了新的关键字`let`声明一个块级作用域的变量
-  - **`typeof()`**：查看当前变量的数据类型。
 
-    * 对**null返回Object**，Js最初的错误被ECMAScript沿用。现在，null 被认为是对象的占位符，从而解释了这一矛盾
+  - **块级作用域问题（大括号括起来的区域）**，区块用在循环、判断、function中
+
+    - JavaScript没有块级作用域，所以推荐在每个函数开头部分声明所有变量
+    - ES6提供了新的关键字`let`声明一个块级作用域的变量
 
 - **运算符**
 
@@ -599,6 +624,11 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
     - JavaScript中`switch`可以==接收**任意**的**原始数据类型**==
   - **for**：var定义的变量不是局部变量，可以用let来来限制作用范围。==无论布尔表达式是否满足，**步进表达式都会执行**==
     - `for...in`：==遍历**数组**或者**对象**的**属性**==：`for (变量 in 对象)`
+    - `for...of`：遍历`iterable`类型，如`Array`、`Map`和`Set`的==**值**==，`for (变量 of 对象)`
+  - 跳出循环方法：（`break`、`continue`只针对最内层循环）
+    - `break`语句用于跳出代码块或循环
+    - `continue`语句用于立即终止本轮循环，返回循环结构的头部，开始下一轮循环
+    - `label`标签通常与`break`语句和`continue`语句配合使用，跳出特定的循环
 
 
 
@@ -658,12 +688,12 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 ### 3.2.2 Array
 
-> 数组对象
+> 数组对象，继承自`iterable`类型
 
 - 创建：
-  ​    ​    1. `var arr = new Array(元素列表);`
-  ​    2. `var arr = new Array(默认长度);`，不设置长度时arr为空的数组
-  ​    3. `var arr = [元素列表];`
+  1. `var arr = new Array(元素列表);`
+  2. `var arr = new Array(默认长度);`，不设置长度时arr为空的数组
+  3. `var arr = [元素列表];`
 - 方法
     - `join(参数)`：将数组中的元素**按照指定的分隔符拼接**为**字符串**。不传参数默认按`,`拼接（document.write）
     - `push()`：向数组的**末尾添加一个或更多元素**，并**返回新的长度**。
@@ -673,7 +703,8 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
     - `concat`：数组的连接
 - 属性：`length`：数组的长度=最大角标+1
     - ==与Java不同的是**可以设置值为0**从而清空，Java中是==`final`==不可修改==
-    - 使用`for in`遍历的是**属性**，即`length`
+    - 使用`for ... in`遍历的是**属性**，即`length`
+    - 使用`for ... of`遍历的是值，ES6添加的方法
 - 特点：JavaScript中，==数组**元素的类型可变**，**数组长度可变**。==
 
 ### 3.2.3 Date
@@ -736,16 +767,16 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 - **正则表达式**：定义**字符串的组成规则**。
 
-  1. **单个字符**：如 `[a]`、`[ab]`(a或b)、`[a-zA-Z0-9_]`。特殊符号代表特殊含义的单个字符：
-       ​    * `\d`：单个数字字符 [0-9]
-       ​    * `\w`：单个单词字符[a-zA-Z0-9_]
+  1. **单个字符**：如 `a`、`ab`(a或b)、`a-zA-Z0-9_`。特殊符号代表特殊含义的单个字符：
+       - `\d`：单个数字字符 [0-9]
+       - `\w`：单个单词字符[a-zA-Z0-9_]
    2. **量词符号**：
          - `?`：表示出现0次或1次
          - `*`：表示出现0次或多次
          - `+`：出现1次或多次
          - `{m,n}`：表示 m<= 数量 <= n
             - m如果缺省： `{,n}`最多n次
-               - n如果缺省：`{m,}`最少m次
+            - n如果缺省：`{m,}`最少m次
   3. **开始结束符号**
     * `^`：开始
     * `$`：结束
@@ -755,8 +786,7 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
   1. 创建
     1. `var reg = new RegExp("正则表达式");`，需要注意字符串中的转义字符
     2. `var reg = /正则表达式/;`使用最多
-  2. 方法	
-    - `test(参数)`：验证指定的字符串是否符合正则定义的规范	
+  2. 方法	`test(参数)`：验证指定的字符串是否符合正则定义的规范，返回boolean类型值
 
 
 ### 3.2.7 Global
@@ -844,7 +874,8 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 - ==**location**==：当前URL信息
 
   - 属性
-    - **`href`**：设置或返回完整的 URL：`document.write(location.href); `
+    - **`href`**：设置或返回完整的 URL：`location.href="https://www.baidu.com"`
+    - `search`：设置或返回从？开始的URL（即查询部分）
   - 方法
     - **`reload()`**：**重新加载**当前文档
 
@@ -870,13 +901,14 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 - W3C DOM 标准被分为 3 个不同的部分：
 
   * **核心 DOM** - 针对任何结构化文档的标准模型
-    * **Document**：文档对象
-    * **Element**：元素对象
-    * Attribute：属性对象
-    * Text：文本对象
+    * **Node**：原生节点对象，以下节点对象都继承于此
+    * **Document**：文档对象，整个文档树的顶层节点
+    * DocumentType：`doctype`标签（比如`<!DOCTYPE html>`
+    * **Element**：元素对象，网页的各种HTML标签（比如`<body>`、`<a>`等）
+    * **Attribute**：属性对象，网页元素的属性（比如`class="right"`）
+    * **Text**：文本对象，标签之间或标签包含的文本
     * Comment：注释对象
-
-    * **Node**：节点对象，其他5个的父对象
+    * DocumentFragment：文档的片段
   * XML DOM - 针对 XML 文档的标准模型
   * **HTML DOM** - 针对 HTML 文档的标准模型
 
@@ -884,98 +916,117 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
   ![](F:\GitHub\Studying\Java Web\images\ct_htmltree.png)
 
-### 3.4.1 Document
+### 3.4.1 Node
 
-* 获取：在html dom模型中可以使用`window`对象来获取
+> 节点对象，其他对象的父对象。所有dom对象都可以被认为是一个节点
+
+- 属性：
+  - `nodeType`：一个整数值表示==**节点的类型**==。如Element为1、Attribute为2、Text为3、Document为9
+  - `nodeName`：**节点的名称**。如Element为大写标签名、Attribute为属性名、Text为`#text`、Document为`#document`
+  - `nodeValue`：一个字符串，表示**当前节点**本身的**文本值**。只有Attribute、Text、Comment有值，其余返回`null`
+  - `textContent `：**当前**节点和它的**所有后代**节点的==**所有文本内容**==，自动**忽略**当前节点内部的 **HTML 标签**
+  - `baseURI`：一个字符串，表示当前网页的绝对路径
+  - `ownerDocument`：当前节点所在的顶层文档对象，document本身的这个属性为`null`。与`getRootNode()`一样作用
+  - `previousSiblin `：当前节点==**前**==面的、距离最近的一个**同级节点**，没有同级节点则返回`null`
+  - `nextSibling`：紧跟在当前节点==**后**==面的第一个**同级节点**，没有同级节点则返回`null`
+  - **`parentNode`**：==当前节点的**父节点**==，可能有三种类型，如Document、Element、DocumentFragment
+  - `parentElement`：当前节点的**父元素节点**，排除了上述类型中首尾两个
+- 方法(CRUD DOM树)：
+  - **`appendChild(newNode)`**：==将其作为**最后一个子节点**，**插入**当前节点==。若`newNode`为DOM中已存在的，相当于**剪贴**
+  - `insertBefore(newNode,oldNode)`：节点之前插入一个新的节点，没有insertAfter()方法可以结合`nextSibling`实现
+  - `removeChild(Node)`：通过父节点删除指定子节点，并返回被删除的节点。不存在DOM中，但在内存中仍可使用
+  - `replaceChild(newNode,oldNode)`：通过父节点用新节点替换一个子节点
+  - **`cloneNode(boolean b)`**：**复制节点返回新节点**，boolean表示**是否复制子节点**，会丧失该节点上的事件回调函数
+
+- > `childNodes `：当前节点的所有子节点的`NodeList`集合，但是包括Text、Commnet！空格之类的都包括！别用！
+  >
+  > `hasChildNodes()`：当前节点是否有子节点，也是包括所有类型节点！空格也算！别用！
+
+#### 1 NodeList 接口（了解）
+
+* `NodeList`实例是一个类似数组不是数组的对象，它的成员是节点对象。通过以下方法可以得到`NodeList`实例
+  * `Node.childNodes`：说了别用！省的没注意空格！
+  * `document.querySelectorAll()`等节点搜索方法
+* 属性：
+  * `length`，NodeList 实例包含的节点数量
+* 方法：
+  * `forEach`，也可以使用for循环。没pop、pust等方法哦！
+  * `item(index)`：接受一个整数值作为参数，表示成员的位置，返回该位置上的成员。
+* 。。。懒得看了
+
+#### 2 HTMLCollection 接口（了解）
+
+* `HTMLCollection`是一个节点对象的集合，只能包含元素节点（element），不能包含其他类型的节点。它的返回值是一个类似数组的对象，但是与`NodeList`接口不同，`HTMLCollection`没有`forEach`方法，只能使用`for`循环遍历
+* 返回`HTMLCollection`实例的，主要是一些`Document`对象的集合属性，比如`document.links`、`docuement.forms`、`document.images`、`document.styleSheets`、`document.scripts`等
+* `HTMLCollection`实例都是动态集合，节点的变化会实时反映在集合中
+* 属性
+  * `length`：返回`HTMLCollection`实例包含的成员数量
+* 方法
+  * `item()`：接受一个整数值作为参数，表示成员的位置，返回该位置上的成员
+  * `namedItem()`：参数是一个字符串，表示`id`属性或`name`属性的值，返回对应的元素节点。如果没有则返回`null`
+
+#### 3 ParentNode 接口
+
+* 只有元素节点（element）、文档节点（document）和文档片段节点（documentFragment）拥有子节点，因此只有这三类节点会继承`ParentNode`接口
+* 属性
+  * `children`：返回一个`HTMLCollection`实例，成员是当前节点的所有**元素子节点**。该属性只读。
+  * `firstElementChild`：当前节点的第一个元素子节点。如果没有任何元素子节点，则返回`null`
+  * `lastElementChild`：当前节点的最后一个元素子节点，如果不存在任何元素子节点，则返回`null`
+  * `childElementCount`：返回一个整数表示当前节点的所有元素子节点的数目。如果不包含任何元素子节点则返回`0`
+* ==方法（如下方法都没有返回值）==
+  * **`append()`**：为当前节点的最后一个元素子节点后追加**一个或多个子节点**。可以添加元素子节点、文本子节点
+  * **`prepend()`**：为当前节点的的第一个元素子节点前追加**一个或多个子节点**。同append()方法
+    * 若是若`newNode`为DOM中已存在的，相当于**剪贴**
+
+#### 4 ChildNode 接口
+
+* 如果一个节点有父节点，那么该节点就继承了`ChildNode`接口
+* ==方法（都是本节点调用方法）==
+  * `remove()`：==用于从父节点**移除当前节点**，**自己调用删除自己**！因为已知本节点有父节点==
+  * `before()`：当前节点的**前**面，插入**一个或多个**同级节点，两者拥有相同的父节点。可以插入元素节点、文本节点
+  * `after()`：在当前节点的**后**面，插入**一个或多个**同级节点，两者拥有相同的父节点。同before()方法
+  * `replaceWith()`：使用参数节点，**替换**当前节点。参数可以是元素节点，也可以是文本节点
+
+### 3.4.2 Document
+
+* 获取：在html dom模型中可以使用`window`对象来获取，也可以省略。**继承了Node、ParentNode等接口**
 
 - **方法：**
 
   - **write**()：向页面输出变量（值）、html代码
-  - 获取Element对象
-    - **`getElementById("id")`**：通过id属性值获取一个**元素对象**
-    - **`getElementsByClassName("className")`**：通过标签的class的属性值得到元素集合（**数组**）
-    - **`getElementsByTagName("tagName")`**：通过标签名称得到元素集合（**数组**）
-    - **``getElementsByName("name")``**：通过标签的name属性值得到元素集合（**数组**），radio、checkBox等
+  - 获取Element对象（**除了`~ById()`，以下方法还可以用在`Element`对象上**）
+    - **`querySelector()`**：CSS选择器为参数，如果有多个节点满足匹配条件，则返回**第一个匹配的节点**，没有返回null
+    - **`querySelectorAll()`**：返回一个`NodeList`对象，包含**所有匹配给定选择器的节点**。用法同上
+      - 【注意】不支持CSS伪元素选择器和伪类选择器
+    - **`getElementById("id")`**：id属性获取一个**元素对象**，效率比querySelector()根据ID获取对象高
+    - **`getElementsByClassName("className")`**：标签的class的属性值得到元素集合（**`HTMLCollection`实例**）
+    - **`getElementsByTagName("tagName")`**：标签名称得到元素集合（**`HTMLCollection`实例**）
+    - **``getElementsByName("name")``**：标签的name属性值得到元素集合（**`NodeList`实例**），radio、checkBox等
       - 只有一个标签时通过`document.getElementsBy(Tag/Class)Name("input")[0]`获取元素对象
   - 创建其他DOM对象
-    - **`createElement("元素名称")`**：创建**元素节点**
-    - **`createTextNode("文本内容")`**：创建**文本节点**
-    - `createAttribute(name)`：创建拥有指定名称的属性节点，并返回新的 Attr 对象
+    - **`createElement("元素名称")`**：创建**元素节点**，参数为tagName属性，对HTML不区分大小写，但不能加尖括号
+    - **`createTextNode("文本内容")`**：创建**文本节点**，可以在内容中添加标签。不能对属性赋值，不会转义单双引
+    - `createAttribute(name)`：创建拥有指定名称的属性节点，并返回新的 Attr 对象。通过Node来设置属性
     - `createComment()`：创建注释节点
 
   【注意】由于我们现在访问的是本地文件，js安全性，谷歌浏览器安全级别很高，不允许访问本地文件。在实际开发中，没有这样的问题，实际中不可能访问本地的文件。
 
-### 3.4.2 Element
+### 3.4.3 Element
 
 - 获取：通过`document`来获取和创建
 - 属性
-  - **`innerHTML`**：设置或返回元素的内容
+  - **`innerHTML`**：返回一个字符串，等同于**该元素包含的所有 HTML 代码**，该属性**可读写**。用来设置某个节点的内容
+  - `textContent`：显示文本或插入的是文本时使用来替代上面方法。原样显示，不像上面方法会转为`&**;`来显示
+  - `value`：代表的是元素的value属性，一般用于**`input`标签值的获取**
+  - `style`：用来读写该元素的行内样式信息，配合CSS。如display可取值none、block、inner
+    - 也可以**提前定义好**类选择器的样式，通过元素的`className`属性来设置其`class`属性值。
 - **方法：**
-
   - **`getAttribute("name")`**：获取属性里面的值
 
   - **`setAttribute("name","value")`**：设置属性的值
 
   - **`removeAttribute("name")`**：删除属性，**不能删除value属性**
-- **获取标签下面的子标签**的唯一有效办法，使用父节点**getElementsByTagName**方法，不使用childNodes
-
-### 3.4.3 Node
-
-> 节点对象，其他5个的父对象。所有dom对象都可以被认为是一个节点
-
-* 属性：
-  * **`parentNode`**：返回节点的父节点。
-
-* 方法(CRUD DOM树)：
-   * **`appendChild(newNode)`**：向节点的子节点列表的结尾添加新的子节点。相当于剪切
-   * `insertBefore(newNode,oldNode)`：在某个节点之前插入一个新的节点，没有insertAfter()方法
-   * `removeChild(Node)`：通过父节点删除（并返回）当前节点的指定子节点。
-   * `replaceChild(newNode,oldNode)`：通过父节点用新节点替换一个子节点。
-   * **`cloneNode(boolean)`**：复制节点，boolean表示**是否复制子节点**
-
-- 使用dom解析html时候，需要html里面的**标签**、**属性**和**文本**都封装成对象
-
-  - **标签**节点对应的值
-    **nodeType： 1**
-    nodeName： 大写标签名称  比如SPAN
-    nodeValue: null
-
-  - **属性**节点对应的值
-
-    **nodeType： 2**
-    nodeName： 属性名称
-    nodeValue: 属性的值
-
-  - **文本**节点对应的值
-
-    **nodeType： 3**
-    nodeName： #text
-    nodeValue: 文本内容
-
-
-### 3.4.4 HTML DOM
-
-- **标签体**的设置和获取：**`innerHTML`**，开始、闭合标签中的内容，包括子标签的所有内容
-
-  - 区别于**`value`**属性：代表的是元素的值，一般用于**`input`标签值的获取**
-
-- 使用html**元素**对象的**属性**
-
-- **控制元素样式**
-
-  - 使用元素的**`style`**属性来设置
-
-    ```javascript
-    //修改样式方式1
-    div1.style.border = "1px solid red";
-    div1.style.width = "200px";
-    //font-size--> fontSize
-    div1.style.fontSize = "20px";
-    ```
-
-  * **提前定义好**类选择器的样式，通过元素的`className`属性来设置其`class`属性值。
-
-
+- **获取标签下面的子标签**的唯一有效办法，使用父节点**`getElementsByTagName()`**方法，不使用childNodes属性
 
 
 
@@ -1246,36 +1297,45 @@ document.getElementById("sheng").onchange = function () {
 
 # 4 jQuery
 
-## 4.1 jQuery概述
-
-- 是JavaScript的一个库，不带min的和带min的版本区别在于格式
+> JavaScript框架，简化JS开发，本质上就是一些JS文件，封装了JS的原生代码
+>
+> 不带min的和带min的版本区别在于格式、缩进、大小、注释。一个用于开发环境，一个用于生产环境
 
 - 区别：
 
   - **jQuery的加载比js快**，jQuery在dom树结构绘制完毕就会加载；而js在整个页面加载完毕才加载
   - jQuery没有覆盖问题，并且按顺序执行；而js存在覆盖问题
 
-- 基本语法：**jQuery(选择器)**、**$(选择器)**，jQuery对象内部以**数组**存放匹配的数据，若只有一个，索引号为0
 
-  - jQuery对象和DOM对象转换(jQuery对象和js对象无法互相操作属性和方法)
-    - DOM-->jQuery：**jQuery(DOM对象)**
-    - jQuery-->DOM：**`$(选择器)[0]或$(选择器).get(0)`**
+## 4.1 基本语法
 
-- **页面加载：**
+* 语法：**`$(CSS选择器)`**或**`jQuery(CSS选择器)`**，jQuery对象内部以**==数组==存储匹配的数据**，若只有一个，索引号为0
 
-  - **ready**()：用于页面加载成功后执行，与window.onload()一样。可以简写如下
+* 对象**转换**（jQuery对象和JS对象无法互相操作属性和方法）
 
-    ```javascript
-    $(document).ready(function(){
-        alert("jQuery页面加载");
-    });
-    
-    $(function () {
-        alert("hello")
-    });
-    ```
+  * JS-->jQuery：**`$(JS对象)`**
+  * jQuery-->JS：**`$(选择器)[0]`或`$(选择器).get(0)`**
+
+* 绑定事件（去掉JS事件中on即可，并给事件方法传入function对象）
+
+  ```javascript
+  $("#id1").click(function(){
+     //。。。 
+  });
+  ```
+
+* **入口函数**（DOM树加载完毕执行）：区别在于onload只能定义一次，否则覆盖；而ready可以定义多次
+
+  ```javascript
+  //$(document).ready(function(){   //精简如下
+  $(function(){
+      
+  });
+  ```
 
 ## 4.2 选择器
+
+> 在字符串中
 
 - **基本选择器**
 
@@ -1288,140 +1348,152 @@ document.getElementById("sheng").onchange = function () {
 
   | 组合  | 选择                                                         |
   | ----- | ------------------------------------------------------------ |
-  | A,B   | 满足A（和/或）B的任意元素                                    |
-  | A B   | 满足条件：**B**是A的**后代结点**（B是A的子节点，或者A的子节点的子节点） |
-  | A > B | 满足条件：**B**是A的**直接子节点**                           |
-  | A + B | 满足条件：**下一个兄弟选择器**（AB有相同的父结点，**B**是A的**紧跟着的兄弟节点**） |
-  | A ~ B | 满足条件：**一般兄弟选择器**（AB有相同的父节点，**B**是A之后的**所有兄弟节点**） |
+  | A,B   | 选择**所有A元素和B元素**                                     |
+  | A B   | ==**后代选择器**==（**B**是A的所有**后代结点**，如子节点或者孙节点），可能多个 |
+  | A > B | ==**子选择器**==（**B**是A的**直接子节点**），可能多个       |
+  | A + B | ==**相邻兄弟选择器**==（AB有相同的父结点，**B**是A的**紧跟着的兄弟节点**），只能一个 |
+  | A ~ B | ==**一般兄弟选择器**==（AB有相同的父节点，**B**是A**之后**的**所有兄弟节点**），可能多个 |
 
-- **属性选择器**
+- **属性选择器**（值要加引号）
 
-  | 属性         | 选择                                                        |
-  | ------------ | ----------------------------------------------------------- |
-  | [attr]       | 包含 attr 属性的**所有元素**                                |
-  | [attr=val]   | 选择 attr 属性被赋值**为 val** 的所有元素                   |
-  | [attr~=val]  | 选择 attr 属性里被空白分开的字符串里**其中一个是val**的元素 |
-  | [attr\|=val] | 选择attr属性的值是 **val 或值以 val- 开头**的元素           |
-  | [attr^=val]  | 选择attr属性的值**以 val 开头（包括 val）**的元素           |
-  | [attr$=val]  | 选择attr属性的值**以 val 结尾（包括 val）**的元素           |
-  | [attr*=val]  | 选择attr属性的值中包含**子字符串 val** 的元素               |
+  | 属性                                     | 选择                                                         |
+  | ---------------------------------------- | ------------------------------------------------------------ |
+  | ==**[attr]**==                           | 带有以 attr 命名的属性的元素                                 |
+  | ==**[attr='value']**==                   | 带有以 attr 命名的，且**值为"value"**的属性的元素。          |
+  | ==**[attr!='value']**==                  | 带有以 attr 命名的，且**值不为"value"**的属性的元素或**没有这个属性**的元素 |
+  | [attr~=value]                            | 带有以 attr 命名的属性的元素，并且该属性是一个**以空格作为分隔的值列表**，其中至少一个值为"value" |
+  | [attr\|=value]                           | 带有以 attr 命名的属性的元素，**属性值为“value”或是以“value-”为前缀**（"-"为连字符，Unicode编码为U+002D）开头。用来匹配语言简写代码（如zh-CN，zh-TW可以用zh作为value） |
+  | ==[**attr^=value**]==                    | 表示带有以 attr 命名的，且值是以"value"**开头**的属性的元素  |
+  | ==[**attr$=value**]==                    | 表示带有以 attr 命名的，且值是以"value"**结尾**的属性的元素  |
+  | ==[**attr*=value**]==                    | 表示带有以 attr 命名的，且值**包含**有"value"的属性的元素    |
+  | ==\[attr1='value1'][attr2='value2']...== | **复合属性**选择器，需要同时满足多个条件时使用。             |
 
 - **基本过滤选择器**
 
-  - :**first**
-  - :**last**
-  - :not(...)：删除指定内容。如：1234:not(3)--->124
-  - :**even**：偶数，从0开始计数。操作索引号，页面显示奇数项
-  - :**odd**：奇数
-  - :eq(index)：指定第几个
-  - :gt(index)：大于n个
-  - :lt(index)：小于n个
-  - :header：获得标题
-  - :animated：获得动画的
-  - :focus：获得焦点
-  - :first-child：第一个子元素
-  - :last-child：最后一个子元素
+  - **`:first`**：首元素选择器，获得选择的元素中的第一个元素
+  - **`:last`**：尾元素选择器，获得选择的元素中的最后一个元素
+  - **`:not`**(selector)：非元素选择器，不包括指定内容的元素。如：1234:not(3)--->124
+  - **`:even`**：偶数选择器，从0开始计数。操作索引号，页面显示奇数项
+  - **`:odd`**：奇数选择器，从0开始计数
+  - **`:eq`**(index)：等于索引选择器，等于指定索引元素
+  - **`:gt`**(index)：大于索引选择器，大于指定索引元素
+  - **`:lt`**(index)：小于索引选择器，小于指定索引元素
+  - **`:header`**：标题选择器，获得标题（h1~h6）元素，固定写法
+  - `:animated`：获得动画的
+  - `:focus`：获得焦点
+  - `:first-child`：第一个子元素
+  - `:last-child`：最后一个子元素
   - ……
+
+- **表单属性过滤选择器**
+
+  - **`:enabled`**：可用元素选择器，获得可用元素
+  - **`:disabled`**：不可用元素选择器，获得不可用元素
+  - **`:checked`**：选中选择器（radio、checkbox）
+  - **`:selected`**：选中选择器（select）
+  - `:input`：匹配所有 input, textarea, select 和 button 元素
 
 - 内容过滤选择器
 
   - :contains：匹配包含指定文本的元素
 
-- **表单属性过滤选择器**
+## 4.3 DOM操作
 
-  - :input：匹配所有 input, textarea, select 和 button 元素（其他的只匹配自己）
-  - :enabled：可用
-  - :disabled：不可用
-  - **:checked**：选中（radio、checkbox）
-  - **:selected**：选择（select）
-
-## 4.3 属性
-
-- **属性操作**：从jQuery 1.6开始，**尚未设置的属性该.attr()方法返回undefined**。**检索和修改DOM属性，如checked，selected或disabled等boolean值**元素形式的元素状态，使用**.prop()**方法
-  - **.attr(name)** 
-  - .attr(properties) 
-  - **.attr(key, value)** 
-  - .attr(key, fn) 
-  - .removeAttr(name) 
-  - **.prop用法同attr**
-- **CSS类**
-  - **.addClass**(class)
-  - **.removeClass**(class)
-  - **.toggleClass**(class)
-    - **.css**(name | properties | [name,val | fn])：自己练习用，开发时不用，用上面那个
-    - 操作CSS的方法有：
-      - 设置CSS样式属性`css(name, value)` 设置一个CSS样式属性
-      - 通过attr属性设置 / 获取 style属性 `attr('style', 'color:red');` 添加style属性
-      - 设置class属性`addClass(class)`等
-- **HTML**代码/文本/值
-  - **.html**( [val | fn] ) ：带标签，获取值/设置值
-  - **.text**( [val | fn] ) ：不带标签，获取值/设置值
-  - **.val**( [val | fn | arr] ) ：获取值
+- **内容操作**
+  - **`html()`**：获取/设置元素的**标签体**内容   `<a><font>内容</font></a>`  --> `<font>内容</font>`
+  - **`text()`**：获取/设置元素的**标签体纯文本**内容   `<a><font>内容</font></a>` --> `内容`，设置时将font也删去了
+  - **`val()`**：获取/设置元素的**value属性值**，常用于input标签
+- **属性操作**
+  1. **通用属性操作**（获取传递1个字符串；设置传递2个字符串；删除传递1个字符串）
+     - **`attr()`**: 获取/设置元素的属性
+     - **`removeAttr()`**:删除属性
+     - **`prop()`**:获取/设置元素的属性
+     - **`removeProp()`**:删除属性
+       - ==attr和prop**区别**？==
+         - 如果操作的是**元素**的**固有属性**，则建议**使用prop**。如checked，selected、disabled、href、src等之类
+         - 如果操作的是元素**自定义属性**，则建议**使用attr**。若上述属性在未设置属性值时使用attr，返回undefined
+  2. **对class属性操作**
+     - **`addClass()`**:添加class属性值
+     - **`removeClass()`**:删除class属性值
+     - **`toggleClass()`**:**切换**class属性，综合上面2个方法，类似开关
+       - toggleClass("one")：判断如果元素对象上存在class="one"，则将属性值one删除掉。否则添加
+     - **`css()`**：传递1个字符串为获取值；2个为设置值
+- **CRUD操作**（除过empty，其他方法JS原生都有实现，empty可以利用`innerHTML=""`实现）
+  - 内部插入（父子），对已存在的元素为剪贴
+    - **`append(content)`** ：在A元素结尾追加B
+    - **`prepend(content)`**：在A元素开头追加B
+    - `appendTo(content)`：在B元素结尾追加A
+    - `prependTo(content)`：在B元素开头追加A
+  - 外部插入（兄弟），对已存在的元素为剪贴
+    - **`before(content)`**：在A元素之前插入B
+    - **`after(content)`**：在A元素之后插入B
+    - `insertBefore(content)`：在B元素之前插入A
+    - `insertAfter(content)`：在B元素之后插入A
+  - 删除
+    - **`empty()`**：**清空**匹配元素中所有的**子节点（所有Node）**，但是保留当前对象以及其属性节点
+    - **`remove([expr])`**：expr筛选元素。**删除所有匹配的元素，事件数据也会删除**，不提供值为删除自己
+    - `detach([expr])`：expr筛选元素。**删除所有匹配的元素，事件数据会保留**
+  - 替换
+    - `replaceWith(html)`：把匹配的元素替换为指定元素，用B替换A
+    - `replaceAll(html)`：相反，用A替换B
+    - `clone([flag])`：复制，克隆匹配的DOM元素并且选中这些克隆的副本。QQ表情案例
+      - flag为true副本具有与真身一样的事件处理能力，默认不用填写代表为false
 
 ## 4.4 遍历
 
-- **.each(callback)**：**jQuery对象使用**（选择器获取后使用）
+- **`.each(callback)`**：**jQuery对象使用**（选择器获取后使用），遍历后的值可能为JS对象，注意方法调用区别
 
   ```javascript
   $(arr).each(function (key,value) {});
   ```
 
-- **$.each(object,[callback])**：遍历任意对象。callback可设置function(k,v)
+  * key为索引；value/this是每一个元素对象（JS对象）；
+  * 回调函数返回值为false相当于break；返回值为true相当于continue
+
+- **`$.each(object,[callback])`**：遍历任意对象（JS数组等也可以）。
 
   ```javascript
   $.each(arr,function (key,value) {});
   ```
 
-## 4.5 DOM操作
+* **`for...of`**：jQuery3.0后提供的方式，同ES6中使用方法一致
 
-- 内部插入
-
-  - **append**(content) ：内部结尾处，将B追加到A里面去
-  - **appendTo**(content)：内部结尾处，将A追加到B里面去
-  - prepend(content)：内部开始处，将B追加到A里面去
-
-  - prependTo(content)：内部开始处，将A追加到B里面去
-
-- 外部插入
-
-  - after(content):外部，将B追加到A后面
-  - before(content):外部，将A追加到B前面
-  - insertAfter(content):外部，将A追加到B后面
-  - insertBefore(content)::外部，将A追加到B前面
-
-- 复制：clone([flag])，克隆匹配的DOM元素并且选中这些克隆的副本
-
-  - flag为true副本具有与真身一样的事件处理能力，默认不用填写代表为false
-
-- 删除
-
-  - **empty**()：**清空**匹配元素中所有的**子节点（所有Node）**
-  - **remove**([expr])：expr筛选元素。**删除所有匹配的元素，事件数据也会删除**
-  - detach([expr])：expr筛选元素。**删除所有匹配的元素，事件数据会保留**
-
-- 替换
-
-  - replaceWith(html)：把匹配的元素替换为指定元素，用B替换A
-  - replaceAll(html)：相反，用A替换B
-
-- wrap(content)
-
-- unwrap()
-
-- wrapAll(content)
-
-- wrapInner(content)
-
-   
-
-## 4.6 事件
+## 4.5 事件
 
 - **页面加载：**
-  - **ready(fn)**
-  - 有时标签绑定一个事件但是函数不执行，原因就是DOM没有加载完毕。可以放在/body之前，或onload里
-- **事件绑定**：（或直接绑定）
-  - bind(type,[data],fn)
-  - unbind(type,[data],fn)
+  - **ready(fn)**：有时标签绑定一个事件但是函数不执行，原因就是DOM没有加载完毕。可以放在/body之前，或onload里
+
+    ```javascript
+    //$(document).ready(function(){   //精简如下
+    $(function(){
+        
+    });
+    ```
+
+- **事件绑定**：
+
+  - jquery标准的绑定方式：`jq对象.事件方法(回调函数)；`
+
+    - 注：如果调用事件方法，不传递回调函数，则会触发浏览器默认行为，如触发事件。
+
+      `表单对象.submit();`：让表单提交
+
+  - on绑定事件/off解除绑定
+
+    - `jq对象.on("事件名称",回调函数)`
+    - `jq对象.off("事件名称")`
+      - 如果off方法不传递任何参数，则将组件上的所有事件全部解绑
+
+  - toggle事件切换
+
+    - `jq对象.toggle(fn1,fn2...)`：当单击jq对象对应的组件后，会执行fn1.第二次点击会执行fn2.....
+
+    - 注意：1.9版本 .toggle() 方法删除,jQuery Migrate（迁移）插件可以恢复此功能。
+
+      ```javascript
+       <script src="../js/jquery-migrate-1.0.0.js" type="text/javascript" charset="utf-8"></script>
+      ```
+
 - 鼠标事件
   - mouseover
   - mouseout
@@ -1429,22 +1501,81 @@ document.getElementById("sheng").onchange = function () {
   - toggle
   - 同js方法
 
-## 4.7 动画
+## 4.6 动画
 
 - 显示/隐藏
-  - show([s],[e],[fn])
-  - hide([s],[e],[fn])
-  - toggle([s],[e],[fn])
+  - **show**([speed,[easing],[fn]])
+    1. speed：动画的速度。三个预定义的值("slow","normal", "fast")或表示动画时长的毫秒数值(如：1000)
+        2. easing：用来指定切换效果，默认是"swing"，可用参数"linear"
+           ​    * swing：动画执行时效果是 先慢，中间快，最后又慢
+              * linear：动画执行时速度是匀速的
+     3. fn：在动画完成时执行的函数，每个元素执行一次。
+  - **hide**([speed,[easing],[fn]])
+  - **toggle**([speed,[easing],[fn]])
 - 滑动显示/隐藏
-  - slideDown([s],[e],[fn]) 
-  - slideUp([s,[e],[fn]]) 
-  - slideToggle([s],[e],[fn])
+  - **slideDown**([speed,[easing],[fn]])
+  - **slideUp**([speed,[easing],[fn]])
+  - **slideToggle**([speed,[easing],[fn]])
 - 淡入淡出
-  - fadeIn([s],[e],[fn]) 
-  - fadeOut([s],[e],[fn]) 
-  - fadeToggle([s,[e],[fn]])
+  - **fadeIn**([speed,[easing],[fn]])
+  - **fadeOut**([speed,[easing],[fn]])
+  - **fadeToggle**([speed,[easing],[fn]])
   - fadeTo([[s],o,[e],[fn]])：调整元素不透明度
 
+
+
+## 4.7 插件
+
+* 增强JQuery的功能
+
+* 实现方式	
+
+  1. `$.fn.extend(object)` ：增强通过jQuery获取的对象的功能，如获取$("#id")对象，并增强其功能
+
+     ```javascript
+     //1.定义jqeury的对象插件
+     $.fn.extend({
+         //定义了一个check()方法。所有的jq对象都可以调用该方法
+         check:function () {
+             //让复选框选中        
+             this.prop("checked",true);//this:调用该方法的jq对象
+         },
+         uncheck:function () {
+             //让复选框不选中
+             this.prop("checked",false);
+         }
+     });
+     
+     $(function () {
+         $("#btn-check").click(function () {
+             //获取复选框对象
+             $("input[type='checkbox']").check();
+         });
+     
+         $("#btn-uncheck").click(function () {
+             //获取复选框对象
+             $("input[type='checkbox']").uncheck()
+         });
+     });
+     ```
+
+  2. `$.extend(object)`：增强jQuery对象自身的功能，$或jQuery
+
+    ```javascript
+    $.extend({
+        max:function (a,b) {
+            //返回两数中的较大值
+            return a >= b ? a:b;
+        },
+        min:function (a,b) {
+            //返回两数中的较小值
+            return a <= b ? a:b;
+        }
+    });
+    //调用全局方法
+    var max = $.max(4,3); //4
+    var min = $.min(1,2); //1
+    ```
 
 
 ## 4.8 jQuery重写案例
@@ -1470,7 +1601,7 @@ var hiddenAd = function () {
 
 ```javascript
 $(function () {
-    // $("tbody>tr:even").css("background-color","red");//偶数行设置
+    $("tbody>tr:even").css("background-color","yello");//偶数行设置
     $("tbody>tr:odd").css("background-color","red");//奇数行设置
 })
 ```
@@ -1616,32 +1747,31 @@ $(function () {
 
 ## 5.1 Ajax概述
 
-- Ajax(asynchronous javascript and xml)：异步的js和xml。它能**使用js异步访问服务器**
+- **Ajax**(asynchronous javascript and xml)：异步的javascript 和xml。它能**使用javascript 异步访问服务器**
 
-### 5.1.1 什么是同步，什么是异步
+* **同步和异步**：客户端和服务器端相互通信的基础上，**客户端发送请求到服务器端**
+  * **同步**：客户端必须**等待服务器端的响应**，在等待的期间客户端不能做其他操作
+  * **异步**：客户端**不需要等待服务器端的响应**，在服务器处理请求的过程中，客户端可以进行其他的操作
+* Ajax 是一种在无需重新加载整个网页的情况下，能够更新部分网页的技术。通过在后台与服务器进行少量数据交换，Ajax 可以使网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新，提升用户的体验。传统的网页（不使用 Ajax）如果需要更新内容，必须重载整个网页页面。
 
-- 同步：客户端发送请求到服务器端，**当服务器返回响应之前**，客户端都处于**等待**卡死状态
-- 异步：客户端发送请求到服务器端，**无论服务器是否返回响应**，客户端都可以**随意做其他事情**，不会被卡死
+* Ajax**运行原理**
 
-### 5.1.2 Ajax运行原理
+  页面发起请求，会**将请求发送给==浏览器内核中的Ajax引擎==**，Ajax引擎会提交请求到服务器端，在这段时间里，客户端可以任意进行任意操作，**直到服务器端将数据返回给Ajax引擎后**，会**触发**你设置的**事件**，从而**执行自定义的js逻辑代码**完成某种页面功能
 
-- 页面发起请求，会**将请求发送给浏览器内核中的Ajax引擎**，Ajax引擎会提交请求到服务器端，在这段时间里，客户端可以任意进行任意操作，**直到服务器端将数据返回给Ajax引擎后**，会**触发**你设置的**事件**，从而**执行自定义的js逻辑代码**完成某种页面功能
-
-### 5.1.3 Ajax应用场景
-
-- 谷歌/百度的搜索框自动补全
-- 用户注册时（校验用户名是否被注册过）
-- 下拉框联动
+* Ajax应用场景
+  * 谷歌/百度的搜索框自动补全
+  * 用户注册时（校验用户名是否被注册过）
+  * 下拉框联动
 
 ## 5.2 js原生的Ajax技术(了解)
 
 - js原生的Ajax其实就是围绕浏览器内内置的Ajax引擎对象进行学习的，使用js原生的Ajax完成异步操作：
 
-  1. 创建Ajax引擎对象
+  1. 创建Ajax引擎对象XHR
 
      ```javascript
      var xmlHttp = new XMLHttpRequest();
-     var xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");//IE5和IE6,现在基本没了吧
+     //var xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");//IE5和IE6,现在基本没了吧
      ```
 
   2. 为Ajax引擎对象**绑定监听onreadystatechange**（监听服务器已将数据响应给引擎），每当 **readyState** 改变时，就会触发 onreadystatechange 事件
@@ -1684,33 +1814,19 @@ $(function () {
 
   5. 接受响应数据：写在onreadystatechange事件函数中
 
-## 5.3 Json
 
-- json是一种**与语言无关**的**数据交换的格式**，作用：
-  - 使用ajax进行前后台数据交换
-  - 移动端与服务端的数据交换
-- json有两种格式：
-  - **对象**格式：{"key1":obj,"key2":obj,"key3":obj...}
-  - **数组/集合**格式：[obj,obj,obj...]
-  - 注意：对象格式和数组格式**可以互相嵌套**；json的**key是字符串**，json的**value是Object**
-- json的解析：
-  - **json是js的原生内容**，也就意味着**js可以直接取出**json对象中的数据
-- json的转换工具，将java的对象或集合转成json形式字符串
-  - jsonlib
-  - Gson：google
-  - fastjson：阿里巴巴
 
-## 5.4 jQuery的Ajax技术(重点)
+## 5.3 jQuery的Ajax技术(重点)
 
 - jQuery是一个优秀的js框架，自然对js原生的ajax进行了封装，封装后的ajax的操作方法更简洁，功能更强大，与ajax操作相关的jQuery方法有如下几种，但开发中经常使用的有三种
 
-  <pre style="background:yellow">$.ajax(url[,settings])：是ajax在jquery中的底层实现,最复杂,最强功能.</pre> 
+  **`$.ajax( url [, settings ] )`**：是ajax在jquery中的**底层实现，最复杂，最强功能**。url必须有，也可在settings中设置
 
   ```javascript
-  $.ajax("/AjaxServlet",
-         {
-      type: "POST",
-      async: true,//是否异步
+  $.ajax({
+      url: "AjaxServlet", //请求路径，不加/
+      type: "POST", //请求方式
+      async: true, //是否异步
       data: {"name": "zhangsan", "age": 22},
       success: function (data) {
           alert(data.name);
@@ -1718,18 +1834,17 @@ $(function () {
       error: function () {
           alert("请求失败");
       },
-      dataType: "json"
-  
+      dataType: "json" //服务器返回的数据类型，若不指定S将根据HTTP包MIME信息来智能判断
   });
   ```
 
-  <pre style="background:yellow">$.get(url[,data][,callback][,type])</pre>
+  **`$.get( url [, data ] [, success ] [, dataType ] )`**：发送get请求
 
-  <pre style="background:yellow">$.post(url[,data][,callback][,type])</pre>
+  **`$.post( url [, data ] [, success ] [, dataType ] )`**：发送post请求
 
   ```javascript
-  $.get(
-      "/AjaxServlet",  //url：待载入页面的URL地址
+  $.get( //$.post和get没区别
+      "AjaxServlet",  //url：待载入页面的URL地址，不加/
       {"name":"zhangsan","age":22},  //data：待发送 Key/value 参数
       function (data) {  //callback：载入成功时回调函数;data是接收服务端发送的数据
           alert(data.name+":"+data.age)
@@ -1738,35 +1853,120 @@ $(function () {
   );
   ```
 
-  <pre style="background:yellow">$.getJSON(url[,data][,callback])：getJSON专门用于请求json数据</pre>
+  `$.getJSON( url [, data ] [, success ] )`：getJSON专门用于请求json数据
 
-  <pre>$.getScript(url[,callback])</pre>
+  `$.getScript(url[,callback])`
 
-  <pre>load(url[,data][,callback])</pre>
+  `load(url[,data][,callback])`
 
   - GET和POST提交基本差不多，有一个地方不一样就是提交的数据是中文的话，Servlet需要编码，解码
     - 若是POST提交，可以设置request.setCharacterEncoding("utf-8")或者不用管，Ajax本身就解决了
     - 若是GET提交，则需要编码解码
 
+  **`serialize()`：序列表单内容为字符串**。可用于Ajax提交表单
 
+
+
+## 5.4 JSON
+
+* JSON（JavaScript Object Notation）：JavaScript对象表示法
+
+- JSON是一种**与语言无关**的**数据交换的格式**，作用：
+
+  - JSON现在多用于**存储**和**交换文本信息**的语法
+  - 进行数据的**传输**
+  - JSON 比 XML 更小、更**快**，更易解析
+
+- 语法
+
+  1. 基本规则
+
+     - 数据在**名称/值**对中，**键用双引号**引起来
+     - 值的取值类型：
+       1. 数字（整数或浮点数）
+       2. 字符串（在双引号中）
+       3. 逻辑值（true 或 false）
+       4. 数组（在方括号中）	`{"persons":[{},{}]}`
+       5. 对象（在花括号中） `{"address":{"province"："陕西"....}}`
+       6. null
+     - 数据由**逗号分隔**：多个键值对由逗号分隔
+     - **花括号保存对象**：使用{}定义json 格式
+     - **方括号保存数组**：[]
+
+  2. 获取数据：JSON 是JavaScript的原生内容，也就是**JavaScript**可以**直接取**出JSON 对象中的数据
+
+     1. `JSON对象.键名`
+
+     2. `JSON对象["键名"]`
+
+     3. `数组对象[索引]`
+
+     4. 遍历：
+
+        1. `for...in`：遍历**属性**，即key字符串。普通for循环也可以
+
+           ```javascript
+           for(let key in person){    
+               //alert(key + ":" + person.key); //这样不能获取到。因为key值为字符串，相当于person."name"
+               alert(key+":"+person[key]);
+           }
+           ```
+
+        2. `for...of`：遍历**值**
+
+           ```javascript
+           for(let value of person){
+               alert(value.name);
+           }
+           ```
+
+## 5.5 JSON和Java对象的转换
+
+* 常见的JSON解析器：Jsonlib，Gson（谷歌），fastjson（阿里），==**jackson**==（Spring内置）
+* 使用步骤
+  1. **导**入jackson的相关jar**包**
+  2. 创建Jackson**核心对象 `ObjectMapper`**
+  3. 如下：
+
+### 5.5.1 Java对象转换JSON
+
+* 调用ObjectMapper的相关方法进行转换
+  1. 转换方法
+     1. **`writeValueAsString(obj)`**：**将对象转为json字符串**
+     2. **`writeValue(参数1，obj)`**，参数1如下：
+        - **File**：将obj对象转换为JSON字符串，并保存到指定的文件中
+        - **Writer**：将obj对象转换为JSON字符串，并将json数据填充到字符输出流中
+        - **OutputStream**：将obj对象转换为JSON字符串，并将json数据填充到字节输出流中
+  2. 注解（在JavaBean的属性上注解）
+     1. `@JsonIgnore`：排除属性
+     2. **`@JsonFormat(pattern = "yyyy-MM-dd")`**：属性值得格式化，pattern自定义
+  3. 复杂java对象转换
+     1. List：数组
+     2. Map：对象格式一致
+
+### 5.5.2 JSON转为Java对象
+
+* 调用ObjectMapper的相关方法进行转换：`readValue(json字符串数据,Class)`
 
 ## 5.5 案例
 
-### 5.5.1 异步校验用户名是否存在
+### 1 异步校验用户名是否存在
 
 ```javascript
 $("#inputusername").blur(function () {
     var username = $(this).val();
+    //期望服务器响应回的数据格式：{"userExsit":true,"msg":"此用户名太受欢迎,请更换一个"}
+    //                         {"userExsit":false,"msg":"用户名可用"}
     $.post(
         "/CheckServlet",
         {"username":username},
         function(data){
-            if(data.check){
-                $("#usernameTag").text("用户名已存在");
-                 $("#usernameTag").css("color","red")
+            if(data.userExsit){
+                $("#usernameTag").text(data.msg);
+                $("#usernameTag").css("color","red")
             } else {
-                $("#usernameTag").text("用户名可以使用");
-                 $("#usernameTag").css("color","green")
+                $("#usernameTag").text(data.msg);
+                $("#usernameTag").css("color","green")
             }
         },
         "json"
@@ -1775,27 +1975,30 @@ $("#inputusername").blur(function () {
 ```
 
 ```java
-//CheckServlet
-UserService userService = new UserService();
-String username = request.getParameter("username");
-boolean flag = false;
-try {
-    flag = userService.checkUsername(username);
-    System.out.println(flag);
-} catch (SQLException e) {
-    e.printStackTrace();
+//设置响应的数据格式为json
+response.setContentType("application/json;charset=utf-8");
+String username = request.getParameter("username");//获取用户名
+//期望服务器响应回的数据格式：{"userExsit":true,"msg":"此用户名太受欢迎,请更换一个"}
+//                         {"userExsit":false,"msg":"用户名可用"}
+Map<String,Object> map = new HashMap<String,Object>();
+if("tom".equals(username)){ //存在    
+    map.put("userExsit",true);
+    map.put("msg","此用户名太受欢迎,请更换一个");
+}else{ //不存在
+    map.put("userExsit",false);
+    map.put("msg","用户名可用");
 }
-response.getWriter().write("{\"check\":"+flag+"}");//拼凑字符串看清楚了
 
-//dao
-QueryRunner queryRunner = new QueryRunner(JdbcUtils.getDataSource());
-String sql = "select count(*) from user where username=?";
-Object[] params = {username};
-Long number = (Long) queryRunner.query(sql,new ScalarHandler(),params);
-return number>0?true:false;
+//将map转为json，并且传递给客户端
+ObjectMapper mapper = new ObjectMapper();
+mapper.writeValue(response.getWriter(),map);
 ```
 
-### 5.5.2 站内搜索
+* 服务器响应的数据，在客户端使用时，要想当做**json数据格式使用**。有两种解决方案：
+  1. `$.get()`或`$.post()`或`$.ajax()`：将参数**dataType**指定为"json"
+  2. 在**服务器端设置MIME类型**`response.setContentType("application/json;charset=utf-8");`
+
+### 2 站内搜索
 
 
 
@@ -3134,8 +3337,8 @@ public void destroy() {
 
        * `BufferedReader getReader()`：获取**字符输入流**，只能操作字符数据
 
-            *  `ServletInputStream getInputStream()`：获取**字节输入流**，可以操作所有类型数据。继承了InputStream
-               * 在**文件上传**知识点后讲解
+       * `ServletInputStream getInputStream()`：获取**字节输入流**，可以操作所有类型数据。继承了InputStream
+          * 在**文件上传**知识点后讲解
 
     2. **再从流对象中拿数据**
 
@@ -4518,9 +4721,8 @@ VerifyCode.output(bi,response.getOutputStream());
       4. 过滤器2
       5. 过滤器1 
    2. 过滤器先后顺序问题：
-     1. 注解配置：按照类名的字符串按每个字符比较规则比较，值小的先执行
-       * 如： AFilter 和 BFilter，AFilter就先执行了。
-     2. web.xml配置： `<filter-mapping>`谁定义在上边，谁先执行
+        1. 注解配置：按照类名的字符串按每个字符比较规则比较，值小的先执行。如：AFilter和BFilter，AFilter就先执行
+        2. web.xml配置： `<filter-mapping>`谁定义在上边，谁先执行
 
 ### 8.1.3 案例
 
@@ -4529,7 +4731,7 @@ VerifyCode.output(bi,response.getOutputStream());
 1. 需求：
 
    1. 访问usermanagement案例的资源。验证其是否登录
-      2. 如果登录了，则直接放行。
+   2. 如果登录了，则直接放行。
      3. 如果没有登录，则跳转到登录页面，提示"您尚未登录，请先登录"
 
 2. 分析
@@ -4640,7 +4842,7 @@ VerifyCode.output(bi,response.getOutputStream());
 
 - **增强对象的功能**：可以采用**设计模式（一些通用的解决固定问题的方式）**
 
-  - **装饰模式**：可参考后续两个例子的代码，此处不再详细介绍
+  - **装饰模式**：可参考后续两个例子的代码，此处不再详细介绍。如IO流		
 
   - **代理模式**（两者区别在于代理对象的生成模式）
 
@@ -4935,11 +5137,149 @@ public class StaticFilter implements Filter {
 
 
 
+# 第三部分 案例
+
+# 黑马旅游网案例
+
+## 9.1 准备工作
+
+* Maven项目的**导入**。选择`pom.xml`文件
+* 通过tomcat7的插件**启动**项目（可以在配置中设置好），不同版本Tomcat也不一样。`tomcat7:run`
+* 技术选型
+  * Web层
+    * Servlet：前端控制器
+    * html：视图。互联网应用为了访问速度，使用HTML采用json数据交互。若是OA等项目，可以JSP
+    * Filter：过滤器
+    * BeanUtils：数据封装
+    * Jackson：json序列化工具
+  * Service层
+    * Javamail：java发送邮件工具
+    * Redis：nosql内存数据库
+    * Jedis：java的redis客户端
+  * Dao层
+    * Mysql：数据库
+    * Druid：数据库连接池
+    * JdbcTemplate：jdbc的工具
+* 创建数据库：创建库、使用库、复制创建表、插入数据的语句执行即可
+
+## 9.2 BaseServlet的抽取
+
+对一张表的请求写太多Servlet没必要，可以继承HttpServlet并重写service方法，**根据请求URI的不同来调用不同方法（反射）**。类似REST，但是不是使用GET、POST、DELETE、PUT等。
+
+```java
+public class BaseServlet extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String uri = req.getRequestURI(); //  /travel/user/add       
+        String methodName = uri.substring(uri.lastIndexOf('/') + 1); //获取方法名称
+        try {
+            //this是谁调用我？我代表谁。即代表被请求的那个继承于此的Servlet
+            Method method = this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);//利用反射获取方法对象Method
+            //method.setAccessible(true); //暴力反射没必要，可以将继承后的Servlet中方法声明为public即可
+            method.invoke(this,req,resp);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 直接将传入的对象序列化为json，并且写回客户端
+     * @param obj
+     */
+    public void writeValue(Object obj,HttpServletResponse response) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        response.setContentType("application/json;charset=utf-8");
+        mapper.writeValue(response.getOutputStream(),obj);
+    }
+    /**
+     * 将传入的对象序列化为json，返回
+     * @param obj
+     * @return
+     */
+    public String writeValueAsString(Object obj) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(obj);
+    }
+}
+```
 
 
 
+## 9.3 注册、激活、登陆(回显)、退出
 
-# 9 国际化
+![](images\注册登录.png)
+
+
+
+## 9.4 分类数据展示
+
+对于大多时候不改变的数据，应使用**Redis缓存**优化。**展示类别的cname，并携带类别的cid值**
+
+![](images\分类数据展示.png)
+
+
+
+## 9.5 旅游线路分页展示
+
+根据携带的cid来请求查找（可封装为JS库）；全部使用**Ajax请求**（封装为方法），利用JavaScript方法传递**cid，还有currentPage和pageSize(可以不提供)**；
+
+![](images\旅游路线分页展示.png)
+
+分页中只显示10页，代码如下：
+
+```javascript
+let begin;
+let end;
+if (data.totalPage < 10) { //总页数不足10页
+    begin = 1;
+    end = data.totalPage;
+} else {
+    begin = data.currentPage - 5;
+    end = data.currentPage + 4;
+    if (begin < 1) { //头溢出
+        begin = 1;
+        end = begin + 9;//10
+    }
+    if (end > data.totalPage) { //尾溢出
+        end = data.totalPage;
+        begin = end - 9;
+    }
+}
+//之后根据begin、end来遍历即可
+```
+
+## 9.6 旅游线路名称模糊查询
+
+将搜索按钮绑定onclick事件，**获取`input`标签`value`的==cname==值**和**链接中的==cid==**，利用**location.href属性拼接并转到route_list.html页**
+
+在route_list.html中解码获取**cname**的值，获取**id**的值。**添加参数（前端页面中cname为字符串，需添加引号）**至分页展示代码的前端、后端中（都要修改）
+
+> 注意：
+>
+> 1、获取请求参数时，==值为**字符串"null"**的也要过滤掉==
+>
+> 2、Dao层中条件查询（1=1、拼接sql、params）
+>
+> 3、Tomcat7以及之前的需要设置GET请求编码，`new String(s.getBytes("iso8859-1"),"utf-8")`
+
+## 9.7 旅游线路详情
+
+route_list.html中每个查看详情传递rid，在route_detail.html中获取并请求后端查询。
+
+后端通过分别查询四张表来获取Route、RouteImg、Seller对象和收藏次数count，后三个保存至Route对象中，以json响应
+
+前端解析json数据展示即可
+
+## 9.8 旅游线路收藏
+
+![](images\收藏线路.png)
+
+​	
+
+# 10 国际化
 
 * 一般内容排版都不一样，尽量再写一份HTML页面
 

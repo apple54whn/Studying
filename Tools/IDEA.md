@@ -11,7 +11,7 @@
   * `按住Alt`：竖向多选
 * `.var`：直接给变量命名和确定类型
 
-
+* `Ctrl+Alt+T`：surround wity，将代码放入代码块中
 
 
 

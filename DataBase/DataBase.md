@@ -1,6 +1,6 @@
 [TOC]
 
-
+# 第一部分 SQL
 
 # 1 DataBase 简介
 
@@ -1486,7 +1486,7 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 
 * **创建JdbcTemplate对象**：依赖于数据源**`DataSource`**，`JdbcTemplate template = new JdbcTemplate(dateSource);`
 
-* **调用JdbcTemplate的方法**来完成CRUD的操作
+* **调用JdbcTemplate的方法**来完成CRUD的操作（查找语句若未找到，直接抛异常，不是返回null，所以要**try...catch...**）
 
   * `update()`：执行**DML**语句。增、删、改语句
   * `query()`：查询并将结果封装为==**JavaBean对象的List集合**==。JavaBean属性使用**包装类型**最好，可以存储null。
@@ -1563,16 +1563,473 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 
 
 
+# 第二部分 NoSQL
+
+**NoSQL**(Not Only SQL)，意即“不仅仅是SQL”，是一项全新的数据库理念，泛指**非关系型的数据库**。
+
+> 随着互联网web2.0网站的兴起，传统的关系数据库在应付web2.0网站，特别是超大规模和高并发的SNS类型的web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。NoSQL数据库的产生就是为了解决**大规模数据集合多重数据种类**带来的挑战，尤其是大数据应用难题。
+>
+> NOSQL和SQL数据库比较
+>
+> - 优点：
+>   1. 成本：nosql数据库简单易部署，基本都是开源软件，不需要像使用oracle那样花费大量成本购买使用
+>   2. 查询速度：nosql数据库将数据存储于**缓存**之中，关系型数据库将数据存储在硬盘中
+>   3. 存储数据的格式：nosql的存储格式是key,value形式、文档形式、图片形式等等，所以可以存储基础类型以及对象或者是集合等各种格式，而sql数据库则只支持基础类型。
+>   4. 扩展性：关系型数据库有类似join这样的多表查询机制的限制导致扩展很艰难。
+> - 缺点
+>   1. 维护的工具和资料有限，因为nosql是属于新的技术，不能和关系型数据库10几年的技术同日而语。
+>   2. 不提供对sql的支持，如果不支持sql这样的工业标准，将产生一定用户的学习和使用成本。
+>   3. 不提供关系型数据库对事务的处理。
+
+* 非关系型数据库的优势：
+  * **性能高**：NOSQL是基于键值对，可以想象成表中的主键和值的对应关系，且不需要经过SQL层的解析，所以性能高。
+  * **可扩展性**：同样也是因为基于键值对，数据之间没有耦合性，所以非常容易水平扩展。
+* 关系型数据库的优势
+  * **复杂查询**：可以用SQL语句方便的在一个表以及多个表之间做非常复杂的数据查询。
+  * **事务**：事务使得对于安全性能很高的数据访问要求得以实现。
+* 总结：SQL数据库与NoSQL数据库是互补的关系，一般会将数据**存储**在SQL数据库中，在NoSQL数据库中**备份存储**关系型数据库的数据
+* 主流的NOSQL产品
+  * **键值(Key-Value)存储数据库**
+    相关产品： Tokyo Cabinet/Tyrant、**Redis**、Voldemort、Berkeley DB
+    典型应用： **内容缓存**，主要用于处理**大量数据的高访问负载**。 
+    数据模型： 一系列键值对
+    **优势： 快速查询**
+    劣势： 存储的数据**缺少结构化**
+  * 列存储数据库
+    相关产品：Cassandra, HBase, Riak
+    典型应用：分布式的文件系统
+    数据模型：以列簇式存储，将同一列数据存在一起
+    优势：查找速度快，可扩展性强，更容易进行分布式扩展
+    劣势：功能相对局限
+  * 文档型数据库
+    相关产品：CouchDB、MongoDB
+    典型应用：Web应用（与Key-Value类似，Value是结构化的）
+    数据模型： 一系列键值对
+    优势：数据结构要求不严格
+    劣势： 查询性能不高，而且缺乏统一的查询语法
+  * 图形(Graph)数据库
+    相关数据库：Neo4J、InfoGrid、Infinite Graph
+    典型应用：社交网络
+    数据模型：图结构
+    优势：利用图结构相关算法。
+    劣势：需要对整个图做计算才能得出结果，不容易做分布式的集群方案。
+
+# 1 Redis
+
+## 1.1 Redis简介
+
+Redis是用C语言开发的一个开源的高性能键值对（key-value）数据库，官方提供测试数据，50个并发执行100000个请求,读的速度是110000次/s,写的速度是81000次/s ，且Redis通过提供多种键值数据类型来适应不同场景下的存储需求，目前为止Redis支持的键值数据类型：字符串类型 string、哈希类型 hash、列表类型 list、集合类型 set、有序集合类型 sortedset
+
+redis的应用场景
+
+* 缓存（数据查询、短连接、新闻内容、商品内容等等）
+* 聊天室的在线好友列表
+* 任务队列。（秒杀、抢购、12306等等）
+* 应用排行榜
+* 网站访问统计
+* 数据过期处理（可以精确到毫秒
+* 分布式集群架构中的session分离
+
+## 1.2 下载安装
+
+1. [官网](https://redis.io)
+2. [中文网](http://www.redis.net.cn/)
+3. 解压直接可以使用：
+  * redis.windows.conf：配置文件
+  * redis-cli.exe：redis的客户端
+  * redis-server.exe：redis服务器端
+
+## 1.3 命令操作
+
+### 1.3.1 redis的数据结构
+
+* redis存储的是：**key,value格式**的数据，其中**key都是字符串**，**value有5种不同的数据结构**
+   * **字符串**类型 string
+   * **哈希**类型 hash ： map格式
+   * **列表**类型 list ： linkedlist格式。支持重复元素
+   * **集合**类型 set  ： 不允许重复元素
+   * **有序集合**类型 sortedset：不允许重复元素，且元素有顺序
+
+### 1.3.2 字符串 Strings
+
+* 存储： **set** key value
+
+   ```
+   127.0.0.1:6379> set username zhangsan
+   OK
+   ```
+
+* 获取： **get** key
+
+  ```
+  127.0.0.1:6379> get username
+  "zhangsan"
+  ```
+
+* 删除： **del** key
+
+  ```
+  127.0.0.1:6379> del age
+  (integer) 1
+  ```
+
+### 1.3.3 哈希 Hashes
+
+* 存储： **hset** key field value
+
+  ```
+  127.0.0.1:6379> hset myhash username lisi
+  (integer) 1
+  127.0.0.1:6379> hset myhash password 123
+  (integer) 1
+  ```
+
+* 获取
+
+  * **hget** key field: 获取指定的field对应的值
+
+    ```
+    127.0.0.1:6379> hget myhash username
+    "lisi"
+    ```
+
+  * **hgetall** key：获取所有的field和value
+
+    ```
+    127.0.0.1:6379> hgetall myhash
+    1) "username"
+    2) "lisi"
+    3) "password"
+    4) "123"
+    ```
+
+* 删除： **hdel** key field
+
+  ```
+  127.0.0.1:6379> hdel myhash username
+  (integer) 1
+  ```
+
+### 1.3.4 列表 Lists
+
+可以添加一个元素到列表的头部（左边）或者尾部（右边）
+
+* 添加
+
+  * **lpush** key value: 将元素加入列表左表
+
+  * **rpush** key value：将元素加入列表右边
+
+    ```
+    127.0.0.1:6379> lpush myList a
+    (integer) 1
+    127.0.0.1:6379> lpush myList b
+    (integer) 2
+    127.0.0.1:6379> rpush myList c
+    (integer) 3
+    ```
+
+* 获取
+
+  * **lrange** key start end ：范围获取
+
+    ```
+    127.0.0.1:6379> lrange myList 0 -1
+    1) "b"
+    2) "a"
+    3) "c"
+    ```
+
+* 删除
+
+  * **lpop** key： 删除列表最左边的元素，并将元素返回
+  * **rpop** key： 删除列表最右边的元素，并将元素返回
+
+### 1.3.5 集合 Sets
+
+不允许重复元素
+
+* 存储：**sadd** key value
+
+  ```
+  127.0.0.1:6379> sadd myset a
+  (integer) 1
+  127.0.0.1:6379> sadd myset a
+  (integer) 0
+  ```
+
+* 获取：**smembers** key:获取set集合中所有元素
+
+  ```
+  127.0.0.1:6379> smembers myset
+  1) "a"
+  ```
+
+* 删除：**srem** key value:删除set集合中的某个元素	
+
+  ```
+  127.0.0.1:6379> srem myset a
+  (integer) 1
+  ```
+
+### 1.3.6 有序集合 Sorted sets
+
+不允许重复元素，且元素有顺序。每个元素都会关联一个double类型的分数，redis正是通过分数来为集合中的成员进行从小到大的排序。
+
+* 存储：**zadd** key score value
+
+  ```
+  127.0.0.1:6379> zadd mysort 60 zhangsan
+  (integer) 1
+  127.0.0.1:6379> zadd mysort 50 lisi
+  (integer) 1
+  127.0.0.1:6379> zadd mysort 80 wangwu
+  (integer) 1
+  ```
+
+* 获取：**zrange** key start end [withscores]
+
+  ```
+  127.0.0.1:6379> zrange mysort 0 -1
+  1) "lisi"
+  2) "zhangsan"
+  3) "wangwu"
+  
+  127.0.0.1:6379> zrange mysort 0 -1 withscores
+  1) "zhangsan"
+  2) "60"
+  3) "wangwu"
+  4) "80"
+  5) "lisi"
+  6) "500"
+  ```
+
+* 删除：**zrem** key value
+
+  ```
+  127.0.0.1:6379> zrem mysort lisi
+  (integer) 1
+  ```
+
+### 1.3.7 通用命令
+
+* `keys *` : 查询所有的键
+* `type key` ： 获取键对应的value的类型
+* `del key`：删除指定的key value
+
+## 1.4 Redis持久化
+
+redis中数据存储在内存，当redis服务器重启或电脑重启，数据会丢失，可以将redis内存中的数据持久化保存到硬盘的文件中。
+
+* redis持久化机制
+
+  * **RDB**：默认方式，不需要进行配置。在一定的间隔时间中，检测key的变化情况，然后持久化数据
+
+    1. 编辑redis.windwos.conf文件
+
+       ```
+       #   after 900 sec (15 min) if at least 1 key changed
+       save 900 1
+       #   after 300 sec (5 min) if at least 10 keys changed
+       save 300 10
+       #   after 60 sec if at least 10000 keys changed
+       save 60 10000
+       ```
+
+    2. 命令行中重新启动redis服务器，并指定配置文件名称`redis-server.exe redis.windows.conf`
+
+  * AOF：日志记录的方式，可以记录每一条命令的操作。可以每一次命令操作后，持久化数据。不推荐
+
+    1. 编辑redis.windwos.conf文件
+
+       ```
+       appendonly no（关闭aof） --> appendonly yes （开启aof）
+       
+       # appendfsync always ： 每一次操作都进行持久化
+       appendfsync everysec ： 每隔一秒进行一次持久化
+       # appendfsync no	 ： 不进行持久化
+       ```
+
+    2. 命令行中重新启动redis服务器，并指定配置文件名称。同上
 
 
 
+## 1.5 Jedis
+
+### 1.5.1 Jedis简介
+
+Jedis: 一款java操作redis数据库的工具
+
+* 使用步骤
+
+  1. 导入jedis的jar包
+
+  2. 使用
+
+     ```java
+     //1. 获取连接
+     Jedis jedis = new Jedis("localhost",6379);
+     //2. 操作
+     jedis.set("username","zhangsan");
+     //3. 关闭连接
+     jedis.close();
+     ```
+
+### 1.5.2 Jedis操作Redis中的数据结构
+
+```java
+//获取连接
+@Before
+public void init(){
+    Jedis jedis = new Jedis();//如果使用空参构造，默认值 "localhost",6379端口
+}
+//关闭连接
+@After
+public void close(){
+    jedis.close();
+}
+```
+
+* 字符串 Strings：`set`、`setex`、`del`、`get`
+
+  ```java
+  //存储
+  jedis.set("username","zhangsan");
+  //获取
+  String username = jedis.get("username"); //zhangsan
+  
+  //可以使用setex()方法存储可以指定过期时间的 key value
+  jedis.setex("activecode",20,"hehe");//将activecode：hehe键值对存入redis，并且20秒后自动删除该键值对
+  ```
+
+* 哈希 Hashes（map格式）：`hset`、`hdel`、`hget`、`hgetAll`
+
+  ```java
+  // 存储hash
+  jedis.hset("user","name","lisi");
+  jedis.hset("user","age","23");
+  jedis.hset("user","gender","female");
+  
+  // 获取hash
+  String name = jedis.hget("user", "name"); //lisi
+  // 获取hash的所有map中的数据
+  Map<String, String> user = jedis.hgetAll("user");
+  ```
+
+* 列表 Lists：`lpush/rpush`、`lpop/rpop`、`lrange`
+
+  ```java
+  jedis.lpush("mylist","a","b","c");//从左边存
+  jedis.rpush("mylist","a","b","c");//从右边存
+  
+  // list 范围获取
+  List<String> mylist = jedis.lrange("mylist", 0, -1); // [c,b,a,a,b,c]
+  
+  // list 弹出
+  String element1 = jedis.lpop("mylist");//c
+  String element2 = jedis.rpop("mylist");//c
+  List<String> mylist2 = jedis.lrange("mylist", 0, -1); // ,b,a,a,b]
+  ```
+
+* 集合 Sets：`sadd`、`srem`、`smembers`
+
+  ```java
+  // set 存储
+  jedis.sadd("myset","java","php","c++");
+  
+  // set 获取
+  Set<String> myset = jedis.smembers("myset"); //[c++,java,php]
+  ```
+
+* 有序集合 Sorted sets：`zadd`、`zrem`、`zrange [withscores]`
+
+  ```java
+  jedis.zadd("mysortedset",3,"亚瑟");
+  jedis.zadd("mysortedset",30,"后裔");
+  jedis.zadd("mysortedset",55,"孙悟空");
+  
+  // sortedset 获取
+  Set<String> mysortedset = jedis.zrange("mysortedset", 0, -1);
+  ```
+
+
+### 1.5.3 Jedis连接池-JedisPool
+
+* 使用
+
+  1. 创建`JedisPool`连接池对象
+  2. 调用方法`getResource()`方法获取Jedis连接
+
+  ```java
+  //0.创建一个配置对象，耦合度高！
+  JedisPoolConfig config = new JedisPoolConfig();
+  config.setMaxTotal(50);
+  config.setMaxIdle(10);
+  
+  //1.创建Jedis连接池对象
+  JedisPool jedisPool = new JedisPool(config,"localhost",6379);
+  
+  //2.获取连接
+  Jedis jedis = jedisPool.getResource();
+  //3. 使用
+  jedis.set("hehe","heihei");
+  //4. 关闭 归还到连接池中
+  jedis.close();
+  ```
+
+* **JedisUtils**
+
+  ```java
+  /**
+   JedisPool工具类
+      加载配置文件，配置连接池的参数
+      提供获取连接的方法
+   */
+  public class JedisPoolUtils {
+      private static JedisPool jedisPool;
+      static{
+          //读取配置文件
+          InputStream is = JedisPoolUtils.class.getClassLoader().getResourceAsStream("jedis.properties");
+          //创建Properties对象
+          Properties pro = new Properties();
+          //关联文件
+          try {
+              pro.load(is);
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+          //获取数据，设置到JedisPoolConfig中
+          JedisPoolConfig config = new JedisPoolConfig();
+          config.setMaxTotal(Integer.parseInt(pro.getProperty("maxTotal")));
+          config.setMaxIdle(Integer.parseInt(pro.getProperty("maxIdle")));
+          //初始化JedisPool
+          jedisPool = new JedisPool(config,pro.getProperty("host"),Integer.parseInt(pro.getProperty("port")));
+      }
+      /**
+       * 获取连接方法
+       */
+      public static Jedis getJedis(){
+          return jedisPool.getResource();
+      }
+  }
+  ```
+
+
+## 1.6 案例
+
+需求：
+
+* 提供index.html页面，页面中有一个省份 下拉列表
+* 当页面加载完成后 发送ajax请求，加载所有省份
+
+注意：使用**redis**缓存一些**不经常发生变化的数据**。
+* **数据库的数据一旦发生改变，则需要更新缓存**。
+  * 数据库的表执行增删改的相关操作，需要将redis缓存数据清空，再次存入
+  * 在service对应的增删改方法中，将redis数据删除。
 
 
 
-
-
-
-# 10 其他
+# 其他旧知识
 
 ## 10.1 common-dbutils.jar
 
@@ -1995,15 +2452,13 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 
 
 
-# 11 分页
+## 11 分页
 
 * 分页的优点：只查询一页，不用查询所有页！
 
   ```latex
   第N页/共M页　首页 上一页 1 2 3 4 5 6 7 8 9 10　下一页 尾页 [ ] go
   ```
-
-## 11.1 分页数据
 
 * **页面的数据都是由Servlet传递来的！**
 
@@ -2110,15 +2565,15 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
     * 表单请求改为GET，即可以在链接后带参数（记得设置请求编码）
     * 将请求获取的参数中带pc的截取掉，使用jsp链接自带的后缀pc
 
-# 14 客户关系管理系统
+## 14 客户关系管理系统
 
-## 14.1 架构的搭建
+### 14.1 架构的搭建
 
 1. 导入原型（只有页面，没有功能）
 
 
 
-## 14.2 编码中问题
+### 14.2 编码中问题
 
 1. 导入原型
    - jstl标签库导入后再运行查看页面
