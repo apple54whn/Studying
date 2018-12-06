@@ -5289,11 +5289,11 @@ public static void main(String[] args) throws Exception {
 
 * **代理模式**（两者区别在于代理对象的生成模式）
 
-  1. 静态代理：有一个类文件描述代理模式
+  1. 静态代理：字节码一上来就创建好，并完成加载。装饰者模式就是静态代理的一种体现。 
 
-  2. ==**动态代理**==：**程序运行过程**，在**内存中**动态的为目标对象**创建**一个虚拟的代理对象
+  2. ==**动态代理**==：**程序运行过程**，在**内存中**动态的为目标对象**创建**一个虚拟的代理对象。字节码随用随创建，随用随加载。 
 
-     `java.lang.reflect`包下提供了一个`Proxy`类和一个`InvocationHandler`接口，通过使用这个类和接口就可以生成动态代理对象。JDK提供的代理**只能针对实现统一接口的类做代理**，我们有更强大的代理**cglib**
+     `java.lang.reflect`包下提供了一个`Proxy`类和一个`InvocationHandler`接口，通过使用这个类和接口就可以生成动态代理对象。JDK提供的代理要求**被代理类最少实现一个接口**。 
 
      - 实现步骤：
        1. 代理对象和真实对象实现相同的接口
@@ -5322,7 +5322,7 @@ public static void main(String[] args) throws Exception {
                new InvocationHandler() {
                    @Override
                    //被执行几次?---看代理对象调用方法几次;代理对象调用接口相应方法 都是调用该invoke方法
-                   /** proxy:是代理对象，不用
+                   /** proxy:是代理对象，一般不用
        			 * method:代理对象调用的方法被封装为Method对象
        			 * args:代理对象调用方法时传递的实际参数，封装为数组，即参数列表
        			 */
@@ -5344,6 +5344,52 @@ public static void main(String[] args) throws Exception {
        1. 增强**返回值**：通过**对`return`返回值的修改**
        2. 增强**参数列**表：通过**`method.getName()`判断要增强的方法**，并对**参数`args[]`数组进行修改**
        3. 增强**方法体**执行逻辑：**反射方法`invoke()`执行前后修改**
+
+------
+
+* 基于子类的动态代理
+
+  * 提供者：第三方的 CGLib，如果报 asmxxxx 异常，需要导入 asm.jar。 
+
+  * 要求：被代理类不能用 final 修饰的类（最终类）。 
+
+    ```java
+    public static void  main(String[] args) {
+        final Actor actor = new Actor();      
+        Actor cglibActor = (Actor) Enhancer.create(actor.getClass(), new MethodInterceptor() {
+    		/** 
+    		 * 执行被代理对象的任何方法，都会经过该方法。在此方法内部就可以对被代理对象的任何 方法进行增强。     
+    		 * 参数：     
+    		   *  前三个和基于接口的动态代理是一样的。     
+    		   *  MethodProxy：当前执行方法的代理对象。     
+    		   *  返回值：当前执行方法的返回值     
+    		 */    
+            @Override    
+            public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+                String name = method.getName();
+                Float money = (Float) args[0];
+                Object rtValue = null;     
+                if("basicAct".equals(name)){ 
+         			//基本演出      
+                    if(money > 2000){       
+                        rtValue = method.invoke(actor, money/2); 
+                    }     
+                } 
+                if("dangerAct".equals(name)){ 
+         			//危险演出      
+                    if(money > 5000){ 
+                        rtValue = method.invoke(actor, money/2);      
+                    } 
+                }     
+                return rtValue;    
+            } 
+      });     
+        cglibActor.basicAct(10000); 
+        cglibActor.dangerAct(100000); 
+    ```
+
+
+
 
 # 11 注解（annotation）
 

@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 # Java Web 概述
 
 * JavaWeb：使用Java语言开发基于互联网的项目
@@ -194,7 +198,7 @@
 
       还可以获取==**form**==，使用**其`submit()`方法，返回false（true或无返回值都将跳转）**！用于Ajax提交表单
 
-      可以使用==**普通button**==，配合JS来使用Ajax提交表单
+      可以使用==**普通button**==，配合JS来使用Ajax提交表单。**type需指定为button**，否则浏览器会将值设置为submit
 
       ```html
       <input type="submit"/> <!--默认为提交（中文环境）、submit（英文环境）-->
@@ -448,21 +452,19 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 ### 2.4.9 盒子模型(控制布局)
 
 - 在进行布局前需要把数据封装到一块一块的区域内（div）
-  1. ==外边距（**margin**:20px|auto）==
+  1. ==外边距（**margin**:20px | auto）==：第二个参数auto和居中类似。
 
   2. ==边框（**border:**2px solid blue;）==
 
      - 统一设置
      - 单独设置（border-top、border-bottom、border-left、border-right）
 
-  3. ==内边距（**padding**:20px|auto;）==：第二个参数auto和居中类似。
-
+  3. ==内边距（**padding**: 20px | auto;）==：第二个参数auto和居中类似。
      - 统一设置
 
      - 单独设置（padding-top、padding-bottom、padding-left、padding-right）
 
      - ==默认情况**内边距改变**会**改变盒子大小**==，解决这个问题可以添加以下属性
-
        - `box-sizing:border-box`：指定宽度和高度（最小/最大属性）确定最终元素边框box大小
 
 
@@ -3316,7 +3318,7 @@ public void destroy() {
 * 获取**请求行**数据：如`GET /day14/login?name=zhangsan HTTP/1.1`
 
   * 获取请求方式：`String getMethod()`，如`GET` 。HttpServlet已经在内部使用了，以后用不到
-  * 获取**请求URL**：`StringBuffer getRequestURL()`，如`http://localhost/day14/demo1`。**统一资源定位符**
+  * 获取**请求URL**：`StringBuffer getRequestURL()`，如`http://localhost/day14/login/a.html`。**统一资源定位符**
   * ==获取**请求URI**==：`String getRequestURI()`，如`/day14/login`。**统一资源标识符**，它**包括URL**
   * ==获取**虚拟目录**==：`String getContextPath()`，如`/day14`
   * 获取Servlet路径：`String getServletPath()`，如`/login`
@@ -4312,9 +4314,9 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
 
 ## 7.3 JavaWeb三层架构
 
-- 表示层（Web层） --> 与Web相关的内容。**Servlet充当Controller**
-- 业务层（Service层） --> 处理业务逻辑的
-- 数据层（DAO层） --> 操作数据库存储文件，不能跳出到DAO之外(Data Access Object，数据访问对象)
+- **表现层**（Web层） --> 与Web相关的内容。**Servlet充当Controller**
+- **业务逻辑层**（Service层） --> 处理业务逻辑的
+- **数据访问层**（DAO层） --> 操作数据库存储文件，不能跳出到DAO之外(Data Access Object，数据访问对象)
 
 ### 7.3.1 用户信息管理
 
@@ -4711,7 +4713,7 @@ VerifyCode.output(bi,response.getOutputStream());
 3. ==过滤器**生命周期方法**==
    1. `init(FilterConfig)`：在**服务器启动后**，会创建Filter对象，然后调用`init`方法。**只执行一次**，用于加载资源
    2. `doFilter(ServletRequest,ServletResponse,FilterChain)`：**每一次请求被拦截**时执行。可以执行多次
-     - 放行后的**`Request`和`Response`还是同一个**，类似转发
+      - 放行后的**`Request`和`Response`还是同一个**，类似转发
    3. `destroy()`：在**服务器正常关闭前**，Filter对象被销毁。**只执行一次**，用于释放资源
 4. ==**过滤器链**（配置多个过滤器）==，如果没有下一个过滤器那么执行的是目标资源，否则就执行下一个过滤器！如净水器过滤
    1. 执行顺序：如果有两个过滤器：过滤器1和过滤器2
@@ -5279,7 +5281,272 @@ route_list.html中每个查看详情传递rid，在route_detail.html中获取并
 
 ​	
 
-# 10 国际化
+# Linux
+
+> Linux是基于Unix的，是一种自由和开放源码的操作系统，存在着许多不同的Linux版本，但它们都使用了Linux内核。
+
+Linux的版本分为两种：
+
+* **内核版本**：是指在Linus领导下的内核小组开发维护的系统内核的版本号 ；
+
+* **发行版本**：是一些组织和公司根据自己发行版的不同而自定的 ；
+
+![](images\linux目录结构.png)
+
+## 常用命令
+
+> 标识符如\$前带`~`为用户主目录：`conanan@Conanan:~$`；带`/`为根目录
+>
+> Linux中，前缀带`.`的都是隐藏目录或文件
+
+
+
+**切换目录**
+
+* **`cd`**：`~`(进入用户主目录)；`/`(进入根目录)；`..`(上一层)；`-`(上一个目录)；`app
+
+**创建目录和移除目录**
+
+- **`mkdir [-p]`**(创建级联路径)、`rmdir`(只用于没有子路径的路径)
+
+**列出文件列表**
+
+* **`ls [-a]` **、**`ll`(`-h`友好显示文件大小)**、 `dir`
+
+**浏览文件**
+
+* `cat`(全部内容)、`more`(分页，回车下一行，空格下一页)、`less`(pgup、pgdn)、**`tail`(`-n`显示后n行，`-f`动态查看)**
+
+**文件操作**
+
+* **`rm`(`-r`递归删除，`-f`不用询问，`-rf`慎用)**
+
+* `cp`(**复制**，需要指定源文件名与目标文件名或目录)、`mv`(**移动**或者**重命名**)
+
+* **`tar`**(**打包**但不做压缩，**解压**)
+  * -**c**：创建一个新tar文件
+
+    -**v**：显示运行过程的信息
+
+    -**f**：指定文件名
+
+    -**z**：**调用gzip压缩命令**进行压缩
+
+    -t：查看压缩文件的内容
+
+    -**x**：解开tar文件
+
+  * **打包**：`tar –cvf xxx.tar ./*`
+
+  * **打包并且压缩**：`tar –zcvf xxx.tar.gz ./*`
+
+  * **解压**：`tar –xvf xxx.tar`、`tar -xvf xxx.tar.gz -C /usr/aaa`(`-C`指定路径)
+
+* `grep`：查找**符合条件的字符串**，用法`grep [选项]... PATTERN [FILE]...`
+
+  * `grep lang anaconda-ks.cfg`  在文件中查找lang
+
+    `–color`高亮显示，`-A5`当前行和后5行，`-b5`当前行和前5行
+
+**其他常用命令**
+
+* `pwd`：显示当前所在目录
+* `touch a.txt`  ：创建一个空文件
+* `wget`：下载资料
+
+
+
+**重定向输出>和>>**
+
+* `>` 重定向输出，覆盖原有内容。`ifconfig > ifconfig.txt`
+* `>>` 重定向输出，有追加功能。`ifconfig >> ifconfig.txt`
+
+**管道 |**：将一个命令的输出用作另一个命令的输入
+
+* `ls --help | more`：分页查询帮助信息
+
+**命令执行控制 &&**：命令之间使用 && 连接，实现逻辑与的功能。`mkdir test && cd test`
+
+**网络通讯命令**
+
+* `ifconfig`  显示或设置网络设备
+* `ifconfig eth0 up` 启用eth0网卡
+* `ifconfig eth0 down`停用eth0网卡
+* `ping`   探测网络是否通畅
+* `netstat` 查看网络端口。`netstat -an | grep 3306` 查询3306端口占用情况
+
+**系统管理命令**
+
+* `date` 显示当前系统时间；`date -s "2014-01-01 10:10:10"`设置系统时间
+* `df [–h]` (友好)显示磁盘大小等信息
+* `free [-m]` (以mb单位)显示内存状态
+* `top` **动态显示负载，执行中的程序等信息**
+* `clear` 清屏
+* `ps` 正在运行的某个进程的状态
+  * `ps –ef`  查看所有进程
+  * `ps –ef | grep ssh`**查找某一进程**
+* `kill` **杀掉某一进程**
+  * `kill 2868`  杀掉2868编号的进程
+  * `kill -9 2868`  强制杀死进程
+* `du [-h]` (友好)显示目录或文件的大小
+* `who` 显示目前登入系统的用户信息
+* `hostname` 查看当前主机名。修改：`vi /etc/sysconfig/network`，没找到
+* `uname -a` 显示本机详细信息。内核名称(类别)，主机名，内核版本号，内核版本，内核编译日期，硬件名，处理器类型，硬件平台类型，操作系统名称
+
+## Linux的用户和组
+
+**用户的管理**
+
+* `useradd`  添加一个用户
+  * `useradd test` 添加test用户
+  * `useradd test -d /home/test -g publicc`  指定用户home目录、指定组
+* `passwd`  设置、修改密码
+  * `passwd test`  为test用户设置密码
+* `userdel`  删除一个用户
+  * `userdel test` 删除test用户(不会删除home目录)
+  * **`userdel –r test`**  删除用户以及home目录
+* 切换登陆
+  * `ssh -l test -p 22 192.168.19.128`
+  * `su – 用户名`
+
+**组管理**：创建一个新用户user时，若没有指定他所属于的组，就建立一个和该用户同名的私有组。创建用户时也可以指定所在组。
+
+* `groupadd`  创建组
+  * `groupadd public` 创建一个名为public的组
+* `groupdel` 删除组，如果该组有用户成员，必须先删除用户才能删除组
+  * `groupdel public`
+
+**id、su命令**
+
+* `id`：查看一个用户的UID和GID。`id [选项]... [用户名]`
+
+* `su`：切换用户。`su [选项]... [-][用户 [参数]... ]`
+
+  * `su u1`  切换到u1用户
+  * `su - u1` 切换到u1用户，并且将环境也切换到u1用户的环境（推荐使用）
+
+* 账户文件
+
+  * /etc/passwd  用户文件
+
+    /etc/shadow  密码文件
+
+    /etc/group  组信息文件
+
+## Linux的权限命令
+
+![](images\linux权限.png)
+
+| 属主(user) |      |      | 属组(group) |      |      | 其他用户 |      |      |
+| :--------: | :--: | :--: | :---------: | :--: | :--: | :------: | :--: | :--: |
+|     r      |  w   |  x   |      r      |  w   |  x   |    r     |  w   |  x   |
+|     4      |  2   |  1   |      4      |  2   |  1   |    4     |  2   |  1   |
+
+Linux三种文件类型
+
+* 普通文件： 包括文本文件、数据文件、可执行的二进制程序文件等
+* 目录文件： Linux系统把目录看成是一种特殊的文件，利用它构成文件系统的树型结构
+* 设备文件： Linux系统把每一个设备都看成是一个文件
+
+**文件类型标识**
+
+* **普通文件`-`**
+* **目录`d`**
+* **符号链接`l`**：进入etc可以查看，相当于快捷方式
+* 字符设备文件（c） 
+* 块设备文件（s） 
+* 套接字（s） 
+* 命名管道（p）
+
+**文件权限管理（可以为0~7）**
+
+* `chmod` **变更文件或目录的权限**。`chmod 755 a.txt`或`chmod u=rwx,g=rx,o=rx a.txt`
+  * 变更文件或目录改文件所属用户和组：
+    * `chown user:group a.txt`：变更当前的目录或文件的所属用户和组
+    * `chown -R user:group dir`：变更目录中的所有的子目录及文件的所属用户和组
+
+## Linux远程连接
+
+SecureCRT
+
+XShell
+
+Mac或Linux中的SSH命令
+
+sftp：从Windows上传文件到Linux中
+
+
+
+## Vi和Vim编辑器
+
+* **正常模式**：按**Esc**键
+* **可视模式**：正常模式下按v键
+* **插入模式**：正常模式下按 `i` 、`a`、`o`键
+  * `i` 在当前位置**前**插入；`I` 在当前**行首**插入
+  * `a` 在当前位置**后**插入；`A` 在当前行尾插入
+  * `o` 在当前行之**后插入一行**；`O` 在当前行之**前插入一行**
+
+
+
+文件编辑
+
+* 打开文件：`vim file`
+* 退出：正常模式下按`:q`；不保存强制退出`:q!`；保存并退出`:wq`
+* 删除一行：`dd`
+
+
+
+# Nginx
+
+> [engine x] 能够使用Nginx搭建**Tomcat集群**，完成==**负载均衡**==
+>
+> 负载均衡服务器分为两种一种是通过硬件实现的负载均衡服务器，简称硬负载例如：f5。另一种是通过软件来实现的负载均衡，简称软负载:例如apache和nginx。硬负载和软负载相比前者作用的网络层次比较多可以作用到socket接口的数据链路层对发出的请求进行分组转发但是价格成本比较贵，而软负载作用的层次在http协议层之上可以对http请求进行分组转发并且因为是开源的所以几乎是0成本，并且阿里巴巴，京东等电商网站使用的都是Nginx服务器。
+
+**Nginx+Tomcat集群配置**
+
+1. **安装两个Tomcat**：win和Linux都是解压即可。
+
+2. 在service.xml中**修改为不同的端口**
+
+   1. 修改关闭端口为`<Server port="8006" shutdown="SHUTDOWN">`
+   2. 修改启动端口为`<Connector port="8081" protocol="HTTP/1.1"`
+   3. 修改AJP连接端口为`<Connector port="8010" protocol="AJP/1.3" redirectPort="8443" />`
+
+3. 发布项目到俩Tomcat中，并启动Tomcat。但是此时访问时端口号不同，地址不同，解决如下：
+
+4. **Nginx安装**（默认端口80，win解压即可）双击可打开，关闭需杀掉进程可执行命令`nginx -s stop`
+
+5. **配置Nginx**`conf/nginx.conf`，在nginx目录下，不关闭nginx**重新加载配置文件**`nginx -s reload`
+
+   ```yaml
+   upstream server_list{  //服务器列表
+   	server localhost:8080;
+   	server localhost:8081;
+   }
+   server {
+   	listen       80;  //端口
+   	server_name  localhost;  //域名
+   	
+   	location / {
+   		root   html;
+   		proxy_pass   http://server_list; //代理
+   		index  index.html index.htm;
+        }
+   ```
+
+6. Tomcat集群的**Session共享**
+
+   - 每一个用户只访问同一台服务器，upstream server_list中添加`ip_hash`，给上述服务器列表添加权重`weight=10`
+   - Session共享
+     - 使用Tomcat的广播机制实现（不推荐，Tomcat越多性能越低，需要彼此知道彼此），修改Tomcat中`server.xml`
+       1. 取消Tomcat的Engine下`<Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/>`的注释，若有不同的集群，还需添加其他标签
+       2. Tomcat的web.xml中添加`<distributable/>`节点即可
+     - **使用Redis缓存Session**（推荐）
+
+
+
+
+# 国际化
 
 * 一般内容排版都不一样，尽量再写一份HTML页面
 

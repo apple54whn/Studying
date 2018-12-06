@@ -1159,7 +1159,8 @@
       //2.通过DriverManager获取数据库连接对象 Connection。不同数据库写法不同
       Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","w19");
       	//若出现乱码，可以指定参数：?characterEncoding=utf8
-      	//在使用6以上版本时，会碰到时区异常以及SSl警告，需要在url添加：?serverTimezone=UTC&useSSL=false
+      	//在使用6以上版本时，会碰到时区异常以及SSl警告，需要在url添加：?serverTimezone=GMT%2B8&useSSL=false
+      	//url编码后的GMT%2B8，或Asia/Shanghai等
       
   
       //3.获得语句执行者。
@@ -1219,6 +1220,8 @@
   - 回滚事务：`rollback() `
 
 ### 7.2.3 Statement
+
+* `boolean execute(String sql)`：执行CRUD等语句，返回值为是否有结果集
 
 - `int executeUpdate(String sql) `：执行DDL、DML语句。返回值为影响的行数，DDL返回0
 - `ResultSet executeQuery(String sql)`：执行DQL语句
@@ -1308,7 +1311,7 @@
 > BasicDataSource ds = new BasicDataSource();
 > //ds.setUsername("root");
 > //ds.setPassword("123");
-> //ds.setUrl("jdbc:mysql://localhost:3306/mydb?serverTimezone=UTC&useSSL=false");
+> //ds.setUrl("jdbc:mysql://localhost:3306/mydb?serverTimezone=GMT%2B8&useSSL=false");
 > //ds.setDriverClassName("com.mysql.jdbc.Driver");		
 > Connection con = ds.getConnection();
 > System.out.println(con.getClass().getName());
@@ -1331,7 +1334,7 @@
           <!--  连接参数 -->
           <property name="driverClass">com.mysql.jdbc.Driver</property>
           <!-- &useSSL=false添加时显示语法错误，Druid添加时正常 -->
-          <property name="jdbcUrl">jdbc:mysql://localhost:3306/mydb?serverTimezone=UTC</property>
+          <property name="jdbcUrl">jdbc:mysql://localhost:3306/mydb?serverTimezone=GMT%2B8</property>
           <property name="user">root</property>
           <property name="password">root</property>
   
@@ -1375,7 +1378,7 @@
 
   ```properties
   driverClassName=com.mysql.jdbc.Driver
-  url=jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false
+  url=jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=GMT%2B8&useSSL=false
   username=root
   password=root
   initialSize=5 
@@ -2102,59 +2105,6 @@ public void close(){
     ```
 
 
-
-## 10.2 BaseServlet
-
-* 缘由：
-  * 我们希望在**一个Servlet中可以有多个请求处理方法**！
-
-  * 客户端发送请求时，必须**多给出一个参数，用来说明要调用的方法**
-    请求处理方法的签名必须与service相同，即返回值和参数，以及声明的异常都相同！
-
-    **客户端必须传递名为method的参数**！
-
-  ```java
-  public class BaseServlet extends HttpServlet {
-  	@Override
-  	public void service(HttpServletRequest request, HttpServletResponse response)
-  			throws ServletException, IOException {
-  		response.setContentType("text/html;charset=UTF-8");//处理响应编码
-  		request.setCharacterEncoding("UTF-8");//处理请求编码
-  		
-  		//1. 获取客户端发送的method参数，它是用户想调用的方法 
-  		String methodName = request.getParameter("method");
-  		Method method = null;
-  		//2. 通过方法名称获取Method对象(反射)
-  		try {
-  			method = this.getClass().getMethod(methodName,
-  					HttpServletRequest.class, HttpServletResponse.class);
-  		} catch (Exception e) {
-  			throw new RuntimeException("您要调用的方法："+methodName + "它不存在！", e);
-  		}
-  		//3. 通过method对象来调用它
-  		try {
-              //根据方法的返回值来决定转发、重定向、下载等等操作
-  			String result = (String)method.invoke(this, request, response);
-  			if(result != null && !result.trim().isEmpty()) {//如果请求处理方法返回不为空
-  				int index = result.indexOf(":");//获取第一个冒号的位置
-  				if(index == -1) {//如果没有冒号，使用转发
-  					request.getRequestDispatcher(result).forward(request, response);
-  				} else {//如果存在冒号
-  					String start = result.substring(0, index);//分割出前缀
-  					String path = result.substring(index + 1);//分割出路径
-  					if(start.equals("f")) {//前缀为f表示转发
-  					  request.getRequestDispatcher(path).forward(request, response);
-  					} else if(start.equals("r")) {//前缀为r表示重定向（需要项目名）
-  				      response.sendRedirect(request.getContextPath() + path);
-  					}
-  				}
-  			}
-  		} catch (Exception e) {
-  			throw new RuntimeException(e);
-  		}
-  	}
-  }
-  ```
 
 
 
