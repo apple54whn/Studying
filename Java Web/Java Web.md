@@ -298,7 +298,7 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 
 
-## 2.2 CSS的**基本选择器**（三种）
+## 2.2 CSS的基本选择器（三种）
 
 1. **id选择器**             `#idName{...}`
 2. **class选择器**        `.className{...}`
@@ -1830,6 +1830,7 @@ $(function () {
       type: "POST", //请求方式
       async: true, //是否异步
       data: {"name": "zhangsan", "age": 22},
+      //contentType: 设置发送信息的MIME类型，可以不设置，默认application/x-www-form-urlencoded
       success: function (data) {
           alert(data.name);
       },
@@ -3622,7 +3623,7 @@ document.getElementById("verifyCode").onclick = function () {
 
 
 
-## 5.4 文件下载
+## 案例 文件下载
 
 * 文件下载需求：
 
@@ -3899,7 +3900,7 @@ document.getElementById("verifyCode").onclick = function () {
 
 
 
-## 6.3 用户登录加验证码
+## 案例 用户登录加验证码
 
 - 案例相关页面和Servlet
 
@@ -4018,11 +4019,9 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
 
 
 
-# 7 JSP及架构
+# 7 JSP
 
-## 7.1 JSP
-
-### 7.1.1 JSP简介
+## 7.1 JSP简介
 
 * JSP（java server pages）其实就是Servlet，用于简化Servlet的书写
   - Servlet：
@@ -4043,7 +4042,7 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
   - Servlet：作为请求中**处理数据**的环节
   - JSP：作为**请求发起页面**，例如显示表单、超链接。作为**请求结束页面**，例如显示数据
 
-### 7.1.2 JSP的脚本
+## 7.2 JSP的脚本
 
 * JSP= html + Java脚本 + JSP标签(指令)
 * 3种Java脚本：
@@ -4054,7 +4053,7 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
   * 但是HTML中注释会发送并可以从查看源代码中找到，虽然页面中不显示
 * JSP对应的Java文件：java脚本直接显示，html输出用write，变量输出用print
 
-### 7.1.3 **JSP九大内置对象**
+## 7.3 **JSP九大内置对象**
 
 - pageContext（PageContext）：当前页面共享数据。页面上下文对象，可以获取其他8个对象，一个顶9个！
 - application（ServletContext）：整个应用程序，所有用户间共享数据
@@ -4084,7 +4083,7 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
 
 
 
-### 7.1.4 JSP三大指令
+## 7.4 JSP三大指令
 
 作用：用于**配置JSP页面**，**导入资源文件**。一个jsp页面中，可以有0~N个指令的定义！可以放在任意位置
 
@@ -4162,7 +4161,7 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
 
 
 
-### 7.1.5 EL表达式
+## 7.5 EL表达式
 
 1. 概念：**EL（Expression Language）** 表达式语言
 2. 作用：**替换**和**简化jsp页面**中**java代码的编写**。EL替代的是`<%= ... %>`，也就是说，**EL只能做输出**
@@ -4210,7 +4209,7 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
               * 获取其他9个内置对象，有个cookie它获取不到
               * `${pageContext.request.contextPath}`：动态获取**虚拟目录**
 
-### 7.1.6 JSTL标签库
+## 7.6 JSTL标签库
 
 1. 概念：JavaServer Pages Tag Library  **JSP标准标签库**。是由Apache组织提供的开源的免费的jsp标签`<标签>`
 
@@ -4300,23 +4299,30 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
 
 
 
-## 7.2 MVC框架
 
-- MVC框架
-  - M -- **Model** 模型(JavaBean)：具体业务操作
-  - V -- **View**  视图(JSP)：展示数据
-  - C -- **Controller** 控制器(Servlet)：获取客户端输入，调用模型，将数据交给视图
-- 优点：
-  1. 耦合性低，方便维护，可以利于分工协作 
-  2. 重用性高
-- 缺点：
-  1. 使得项目架构变得复杂，对开发人员要求高
 
-## 7.3 JavaWeb三层架构
+# 8 三层架构及MVC模型
+
+三层架构
 
 - **表现层**（Web层） --> 与Web相关的内容。**Servlet充当Controller**
 - **业务逻辑层**（Service层） --> 处理业务逻辑的
 - **数据访问层**（DAO层） --> 操作数据库存储文件，不能跳出到DAO之外(Data Access Object，数据访问对象)
+
+------
+
+MVC模型
+- M -- **Model** 模型(JavaBean)：具体业务操作
+- V -- **View**  视图(JSP)：展示数据
+- C -- **Controller** 控制器(Servlet)：获取客户端输入，调用模型，将数据交给视图
+
+优点：
+1. 耦合性低，方便维护，可以利于分工协作 
+2. 重用性高
+
+缺点：
+
+1. 使得项目架构变得复杂，对开发人员要求高
 
 ### 7.3.1 用户信息管理
 
@@ -4361,7 +4367,7 @@ if(username.equals("hehe")&&password.equals("123")){//判断是否可以登录�
 
 
 
-### 7.3.2 登录注册
+### 7.3.2 登录注册（旧）
 
 #### 1、分析功能
 
@@ -4642,14 +4648,14 @@ VerifyCode.output(bi,response.getOutputStream());
 
 
 
-# 8 Filter、Listener
+# 9 Filter、Listener
 
-## 8.1 Filter
+## 9.1 Filter
 
 * web中的过滤器：当访问服务器的资源时，过滤器可以**拦截请求**，增强Request、Response
 * 过滤器的作用：一般用于完成**通用的操作**。如：**登录验证**、统一**编码处理**、**敏感字符过滤**……
 
-### 8.1.1 快速入门
+### 9.1.1 快速入门
 
  1. 定义一个类，**实现接口Filter**
 
@@ -4689,7 +4695,7 @@ VerifyCode.output(bi,response.getOutputStream());
      </filter-mapping>
      ```
 
-### 8.1.2 Filter细节
+### 9.1.2 Filter细节
 
 1. ==过滤器**配置**详解==
    1. **拦截路径配置**：`value[]`或`urlPatterns[]`属性
@@ -4726,7 +4732,7 @@ VerifyCode.output(bi,response.getOutputStream());
         1. 注解配置：按照类名的字符串按每个字符比较规则比较，值小的先执行。如：AFilter和BFilter，AFilter就先执行
         2. web.xml配置： `<filter-mapping>`谁定义在上边，谁先执行
 
-### 8.1.3 案例
+### 案例
 
 #### 1、登陆验证（权限控制）
 
