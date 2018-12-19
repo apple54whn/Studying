@@ -221,13 +221,13 @@ Maven中project标签下初始配置可以如下，稍加修改
 
 * 方法一：
 
-  - 在maven_web子模块的 pom.xml 中配置 tomcat 插件运行
+  - 在maven_web子模块的 pom.xml 中配置 tomcat 插件运行（需install）
 
     运行 ssm_web 工程它会**从本地仓库下载依赖的 jar 包**（需要将maven_web所依赖的所有模块发布至本地仓库，直接install父工程也行），所以当 ssm_web 依赖的 jar 包内容修改了必须及时发布到本地仓库，比如：ssm_web 依赖的 ssm_service 修改了，需要及时将ssm_service 发布到本地仓库。 
 
   方法二：
 
-  - **在maven_parent父工程的 pom.xml 中配置 tomcat插件运行**，自动聚合并执行（**推荐**）
+  - **在maven_parent父工程的 pom.xml 中配置 tomcat插件运行**，自动聚合并执行（**推荐**）（需install）
 
     如果子工程都在本地，采用方法2则不需要子工程修改就立即发布到本地仓库，父工程会自动聚合并使用最新代码执行。 
 
@@ -235,7 +235,7 @@ Maven中project标签下初始配置可以如下，稍加修改
 
   方法三：
 
-  - 使用本地Tomcat部署
+  - 使用本地Tomcat部署（需install）
 
     ![](images\本地Tomcat部署项目.PNG)
 
@@ -350,15 +350,17 @@ nexus仓库类型（默认在 sonatype-work 目录中）
 
 ### 6.3 安装第三方jar包到本地仓库
 
+注意：powershell失败，但是cmd执行成功。后续oracle的maven坐标添加不成功需要使用这个方法。
+
 * cmd进入jar包所在目录并运行
 
-  ```powershell
+  ```
   mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 -Dfile=fastjson-1.1.37.jar -Dpackaging=jar
   ```
 
 * 打开cmd直接运行
 
-  ```powershell
+  ```
   mvn install:install-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 -Dpackaging=jar -Dfile=C:/my_java/mavenjar/fastjson-1.1.37.jar
   ```
 
@@ -376,13 +378,13 @@ nexus仓库类型（默认在 sonatype-work 目录中）
 
 * cmd进入jar包所在目录并运行
 
-  ```powershell
+  ```
   mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 -Dpackaging=jar -Dfile=fastjson-1.1.37.jar -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/ -DrepositoryId=thirdparty
   ```
 
 * 打开cmd直接运行
 
-  ```powershell
+  ```
   mvn deploy:deploy-file -DgroupId=com.alibaba -DartifactId=fastjson -Dversion=1.1.37 -Dpackaging=jar -Dfile=C:/my_java/mavenjar/fastjson-1.1.37.jar -Durl=http://localhost:8081/nexus/content/repositories/thirdparty/ -DrepositoryId=thirdparty
   ```
 
@@ -391,17 +393,13 @@ nexus仓库类型（默认在 sonatype-work 目录中）
 
 ## 1 SVN
 
-
-
-
-
-
+:smiley:略，自己看文档
 
 
 
 ## 2 Git
 
-
+Git官网[文档](https://www.git-scm.com/)
 
 
 
@@ -510,6 +508,8 @@ nexus仓库类型（默认在 sonatype-work 目录中）
 
   - objectFactory（对象工厂）
 
+  - objectWrapperFactory
+
   - plugins（插件）
 
   - environments（环境集合属性对象）
@@ -517,6 +517,8 @@ nexus仓库类型（默认在 sonatype-work 目录中）
     - environment（环境子属性对象）
       - transactionManager（事务管理）
       - dataSource（数据源）
+
+  - databaseIdProvider
 
   - **==mappers==**（映射器）：告诉MyBatis去哪里找映射文件
 
@@ -1438,6 +1440,7 @@ List<User> findByUsername(String username);
     @Result(id = true,property = "id",column = "id"),
     @Result(property = "uid",column = "uid"),
     @Result(property = "money",column = "money"),
+    //column为外键列，可以不出现在实体类中，只要数据库中有，可以通过后面的sql语句使用该外键查询即可
     @Result(property = "user",column = "uid",
             one = @One(select = "cn.itcast.dao.UserMapper.findById",fetchType = FetchType.EAGER ))
 
@@ -1462,6 +1465,8 @@ List<Account> findById(Integer uid);
     @Result(property = "birthday",column = "birthday"),
     @Result(property = "sex",column = "sex"),
     @Result(property = "address",column = "address"),
+    //column为外键列，可以不出现在实体类中，只要数据库中有，可以通过后面的sql语句使用该外键查询即可
+    //此处为通过id查询关联的表中数据
     @Result(property = "accounts",column = "id",
             many = @Many(select = "cn.itcast.dao.AccountMapper.findById",fetchType = FetchType.LAZY))
 })
@@ -2752,7 +2757,7 @@ TransactionStatus：此接口提供的是**事务具体的运行状态**，方�
    </bean>
    
    <!-- 开启spring对注解事务的支持-->
-   <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+   <tx:annotation-driven transaction-manager="transactionManager"/>
    ```
 
    ```java
@@ -2861,6 +2866,10 @@ jdbc.password=w111151
 ```
 
 AccountServiceImpl和6.4中一致
+
+
+
+
 
 
 
@@ -3378,6 +3387,8 @@ public String updateAccount(User user) {
 
 ### 3.5 自定义类型转换器
 
+除了类型转换器，SpringMVC还提供了**注解`@DateTimeFormate`来转换日期格式**。查看5常用注解这一章。
+
 SpringMVC还可以实现一些**数据类型自动转换**。内置转换器全都在`org.springframework.core.convert.support`包下。如String转Integer等等
 
 如遇**特殊类型转换**要求，比如日期数据有很多种格式，SpringMVC没办法把带`-`字符串转换成日期类型，需要我们自己编写**自定义类型转换器**。步骤如下：
@@ -3437,7 +3448,7 @@ SpringMVC还可以实现一些**数据类型自动转换**。内置转换器全�
 
   > 如：`return "success"; `指定逻辑视图名，经过视图解析器解析为 jsp 物理路径如`/WEB-INF/pages/success.jsp` 
 
-* **`forward:`转发**：`return "forward:/WEB-INF/pages/success.jsp"; `则路径必须写成实际视图 url，不能写逻辑视图
+* **`forward:`转发**：`return "forward:pages/success.jsp"; `则路径必须写成实际视图 url，不能写逻辑视图
 
 * **`redirect:`重定向**：`return "redirect:testReturnModelAndView"; `路径可以不添加项目名称，会自动添加
 
@@ -3477,14 +3488,15 @@ SpringMVC还可以实现一些**数据类型自动转换**。内置转换器全�
 
 ## 5 常用注解
 
-### ~~5.1 `@RequestParam`~~
+### 5.1 `@RequestParam`
 
-作用：把请求中指定名称的参数给控制器中的形参赋值。 但是还不如参数名称一致好使
+作用：把请求中指定名称的参数给控制器中的形参赋值。 但是还不如参数名称一致好使。可以用于**分页中默认值设置**
 
 属性：
 
-* `value`：请求参数中的名称。  
+* `value`或`name`：请求参数中的名称。若参数名称(name)和形参一致，可以不用指定value或name
 * `required`：请求参数中是否必须提供此参数。默认值：true。表示必须提供，如果不提供将报错
+* `defaultValue`：请求参数默认值
 
 ```html
 <a href="springmvc/useRequestParam?name=test">requestParam 注解</a> 
@@ -3492,8 +3504,11 @@ SpringMVC还可以实现一些**数据类型自动转换**。内置转换器全�
 
 ```java
 @RequestMapping("/useRequestParam") 
-public String test( @RequestParam("name")String username, @RequestParam(value="age",required=false)Integer age){
-    System.out.println(username+","+age);  
+public String test( 
+    @RequestParam("name")String username, 
+    @RequestParam(value="age",required=false,defaultValue="88")Integer age){
+    
+   	System.out.println(username+","+age);  
     return "success"; 
 }
 ```
@@ -3508,7 +3523,7 @@ public String test( @RequestParam("name")String username, @RequestParam(value="a
 
 属性：  
 
-- `value`：用于指定 url 中占位符名称。若占位符名称和形参一致，可以不用指定value
+- `value`或`name`：用于指定 url 中占位符名称。若占位符名称和形参一致，可以不用指定value
 - `required`：是否必须提供占位符。 
 
 ```html
@@ -3621,7 +3636,18 @@ public @ResponseBody Address testJson(@RequestBody Address address) {
 
 用在方法上，替代方法的`@RequestMapping`
 
-### 5.5 RESTful
+### 5.7 `@DateTimeFormat`
+
+直接在JavaBean**属性**上添加注释即可（在get或set方法上添加，命名规范的话字段上添加也行。由于一般自动生成，所以都行）
+
+```java
+@DateTimeFormat(pattern="yyyy-MM-dd HH:mm")
+private Date creationTime;
+```
+
+
+
+### 5.8 RESTful
 
 - RESTful是一个资源定位及资源操作的风格。使用POST、DELETE、PUT、GET，使用不同方法对资源进行操作，分别对应  添加、 删除、修改、查询
 
@@ -3648,7 +3674,7 @@ public @ResponseBody Address testJson(@RequestBody Address address) {
       - @PathVariable是获取url上数据的。@RequestParam获取请求参数的（包括post表单提交）
       - 如果加上@ResponseBody注解，就不会走视图解析器，不会返回页面，返回如json数据。如果不加，就走视图解析器，返回页面
 
-### 5.6 其他不常用注解
+### 5.9 其他不常用注解
 
 #### `@RequestHeader`
 
@@ -4167,7 +4193,229 @@ public String fileupload2(HttpServletRequest request,MultipartFile upload) throw
 
 
 
-# 第六部分 整合SSM
+# 第六部分 Spring Security
+
+[Spring Security](https://projects.spring.io/spring-security/) 的前身是 Acegi Security ，是 Spring 项目组中用来提供安全认证服务的框架。 安全包括两个主要操作：
+
+* “认证”是为用户建立一个他所声明的主体。主体一般是指用户，设备或可以在你系统中执行动作的其他系统。 
+* “授权”指的是一个用户能否在你的应用中执行某个操作，在到达授权判断之前，身份的主体已经由身份验证过程建立了。
+
+基于Spring Security的数据库认证的操作方式有多种，这里我们介绍使用`UserDetails`、 `UserDetailsService`来完成操作
+
+* **`UserDetails`**接口，作用是于**封装当前进行认证的用户信息**，我们可以对其进行实现，也可以**使用Spring Security提供的一个UserDetails的实现类User**来完成操作
+
+  ```java
+  public interface UserDetails extends Serializable {     
+  	Collection<? extends GrantedAuthority> getAuthorities();    
+  	String getPassword();       
+  	String getUsername();       
+  	boolean isAccountNonExpired();      
+  	boolean isAccountNonLocked();    
+  	boolean isCredentialsNonExpired();    
+  	boolean isEnabled(); 
+  }
+  ```
+
+  以下是User类的部分代码：
+
+  ```java
+  public class User implements UserDetails, CredentialsContainer {
+      private String password;    
+      private final String username;    
+      private final Set<GrantedAuthority> authorities;    
+      private final boolean accountNonExpired; //帐户是否过期    
+      private final boolean accountNonLocked; //帐户是否锁定    
+      private final boolean credentialsNonExpired; //认证是否过期    
+      private final boolean enabled; //帐户是否可用
+  }
+  ```
+
+* `UserDetailsService`接口，用于规范验证方法的接口
+
+  ```java
+  public interface UserDetailsService {        
+      UserDetails loadUserByUsername(String username) throws UsernameNotFoundException; 
+  }
+  ```
+
+------
+
+![](images\使用数据库完成springSecurity用户登录流程分析.bmp)
+
+SSM综合练习中用户登录来完成Spring Security的认证操作：
+
+1. 导入依赖
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-web</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-config</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   <!--下面不认资料中没有导入-->
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-core</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-taglibs</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   ```
+
+2. `web.xml`中配置**`springSecurityFilterChain`**（必须这个名字），别忘了监听器加载`spring-security.xml`配置文件
+
+   ```xml
+   <filter>
+       <filter-name>springSecurityFilterChain</filter-name>
+       <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+   </filter>
+   <filter-mapping>
+       <filter-name>springSecurityFilterChain</filter-name>
+       <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   
+   <context-param>
+       <param-name>contextConfigLocation</param-name>
+       <param-value>classpath*:spring-security.xml</param-value>
+   </context-param>
+   <listener>
+       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+   </listener>
+   ```
+
+3. `spring-security.xml`中配置如下
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:security="http://www.springframework.org/schema/security"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans
+                              http://www.springframework.org/schema/beans/spring-beans.xsd
+                              http://www.springframework.org/schema/security
+                              http://www.springframework.org/schema/security/spring-security.xsd">
+   
+       <!-- 配置不拦截的资源（静态资源及登录相关）  -->
+       <security:http pattern="/login.jsp" security="none"/>
+       <security:http pattern="/failer.jsp" security="none"/>
+       <security:http pattern="/css/**" security="none"/>
+       <security:http pattern="/img/**" security="none"/>
+       <security:http pattern="/plugins/**" security="none"/>
+   
+       
+        <!--配置授权的具体的规则
+        auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面
+        use-expressions="false"	是否使用SPEL表达式（没学习过）-->
+       <security:http auto-config="true" use-expressions="false">
+           <!-- 配置具体的拦截的规则 pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER或...的角色" -->
+           <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+           <!-- 定义跳转的具体的页面 -->
+           <security:form-login
+                                login-page="/login.jsp"
+                                login-processing-url="/login.do"
+                                default-target-url="/index.jsp"
+                                authentication-failure-url="/failer.jsp"
+                                authentication-success-forward-url="/pages/main.jsp"
+                                />
+           <!-- 关闭跨域请求 -->
+           <security:csrf disabled="true"/>
+           <!-- 退出，invalidate-session 是否删除session logout-url：登出处理url logout-successurl：登出成功页面-->
+           <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp"/>
+       </security:http>
+   
+       
+       <!-- 认证管理器，指定了认证需要访问的service 。切换成数据库中的用户名和密码。-->
+       <security:authentication-manager>
+           <security:authentication-provider user-service-ref="userService">
+               <!-- 配置加密的方式。若配置此项，则需要指定密码加密方式，否则使用{noop}拼接上密码即可
+               <security:password-encoder ref="passwordEncoder"/> -->
+           </security:authentication-provider>
+       </security:authentication-manager>
+   
+       
+       <!-- 配置加密类 -->
+       <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+   
+       
+       <!-- 提供了入门的方式，在内存中存入用户名和密码
+       <security:authentication-manager>
+        <security:authentication-provider>
+         <security:user-service>
+          <security:user name="admin" password="{noop}admin" authorities="ROLE_USER"/>
+         </security:user-service>
+        </security:authentication-provider>
+       </security:authentication-manager>
+       -->
+   </beans>
+   ```
+
+4. 实现`UserDetailsService`接口
+
+   ```java
+   public interface UserService extends UserDetailsService {}
+   ```
+
+   ```java
+   @Service("userService")
+   @Transactional
+   public class UserServiceImpl implements UserService {
+       @Autowired
+       private UserDao userDao;
+   
+       @Override
+       public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+   
+           UserInfo userInfo = userDao.findByUsername(s);//UserInfo为和数据库对应的实体类
+           //User user = new User(userInfo.getUsername(), "{noop}" + userInfo.getPassword(), getAuthorities(userInfo.getRoles()));
+           //添加用户状态的判断。封装到UserDetails实现类User。
+           User user = new User(userInfo.getUsername(), "{noop}" + userInfo.getPassword(),userInfo.getStatus()==0?false:true,true,true,true, getAuthorities(userInfo.getRoles()));
+           return user;
+       }
+   
+       public List<SimpleGrantedAuthority> getAuthorities(List<Role> roles) {
+           List<SimpleGrantedAuthority> list = new ArrayList<>();
+           for (Role role : roles) {
+               list.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+           }
+           return list;
+       }
+   }
+   ```
+
+5. UserDao中查询user时还需查询user所属的权限
+
+   ```java
+   @Repository
+   public interface UserDao {
+   
+       @Select("select * from users where username=#{username}")
+       @Results({
+               @Result(id = true, property = "id", column = "id"),
+               @Result(column = "username", property = "username"),
+               @Result(column = "email", property = "email"),
+               @Result(column = "password", property = "password"),
+               @Result(column = "phoneNum", property = "phoneNum"),
+               @Result(column = "status", property = "status"),
+               @Result(column = "id", property = "roles",
+                       many = @Many(select = "com.itheima.ssm.dao.RoleDao.findRoleByUserId"))
+       })
+       UserInfo findByUsername(String username);
+   }
+   ```
+
+6. login页面：表单请求方法为POST，action为login.do，用户名和密码的表单name为username、password（不乱修改则不需要在spring-security.xml中配置）
+
+
+
+# 第七部分 整合SSM
 
 整合的思路：
 
@@ -4411,9 +4659,9 @@ create table account(
         </dependency>
         <!--c3p0连接池，也可以用Spring自带的-->
         <dependency>
-            <groupId>c3p0</groupId>
+            <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
-            <version>0.9.1.2</version>
+            <version>0.9.5.2</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -4486,7 +4734,7 @@ create table account(
 
 ### 1.3 创建maven_dao子模块
 
-打包方式为**jar**包（默认为jar方式打包） ，`applicationContext-dao.xml`如下：
+打包方式为**jar**包（默认为jar方式打包），domain也可以从中脱离出来。`applicationContext-dao.xml`如下：
 
 整合MyBatis思路：
 
@@ -4515,27 +4763,47 @@ create table account(
     <!-- 加载配置文件 -->
     <context:property-placeholder location="classpath:jdbcConfig.properties"/>
 
-    <!--配置DataSource连接池-->
+    <!--配置Druid DataSource连接池，交给IoC管理-->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="driverClassName" value="${jdbc.driver}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
     </bean>
+    
+    <!-- 也可以配置c3p0连接池，交给IoC管理。 
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}" />
+        <property name="user" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+    </bean> -->
 
-    <!--配置SqlSession工厂-->
+    <!--配置SqlSession工厂，交给IoC管理-->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>  <!--注入DataSource-->
         <property name="typeAliasesPackage" value="com.itheima.domain"/>  <!--JavaBean别名-->
     </bean>
 
-    <!--扫描接口的包路径，生成所有接口的代理对象，并放入Spring容器中-->
+    <!--扫描接口的包路径，生成所有接口的代理对象，并放入Spring容器中，交给IoC管理-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.itheima.dao"/>
     </bean>
     <!--====================dao层配置文件结束====================-->
 </beans>
 ```
+
+```properties
+#JdbcConfig.properties
+jdbc.driver=com.mysql.cj.jdbc.Driver 
+jdbc.url=jdbc:mysql://localhost:3306/bxgtest?serverTimezone=GMT%2B8&useSSL=false
+jdbc.username=root
+jdbc.password=w1111
+```
+
+
+
+
 
 ### 1.4 创建maven_service子模块
 
@@ -4580,6 +4848,9 @@ create table account(
         <aop:pointcut id="pt1" expression="execution(* com.itheima.service.impl.*.*(..))"/>
         <aop:advisor advice-ref="txAdvice" pointcut-ref="pt1"/>
     </aop:config>
+    
+    <!--也可以开启对事务的注解支持-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
     <!--====================service层配置文件结束====================-->
 </beans>
 ```
@@ -4674,7 +4945,7 @@ create table account(
     <!--组件扫描，只扫描controller包下的类。也可以用applicationContext中配置方法-->
     <context:component-scan base-package="com.itheima.controller"/>
 
-    <!--处理器映射器，处理器适配器-->
+    <!--处理器映射器，处理器适配器，开启对SpringMVC注解的支持-->
     <mvc:annotation-driven/>
 
     <!--视图解析器，可以省略id-->
@@ -4692,6 +4963,28 @@ create table account(
     -->
 </beans>
 ```
+
+日志输出
+
+```properties
+#log4j.properties
+# Configure logging for testing: optionally with log file
+log4j.rootLogger=WARN, stdout
+# log4j.rootLogger=WARN, stdout, logfile
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d %p [%c] - %m%n
+
+log4j.appender.logfile=org.apache.log4j.FileAppender
+log4j.appender.logfile.File=target/spring.log
+log4j.appender.logfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
+```
+
+
+
+
 
 ### 1.6 各子模块间依赖
 
@@ -4743,149 +5036,1107 @@ web依赖于service；service依赖于dao（如下）
 
 
 
-## 2 整合
+## 2 SSM综合练习
 
-* 整合目标：控制层采用SpringMVC、持久层使用MyBatis实现
+### 2.1 Oracle数据库及表结构
 
-* 需要的jar包：
+这只是其中两个表，后续还有其他表
 
-  * spring（包括SpringMVC）
-  * mybatis
-  * mybatis-spring整合包
-  * 数据库驱动
-  * 第三方连接池
+1. Oracle 为每个项目创建单独user，oracle数据表存放在表空间下，每个用户有独立表空间。创建用户并授权：
 
-* **整合思路**：
+   ```sql
+   -- Create the user 
+   create user SSM
+     identified by itheima
+     default tablespace USERS
+     temporary tablespace TEMP
+     profile DEFAULT;
+   -- Grant/Revoke role privileges 
+   grant connect to SSM;
+   grant resource to SSM;
+   -- Grant/Revoke system privileges 
+   grant unlimited tablespace to SSM;
+   ```
 
-  * Dao层：
-    * mybatis-config.xml。空文件即可，也可以配置POJO别名
-    * **applicationContext-dao.xml**：1.数据库连接池；2.SqlSessionFactory对象；3.mapper文件扫描器
+2. 创建order表
 
-  ```xml
-  //applicationContext-dao.xml
-  <!-- 加载配置文件，在第二部分6.3节-->
-  <context:property-placeholder location="classpath:db.properties"/>
-  
-  <!-- 数据库连接池 -->
-  <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-      <property name="driverClass" value="${jdbc.driverClass}"></property>
-      <property name="jdbcUrl" value="${jdbc.url}"></property>
-      <property name="user" value="${jdbc.username}"></property>
-      <property name="password" value="${jdbc.password}"></property>
-  </bean>
-  
-  <!-- Mybatis的工厂 -->
-  <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
-      <property name="dataSource" ref="dataSource"/>
-      <!-- 核心配置文件的位置 -->
-      <property name="configLocation" value="classpath:mybatis-config.xml"/>
-  </bean>
-  
-  <!-- Mapper动态代理开发，扫描。并且不需要注入工厂，自动寻找 -->
-  <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-      <!-- 基本包，会查询包及其子包 -->
-      <property name="basePackage" value="cn.itcast.ssm.mapper"/>
-  </bean>
+   ```sql
+   CREATE TABLE product(  
+   	id varchar2(32) default SYS_GUID() PRIMARY KEY,  -- 主键uuid，无实际意义。default SYS_GUID()为默认获取UUID
+   	productNum VARCHAR2(50) NOT NULL,  
+   	productName VARCHAR2(50),  
+   	cityName VARCHAR2(50),  
+   	DepartureTime timestamp,  
+   	productPrice Number,  
+   	productDesc VARCHAR2(500),  
+   	productStatus INT,  
+   	CONSTRAINT product UNIQUE (id, productNum) 
+   )
+   ```
+
+3. 插入数据
+
+   ```sql
+   insert into ORDERS (ordernum, ordertime, peoplecount, orderdesc, paytype, orderstatus, productid, memberid)
+   values (to_timestamp('02-03-2018 12:00:00.000000', 'dd-mm-yyyy hh24:mi:ss.ff'), 2, '没什么', 0, 1, '676C5BD1D35E429A8C2E114939C5685A', 'E61D65F673D54F68B0861025C69773DB');......
+   ```
+
+### 2.2 SSM整合
+
+1. 利用Maven的父子工程来创建各模块，父工程的pom.xml文件节选如下：
+
+   ```xml
+   <properties>
+           <spring.version>5.1.1.RELEASE</spring.version>
+           <slf4j.version>1.6.6</slf4j.version>
+           <log4j.version>1.2.12</log4j.version>
+           <oracle.version>10.2.0.1.0</oracle.version>
+           <mybatis.version>3.4.6</mybatis.version>
+           <spring.security.version>5.1.1.RELEASE</spring.security.version>
+       </properties>
+   
+       <dependencies>        <!-- spring -->
+           <dependency>
+               <groupId>org.aspectj</groupId>
+               <artifactId>aspectjweaver</artifactId>
+               <version>1.6.8</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-aop</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-context</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-context-support</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-web</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-orm</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-beans</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-core</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-test</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-webmvc</artifactId>
+               <version>${spring.version}</version>
+   
+           </dependency>
+           <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-tx</artifactId>
+               <version>${spring.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>junit</groupId>
+               <artifactId>junit</artifactId>
+               <version>4.12</version>
+               <scope>test</scope>
+           </dependency>
+   
+           <dependency>
+               <groupId>javax.servlet</groupId>
+               <artifactId>javax.servlet-api</artifactId>
+               <version>3.1.0</version>
+               <scope>provided</scope>
+           </dependency>
+           <dependency>
+               <groupId>javax.servlet.jsp</groupId>
+               <artifactId>jsp-api</artifactId>
+               <version>2.0</version>
+               <scope>provided</scope>
+           </dependency>
+           <dependency>
+               <groupId>jstl</groupId>
+               <artifactId>jstl</artifactId>
+               <version>1.2</version>
+           </dependency>        <!-- log start -->
+           <dependency>
+               <groupId>log4j</groupId>
+               <artifactId>log4j</artifactId>
+               <version>${log4j.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-api</artifactId>
+               <version>${slf4j.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.slf4j</groupId>
+               <artifactId>slf4j-log4j12</artifactId>
+               <version>${slf4j.version}</version>
+           </dependency>        <!-- log end -->
+   
+           <dependency>
+               <groupId>org.mybatis</groupId>
+               <artifactId>mybatis</artifactId>
+               <version>${mybatis.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.mybatis</groupId>
+               <artifactId>mybatis-spring</artifactId>
+               <version>1.3.0</version>
+           </dependency>
+           <dependency>
+               <groupId>com.mchange</groupId>
+               <artifactId>c3p0</artifactId>
+               <version>0.9.5.2</version>
+               <type>jar</type>
+               <scope>compile</scope>
+           </dependency>
+           <dependency>
+               <groupId>com.github.pagehelper</groupId>
+               <artifactId>pagehelper</artifactId>
+               <version>5.1.2</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.security</groupId>
+               <artifactId>spring-security-web</artifactId>
+               <version>${spring.security.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.security</groupId>
+               <artifactId>spring-security-config</artifactId>
+               <version>${spring.security.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.security</groupId>
+               <artifactId>spring-security-core</artifactId>
+               <version>${spring.security.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.security</groupId>
+               <artifactId>spring-security-taglibs</artifactId>
+               <version>${spring.security.version}</version>
+           </dependency>
+   
+           <!--oracle的依赖需要自己上传至本地仓库-->
+           <dependency>
+               <groupId>com.oracle</groupId>
+               <artifactId>ojdbc14</artifactId>
+               <version>${oracle.version}</version>
+           </dependency>
+   
+           <dependency>
+               <groupId>javax.annotation</groupId>
+               <artifactId>jsr250-api</artifactId>
+               <version>1.0</version>
+           </dependency>
+       </dependencies>
+       <build>
+           <pluginManagement>
+               <plugins>
+                   <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-compiler-plugin</artifactId>
+                       <version>3.2</version>
+                       <configuration>
+                           <source>1.8</source>
+                           <target>1.8</target>
+                           <encoding>UTF-8</encoding>
+                           <showWarnings>true</showWarnings>
+                       </configuration>
+                   </plugin>
+               </plugins>
+           </pluginManagement>
+       </build>
+   ```
+
+2. 编写实体类
+
+   ```java
+   private Date departureTime; // 出发时间
+   private String departureTimeStr;
+   
+   private Integer productStatus; // 状态 0 关闭 1 开启
+   private String productStatusStr;
+   ```
+
+   1. `productStatus`在数据库中存储的是数字，但是展示时需要变为字符串，所以在其`get()`方法中添加判断即可。
+
+      ```java
+      public String getProductStatusStr() {
+          if (productStatus!=null){
+              if (productStatus.equals(0)) {
+                  this.productStatusStr = "关闭";
+              }
+              else if (productStatus.equals(1)) {
+                  this.productStatusStr = "开启";
+              }
+          }
+          return productStatusStr;
+      }
+      ```
+
+   2. 日期在展示时也是要变为字符串，否则比较麻烦。同样的可以改`get()`方法，在方法中调用DateUtils中静态方法即可。
+
+      ```java
+      public class DateUtils {
+          public static String date2String(Date date, String pattern) {
+              SimpleDateFormat format = new SimpleDateFormat(pattern);
+              return format.format(date);
+          }
+      
+          public static Date String2Date(String s, String pattern) throws ParseException {
+              SimpleDateFormat format = new SimpleDateFormat(pattern);
+              return format.parse(s);
+          }
+      }
+      ```
+
+      ```java
+      public String getDepartureTimeStr() {
+          if (departureTime!=null){
+              departureTimeStr = DateUtils.date2String(departureTime,"yyyy年MM月dd日 HH:mm:ss");
+          }
+          return departureTimeStr;
+      }
+      ```
+
+3. 编写持久层接口
+
+4. 编写业务层接口
+
+5. ...
+
+6. `applicationContext.xml`配置、`db.properties`配置
+
+   ```properties
+   jdbc.driver=oracle.jdbc.driver.OracleDriver
+   jdbc.url=jdbc:oracle:thin:@Conanan:1521:orcl
+   jdbc.username=ssm
+   jdbc.password=itheima
+   ```
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:tx="http://www.springframework.org/schema/tx"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans
+                              http://www.springframework.org/schema/beans/spring-beans.xsd
+                              http://www.springframework.org/schema/context
+                              http://www.springframework.org/schema/context/spring-context.xsd
+                              http://www.springframework.org/schema/tx
+                              http://www.springframework.org/schema/tx/spring-tx.xsd">
+   
+   
+       <!-- 开启注解扫描，管理service和dao -->
+       <context:component-scan base-package="com.itheima.ssm.service"/>
+       <context:component-scan base-package="com.itheima.ssm.dao"/>
+       
+   	<!-- 加载配置文件 -->
+       <context:property-placeholder location="classpath:db.properties"/>
+   
+       <!--配置Druid DataSource连接池，交给IoC管理-->
+       <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+           <property name="driverClassName" value="${jdbc.driver}"/>
+           <property name="url" value="${jdbc.url}"/>
+           <property name="username" value="${jdbc.username}"/>
+           <property name="password" value="${jdbc.password}"/>
+       </bean>
+       
+       <!-- 也可以配置c3p0连接池，交给IoC管理。
+       <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+           <property name="driverClass" value="${jdbc.driver}" />
+           <property name="jdbcUrl" value="${jdbc.url}" />
+           <property name="user" value="${jdbc.username}" />
+           <property name="password" value="${jdbc.password}" />
+       </bean>  -->
+   
+       <!--配置sqlSessionFactory，交给IoC管理-->
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+           <property name="dataSource" ref="dataSource" /> <!--注入DataSource-->
+       </bean>
+   
+       <!--扫描接口的包路径，生成所有接口的代理对象，并放入Spring容器中，交给IoC管理-->
+       <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+           <property name="basePackage" value="com.itheima.ssm.dao"/>
+           <!-- <property name="typeAliasesPackage" value="com.itheima.domain"/>  JavaBean别名，注解时用不到-->
+       </bean>
+   
+   
+       <!-- 配置Spring的声明式事务管理 -->
+       <!-- 配置事务管理器 -->
+       <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+           <property name="dataSource" ref="dataSource"/>
+       </bean>
+       <!--开启事务的注解支持。也可以使用xml配置事务，此处不再叙述，xml+注解方式中有写到-->
+       <tx:annotation-driven transaction-manager="transactionManager"/>
+   
+   </beans>
+   ```
+
+7. `springmvc.xml`配置
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:mvc="http://www.springframework.org/schema/mvc"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:aop="http://www.springframework.org/schema/aop"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+                     http://www.springframework.org/schema/mvc
+                     http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                     http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context.xsd
+                     http://www.springframework.org/schema/aop
+                     http://www.springframework.org/schema/aop/spring-aop.xsd">
+   
+       <!-- 扫描controller的注解，别的不扫描 -->
+       <context:component-scan base-package="com.itheima.ssm.controller"/>
+   
+       <!-- 开启对SpringMVC注解的支持 -->
+       <mvc:annotation-driven/>
+   
+       <!-- 配置视图解析器 -->
+       <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+           <!-- JSP文件所在的目录 -->
+           <property name="prefix" value="/pages/"/>
+           <!-- 文件的后缀名 -->
+           <property name="suffix" value=".jsp"/>
+       </bean>
+   
+       <!--释放静态资源，不拦截静态资源-->
+       <mvc:default-servlet-handler/>
+       <!-- 也可以这样设置
+       <mvc:resources location="/css/" mapping="/css/**"/>
+       <mvc:resources location="/img/" mapping="/img/**"/>
+       <mvc:resources location="/js/" mapping="/js/**"/>
+       <mvc:resources location="/plugins/" mapping="/plugins/**"/> -->
+   
+       <!-- 支持AOP的注解支持，AOP底层使用代理技术
+            JDK动态代理，要求必须有接口
+            cglib代理，生成子类对象，proxy-target-class="true" 默认使用cglib的方式 -->
+       <aop:aspectj-autoproxy proxy-target-class="true"/>
+   </beans>
+   ```
+
+8. `web.xml`配置
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+            xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+            version="3.1">
+   
+     <!-- 配置加载类路径的配置文件 -->
+     <context-param>
+       <param-name>contextConfigLocation</param-name>
+       <param-value>classpath*:applicationContext.xml</param-value>
+     </context-param>
+   
+     <!-- 配置监听器 -->
+     <listener>
+       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+     </listener>
+   
+       
+     <!-- 前端控制器（加载classpath:springmvc.xml 服务器启动创建servlet） -->
+     <servlet>
+       <servlet-name>dispatcherServlet</servlet-name>
+       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+       <!-- 配置初始化参数，创建完DispatcherServlet对象，加载springmvc.xml配置文件 -->
+       <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>classpath:springmvc.xml</param-value>
+       </init-param>
+       <!-- 服务器启动的时候，让DispatcherServlet对象创建 -->
+       <load-on-startup>1</load-on-startup>
+     </servlet>
+     <servlet-mapping>
+       <servlet-name>dispatcherServlet</servlet-name>
+       <url-pattern>*.do</url-pattern>
+     </servlet-mapping>
+   
+       
+     <!-- 解决中文乱码过滤器 -->
+     <filter>
+       <filter-name>characterEncodingFilter</filter-name>
+       <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+       <init-param>
+         <param-name>encoding</param-name>
+         <param-value>UTF-8</param-value>
+       </init-param>
+     </filter>
+     <filter-mapping>
+       <filter-name>characterEncodingFilter</filter-name>
+       <url-pattern>/*</url-pattern>
+     </filter-mapping>
+   
+     <welcome-file-list>
+       <welcome-file>index.html</welcome-file>
+       <welcome-file>index.htm</welcome-file>
+       <welcome-file>index.jsp</welcome-file>
+       <welcome-file>default.html</welcome-file>
+       <welcome-file>default.htm</welcome-file>
+       <welcome-file>default.jsp</welcome-file>
+     </welcome-file-list>
+   </web-app>
+   ```
+
+
+
+### 2.3 产品管理
+
+#### 1、查询所有产品
+
+略
+
+#### 2、添加产品
+
+商品添加页面会有出发**时间**，但是格式是用`-`隔开，所以需要**转换器**，SpringMVC中3.5有介绍**自定义转换器**；还有更方便的注解**`@DateTimeFormat`**可以解决，只需放在JavaBean属性上即可（包括get、set方法和字段(若命名规范)），缺点为只能针对被注解的属性做处理。
+
+```java
+@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+private Date departureTime; // 出发时间
+```
+
+
+
+### 2.3 订单管理
+
+#### 1、订单分页展示（PageHelper）
+
+1. **展示**的时间**字符串**需要用工具类从Date类型**转换**为String；订单状态也需要从0、1转换；支付类型也需从0、1、2转换；都是修改其`get`方法即可
+
+2. 查询订单的同时要查询订单中的产品信息（**一对一**），利用注解开发，需要分别提供两个Dao方法
+
+   ```java
+   @Repository
+   public interface OrdersDao {
+       @Select("select * from orders")
+       @Results({
+           @Result(id = true, property = "id", column = "id"),
+           @Result(property = "orderNum", column = "orderNum"),
+           @Result(property = "orderTime", column = "orderTime"),
+           @Result(property = "orderStatus",column = "orderStatus"),
+           @Result(property = "peopleCount",column = "peopleCount"),
+           @Result(property = "payType",column = "payType"),
+           @Result(property = "orderDesc",column = "orderDesc"),
+           @Result(property = "product",column = "productId",
+                   one = @One(select = "com.itheima.ssm.dao.ProductDao.findById") )
+       })
+       List<Orders> findAll();
+   }
+   ```
+
+   ```java
+   @Repository
+   public interface ProductDao {
+   
+       @Select("select * from product where id=#{id}")
+       Product findById(String  id);
+   }
+   ```
+
+3. **带分页的订单展示**
+
+   GitHub中[PageHelper项目地址](https://github.com/pagehelper/Mybatis-PageHelper)。是一个MyBatis的分页插件，使用步骤如下：
+
+   1. pom.xml中**导入依赖**
+
+      ```xml
+      <dependency>
+          <groupId>com.github.pagehelper</groupId>
+          <artifactId>pagehelper</artifactId>
+          <version>最新版本</version>
+      </dependency>
+      ```
+
+   2. 配置拦截器插件
+
+      注意：新版拦截器是 `com.github.pagehelper.PageInterceptor`。  `com.github.pagehelper.PageHelper` 现在是一个特殊的 `dialect` 实现类，是分页插件的默认实现类，提供了和以前相同的用法。
+
+      在 Spring 配置文件中配置拦截器插件：
+
+      ```xml
+      <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+          <property name="dataSource" ref="dataSource"/>
+          <property name="plugins">
+              <array>
+                  <bean class="com.github.pagehelper.PageInterceptor">
+                      <!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->
+                      <property name="properties">
+                          <value>
+                              helperDialect=mysql
+                              reasonable=true
+                          </value>
+                      </property>
+                  </bean>
+              </array>
+          </property>
+      </bean>
+      ```
+
+      分页插件参数介绍
+
+      * **`helperDialect`**：分页插件会自动检测当前的数据库链接，自动选择合适的分页方式。 你可以配置`helperDialect`属性来指定分页插件使用哪种方言。配置时，可以使用下面的缩写值：
+        `oracle`,`mysql`,`mariadb`,`sqlite`,`hsqldb`,`postgresql`,`db2`,`sqlserver`,`informix`,`h2`,`sqlserver2012`,`derby`
+        **特别注意：**使用 SqlServer2012 数据库时，需要手动指定为 `sqlserver2012`，否则会使用 SqlServer2005 的方式进行分页。
+        你也可以实现 `AbstractHelperDialect`，然后配置该属性为实现类的全限定名称即可使用自定义的实现方法。
+      * `offsetAsPageNum`：默认值为 `false`，该参数对使用 `RowBounds` 作为分页参数时有效。 当该参数设置为 `true` 时，会将 `RowBounds` 中的 `offset` 参数当成 `pageNum` 使用，可以用页码和页面大小两个参数进行分页。
+      * `rowBoundsWithCount`：默认值为`false`，该参数对使用 `RowBounds` 作为分页参数时有效。 当该参数设置为`true`时，使用 `RowBounds` 分页会进行 count 查询。
+      * `pageSizeZero`：默认值为 `false`，当该参数设置为 `true` 时，如果 `pageSize=0` 或者 `RowBounds.limit = 0` 就会查询出全部的结果（相当于没有执行分页查询，但是返回结果仍然是 `Page` 类型）。
+      * **`reasonable`**：分页合理化参数，默认值为`false`。当该参数设置为 `true` 时，`pageNum<=0` 时会查询第一页，`pageNum>pages`（超过总数时），会查询最后一页。默认`false` 时，直接根据参数进行查询。
+      * `params`：为了支持`startPage(Object params)`方法，增加了该参数来配置参数映射，用于从对象中根据属性名取值， 可以配置 `pageNum,pageSize,count,pageSizeZero,reasonable`，不配置映射的用默认值， 默认值为`pageNum=pageNum;pageSize=pageSize;count=countSql;reasonable=reasonable;pageSizeZero=pageSizeZero`。
+      * `supportMethodsArguments`：支持通过 Mapper 接口参数来传递分页参数，默认值`false`，分页插件会从查询方法的参数值中，自动根据上面 `params` 配置的字段中取值，查找到合适的值时就会自动分页。 使用方法可以参考测试代码中的 `com.github.pagehelper.test.basic` 包下的 `ArgumentsMapTest` 和 `ArgumentsObjTest`。
+      * `autoRuntimeDialect`：默认值为 `false`。设置为 `true` 时，允许在运行时根据多数据源自动识别对应方言的分页 （不支持自动选择`sqlserver2012`，只能使用`sqlserver`），用法和注意事项参考下面的**场景五**。
+      * `closeConn`：默认值为 `true`。当使用运行时动态数据源或没有设置 `helperDialect` 属性自动获取数据库类型时，会自动获取一个数据库连接， 通过该属性来设置是否关闭获取的这个连接，默认`true`关闭，设置为 `false` 后，不会关闭获取的连接，这个参数的设置要根据自己选择的数据源来决定。
+      * `aggregateFunctions`(5.1.5+)：默认为所有常见数据库的聚合函数，允许手动添加聚合函数（影响行数），所有以聚合函数开头的函数，在进行 count 转换时，会套一层。其他函数和列会被替换为 count(0)，其中count列可以自己配置。
+      * 分页插件可选参数：dialect。默认情况下会使用 PageHelper 方式进行分页，如果想要实现自己的分页逻辑，可以实现 `Dialect`(`com.github.pagehelper.Dialect`) 接口，然后配置该属性为实现类的全限定名称
+
+   3. **`PageHelper.startPage` 静态方法调用**
+
+      调用 `PageHelper.startPage` 静态方法即可，紧跟在这个方法后的第一个**MyBatis 查询方法**会被进行分页。
+
+      ```java
+      //获取第1页，10条内容，默认查询总数count
+      PageHelper.startPage(1, 10);
+      //紧跟着的第一个select方法会被分页
+      List<Country> list = countryMapper.selectIf(1);
+      ```
+
+   4. **`PageInfo`**的用法：本质就是一个分页Bean
+
+      ```java
+      public class PageInfo<T> extends PageSerializable<T> {
+          private int pageNum; //当前页
+          private int pageSize; //每页展示数据的数量
+          private int pages; //总页数
+          protected long total; //总记录数。继承父类的。
+          private List<T> list; //封装的查询出的数据。继承父类的。
+          
+          private int size; //当前页的数量，指的是实际展示的数据的数量
+          
+          
+          private int prePage; //前一页。若当前页为首页，则其值为0。查看reasonable参数
+          private int nextPage; //下一页。若当前页为尾页，则其值为0。查看reasonable参数
+          private boolean isFirstPage = false; //是否为第一页
+          private boolean isLastPage = false; //是否为最后一页
+          private boolean hasPreviousPage = false; //是否有前一页
+          private boolean hasNextPage = false; //是否有下一页
+          
+          private int navigatePages; //导航页码数
+          private int[] navigatepageNums; //所有导航页号
+          private int navigateFirstPage; //导航条上的第一页
+          private int navigateLastPage; //导航条上的最后一页
+          
+          //由于startRow和endRow不常用，这里说个具体的用法：可以在页面中"显示startRow到endRow 共size条数据"
+          private int startRow; //当前页面第一个元素在数据库中的行号
+          private int endRow; //当前页面最后一个元素在数据库中的行号
+          
+          public PageInfo(List<T> list) {
+              this(list, 8);
+          }
+          ......
+      }
+      ```
+
+   ------
+
+   ```html
+   <!--分页页码处理查看Java Web中黑马旅游网的分页-->
+   <a href="${pageContext.request.contextPath}/orders/findAll.do?pageNum=1&pageSize=4"></a> 
+   
+   <!--通过获取select标签的value属性并在changePageSize设置location.href请求并改变pageSize即可-->
+   <select class="form-control" onchange="changePageSize()">
+       <option>1</option>
+   </select>
+   ```
+
+   ```java
+   @RequestMapping("/findAll.do")
+   public String findAll(Model model, @RequestParam(defaultValue="1") Integer pageNum, @RequestParam(defaultValue="4") Integer pageSize){
+       List<Orders> list = ordersService.findAll(pageNum,pageSize);
+       PageInfo pageInfo = new PageInfo(list);
+       model.addAttribute("pageInfo",pageInfo);
+       return "orders-list";
+   }
+   ```
+
+   ```java
+   public List<Orders> findAll(Integer pageNum, Integer pageSize) {
+       PageHelper.startPage(pageNum,pageSize);
+       return ordersDao.findAll();
+   }
+   ```
+
+
+#### 2、订单详情查询
+
+订单查询时需要查询产品信息（多对一）、旅客信息（多对多）、会员信息（多对一）
+
+**多对多查询时**，需要中间表。首先根据订单的id在中间表中查询查询出traveller的id，再根据traveller的多个id查询多个traveller
+
+```html
+<button type="button" onclick="location.href='${pageContext.request.contextPath}/orders/findById.do?id=${orders.id}'">详情</button>
+```
+
+```java
+@RequestMapping("/findById.do")
+public String findById(Model model, String id){
+    Orders orders = ordersService.findById(id);
+    model.addAttribute("orders",orders);
+    return "orders-show";
+}
+```
+
+```java
+@Repository
+public interface OrdersDao {
+    @Select("select * from orders where id=#{id}")
+    @Results({
+        @Result(id = true, property = "id", column = "id"),
+        @Result(property = "orderNum", column = "orderNum"),
+        @Result(property = "orderTime", column = "orderTime"),
+        @Result(property = "orderStatus",column = "orderStatus"),
+        @Result(property = "peopleCount",column = "peopleCount"),
+        @Result(property = "payType",column = "payType"),
+        @Result(property = "orderDesc",column = "orderDesc"),
+        @Result(property = "product",column = "productId",
+                one = @One(select = "com.itheima.ssm.dao.ProductDao.findById") ),
+        @Result(property = "member",column = "memberId",
+                one = @One(select = "com.itheima.ssm.dao.MemberDao.findById") ),
+        @Result(property = "travellers",column = "id",
+                many = @Many(select = "com.itheima.ssm.dao.TravellerDao.findByOrdersId"))
+    })
+    Orders findById(String id);
+}
+
+@Repository
+public interface TravellerDao {
+   @Select("select * from TRAVELLER where id in(select TRAVELLERID from ORDER_TRAVELLER where orderId=#{orderId})")
+   List<Traveller> findByOrdersId(String orderId);
+}
+```
+
+
+
+
+
+### 2.4 用户管理
+
+#### 1、登录(Spring Security数据库认证)
+
+> 只需要根据username查询所有信息并封装，然后由Spring security自动完成登录的校验
+
+用户表（UserInfo）、角色表（Role）、资源权限表（Permission）。其中用户与角色是多对多；角色与资源权限是多对多。
+
+基于Spring Security的数据库认证的操作方式有多种，这里我们介绍使用`UserDetails`、 `UserDetailsService`来完成操作
+
+- **`UserDetails`**接口，作用是于**封装当前进行认证的用户信息**，我们可以对其进行实现，也可以**使用Spring Security提供的一个UserDetails的实现类User**来完成操作
+
+  ```java
+  public interface UserDetails extends Serializable {     
+  	Collection<? extends GrantedAuthority> getAuthorities();    
+  	String getPassword();       
+  	String getUsername();       
+  	boolean isAccountNonExpired();      
+  	boolean isAccountNonLocked();    
+  	boolean isCredentialsNonExpired();    
+  	boolean isEnabled(); 
+  }
   ```
 
-  * Service层：
+  以下是User类的部分代码：
 
-    * applicationContext-service.xml：**包扫描器**，扫描**@service**注解的类
+  ```java
+  public class User implements UserDetails, CredentialsContainer {
+      private String password;    
+      private final String username;    
+      private final Set<GrantedAuthority> authorities;    
+      private final boolean accountNonExpired; //帐户是否过期    
+      private final boolean accountNonLocked; //帐户是否锁定    
+      private final boolean credentialsNonExpired; //认证是否过期    
+      private final boolean enabled; //帐户是否可用
+  }
+  ```
 
-    ```xml
-    <!-- 配置service扫描 -->
-    <context:component-scan base-package="cn.itcast.ssm.service" />
-    ```
+- `UserDetailsService`接口，用于规范验证方法的接口
 
-    * applicationContext-trans.xml：配置事务	
+  ```java
+  public interface UserDetailsService {        
+      UserDetails loadUserByUsername(String username) throws UsernameNotFoundException; 
+  }
+  ```
 
-  * Controller层：
+------
 
-    * **springmvc.xml**：1.**包扫描器**，扫描**@Controller**注解的类；2.配置**注解驱动**；3.配置**视图解析器**
+![](F:/GitHub/Studying/Spring%20Boot/images/%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%8C%E6%88%90springSecurity%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90.bmp)
 
-    ```xml
-    <!-- 配置Controller扫描 -->
-    <context:component-scan base-package="com.itheima.crm.controller"/>
+SSM综合练习中用户登录来完成Spring Security的认证操作：
+
+1. 导入依赖
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-web</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-config</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   <!--下面不认资料中没有导入-->
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-core</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-taglibs</artifactId>
+       <version>${spring.security.version}</version>
+   </dependency>
+   ```
+
+2. `web.xml`中配置**`springSecurityFilterChain`**（必须这个名字），别忘了监听器加载`spring-security.xml`配置文件
+
+   ```xml
+   <filter>
+       <filter-name>springSecurityFilterChain</filter-name>
+       <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+   </filter>
+   <filter-mapping>
+       <filter-name>springSecurityFilterChain</filter-name>
+       <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   
+   <context-param>
+       <param-name>contextConfigLocation</param-name>
+       <param-value>classpath*:spring-security.xml</param-value>
+   </context-param>
+   <listener>
+       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+   </listener>
+   ```
+
+3. `spring-security.xml`中配置如下
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:security="http://www.springframework.org/schema/security"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans
+                              http://www.springframework.org/schema/beans/spring-beans.xsd
+                              http://www.springframework.org/schema/security
+                              http://www.springframework.org/schema/security/spring-security.xsd">
+   
+       <!-- 配置不拦截的资源（静态资源及登录相关）  -->
+       <security:http pattern="/login.jsp" security="none"/>
+       <security:http pattern="/failer.jsp" security="none"/>
+       <security:http pattern="/css/**" security="none"/>
+       <security:http pattern="/img/**" security="none"/>
+       <security:http pattern="/plugins/**" security="none"/>
+   
+       
+        <!--配置授权的具体的规则
+        auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面
+        use-expressions="false"	是否使用SPEL表达式（没学习过）-->
+       <security:http auto-config="true" use-expressions="false">
+           <!-- pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER或...的角色的授权，没权限也可以登录" -->
+           <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+           <!-- 定义跳转的具体的页面 -->
+           <security:form-login
+                                login-page="/login.jsp"
+                                login-processing-url="/login.do"
+                                default-target-url="/index.jsp"
+                                authentication-failure-url="/failer.jsp"
+                                authentication-success-forward-url="/pages/main.jsp"
+                                />
+           <!-- 关闭跨域请求 -->
+           <security:csrf disabled="true"/>
+           <!-- 退出，invalidate-session 是否删除session logout-url：登出处理url logout-successurl：登出成功页面-->
+           <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp"/>
+       </security:http>
+   
+       
+       <!-- 认证管理器，指定了认证需要访问的service 。切换成数据库中的用户名和密码。-->
+       <security:authentication-manager>
+           <security:authentication-provider user-service-ref="userService">
+               <!-- 配置加密的方式，以便框架来解密。   否则使用{noop}拼接上密码（不推荐）-->
+               <security:password-encoder ref="passwordEncoder"/> 
+           </security:authentication-provider>
+       </security:authentication-manager>
+   
+       
+       <!-- 配置加密类，注入后直接调用即可加密、解密 -->
+       <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+   
+       
+       <!-- 提供了入门的方式，在内存中存入用户名和密码
+       <security:authentication-manager>
+        <security:authentication-provider>
+         <security:user-service>
+          <security:user name="admin" password="{noop}admin" authorities="ROLE_USER"/>
+         </security:user-service>
+        </security:authentication-provider>
+       </security:authentication-manager>
+       -->
+   </beans>
+   ```
+
+4. 实现`UserDetailsService`接口
+
+   ```java
+   public interface UserService extends UserDetailsService {}
+   ```
+
+   ```java
+   @Service("userService")
+   @Transactional
+   public class UserServiceImpl implements UserService {
+       @Autowired
+       private UserDao userDao;
+   
+       @Override
+       public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+   
+           UserInfo userInfo = userDao.findByUsername(s);//UserInfo为和数据库对应的实体类
+           //User user = new User(userInfo.getUsername(), "{noop}" + userInfo.getPassword(), getAuthorities(userInfo.getRoles()));
+           //添加用户状态的判断。封装到UserDetails实现类User。{noop}是明文密码暂时解决方案，后续框架利用配置的加密bean自动对其解密
+           User user = new User(userInfo.getUsername(), userInfo.getPassword(),userInfo.getStatus()==0?false:true,true,true,true, getAuthorities(userInfo.getRoles()));
+           return user;
+       }
+   
+       public List<SimpleGrantedAuthority> getAuthorities(List<Role> roles) {
+           List<SimpleGrantedAuthority> list = new ArrayList<>();
+           for (Role role : roles) {
+               list.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+           }
+           return list;
+       }
+   }
+   ```
+
+5. UserDao中查询user时还需查询user所属的角色Role表（多对多）
+
+   ```java
+   @Repository
+   public interface UserDao {
+   
+       @Select("select * from users where username=#{username}")
+       @Results({
+               @Result(id = true, property = "id", column = "id"),
+               @Result(column = "username", property = "username"),
+               @Result(column = "email", property = "email"),
+               @Result(column = "password", property = "password"),
+               @Result(column = "phoneNum", property = "phoneNum"),
+               @Result(column = "status", property = "status"),
+               @Result(column = "id", property = "roles",
+                       many = @Many(select = "com.itheima.ssm.dao.RoleDao.findRoleByUserId"))
+       })
+       UserInfo findByUsername(String username);
+   }
+   ```
+
+6. login页面：表单请求方法为POST，action为login.do，用户名和密码的表单name为username、password（不乱修改则不需要在spring-security.xml中配置）
+
+#### 2、退出(Spring Security)
+
+在spring-security.xml配置中，只要前端页面访问logout.do即可退出
+
+```html
+<a href="${pageContext.request.contextPath}/logout.do">注销</a>
+```
+
+
+
+#### 3、查询所有用户
+
+略
+
+#### 4、添加用户(BCryptPasswordEncoder加密)
+
+后台管理系统，一般是不提供注册功能，由管理员直接分配。
+
+spring-security.xml中配置了认证管理器的加密方式和BCryptPasswordEncoder的Bean，可以用于加密、解密（每次加密后数据不同，但是前缀一致），只需在service中调用dao的save方法前加密即可（删掉之前添加的{noop}）
+
+```java
+@Controller
+@RequestMapping("/user")
+public class UserController {
+    @RequestMapping("/save.do")
+    public String save(Model model,UserInfo userInfo){
+        userService.save(userInfo);
+        return "redirect:findAll.do";
+    }
+}
+```
+
+```java
+@Service("userService")
+@Transactional
+public class UserServiceImpl implements UserService {
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
     
-    <!-- 注解驱动 替代上两个-->
-    <mvc:annotation-driven/>
-    
-    <!-- 视图解释器 省略前后缀-->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property value="/WEB-INF/jsp/" name="prefix"/>
-        <property value=".jsp" name="suffix"/>
-    </bean>
-    <!-- 对静态资源放行 -->
-    <mvc:resources location="/css/" mapping="/css/**"/>
-    <mvc:resources location="/js/" mapping="/js/**"/>
-    <mvc:resources location="/fonts/" mapping="/fonts/**"/>
-    ```
+    @Override
+    public void save(UserInfo userInfo) {
+        userInfo.setPassword(bCryptPasswordEncoder.encode(userInfo.getPassword()));//加密
+        userDao.save(userInfo);
+    }
+}
+```
 
-  * **web.xml**：1.**配置spring**；2.配置**前端控制器**
+#### 5、用户详情(用户、角色、资源多表联查)
 
-    ```xml
-    <!-- 指定Spring配置文件(下部分代码由IDEA自动生成)-->
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/applicationContext.xml</param-value>
-    </context-param>
-    <!-- 配置监听器加载spring配置文件 -->
-    <listener>
-        <listener-class>
-            org.springframework.web.context.ContextLoaderListener
-        </listener-class>
-    </listener>
-    
-    <!-- 配置过滤器，解决post的乱码问题 -->
-    <filter>
-        <filter-name>encoding</filter-name>
-        <filter-class>
-            org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>encoding</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
-    <!-- 配置SpringMVC前端控制器 -->
-    <servlet>
-        <servlet-name>dispatcher</servlet-name>
-        <servlet-class>
-            org.springframework.web.servlet.DispatcherServlet
-        </servlet-class>
-        <!-- 指定SpringMVC配置文件，可以不配置，默认找/WEB-INF/[servlet的名称]-servlet.xml -->
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:spring/springmvc.xml</param-value>
-        </init-param>
-        <!-- 配置springmvc什么时候启动，参数必须为整数
-      为0或者大于0，则springMVC随着容器启动而启动；小于0，则在第一次请求进来的时候启动 -->
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <!-- 1. /* 拦截所有 jsp js png .css 建议不使用 
-       2. *.action *.do 拦截以do action 结尾的请求 肯定能使用 ERP 
-             3. / 拦截所有（只不包括jsp) 强烈建议使用 前台 面向消费者 对静态资源放行 -->
-        <url-pattern>*.form</url-pattern>
-    </servlet-mapping>
-    ```
+通过id查询用户及其角色信息（多对多）、以及角色包含的资源权限信息（多对多）
+
+```java
+@Controller
+@RequestMapping("/user")
+public class UserController {
+    @RequestMapping("/findById.do")
+    public String findById(Model model,String id){
+        UserInfo userInfo = userService.findById(id);
+        model.addAttribute("user",userInfo);
+        return "user-show";
+    }
+}
+```
+
+```java
+@Repository
+public interface UserDao {    
+    @Select("select * from users where id=#{id}")
+    @Results({
+        @Result(id = true, property = "id", column = "id"),
+        @Result(column = "username", property = "username"),
+        @Result(column = "email", property = "email"),
+        @Result(column = "password", property = "password"),
+        @Result(column = "phoneNum", property = "phoneNum"),
+        @Result(column = "status", property = "status"),
+        @Result(column = "id", property = "roles",
+                many = @Many(select = "com.itheima.ssm.dao.RoleDao.findRoleByUserId"))
+    })
+    UserInfo findById(String id);
+}
+
+@Repository
+public interface RoleDao {
+    @Select("select * from role where id in (select roleid from USERS_ROLE where userId=#{userId})")
+    @Results({
+        @Result(id = true,property = "id",column = "id"),
+        @Result(property = "roleName",column = "roleName"),
+        @Result(property = "roleDesc",column = "roleDesc"),
+        @Result(property = "permissions",column = "id",
+                many = @Many(select = "com.itheima.ssm.dao.PermissionDao.findByRoleId"))
+    })
+    List<Role> findRoleByUserId(String userId);
+}
+
+@Repository
+public interface PermissionDao {
+    @Select("select * from PERMISSION where id in(
+            select PERMISSIONID from ROLE_PERMISSION where roleId=#{roleId})")
+    List<Permission> findByRoleId(String roleId);
+}
+```
+
+注意：在用AdminLTE展示用户、角色、权限时树表格的问题需要注意`data-tt-id`和`data-tt-parent-id`的值要对应
+
+```html
+<c:forEach items="${user.roles}" var="role" varStatus="vs">
+    <tr data-tt-id="${vs.index+1}" data-tt-parent-id="0">
+        <td>${role.roleName }</td>
+        <td>${role.roleDesc }</td>
+    </tr>
+    <c:forEach items="${role.permissions}" var="permission">
+        <tr data-tt-id="1-1" data-tt-parent-id="${vs.index+1}">
+            <td>${permission.permissionName}</td>
+            <td>${permission.url}</td>
+        </tr>
+    </c:forEach>
+</c:forEach>
+```
+
+
+
+### 2.5 角色管理
+
+#### 1、查询所有角色
+
+仅仅只有角色信息，不包含其他表信息。类似2.4的第3小节
+
+#### 2、添加角色
+
+仅仅只有角色信息，不包含其他表信息。类似2.4的第4小节，但不用加密
+
+
+
+### 2.6 资源权限管理
+
+#### 1、查询所有权限
+
+仅仅只有权限信息，不包含其他表信息。类似2.4的第3小节
+
+#### 2、添加权限
+
+仅仅只有权限信息，不包含其他表信息。类似2.4的第4小节，但不用加密
+
+
+
+### 2.7 权限关联
+
+#### 1、用户关联角色
+
+先查出这个用户没有的角色信息；再向user_role表中插入数据
+
+
+
+#### 2、角色关联权限
+
+先查出这个角色没有的权限信息；再向role_permission表中插入数据
+
+
+
+### 2.8 权限控制
+
+#### 3、方法级别权限控制
 
 
 
 
 
+#### 4、页面上权限控制
 
 
 
-
-
-
-# 第七部分 Spring Boot
+# 第八部分 Spring Boot
 
 ## Spring Boot 简介
 

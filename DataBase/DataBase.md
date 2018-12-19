@@ -1650,14 +1650,14 @@ GRANT DBA to itheima;
 
 ## 2.3 常用数据类型（应用）
 
-| 数据类型                    | 描述                                                        |
-| --------------------------- | ----------------------------------------------------------- |
-| Varchar(n)，**Varchar2(n)** | 表示一个字符串                                              |
-| **NUMBER**                  | NUMBER(n)表示一个整数，长度是n                              |
-|                             | NUMBER(m,n):表示一个小数，总长度是 m，小 数是 n，整数是 m-n |
-| **DATA**                    | 表示日期类型                                                |
-| CLOB                        | 大对象，表示大文本数据类型，可存 4G                         |
-| BLOB                        | 大对象，表示二进制数据，可存 4G                             |
+| 数据类型                    | 描述                                                       |
+| --------------------------- | ---------------------------------------------------------- |
+| Varchar(n)，**Varchar2(n)** | 表示一个字符串                                             |
+| **NUMBER**                  | NUMBER(n)表示一个整数，长度是n                             |
+|                             | NUMBER(m,n)表示一个小数，总长度是 m，小 数是 n，整数是 m-n |
+| **DATA、timestamp**         | 表示日期类型；更精确的日期类型（都包含到秒）               |
+| CLOB                        | 大对象，表示大文本数据类型，可存 4G                        |
+| BLOB                        | 大对象，表示二进制数据，可存 4G                            |
 
 
 
@@ -2401,13 +2401,13 @@ commit;
 oracle10g对应jar包为：ojdbc14.jar
 oracle11g对应jar包为：ojdbc6.jar
 
-1. Maven工程中pom.xml添加坐标依赖
+1. Maven工程中pom.xml添加坐标依赖（添加不上则需要利用Maven上传jar包到本地仓库）
 
    ```xml
    <dependency>
        <groupId>com.oracle</groupId>
        <artifactId>ojdbc14</artifactId>
-       <version>10.2.0.4.0</version>
+       <version>10.2.0.1.0</version>
        <scope>runtime</scope>
    </dependency>
    <dependency>

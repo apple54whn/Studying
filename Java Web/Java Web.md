@@ -62,17 +62,15 @@
 
   `<span></span>`   **内联标签**，一行内显示
 
+  `<pre></pre>`   **预格式**文本，保留原有格式
 
+  `<hr/>`   **横线**
 
-​	`<pre></pre>`   **预格式文本**，保留原有格式
+  `<br/>`   **换行**
 
-​	`<hr/>`   **横线**
+  `&lt;`、`&gt;`、`&amp;`、**`&nbsp;`**、`&copy;`、`&reg;`  分别为：<、>、 **空格**、 &、 &copy;、 &reg;  **特殊字符**
 
-​	`<br/>`   **换行**
-
-​	`&lt;`、`&gt;`、`&amp;`、**`&nbsp;`**、`&copy;`、`&reg;`  分别为：<、>、 **空格**、 &、 &copy;、 &reg;  **特殊字符**
-
-​	`<!--注释-->`   **注释**
+  `<!--注释-->`   **注释**
 
 * 文字修饰标签
 
@@ -1019,7 +1017,7 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 - 属性
   - **`innerHTML`**：返回一个字符串，等同于**该元素包含的所有 HTML 代码**，该属性**可读写**。用来设置某个节点的内容
   - `textContent`：显示文本或插入的是文本时使用来替代上面方法。原样显示，不像上面方法会转为`&**;`来显示
-  - `value`：代表的是元素的value属性，一般用于**`input`标签值的获取**
+  - `value`：代表的是元素的value属性，一般用于**`input`标签值的获取**，**`select`**标签值也可以使用
   - `style`：用来读写该元素的行内样式信息，配合CSS。如display可取值none、block、inner
     - 也可以**提前定义好**类选择器的样式，通过元素的`className`属性来设置其`class`属性值。
 - **方法：**
@@ -1404,7 +1402,7 @@ document.getElementById("sheng").onchange = function () {
 - **内容操作**
   - **`html()`**：获取/设置元素的**标签体**内容   `<a><font>内容</font></a>`  --> `<font>内容</font>`
   - **`text()`**：获取/设置元素的**标签体纯文本**内容   `<a><font>内容</font></a>` --> `内容`，设置时将font也删去了
-  - **`val()`**：获取/设置元素的**value属性值**，常用于input标签
+  - **`val()`**：获取/设置元素的**value属性值**，常用于**`input`**标签，**`select`**标签值也可以使用
 - **属性操作**
   1. **通用属性操作**（获取传递1个字符串；设置传递2个字符串；删除传递1个字符串）
      - **`attr()`**: 获取/设置元素的属性
@@ -2081,6 +2079,87 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 * 轮播图
 
 ## 6.4 其他详细的看文档去吧！
+
+
+
+# 7 AdminLTE
+
+* AdminLTE简介
+
+  AdminLTE是一款建立在bootstrap和jquery之上的开源的模板主题工具，它提供了一系列响应的、 可重复使用的组件，并内置了多个模板页面；同时自适应多种屏幕分辨率，兼容PC和移动端。通 过AdminLTE，我们可以快速的创建一个响应式的Html5网站。AdminLTE框架在网页架构与设计 上，有很大的辅助作用，尤其是前端架构设计师，用好AdminLTE 不但美观，而且可以免去写很大 CSS与JS的工作量。从GitHub获取[AdminLTE源码](https://github.com/almasaeed2010/AdminLTE)
+
+  AdminLTE依赖于两个框架Bootstrap3与JQuery1.11+
+
+* AdminLTE结构介绍
+
+  ```
+  AdminLTE/ 
+  ├── dist/ 
+  │   ├── CSS/ 
+  │   ├── JS 
+  │   ├── img 
+  ├── build/ 
+  │   ├── less/ 
+  │   │   ├── AdminLTE's Less files 
+  │   └── Bootstrap-less/ (Only for reference. No modifications have been made) 
+  │       ├── mixins/
+  │       ├── variables.less 
+  │       ├── mixins.less 
+  └── plugins/    
+      ├── All the customized plugins CSS and JS files
+  ```
+
+* AdminLTE布局与皮肤
+
+  * 布局
+
+    `.wrapper`包住了body下的所有代码
+
+    `.main-header`里是网站的logo和导航栏的代码
+
+    `.main-sidebar`里是用户面板和侧边栏菜单的代码
+
+    `.content-wrapper`里是页面的页面和内容区域的代码 
+
+    `.main-footer`里是页脚的代码
+
+    `.control-sidebar`里是页面右侧侧边栏区域的代码
+
+  * 布局选项
+
+    `fixed`：固定
+
+    `layout-boxed`：盒子布局
+
+    `layout-top-nav`：顶部隐藏
+
+    `sidebar-collapse`：侧边栏隐藏
+
+    `sidebar-mini`：侧边栏隐藏时有小图标
+
+  * 皮肤
+
+    `skin-blue`：蓝色
+
+    `skin-black`：黑色
+
+    `skin-purple`：紫色
+
+    `skin-yellow`：黄色 
+
+    `skin-red`：红色
+
+    `skin-green`：绿色
+
+
+
+* **AdminLTE2-IT黑马-定制版**
+
+  传智播客研究院针对英文版本AdminLTE进行了汉化，并优化与定制了部分页面，方便我们的学习 与使用。后续SSM综合练习课程中使用的界面就是基于AdminLTE2-IT黑马-定制版。从GitHub[获取源码](https://github.com/itheima2017/adminlte2-itheima)，也可以[在线进行浏览](http://research.itcast.cn/adminlte2-itcast/release/dist/pages/all-admin-index.html)。
+
+  minLTE2-IT黑马-定制版是基于FIS3进行开发，在目录结构中assets、modules、pages、 plugins都是前端开发时所使用到的，最终发布的就是release。所以对于我们使用AdminLTE2-IT黑 马-定制版来说，我们只需要**关注release目录**下的结构就可以。
+
+  在release目录下有**css、img、pages、plugins**目录。前两者就不在解决pages是产生的一些定制的页面，而plugins中是相关的插件，例如jquery、bootstrap等相关的css与js文件。
 
 
 
