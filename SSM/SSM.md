@@ -1373,6 +1373,8 @@ Mybatis中缓存分为一级缓存，二级缓存
 
 
 
+* @**Param**：方法中有**多参数**时（多表插入时），需指定！！！也可以封装到JavaBean对象中
+
 * @SelectProvider：实现动态 SQL 映射，还有@InsertProvider、@DeleteProvider、@UpdateProvider
 
   需自定义类和方法，之后添加注解`@SelectProvider(type = UserDaoProvider.class, method = "findUserById")  `
@@ -1402,6 +1404,10 @@ void updateUser(User user);
 
 @Delete("delete from user where id=#{id}")
 void deleteUser(Integer id);
+
+//多参数时需指定
+@Insert("insert into USERS_ROLE values(#{userId},#{roleId})")
+void addRoleToUser(@Param("userId") String userId, @Param("roleId") String roleId);
 ```
 
 ### 7.3 单表结果集封装
@@ -1847,7 +1853,7 @@ DI（Dependency Injection）：**依赖注入**，即是**依赖关系的维护*
 
 > 作用和xml配置文件中编写`<bean>`标签实现功能一致
 
-* **`@Component`**：用于==**把当前类对象存入Spirng容器中**==
+* **`@Component`**：用于==**把当前类对象存入Spirng容器中**==。注解在实现类上不指定value会自动指定value（删除Impl）
 
   * 属性：`value`：用于指定bean的id。不写时默认为当前类名，且首字母小写
 
@@ -4314,9 +4320,9 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
         <!--配置授权的具体的规则
         auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面
         use-expressions="false"	是否使用SPEL表达式（没学习过）-->
-       <security:http auto-config="true" use-expressions="false">
+       <security:http auto-config="true" use-expressions="true">
            <!-- 配置具体的拦截的规则 pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER或...的角色" -->
-           <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+           <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/>
            <!-- 定义跳转的具体的页面 -->
            <security:form-login
                                 login-page="/login.jsp"
@@ -4414,6 +4420,25 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
 6. login页面：表单请求方法为POST，action为login.do，用户名和密码的表单name为username、password（不乱修改则不需要在spring-security.xml中配置）
 
 
+
+
+
+* Spring Security允许我们在定义URL访问或方法访问所应有的权限时使用Spring EL表达式，在定义所需的访问权限时如果对应的表达式返回结果为true则表示拥有对应的权限，反之则无。Spring Security可用表达式对象的基类是SecurityExpressionRoot，其为我们提供了如下在使用Spring EL表达式对URL或方法进行权限控制时通用的内置表达式。
+
+  |           **表达式**           | **描述**                                                     |
+  | :----------------------------: | ------------------------------------------------------------ |
+  |        hasRole([role])         | 当前用户是否拥有指定角色。                                   |
+  |   hasAnyRole([role1,role2])    | 多个角色是一个以逗号进行分隔的字符串。如果当前用户拥有指定角色中的任意一个则返回true。 |
+  |      hasAuthority([auth])      | 等同于hasRole                                                |
+  | hasAnyAuthority([auth1,auth2]) | 等同于hasAnyRole                                             |
+  |           Principle            | 代表当前用户的principle对象                                  |
+  |         authentication         | 直接从SecurityContext获取的当前Authentication对象            |
+  |           permitAll            | 总是返回true，表示允许所有的                                 |
+  |            denyAll             | 总是返回false，表示拒绝所有的                                |
+  |         isAnonymous()          | 当前用户是否是一个匿名用户                                   |
+  |         isRememberMe()         | 表示当前用户是否是通过Remember-Me自动登录的                  |
+  |       isAuthenticated()        | 表示当前用户是否已经登录认证成功了。                         |
+  |     isFullyAuthenticated()     | 如果当前用户既不是一个匿名用户，同时又不是通过Remember-Me自动登录的，则返回true。 |
 
 # 第七部分 整合SSM
 
@@ -5862,13 +5887,13 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
        <security:http pattern="/img/**" security="none"/>
        <security:http pattern="/plugins/**" security="none"/>
    
-       
-        <!--配置授权的具体的规则
+   
+       <!--配置授权的具体的规则
         auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面
-        use-expressions="false"	是否使用SPEL表达式（没学习过）-->
-       <security:http auto-config="true" use-expressions="false">
-           <!-- pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER或...的角色的授权，没权限也可以登录" -->
-           <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+        use-expressions="true"	是否使用SPEL表达式-->
+       <security:http auto-config="true" use-expressions="true">
+           <!-- 配置具体的拦截的规则 pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER等角色" -->
+           <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/>
            <!-- 定义跳转的具体的页面 -->
            <security:form-login
                                 login-page="/login.jsp"
@@ -5883,7 +5908,7 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
            <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp"/>
        </security:http>
    
-       
+   
        <!-- 认证管理器，指定了认证需要访问的service 。切换成数据库中的用户名和密码。-->
        <security:authentication-manager>
            <security:authentication-provider user-service-ref="userService">
@@ -5892,11 +5917,11 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
            </security:authentication-provider>
        </security:authentication-manager>
    
-       
+   
        <!-- 配置加密类，注入后直接调用即可加密、解密 -->
        <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
    
-       
+   
        <!-- 提供了入门的方式，在内存中存入用户名和密码
        <security:authentication-manager>
         <security:authentication-provider>
@@ -6114,25 +6139,206 @@ public interface PermissionDao {
 
 #### 1、用户关联角色
 
-先查出这个用户没有的角色信息；再向user_role表中插入数据
+多对多关系，先查出这个用户没有的角色信息；再向user_role表中插入数据
 
+- 信息的回显
+
+  1. 根据用户id查询用户信息（包括已有角色信息）
+
+  2. 根据用户id查询用户没有的角色信息
+
+  3. 将1和2的信息封装并跳转至添加页面
+
+     ```java
+     @Controller
+     @RequestMapping("/user")
+     public class UserController {
+         @RequestMapping("/findUserByIdAndAllRole.do")
+         public String findUserByIdAndAllRole(Model model,String id){
+             UserInfo userInfo = userService.findById(id); //dao中省略的，查看之前的代码
+             List<Role> list = userService.findOtherRoles(id);
+             model.addAttribute("user",userInfo);
+             model.addAttribute("roleList",list);
+             return "user-role-add";
+         }
+     }
+     ```
+
+     ```java
+     @Repository
+     public interface UserDao {
+        	//省略了findById
+         @Select("select * from role where id not in (select roleId from USERS_ROLE where userId = #{userId})")
+         List<Role> findOtherRoles(String userId);
+     }
+     ```
+
+- 用户角色的添加：需要提供用户的id和角色的id数组。（若也面不显示用户，则使用hidden隐藏）
+
+  dao中多参数添加时需要`@Param`注解
+
+  ```html
+  <input type="hidden" name="userId" value="${user.id}">
+  <input name="ids" type="checkbox" value="${role.id}"><!--使用了类似foreach标签，所以有多个值-->
+  ```
+
+  ```java
+  @RequestMapping("/addRoleToUser.do")
+  public String addRoleToUser(String userId,String[] ids){//获取的id是数组
+      userService.addRoleToUser(userId,ids);
+      return "redirect:findAll.do";
+  }
+  ```
+
+  ```java
+  @Insert("insert into USERS_ROLE values(#{userId},#{roleId})")
+  void addRoleToUser(@Param("userId") String userId, @Param("roleId") String roleId);
+  ```
 
 
 #### 2、角色关联权限
 
-先查出这个角色没有的权限信息；再向role_permission表中插入数据
+多对多关系，先查出这个角色没有的权限信息；再向role_permission表中插入数据。类似用户管理角色
 
 
 
 ### 2.8 权限控制
 
-#### 3、方法级别权限控制
+#### 2.8.1 服务器端方法级权限控制
+
+在服务器端我们可以通过Spring security提供的注解对方法来进行权限控制。Spring Security在方法的权限控制上
+支持三种类型的注解，JSR-250注解、@Secured注解和支持表达式的注解，这三种注解默认都是没有启用的，需要
+单独通过`<global-method-security>`元素的对应属性进行**启用**：
+
+* spring-security.xml配置文件
+
+  ```xml
+  <security:global-method-security jsr250-annotations="enabled" secured-annotations="enabled" pre-post-annotations="enabled"/>
+  ```
+
+* 注解开启
+
+  `@EnableGlobalMethodSecurity` ：Spring Security默认是禁用注解的，要想开启注解，需要在继承
+  `WebSecurityConfigurerAdapter`的类上加该注解，并在该类中将`AuthenticationManager`定义为Bean
+
+##### 1、JSR-250注解
+
+* pom.xml中添加依赖
+
+  ```xml
+  <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+      <version>1.0</version>
+  </dependency>
+  ```
+
+* `@RolesAllowed`表示访问对应方法时所应该具有的角色
+
+  ```java
+  @RolesAllowed({"USER", "ADMIN"}) 
+  ```
+
+  该方法只要具有"USER", "ADMIN"任意一种权限就可以访问。这里可以省略前缀ROLE_，实际的权限可能是ROLE_ADMIN
+
+  `@PermitAll`表示允许所有的角色进行访问，也就是说不进行权限控制
+
+  `@DenyAll`是和PermitAll相反的，表示无论什么角色都不能访问
+
+##### 2、@Secured注解
+
+* `@Secured`注解标注的方法进行权限控制的支持，其值默认为disabled
+
+  ```java
+  @Secured("ROLE_ADMIN")
+  public Account readAccount(Long id);
+  ```
+
+##### 3、支持Sp表达式的注解
+
+* `@PreAuthorize` 在方法调用之前,基于表达式的计算结果来限制对方法的访问
+
+  ```java
+  @PreAuthorize("#userId == authentication.principal.userId or hasAuthority(‘ADMIN’)")
+  void changePassword(long userId ){ }
+  ```
+
+  这里表示在changePassword方法执行之前，判断方法参数userId的值是否等于principal中保存的当前用户的userId，或者当前用户是否具有ROLE_ADMIN权限，两种符合其一，就可以访问该方法。
+
+* `@PostAuthorize` 允许方法调用，但是如果表达式计算结果为false，将抛出一个安全性异常
+
+  ```java
+  @PostAuthorize
+  User getUser("returnObject.userId == authentication.principal.userId orhasPermission(returnObject, 'ADMIN')");
+  ```
+
+* `@PostFilter` 允许方法调用,但必须按照表达式来过滤方法的结果
+  `@PreFilter` 允许方法调用,但必须在进入方法之前过滤输入值
 
 
 
 
 
-#### 4、页面上权限控制
+#### 2.8.2 页面上权限控制
+
+* pom.xml中依赖导入
+
+  ```xml
+  <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-taglibs</artifactId>
+      <version>version</version>
+  </dependency>
+  ```
+
+* 页面导入
+
+  ```html
+  <%@taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
+  ```
+
+* **authentication**：代表的是当前认证对象，可以获取当前**认证对象信息**，例如用户名
+
+  ```html
+  <security:authentication property="" htmlEscape="" scope="" var=""/>
+  ```
+
+  `property`：只允许指定Authentication所拥有的属性，可以进行属性的级联获取，如“principle.username”，
+  不允许直接通过方法进行调用
+
+  `htmlEscape`：表示是否需要将html进行转义。默认为true。
+
+  `scope`：与var属性一起使用，用于指定存放获取的结果的属性名的作用范围，默认我pageContext。Jsp中拥
+  有的作用范围都进行进行指定
+
+  `var`： 用于指定一个属性名，这样当获取到了authentication的相关信息后会将其以var指定的属性名进行存
+  放，默认是存放在pageConext中
+
+* **authorize**：用来判断普通**权限**的，通过判断用户是否具有对应的权限而控制其所包含内容的显示
+
+  ```html
+  <security:authorize access="" method="" url="" var=""></security:authorize>
+  ```
+
+  `access`：需要使用表达式来判断权限，当表达式的返回结果为true时表示拥有对应的权限
+
+  `method`：method属性是配合url属性一起使用的，表示用户应当具有指定url指定method访问的权限，method的默认值为GET，可选值为http请求的7种方法
+
+  `url`：url表示如果用户拥有访问指定url的权限即表示可以显示authorize标签包含的内容
+
+  `var`：用于指定将权限鉴定的结果存放在pageContext的哪个属性中
+
+* accesscontrollist：用于鉴定ACL权限的。其一共定义了三个属性：hasPermission、domainObject和var，前两必须指定
+
+  ```html
+  <security:accesscontrollist hasPermission="" domainObject="" var=""></security:accesscontrollist>
+  ```
+
+  `hasPermission`：hasPermission属性用于指定以逗号分隔的权限列表
+
+  `domainObject`：domainObject用于指定对应的域对象
+
+  `var`：var则是用以将鉴定的结果以指定的属性名存入pageContext中，以供同一页面的其它地方使用
 
 
 
