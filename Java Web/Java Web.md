@@ -163,10 +163,29 @@
 
     - **action**：提交到地址，默认提交到当前的页面（可以是一个页面，也可以是后台代码）
     - **method**：常用的有两种  get和post，默认是get请求 
+
       - ==**get和post区别**==
         1. get请求地址栏会携带提交的数据（封装到请求行中），post不会携带（封装在请求体里面，http协议）
         2. get请求数据有大小的限制，post没有限制
         3. get请求安全级别较低，post较高
+
+      - form表单不支持其他请求方式，使用时需要在input中添加一个**`_method`属性**，Ajax方式示例：
+
+        注意：Java后端需**配置`HiddenHttpMethodFilter`**
+
+        ```javascript
+        $.ajax({
+            url:"/user",
+            type: "POST",
+            data: {
+                "_method":"DELETE",
+                "body":$("#form1").serialize()
+            },
+            success : function (href) {
+                location.href = href;
+            }
+        })
+        ```
     - **enctype**：一般请求下不需要这个属性，做**文件上传**时候需要设置这个属性 
 
   - **输入项**`<input type="输入项类型">`
@@ -1864,9 +1883,9 @@ $(function () {
     - 若是POST提交，可以设置request.setCharacterEncoding("utf-8")或者不用管，Ajax本身就解决了
     - 若是GET提交，则需要编码解码
 
-  **`serialize()`：序列表单内容为字符串**。可用于Ajax提交表单
+  **`serialize()`：jQuery中序列表单内容为字符串**。可用于Ajax提交表单
 
-
+  Ajax的其他delete、put等查看HTML章节介绍
 
 ## 5.4 JSON
 
@@ -2918,7 +2937,7 @@ Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，�
 > - 在${CATALINA_HOME}\conf\web.xml中，相当于写到了每个项目的web.xml中，它是所有web.xml的父文件
 >
 >   ```xml
->   //它的优先级最低，如果一个请求没有人处理，那么它来处理！它显示404
+>   //它的优先级最低，如果一个请求没有人处理，那么它来处理！
 >   //当访问路径不存在时，会执行该Servlet！其实我们在访问index.html时也是在执行这个Servlet
 >   <servlet-name>default</servlet-name>
 >   <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
@@ -3159,11 +3178,15 @@ public void destroy() {
 * **urlpartten**：**Servlet访问路径**，用**value**替代了，所以可以不写
 
      - **一个Servlet**可以定义**多个访问路径** ： `@WebServlet({"/d4","/dd4","/ddd4"})`
-     - 路径定义规则：
+     - **路径定义规则**：
+         - **`/`**：==**仅不会匹配.jsp**，需要**释放静态资源**==，（查看Tomcat中web.xml中介绍）
+             - 它的**优先级最低**，如果一个请求没有人处理，会执行该DefaultServlet！其实我们在访问index.html时也是在执行该DefaultServlet。
+             - **不会重写其他Servlet**：即不匹配JSP是因为任何URL后缀为jsp的访问，都会执行名为jsp的Servlet
+         - **`/*`**：带通配符（匹配所有**路径型和后缀型**URL，包括.html、.jsp等），==**不建议使用**，**除非用在Filter中**==
+             - **会重写其他Servlet**：在访问jsp时会报404
          - `/xxx`：路径匹配
          - `/xxx/xxx`：多层路径，称之为目录结构
          - `*.do`：扩展名匹配，*前不能有/，否则报错
-         - `/*`：通配符，优先级低。其他都匹配不到才匹配
 
 
 
@@ -3600,7 +3623,7 @@ public void destroy() {
 
 ### 5.2.5 路径的写法
 
-* **相对路径**：通过相对路径不可以确定唯一资源，以**`./`开头路径**。如：`./index.html`
+* **相对路径**：通过相对路径不可以确定唯一资源，以**`./`开头（或不写它）的路径**。如：`./index.html`
      * 规则：找到当前资源所属目录和目标资源所属目录之间的相对位置关系。`./`：当前目录；`../`:后退一级目录
 * **绝对路径**：通过绝对路径可以确定唯一资源，以**`/`开头的路径**。如：`/day15/responseDemo2`
   * 规则：判断定义的路径是**给谁用**的？**判断将来请求从哪儿发出**
