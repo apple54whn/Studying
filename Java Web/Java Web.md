@@ -1901,7 +1901,7 @@ $(function () {
 
   1. 基本规则
 
-     - 数据在**名称/值**对中，**键用双引号**引起来
+     - 数据在**名称/值**对中，**键用双引号（严格模式，但在js中可以不用）**引起来
      - 值的取值类型：
        1. 数字（整数或浮点数）
        2. 字符串（在双引号中）
@@ -5431,14 +5431,15 @@ Linux的版本分为两种：
 
 * `cp`(**复制**，需要指定源文件名与目标文件名或目录)、`mv`(**移动**或者**重命名**)
 
-* **`tar`**(**打包**但不做压缩，**解压**)
+* **`tar`**(**打包**但不做压缩，解包)
+
   * -**c**：创建一个新tar文件
 
     -**v**：显示运行过程的信息
 
     -**f**：指定文件名
 
-    -**z**：**调用gzip压缩命令**进行压缩
+    -**z**：**调用gzip压缩命令**进行压缩、解压
 
     -t：查看压缩文件的内容
 
@@ -5448,7 +5449,7 @@ Linux的版本分为两种：
 
   * **打包并且压缩**：`tar –zcvf xxx.tar.gz ./*`
 
-  * **解压**：`tar –xvf xxx.tar`、`tar -xvf xxx.tar.gz -C /usr/aaa`(`-C`指定路径)
+  * **解压**：`tar –zxvf xxx.tar`、`tar -zxvf xxx.tar.gz -C /usr/aaa`(`-C`指定路径)
 
 * `grep`：查找**符合条件的字符串**，用法`grep [选项]... PATTERN [FILE]...`
 
@@ -5575,11 +5576,11 @@ Linux三种文件类型
 
 ## Linux远程连接
 
-SecureCRT
+SecureCRT软件：按`Alt+SFTP`可传输文件`put d:\zookeeper-3.4.6.tar.gz`
 
 XShell
 
-Mac或Linux中的SSH命令
+Mac或Linux中的SSH命令：`ssh 用户名@IP`，之后会让输密码；传输文件：`scp D:\zookeeper-3.4.6.tar.gz root@192.168.25.128`
 
 sftp：从Windows上传文件到Linux中
 

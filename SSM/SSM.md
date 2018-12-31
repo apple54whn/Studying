@@ -1366,6 +1366,8 @@ Mybatis中缓存分为一级缓存，二级缓存
 
   需自定义类和方法，之后添加注解`@SelectProvider(type = UserDaoProvider.class, method = "findUserById")  `
 
+  感觉比xml还麻烦啊
+
 
 
 ### 7.2 单表CRUD
@@ -1493,7 +1495,7 @@ User findById(Integer id);
 
 - 配置文件修改：
   - 修改要生成的数据库表
-  - **domain**文件所在包路径
+  - **domain**文件所在包路径，生成后实现Serializable接口，以便在网络中传输。带Example的就不用了
   - **dao**所在的包路径
 - 注意：
   - 逆向工程生成的代码只能做**单表查询**
@@ -5427,7 +5429,7 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
 
 
 
-# 第七部分 整合SSM
+# 第六部分 整合SSM
 
 整合的思路：
 
@@ -7493,3 +7495,8 @@ public interface PermissionDao {
       <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
   ```
+
+
+
+
+
