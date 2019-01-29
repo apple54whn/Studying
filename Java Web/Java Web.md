@@ -215,6 +215,10 @@
 
       还可以获取==**form**==，使用**其`submit()`方法，返回false（true或无返回值都将跳转）**！用于Ajax提交表单
 
+      ```html
+      <a onclick="document:loginForm.submit()">登陆</a> <!--这样也可以提交，但是会跳转。了解-->
+      ```
+
       可以使用==**普通button**==，配合JS来使用Ajax提交表单。**type需指定为button**，否则浏览器会将值设置为submit
 
       ```html
@@ -717,7 +721,8 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
     - `join(参数)`：将数组中的元素**按照指定的分隔符拼接**为**字符串**。不传参数默认按`,`拼接（document.write）
     - `push()`：向数组的**末尾添加一个或更多元素**，并**返回新的长度**。
         - 如果添加的是一个**数组**，这个时候把数组当做一个**整体字符串**添加进去
-    - `pop()`：表示 删除最后一个元素，**返回删除的那个元素**
+    - `pop()`：删除最后一个元素，**返回删除的那个元素**
+    - `splice(index,n)`：**从index位置开始删除n个元素**
     - `reverse()`：颠倒数组中的元素的顺序，改变原有数组顺序
     - `concat`：数组的连接
 - 属性：`length`：数组的长度=最大角标+1
@@ -5580,7 +5585,10 @@ SecureCRT软件：按`Alt+SFTP`可传输文件`put d:\zookeeper-3.4.6.tar.gz`
 
 XShell
 
-Mac或Linux中的SSH命令：`ssh 用户名@IP`，之后会让输密码；传输文件：`scp D:\zookeeper-3.4.6.tar.gz root@192.168.25.128`
+Mac或Linux中的SSH命令
+
+* `ssh 用户名@IP`，之后会让输密码
+* 传输文件：`scp D:\zookeeper-3.4.6.tar.gz root@192.168.25.129:/root/也可以指定文件名称扩展名`
 
 sftp：从Windows上传文件到Linux中
 

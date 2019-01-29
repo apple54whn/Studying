@@ -33,7 +33,7 @@
 
   - C:\ProgramData\MySQL\MySQL Server 8.0\ ==**my.ini**==：**服务器配置文件**，之前版本放在安装目录中bin下
 
-    - 配置MySQL的端口：==**默认为3306**==（一般不建议修改）
+    - 配置MySQL的端口：==**默认为3306**==（一般不建议修改，本电脑MySQL5为3306、MySQL8为3308端口）
     - 配置字符编码：（一般不建议修改）
       - [mysql]下配置默认客户端编码：default-character-set=gbk
       - [mysqld]下配置默认服务器编码：character-set-server=utf8
@@ -44,8 +44,8 @@
   - 关闭服务器(必须保证mysql为windows服务)：**`net stop mysql8`**，mysqld.exe进程不存在
 - ==**客户端操作**==
   - 登录服务器：**`mysql -uroot -p123 `**或**`mysql -uroot -p`**，然后输入密码
-    - 远程登录：**` mysql -h 127.0.0.1 -uroot -p`**，`-h`和`IP`分开，`loclahost`不用分开，其他同上
-      - 还有一种写全称的：`mysql --host=ip地址 --user=用户名 --password=密码`
+    - 远程登录：**` mysql -h 127.0.0.1 -P 3306 -uroot -p`**，`-h`和`IP`分开，**`-P`必须大写**，其他同上
+      - 还有一种写全称的：`mysql --host=ip地址 --user=用户名 --password=密码`（端口号不知怎么写）
   - 退出服务器：**`exit`或`quit`**
 
 
@@ -2817,7 +2817,7 @@ redis中数据存储在内存，当redis服务器重启或电脑重启，数据�
 
 ### 1.5.1 Jedis简介
 
-Jedis: 一款java操作redis数据库的工具
+Jedis: Redis官方推出的一款java操作redis数据库的工具（后续会使用Spring Data Redis）
 
 * 使用步骤
 

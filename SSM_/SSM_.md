@@ -99,7 +99,7 @@ Maven 包含了一个项目对象模型 (Project Object Model)，一组标准集
 
 - Maven项目的jar包只需在**`pom.xml`**添加jar包的**坐标**，自动从**Maven仓库**下载jar包、运行
 
-![](F:/GitHub/Studying/Spring%20Boot/images/maven%E6%A6%82%E5%BF%B5%E6%A8%A1%E5%9E%8B%E5%9B%BE.png)
+![](images/maven%E6%A6%82%E5%BF%B5%E6%A8%A1%E5%9E%8B%E5%9B%BE.png)
 
 Maven仓库分三类：本地仓库、远程仓库（私服）、中央仓库。可以配置本地仓库的路径
 
@@ -643,7 +643,8 @@ in.close();
 
 **OGNL**(Object-Graph Navigation Language)，它是一种功能强大的**表达式语言**，通过它简单一致的表达式语法（省略get、set），可以存取对象的**任意属性**，调用对象的**方法**，遍历整个对象的结构图，实现字段类型转化等功能。它使用相同的表达式去存取对象的属性
 
-* **parameterType**：将要传入语句的参数的完全限定类名或别名。可选，MyBatis推断出具体传入语句的参数
+* **parameterType**：将要传入语句的参数的完全限定类名或别名。**可选**，MyBatis会推断出具体传入语句的参数
+
   * **传递简单类型**：Integer、int、String等等，写全限定类名或简单类型都可以。使用`#{}`占位符，任意取值
   * **传递POJO对象**：Mybatis使用ognl表达式解析对象字段的值，`#{}`括号中的值为提供的POJO属性名称
   * **传递POJO包装对象**
@@ -726,7 +727,7 @@ public interface UserMapper {
 
     
     <insert id="addUser" parameterType="cn.itcast.domain.User"> <!--下面占位符必须对应User中属性-->
-    	<!-- selectKey 插入操作后获取插入的数据的id -->
+    	<!-- selectKey 插入或更新操作后获取插入或更新的数据的id。插入后调用被插入对象的getId()方法即可获取到 -->
     	<!-- keyProperty：主键对应的POJO中的哪一个属性 -->
     	<!-- keyColumn:主键对应的表中的哪一列 -->
     	<!-- order：设置在执行insert语句前执行查询id的sql，还是在执行insert语句之后执行查询id的sql-->
@@ -1491,7 +1492,7 @@ User findById(Integer id);
 
 
 
-## 逆向工程
+## 8 逆向工程
 
 - 配置文件修改：
   - 修改要生成的数据库表
@@ -1510,6 +1511,8 @@ User findById(Integer id);
 # 第三部分 Spring
 
 > 以5.0.2版本讲解。要求JDK8及以上，Tomcat8.5及以上
+
+
 
 ## 1 Spring概述
 
@@ -3325,7 +3328,7 @@ AccountServiceImpl和6.4中一致
 
 
 
-# 第四部分 SpringMVC
+# 第四部分 Spring MVC
 
 > 三层架构
 >
@@ -3965,8 +3968,8 @@ public String test(
 
 ```java
 @RequestMapping("/usePathVariable/{sid}") 
-public String usePathVariable(@PathVariable("sid") Integer id){  
-    System.out.println(id);  
+public String usePathVariable(@PathVariable("sid") Integer sid){  
+    System.out.println(sid);  
     return "success"; 
 }
 ```
@@ -5168,7 +5171,7 @@ HTML中导入名称空间，有代码提示
 
 
 
-!
+
 
 
 
@@ -5182,7 +5185,9 @@ HTML中导入名称空间，有代码提示
 
 # 第五部分 Spring Security
 
-[Spring Security](https://projects.spring.io/spring-security/) 的前身是 Acegi Security ，是 Spring 项目组中用来提供安全认证服务的框架。 安全包括两个主要操作：
+[Spring Security](https://projects.spring.io/spring-security/) 的前身是 Acegi Security ，是一个能够为基于Spring的企业应用系统提供声明式的安全访问控制解决方案的安全框架。它提供了一组可以在Spring应用上下文中配置的Bean，充分利用了Spring IoC，DI 和 AOP功能，为应用系统提供声明式的安全访问控制功能，减少了为企业系统安全控制编写大量重复代码的工作。
+
+安全包括两个主要操作：
 
 * “认证”是为用户建立一个他所声明的主体。主体一般是指用户，设备或可以在你系统中执行动作的其他系统。 
 * “授权”指的是一个用户能否在你的应用中执行某个操作，在到达授权判断之前，身份的主体已经由身份验证过程建立了。
@@ -5217,7 +5222,7 @@ HTML中导入名称空间，有代码提示
   }
   ```
 
-* `UserDetailsService`接口，用于规范验证方法的接口
+* `UserDetailsService`接口，用于规范认证方法的接口
 
   ```java
   public interface UserDetailsService {        
@@ -5229,9 +5234,13 @@ HTML中导入名称空间，有代码提示
 
 ![](images\使用数据库完成springSecurity用户登录流程分析.png)
 
+
+
+## 1 登陆注销
+
 SSM综合练习中用户登录来完成Spring Security的认证操作：
 
-1. 导入依赖
+1. 导入spring-security相关依赖（自动导入spring-security-core/config/web三个依赖）
 
    ```xml
    <dependency>
@@ -5244,12 +5253,7 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
        <artifactId>spring-security-config</artifactId>
        <version>${spring.security.version}</version>
    </dependency>
-   <!--下面不认资料中没有导入-->
-   <dependency>
-       <groupId>org.springframework.security</groupId>
-       <artifactId>spring-security-core</artifactId>
-       <version>${spring.security.version}</version>
-   </dependency>
+   <!--下面资料中没有导入-->
    <dependency>
        <groupId>org.springframework.security</groupId>
        <artifactId>spring-security-taglibs</artifactId>
@@ -5257,18 +5261,9 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
    </dependency>
    ```
 
-2. `web.xml`中配置**`springSecurityFilterChain`**（必须这个名字），别忘了监听器加载`spring-security.xml`配置文件
+2. `web.xml`中配置**`springSecurityFilterChain`**（必须这个名字），别忘了监听器加载`spring-security.xml`等配置文件
 
    ```xml
-   <filter>
-       <filter-name>springSecurityFilterChain</filter-name>
-       <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-   </filter>
-   <filter-mapping>
-       <filter-name>springSecurityFilterChain</filter-name>
-       <url-pattern>/*</url-pattern>
-   </filter-mapping>
-   
    <context-param>
        <param-name>contextConfigLocation</param-name>
        <param-value>classpath*:spring-security.xml</param-value>
@@ -5276,103 +5271,158 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
    <listener>
        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
    </listener>
+   
+   <filter>
+       <filter-name>springSecurityFilterChain</filter-name> <!--名称不能改变！-->
+       <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class> <!--只是个代理类，拦截-->
+   </filter>
+   <filter-mapping>
+       <filter-name>springSecurityFilterChain</filter-name>
+       <url-pattern>/*</url-pattern>
+   </filter-mapping>
    ```
 
 3. `spring-security.xml`中配置如下
 
    ```xml
    <?xml version="1.0" encoding="UTF-8"?>
-   <beans xmlns="http://www.springframework.org/schema/beans"
-          xmlns:security="http://www.springframework.org/schema/security"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://www.springframework.org/schema/beans
-                              http://www.springframework.org/schema/beans/spring-beans.xsd
-                              http://www.springframework.org/schema/security
-                              http://www.springframework.org/schema/security/spring-security.xsd">
+   <!--采用如下约束配置可以在配置时不加security前缀，但在配置bean时需要加beans前缀。主要方便springsecurity配置
+    采用此约束文件，没有前缀的都是springsecurity自身的配置-->
+   <beans:beans xmlns="http://www.springframework.org/schema/security" 
+                xmlns:beans="http://www.springframework.org/schema/beans" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                                    http://www.springframework.org/schema/security
+                                    http://www.springframework.org/schema/security/spring-security.xsd">
    
-       <!-- 配置不拦截的资源（静态资源及登录相关）  -->
-       <security:http pattern="/login.jsp" security="none"/>
-       <security:http pattern="/failer.jsp" security="none"/>
-       <security:http pattern="/css/**" security="none"/>
-       <security:http pattern="/img/**" security="none"/>
-       <security:http pattern="/plugins/**" security="none"/>
+       <!-- 配置不拦截的资源（静态资源及登录相关），不登录也可以访问。否则可能会有重定向次数过多错误  -->
+       <http pattern="/*.html" security="none"/> <!--webapp一级目录下的html文件（包括login.html及login_error等）-->
+       <http pattern="/css/**" security="none"/>
+       <http pattern="/js/**" security="none"/>
+       <http pattern="/img/**" security="none"/>
+       <http pattern="/plugins/**" security="none"/>
+       <http pattern="/seller/add.do" security="none"/> <!--注册相关的也必须放行-->
    
-       
-        <!--配置授权的具体的规则
-        auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面
-        use-expressions="false"	是否使用SPEL表达式（没学习过）-->
-       <security:http auto-config="true" use-expressions="true">
-           <!-- 配置具体的拦截的规则 pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER或...的角色" -->
-           <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/>
-           <!-- 定义跳转的具体的页面 -->
-           <security:form-login
-                                login-page="/login.jsp"
-                                login-processing-url="/login.do"
-                                default-target-url="/index.jsp"
-                                authentication-failure-url="/failer.jsp"
-                                authentication-success-forward-url="/pages/main.jsp"
-                                />
-           <!-- 关闭跨域请求 -->
-           <security:csrf disabled="true"/>
-           <!-- 退出，invalidate-session 是否删除session logout-url：登出处理url logout-successurl：登出成功页面-->
-           <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp"/>
-       </security:http>
    
-       
-       <!-- 认证管理器，指定了认证需要访问的service 。切换成数据库中的用户名和密码。-->
-       <security:authentication-manager>
-           <security:authentication-provider user-service-ref="userService">
-               <!-- 配置加密的方式。若配置此项，则需要指定密码加密方式，否则使用{noop}拼接上密码即可
-               <security:password-encoder ref="passwordEncoder"/> -->
-           </security:authentication-provider>
-       </security:authentication-manager>
+       <!--http标签主要用于配置拦截的具体的规则
+        auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面，不配置默认为true
+        use-expressions="true"	是否启用SPEL表达式，不配置默认为true（功能强大，可以限制ip等，没学习过）-->
+       <http auto-config="true" use-expressions="true">
+           <!-- 具体的拦截规则 pattern="表示拦截页面"，与web.xml中不同。此处为目录规则，/**代表目录及其子目录
+                              access="访问系统的角色名称（以ROLE_开头），当前用户必须有ROLE_ADMIN或...的角色" -->
+           <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')"/> <!--SPEL表达式-->
+           <!-- 开启表单登陆功能，定义跳转的具体的页面 
+       login-page="/login.html"  //必须以斜杠开头
+       default-target-url="/index.html"  //指定了成功进行身份认证和授权后默认呈现给用户的页面 
+       always-use-default-target="true"  //无论请求哪个页面登陆成功后都跳转至index而不是请求的那个页面
+       authentication-failure-url="/login.html"  //指定了身份认证失败时跳转到的页面-->
+           <form-login login-page="/login.html"  default-target-url="/index.html" always-use-default-target="true"  authentication-failure-url="/login.html"  />
    
-       
+           <!-- 注销登陆的配置
+      logout-url：登出处理url，不配置默认为/logout
+      logout-successurl：登出成功页面，默认不配置则跳转登陆页面
+      invalidate-session 是否删除session，不配置默认为true -->
+           <logout invalidate-session="true" logout-url="/logout" logout-success-url="/login.html"/>
+   
+           <!-- 关闭csrf（Cross-site request forgery）跨站请求伪造 ,如果不加会出现403错误。也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。HTML不能使用，JSP可以带指定头信息使用-->
+           <csrf disabled="true"/>
+   
+           <!--不拦截内置框架页，否则即使登陆成功也会拦截内置框架页-->
+           <headers>
+               <frame-options policy="SAMEORIGIN"/>
+           </headers>
+       </http>
+   
+   
+       <!-- 认证管理器，指定了认证需要访问的service 。使用成数据库中的用户名和密码。-->
+       <authentication-manager>
+           <authentication-provider user-service-ref="userService">
+               <!-- 配置加密的方式（会自动解密）。若配置此项，则需要指定密码加密方式，否则使用{noop}拼接上密码-->
+               <password-encoder ref="passwordEncoder"/> 
+           </authentication-provider>
+       </authentication-manager>
        <!-- 配置加密类 -->
-       <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+       <beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+   
    
        
-       <!-- 提供了入门的方式，在内存中存入用户名和密码
-       <security:authentication-manager>
-        <security:authentication-provider>
-         <security:user-service>
-          <security:user name="admin" password="{noop}admin" authorities="ROLE_USER"/>
-         </security:user-service>
-        </security:authentication-provider>
-       </security:authentication-manager>
+      
+       
+       <!--==========================================================================================-->
+       <!--【注意】由于pinyougou-shop-web消费者中UserDetailsServiceImpl是普通类，不能自动注入Dao接口。需要借助Dubbox的Service来间接调用，并且Service也不能直接注入，需要通过dubbox使用接口来注入Service实现类-->
+       <!-- 引用dubbox 服务 -->
+       <dubbo:application name="pinyougou-shop-web" />
+       <dubbo:registry address="zookeeper://192.168.25.129:2181"/>
+       <!--通过dubbox使用接口来注入实现类-->
+       <dubbo:reference id="sellerService" interface="com.pinyougou.sellergoods.service.SellerService"/>
+   
+       <!--认证类-->
+       <beans:bean id="userDetailsService" class="com.pinyougou.service.UserDetailsServiceImpl">
+           <beans:property name="sellerService" ref="sellerService"/>
+       </beans:bean>	
+       <!--==========================================================================================-->
+   
+   
+       <!-- 入门方式，在内存中存入用户名、密码、角色（若使用明文密码，不配置加密方式，则不用添加{noop}）
+       <authentication-manager>
+        <authentication-provider>
+         <user-service>
+          <user name="admin" password="{noop}admin" authorities="ROLE_ADMIN"/>  
+          <user name="zhangsan" password="{noop}zhangsan" authorities="ROLE_ADMIN"/>
+         </user-service>
+        </authentication-provider>
+       </authentication-manager>
        -->
-   </beans>
+   </beans:beans>
    ```
 
-4. 实现`UserDetailsService`接口
+   自定义登陆页面：表单请求方法为**POST**，action为**`/login`**（由Springsecurity自动生成路径），用户名和密码的表单name为**username、password**（不乱修改则不需要在`spring-security.xml`中配置）
 
-   ```java
-   public interface UserService extends UserDetailsService {}
+   ```xml
+   <!--
+    login-processing-url：修改表单登陆action，不配置默认为/login
+    authentication-success-forward-url：不知道。。。
+    username-parameter和password-parameter：表单中用户名、密码input标签的name值。不配置默认为username、password
+   -->
+   <form-login
+               login-processing-url="/loginnnn"
+               authentication-success-forward-url="/pages/main.jsp" 
+               username-parameter="name"
+               password-parameter="pswd"/>
    ```
 
+   注销按钮访问`/logout`即可
+
+   
+
+4. 实现`UserDetailsService`接口，springsecurity会根据**方法返回的User**实现类**对比表单登陆的数据**来决定登陆成功与否
+
    ```java
-   @Service("userService")
-   @Transactional
-   public class UserServiceImpl implements UserService {
-       @Autowired
-       private UserDao userDao;
+   @Service//不使用Dubbox是可以这样写，但使用后这个类可能在web中只是个普通类，就只能xml配置
+   public class UserDetailsServiceImpl implements UserDetailsService {
    
-       @Override
-       public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-   
-           UserInfo userInfo = userDao.findByUsername(s);//UserInfo为和数据库对应的实体类
-           //User user = new User(userInfo.getUsername(), "{noop}" + userInfo.getPassword(), getAuthorities(userInfo.getRoles()));
-           //添加用户状态的判断。封装到UserDetails实现类User。
-           User user = new User(userInfo.getUsername(), "{noop}" + userInfo.getPassword(),userInfo.getStatus()==0?false:true,true,true,true, getAuthorities(userInfo.getRoles()));
-           return user;
+       @Autowired//同上，不使用Dubbox是可以这样写，但使用后就只能xml配置。并且需要提供set方法
+       private SellerService sellerService;
+       public void setSellerService(SellerService sellerService) {
+           this.sellerService = sellerService;
        }
    
-       public List<SimpleGrantedAuthority> getAuthorities(List<Role> roles) {
-           List<SimpleGrantedAuthority> list = new ArrayList<>();
-           for (Role role : roles) {
-               list.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+       @Override
+       public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+   
+           TbSeller seller = sellerService.findOne(username);//查找数据库中的数据对象
+           System.out.println(username+"==="+seller.getPassword()+"==="+seller.getStatus());
+           if (seller != null) {
+               boolean enabled = seller.getStatus().equals("1"); //账户是否可以使用
+               //角色信息本应该和数据库中User对象一起查询出来，然后遍历并添加到如下authorities集合中
+               List<GrantedAuthority> authorities = new ArrayList<>();
+               authorities.add(new SimpleGrantedAuthority("ROLE_SELLER"));
+               //返回UserDetails的实现类User（都是SpringSecurity提供的）
+               return new User(username, seller.getPassword(), enabled, true, true, true, authorities);
+           } else {
+               return null;
            }
-           return list;
        }
    }
    ```
@@ -5398,7 +5448,85 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
    }
    ```
 
-6. login页面：表单请求方法为POST，action为login.do，用户名和密码的表单name为username、password（不乱修改则不需要在spring-security.xml中配置）
+   
+
+## 2 显示登陆名
+
+后端
+
+```java
+@RestController
+@RequestMapping("/login")
+public class LoginController {
+
+    @RequestMapping("showName")
+    public Map showName(){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Map map = new HashMap();
+        map.put("loginName",name);
+        return map;
+    }
+}
+```
+
+前端（AngularJS）
+
+```js
+app.service("loginService",function ($http) {
+    this.showName = function () {
+        return $http.get("../login/showName.do");
+    }
+});
+```
+
+```js
+app.controller("loginController",function ($scope,loginService) {
+    $scope.showName = function () {
+        loginService.showName().success(
+            function (data) {
+                $scope.loginName = data.loginName;
+            }
+        )
+    }
+});
+```
+
+```html
+<!--修改框架页的信息-->
+<body ng-app="pinyougou" ng-controller="loginController" ng-init="showName()">
+    {{loginName}}
+</body>
+```
+
+
+
+## 3 BCrypt密码加密
+
+用户表的密码通常使用MD5等不可逆算法加密后存储，为防止彩虹表破解更会先使用一个特定的字符串（如域名）加密，然后再使用一个随机的salt（盐值）加密。 特定字符串是程序代码中固定的，salt是每个密码单独随机，一般给用户表加一个字段单独存储，比较麻烦。 **BCrypt**算法将salt随机并混入最终加密后的密码，验证时也无需单独提供之前的salt，从而无需单独处理salt问题
+
+MD5加密后的32为字符永远是一样的，但BCrypt即使密码一样，他们的60位字符串还是不一样（加随机的盐salt）！
+
+配置查看上面的
+
+控制层在注册时加密。配置好登陆时SpringSecurity会自动解密对比。
+
+```java
+@RequestMapping("/add")
+public Result add(@RequestBody TbSeller seller){
+    try {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encode = encoder.encode(seller.getPassword());
+        seller.setPassword(encode);
+        sellerService.add(seller);
+        return new Result(true, "增加成功");
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new Result(false, "增加失败");
+    }
+}
+```
+
+
 
 
 
@@ -5424,6 +5552,1025 @@ SSM综合练习中用户登录来完成Spring Security的认证操作：
 
 
 ……看整合部分项目吧
+
+
+
+
+
+
+
+# 第六部分 Spring Data
+
+## 1 Spring Data Redis
+
+> Spring-data-redis是spring大家族的一部分，提供了在srping应用中通过简单的配置访问redis服务，对reids底层开发包(Jedis,  JRedis, and RJC)进行了高度封装，RedisTemplate提供了redis各种操作、异常处理及序列化，支持发布订阅，并对spring 3.1 cache进行了实现
+
+spring-data-redis针对jedis提供了如下功能：
+
+- **连接池自动管理**，提供了一个高度封装的“RedisTemplate”类
+
+- 针对jedis客户端中大量api进行了归类封装，将同一类型操作封装为**operation接口**
+
+  redis存储的是：**key,value格式**的数据，其中**key都是字符串**，**value有5种不同的数据结构**
+
+  - ValueOperations：简单字符串的操作
+  - ListOperations：针对List类型的数据操作
+  - SetOperations：针对Sets即set类型数据操作
+  - ZSetOperations：针对Sorted Sets即排序的set类型数据操作
+  - HashOperations：针对Hashes即map类型的数据操作
+
+
+
+### 1 环境搭建
+
+* 首先要开启Redis服务
+
+* Maven依赖引入（Spring相关、JUnit），还需要 Jedis 和 SpringDataRedis 依赖
+
+  ```xml
+  <!-- 缓存 -->
+  <dependency> 
+      <groupId>redis.clients</groupId> 
+      <artifactId>jedis</artifactId> 
+      <version>2.8.1</version> 
+  </dependency> 
+  <dependency> 
+      <groupId>org.springframework.data</groupId> 
+      <artifactId>spring-data-redis</artifactId> 
+      <version>1.7.2.RELEASE</version> 
+  </dependency>	
+  ```
+
+* resources/properties目录下的`redis-config.properties`配置文件
+
+  ```properties
+  # Redis settings 
+  # server IP 
+  redis.host=127.0.0.1
+  # server port 
+  redis.port=6379
+  # server pass 
+  redis.pass=
+  # use dbIndex 
+  redis.database=0
+  # 控制一个pool最多有多少个状态为idle(空闲的)的jedis实例 
+  redis.maxIdle=300
+  # 表示当borrow(引入)一个jedis实例时，最大的等待时间，如果超过等待时间(毫秒)，则直接抛出JedisConnectionException；  
+  redis.maxWait=3000
+  # 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的  
+  redis.testOnBorrow=true
+  ```
+
+* resources/spring目录下的Spring配置文件`applicationContext-redis.xml`
+
+  ```xml
+  <context:property-placeholder location="classpath*:properties/*.properties" />   
+  <!-- redis 相关配置 --> 
+  <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">  
+      <property name="maxIdle" value="${redis.maxIdle}" />   
+      <property name="maxWaitMillis" value="${redis.maxWait}" />  
+      <property name="testOnBorrow" value="${redis.testOnBorrow}" />  
+  </bean>  
+  
+  <bean id="JedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" 
+        p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.pass}" p:pool-config-ref="poolConfig"/>  <!--p为p命名空间，可以不用写property。下面的就是不用p命名空间-->
+  
+  <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">  
+      <property name="connectionFactory" ref="JedisConnectionFactory" />  
+  </bean>  
+  ```
+
+### 2 不同类型value
+
+* String
+
+  ```java
+  @RunWith(SpringJUnit4ClassRunner.class)
+  @ContextConfiguration("classpath:spring/applicationContext-redis.xml")//可以省略locations
+  public class TestString {
+      @Autowired
+      private RedisTemplate redisTemplate;
+  
+      @Test
+      public void setValue(){
+          redisTemplate.boundValueOps("StringName").set("itcast");
+      }
+  
+      @Test
+      public void getValue(){
+          String name = (String) redisTemplate.boundValueOps("StringName").get();
+          Assert.assertEquals("itcast",name);//name值为null
+      }
+  
+      @Test
+      public void deleteValue(){
+          redisTemplate.delete("StringName");//还可以传入集合，删除集合中所有key对应的key-value
+      }
+  }
+  ```
+
+* List
+
+  ```java
+  @RunWith(SpringJUnit4ClassRunner.class)
+  @ContextConfiguration("classpath:spring/applicationContext-redis.xml")//可以省略locations
+  public class TestList {
+  
+      @Autowired
+      private RedisTemplate redisTemplate;
+  
+      @Test
+      public void rightPushValue(){
+          redisTemplate.boundListOps("ListName").rightPushAll(new Object[]{"张三", "李四"});
+          redisTemplate.boundListOps("ListName").rightPush("王五");
+          //一个一个压栈：[张三, 李四, 王五]
+      }
+  
+      @Test
+      public void leftPushValue(){
+          redisTemplate.boundListOps("ListName").leftPushAll(new Object[]{"zhangsan", "lisi"});
+          redisTemplate.boundListOps("ListName").leftPush("wangwu");
+          //一个一个压栈：[wangwu, lisi, zhangsan]
+      }
+  
+      @Test
+      public void getValueByIndex(){
+          String  listName = (String) redisTemplate.boundListOps("ListName").index(1);//下标从0开始
+          System.out.println(listName);
+      }
+      
+      @Test
+      public void getValue(){
+          List list = redisTemplate.boundListOps("ListName").range(0, -1);
+          System.out.println(list);
+          list.forEach(System.out::println);
+      }
+      
+      @Test
+      public void removeValue(){
+          redisTemplate.boundListOps("ListName").remove(2,"李四");//第一个为要删除的数量
+      }
+      
+      @Test
+      public void deleteValue(){
+          redisTemplate.delete("ListName");//删除ListName对应的List集合。直接打印显示“[]”。还可以传入集合
+      }
+  }
+  ```
+
+* Set
+
+  ```java
+  @RunWith(SpringJUnit4ClassRunner.class)
+  @ContextConfiguration("classpath:spring/applicationContext-redis.xml")//可以省略locations
+  public class TestSet {
+      @Autowired
+      private RedisTemplate redisTemplate;
+  
+      @Test
+      public void addValue(){
+          redisTemplate.boundSetOps("SetName").add("张三");
+          redisTemplate.boundSetOps("SetName").add("李四");
+          redisTemplate.boundSetOps("SetName").add("王五");
+      }
+  
+      @Test
+      public void getValue(){
+          Set setName = redisTemplate.boundSetOps("SetName").members();
+          System.out.println(setName);
+                  setName.forEach(System.out::println);//方法引用，setName.forEach(o -> System.out.println(o))
+      }
+  
+      @Test
+      public void removeValue(){
+          redisTemplate.boundSetOps("SetName").remove("张三");//移除Set其中一个
+      }
+  
+      @Test
+      public void deleteValue(){
+          redisTemplate.delete("SetName");//删除SetName对应的Set集合。直接打印显示“[]”。还可以传入集合
+      }
+  }
+  ```
+
+* ZSet（方法和Set基本一致，除了查找有个`range()`方法）
+
+  ```java
+  @RunWith(SpringJUnit4ClassRunner.class)
+  @ContextConfiguration("classpath:spring/applicationContext-redis.xml")//可以省略locations
+  public class TestZSet {
+      @Autowired
+      private RedisTemplate redisTemplate;
+  
+      @Test
+      public void setValue(){
+          redisTemplate.boundZSetOps("ZSetName").add("张三",0);
+          redisTemplate.boundZSetOps("ZSetName").add("李四",2);
+          redisTemplate.boundZSetOps("ZSetName").add("王五",-2);//由小到大排序
+      }
+  
+      @Test
+      public void getValue(){
+          Set setName = redisTemplate.boundZSetOps("ZSetName").range(0,-1);
+          setName.forEach(System.out::println);//方法引用，setName.forEach(o -> System.out.println(o))lambda的简写
+      }
+  
+      @Test
+      public void removeValue(){
+          redisTemplate.boundZSetOps("ZSetName").remove("张三");//移除ZSet其中一个
+      }
+  
+      @Test
+      public void deleteValue(){
+          redisTemplate.delete("ZSetName");//删除ZSetName对应的ZSet集合。直接打印显示“[]”。还可以传入集合
+      }
+  }
+  ```
+
+* Hash（即map类型，用得比较多）
+
+  ```java
+  @RunWith(SpringJUnit4ClassRunner.class)
+  @ContextConfiguration("classpath:spring/applicationContext-redis.xml")//可以省略locations
+  public class TestHash {
+  
+      @Autowired
+      private RedisTemplate redisTemplate;
+  
+      @Test
+      public void putValue(){
+          Map<String,String> map = new HashMap<>();
+          map.put("a","张三");
+          map.put("b","李四");
+          redisTemplate.boundHashOps("HashName").putAll(map);
+          redisTemplate.boundHashOps("HashName").put("c","王五");
+  
+      }
+  
+      @Test
+      public void getValueByKey(){
+          String o = (String) redisTemplate.boundHashOps("HashName").get("c");
+          System.out.println(o);
+      }
+  
+      @Test
+      public void getValue(){
+          Map hashName = redisTemplate.boundHashOps("HashName").entries();
+          System.out.println(hashName);
+          hashName.forEach((key, value) -> System.out.println(key+"=="+value));
+      }
+  
+      @Test
+      public void removeValue(){
+          redisTemplate.boundHashOps("HashName").delete("c");//注意，此处不再是remove方法，是delete方法
+  
+      }
+  
+      @Test
+      public void deleteValue(){
+          redisTemplate.delete("HashName");//删除HashName对应的Map集合。直接打印显示“{}”。还可以传入集合
+      }
+  }
+  ```
+
+  
+
+
+
+## 2 Spring Data Solr
+
+
+
+​	大多数搜索引擎应用都必须具有某种搜索功能，问题是搜索功能往往是巨大的资源消耗，并且它们由于沉重的数据库加载而拖垮你的应用的性能。这就是为什么转移负载到一个**外部的搜索服务器**是一个不错的主意，**Apache Solr**是一个流行的开源搜索服务器，它通过使用类似**REST的HTTP API**，这就确保你能从几乎==**任何编程语言来使用solr**==。
+
+​	Solr是一个**开源**搜索平台，用于**构建搜索应用程序**。 它建立在[Lucene](http://www.yiibai.com/lucene/)(全文搜索引擎)之上。 Solr是企业级的、快速的和高度可扩展的。 使用Solr构建的应用程序非常复杂，可提供高性能。
+
+​	为了在CNET网络的公司网站上添加搜索功能，Yonik Seely于2004年创建了Solr。并在2006年1月，它成为Apache软件基金会下的一个开源项目。并于2016年发布最新版本Solr 6.0，支持并行SQL查询的执行。
+
+​	**Solr可以和[Hadoop](http://www.yiibai.com/hadoop/)一起使用**。由于Hadoop处理大量数据，Solr帮助我们从这么大的源中找到所需的信息。不仅限于搜索，**Solr也可以用于存储**目的。像其他**NoSQL**数据库一样，它是一种非关系数据存储和处理技术。
+
+​	总之，Solr是一个**可扩展**的，**可部署**，**搜索/存储引擎**，优化搜索**大量以文本为中心的数据**。
+
+
+
+### 1 Solr 环境搭建
+
+#### 1.1 Solr 安装
+
+1. 安装 Tomcat（解压即可）
+
+2. 解压 solr
+
+3. 把 solr 下的dist目录`solr-4.10.3.war`部署到 `Tomcat\webapps`下(去掉版本号)
+
+4. 启动 Tomcat，自动解压缩 war 包
+
+5. 把solr下example/lib/ext 目录下的所有的 jar 包，添加到 solr 的工程中(\WEB-INF\lib目录下)
+
+6. solrhome，solr 下的/example/solr 目录就是一个 solrhome。复制此目录到如D盘并改名为solrhome（存储数据）
+
+7. 关联 solr 及 solrhome。需要修改 solr 工程的 web.xml 文件
+
+   ```xml
+   <env-entry>
+       <env-entry-name>solr/home</env-entry-name>
+       <env-entry-value>d:\solrhome</env-entry-value>
+       <env-entry-type>java.lang.String</env-entry-type>
+   </env-entry>
+   ```
+
+8. 重新启动该Tomcat，访问`http://localhost:8080/solr/`即可看到界面，可以查询、分析
+
+
+
+#### 1.2 中文分析器 IK Analyzer
+
+> IK Analyzer 是一个开源的，基亍 java 语言开发的轻量级的中文分词工具包。从 2006年 12 月推出 1.0 版开始，IKAnalyzer 已经推出了 4 个大版本。最初，它是以开源项目Luence 为应用主体的，结合词典分词和文法分析算法的中文分词组件。3.0 版本开始，IK 发展为面向 Java 的公用分词组件，独立于 Lucene 项目，同时提供了对 Lucene 的默认优化实现。在 2012 版本中，IK 实现了简单的分词歧义排除算法，标志着 IK 分词器从单纯的词典分词向模拟语义分词衍化
+
+IK Analyzer配置：
+
+1. 把IKAnalyzer2012FF_u1.jar 添加到 solr 工程的 lib 目录下
+
+2. 创建WEB-INF/classes文件夹，把扩展词典、停用词词典（辅助词或敏感词）、配置文件放到 solr 工程的 WEB-INF/classes 目录下
+
+3. 修改 Solrhome 的 schema.xml 文件，配置一个 FieldType，使用 IKAnalyzer来做中文分析器
+
+   ```xml
+   <fieldType name="text_ik" class="solr.TextField">
+       <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>
+   </fieldType>
+   ```
+
+
+
+#### 1.3 配置域
+
+域相当于数据库的表字段，用户存放数据，因此用户根据业务需要去定义相关的Field（域），一般来说，每一种对应着一种数据，用户对同一种数据进行相同的操作。域的常用属性：
+
+* name：指定域的名称
+* type：指定域的类型
+* indexed：是否索引（要搜索的域）
+* stored：是否存储
+* required：是否必须
+* multiValued：是否多值
+
+##### 1.3.1 基本域
+
+修改solrhome的`schema.xml`文件，设置业务系统 Field。根据搜索的、被搜索出的、要用到的Field来配置
+
+```xml
+<field name="item_goodsid" type="long" indexed="true" stored="true"/> <!--goodsId,商品SKU。这些都是item表数据-->
+<field name="item_title" type="text_ik" indexed="true" stored="true"/><!--title,商品标题-->
+<field name="item_price" type="double" indexed="true" stored="true"/><!--price,商品价格-->
+<field name="item_image" type="string" indexed="false" stored="true" /><!--image,商品图片地址-->
+<field name="item_category" type="string" indexed="true" stored="true" /><!--category,商品分类-->
+<field name="item_seller" type="text_ik" indexed="true" stored="true" /><!--seller,商家-->
+<field name="item_brand" type="string" indexed="true" stored="true" /><!--brand,品牌-->
+<!--后添加的-->
+<field name="item_updatetime" type="date" indexed="true" stored="true" /><!--updatetime,上架时间-->
+```
+
+##### 1.3.2 复制域
+
+多条件查询时（同时输入标题、分类、商家、品牌），复制域的作用在于将某一个Field中的数据复制到另一个域中，不需要存储
+
+```xml
+<field name="item_keywords" type="text_ik" indexed="true" stored="false" multiValued="true"/>
+<copyField source="item_title" dest="item_keywords"/>
+<copyField source="item_category" dest="item_keywords"/>
+<copyField source="item_seller" dest="item_keywords"/>
+<copyField source="item_brand" dest="item_keywords"/>
+```
+
+##### 1.3.3 动态域
+
+当我们需要动态扩充字段时，我们需要使用动态域。对于品优购，规格的值是不确定的，所以我们需要使用动态域来实现。需要实现的效果如下：
+
+![1548005515777](images/1548005515777.png)
+
+```xml
+<dynamicField name="item_spec_*" type="string" indexed="true" stored="true" />	
+```
+
+
+
+
+
+### 2 Spring Data Solr 入门
+
+Spring Data Solr就是为了方便Solr的开发所研制的一个框架，其底层是对SolrJ（官方API）的封装。
+
+> 官方类库 SolrJ：原理是**RESTful的HTTP请求和响应**
+>
+> Spring Data Solr：是对SolrJ的封装
+>
+> 也可不使用上述工具，手动请求Solr，手动处理响应，httpClient
+
+#### 2.1 环境搭建
+
+* Maven依赖
+
+  ```xml
+  <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-solr</artifactId>
+      <version>1.5.5.RELEASE</version>
+  </dependency>
+  <!--Demo中还会用到JUnit和Spring与JUnit整合-->
+  ```
+
+* resources下创建`applicationContext-solr.xml`
+
+  ```xml
+  <!-- solr服务器地址，其实就是配置了一个bean -->
+  <solr:solr-server id="solrServer" url="http://127.0.0.1:8080/solr" />
+  
+  <!-- solr模板，使用solr模板可对索引库进行CRUD的操作 -->
+  <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
+      <constructor-arg ref="solrServer" />
+  </bean>
+  ```
+
+#### 2.2 `@Field` 、`@Dynamic`注解
+
+> `@Field`是Solr官方的SolrJ提供的注解，`@Dynamic`是SpringDataSolr的注解
+
+创建 cn.itcast.pojo 包，将品优购的TbItem实体类拷入本工程，属性（即Field域）使用`@Field`注解标识。如果属性与配置文件定义的域名称不一致，需要在注解中指定域名称。（上面Solr中基本域配置和这个对应，复制域不需要，动态域后面讲）
+
+```java
+public class TbItem implements Serializable{
+    
+    @Dynamic
+    @Field("item_spec_*")
+    private Map<String,String> specMap;//动态域，在数据导入时需利用fastJSON转换JSON为map
+
+    @Field
+    private Long id;
+
+    @Field("item_title")
+    private String title;
+
+    @Field("item_price")
+    private BigDecimal price;
+
+    @Field("item_image")
+    private String image;
+
+    @Field("item_goodsid")//注意大小写对应solr中配置的基本域
+    private Long goodsId;
+
+    @Field("item_category")
+    private String category;
+
+    @Field("item_brand")
+    private String brand;
+
+    @Field("item_seller")
+    private String seller;
+    
+    @Field("item_updatetime")
+    private Date updateTime;//后添加的，排序需要
+    .......
+}
+```
+
+#### 2.3 增加（修改）
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext-solr.xml")//可以省略locations
+public class TestTemplate {
+    @Autowired
+    private SolrTemplate solrTemplate;
+
+    @Test
+    public void testAdd(){
+
+        TbItem tbItem = new TbItem();
+        tbItem.setId(1L);
+        tbItem.setTitle("华为Mate10");
+        tbItem.setCategory("手机");
+        tbItem.setBrand("华为");
+        tbItem.setSeller("华为旗舰店");
+        tbItem.setGoodsId(10L);
+        tbItem.setPrice(new BigDecimal(4500.00));
+        solrTemplate.saveBean(tbItem);//增加；修改时只需对象的id（主键，非空）不变，其他修改后save即可
+        //solrTemplate.saveBeans(collection);（可以传递集合）
+        solrTemplate.commit();//必须commit
+    }
+}
+```
+
+#### 2.4 按主键删除
+
+```java
+@Test
+public void deleteById(){
+    solrTemplate.deleteById("1");//自动转换
+    solrTemplate.commit();
+}
+```
+
+#### 2.5 删除所有（条件）
+
+```java
+@Test
+public void deleteAll(){
+    Query query = new SimpleQuery("*:*");
+    solrTemplate.delete(query);
+    solrTemplate.commit();
+}
+```
+
+#### 2.5 按主键查询
+
+```java
+@Test
+public void getById(){
+    TbItem item = solrTemplate.getById(1L, TbItem.class);
+    System.out.println(item.getTitle());
+}
+```
+
+#### 2.6 条件查询（含分页查询）
+
+```java
+//条件查询
+@Test
+public void testQuery(){
+    Query query = new SimpleQuery("*:*");//查询所有字段所有信息（利用封装好的方法，不用写表达式）
+    Criteria criteria = new Criteria("item_category").contains("手机")
+        .and("item_title").contains("2");
+    query.addCriteria(criteria);
+
+    ScoredPage<TbItem> items = solrTemplate.queryForPage(query, TbItem.class);
+
+    List<TbItem> content = items.getContent();//当前页所有数据
+    content.forEach(o-> System.out.println(o.getTitle()+"--"+o.getBrand()+"--"+o.getPrice()));
+
+    System.out.println("总记录数："+items.getTotalElements());
+    System.out.println("总页数："+items.getTotalPages());
+}
+
+
+//分页
+@Test
+public void testQueryPage(){
+    Query query = new SimpleQuery("*:*");//查询所有字段所有信息
+    query.setOffset(20);//开始索引
+    query.setRows(5);//每页记录数
+    ScoredPage<TbItem> items = solrTemplate.queryForPage(query, TbItem.class);
+
+    List<TbItem> content = items.getContent();//当前页所有数据
+    content.forEach(o-> System.out.println(o.getTitle()+"--"+o.getBrand()+"--"+o.getPrice()));
+
+    System.out.println("总记录数："+items.getTotalElements());
+    System.out.println("总页数："+items.getTotalPages());
+}
+
+
+//首先利用saveBeans()方法批量添加数据
+@Test
+public void testAddList(){
+    List<TbItem> list=new ArrayList();
+
+    for(int i=0;i<100;i++){
+        TbItem item=new TbItem();
+        item.setId(i+1L);
+        item.setBrand("华为");
+        item.setCategory("手机");
+        item.setGoodsId(1L);
+        item.setSeller("华为2号专卖店");
+        item.setTitle("华为Mate"+i);
+        item.setPrice(new BigDecimal(2000+i));
+        list.add(item);
+    }
+    solrTemplate.saveBeans(list);
+    solrTemplate.commit();
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+### 3 批量数据导入
+
+> 可以使用Solr自带插件来导入，但不灵活，推荐查询增加的方式，根据条件筛选数据并导入Solr中
+>
+
+```java
+//审核通过才导入
+TbItemExample example = new TbItemExample();
+TbItemExample.Criteria criteria = example.createCriteria();
+criteria.andStatusEqualTo("1");
+
+List<TbItem> items = itemMapper.selectByExample(example);
+for (TbItem item : items) {
+    Map specMap = JSON.parseObject(item.getSpec(), Map.class);//fastJSON将数据库中json数据转为Map
+    item.setSpecMap(specMap);
+}
+solrTemplate.saveBeans(items);//saveBeans()
+solrTemplate.commit();
+```
+
+
+
+### 4 关键字搜索（复制域）
+
+`ItemSearchServiceImpl`
+
+```java
+@Service(timeout = 5000)//推荐写在服务提供方。当两方同时写，以消费方为准
+public class ItemSearchServiceImpl implements ItemSearchService {
+    @Autowired
+    private SolrTemplate solrTemplate;
+    
+    //前端传入的数据有多好多类型，如关键字、类型多选框之类的，前端封装为map类似对象
+    //后端不仅仅返回列表数据，还要返回根据关键字搜索后的分类信息，选择框等等，所以封装为map
+    @Override
+    public Map search(Map searchMap) {
+        Map map = new HashMap();
+        //Query query = new SimpleQuery("*:*");//好像不设置"*:*"也可以
+        //Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));//is匹配（利用分词实现）
+        //query.addCriteria(criteria);
+        Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));//is匹配（利用分词实现）
+        Query query = new SimpleQuery(criteria);
+        ScoredPage<TbItem> tbItems = solrTemplate.queryForPage(query, TbItem.class);
+
+        map.put("list",tbItems.getContent());
+        return map;
+    }
+}
+```
+
+`ItemSearchController`
+
+```java
+@RestController
+@RequestMapping("/itemSearch")
+public class ItemSearchController {
+    @Reference(timeout = 5000)//默认为1秒
+    private ItemSearchService itemSearchService;
+
+    @RequestMapping("/search")
+    public Map search(@RequestBody Map searchMap){ //@RequestBody接收前端json数据
+        return itemSearchService.search(searchMap);
+    }
+}
+```
+
+`ItemSearchService.js`
+
+```js
+app.service("itemSearchService",function ($http) {
+    this.search = function (searchMap) {
+        return $http.post("/itemsearch/search.do",searchMap);
+    }
+})
+```
+
+`ItemSearchController.js`
+
+```js
+app.controller("itemSearchController",function ($scope,itemSearchService) {
+    $scope.search = function () {
+        itemSearchService.search($scope.searchMap).success(function (data) {
+            $scope.resultMap = data;
+        })
+    }
+})
+```
+
+HTML遍历展示即可
+
+
+
+
+
+### 5 高亮显示关键字搜索（复制域）
+
+> 高亮显示标题title中的字符
+
+需要修改关键字搜索中的service方法，其他不变
+
+```java
+@Override
+public Map search(Map searchMap) {
+    Map<String,Map> map = new HashMap<>();
+    map.putAll(searchList(searchMap));//1.查询列表数据
+    map.put("categoryList",searchCategoryList(searchMap));//2.分组查询商品分类列表
+
+
+    return map;
+}
+
+/**
+ * 列表查询
+ */
+private Map searchList(Map searchMap) {
+    Map map = new HashMap();
+    //关键字的条件查询（利用复制域），相当于where
+    Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
+    HighlightQuery query = new SimpleHighlightQuery(criteria);
+	//高亮选项
+    HighlightOptions highlightOptions = new HighlightOptions()
+        .addField("item_title")//高亮Filed域
+        .setSimplePrefix("<span style='color: red;'>")//HTML前缀
+        .setSimplePostfix("</span>");//HTML后缀
+    query.setHighlightOptions(highlightOptions);//设置高亮设置
+    HighlightPage<TbItem> items = solrTemplate.queryForHighlightPage(query, TbItem.class);
+
+    //设置高亮
+    List<HighlightEntry<TbItem>> highlighted = items.getHighlighted();//高亮entry集合（每条记录）
+    for (HighlightEntry<TbItem> entry : highlighted) {
+        //高亮列表（高亮Filed域个数可能多个）。并且每个Filed域可能存储多值（此处没有）
+        TbItem item = entry.getEntity();//获取源实体类
+        List<HighlightEntry.Highlight> highlights = entry.getHighlights();
+        if (highlights.size() >= 0 && highlights.get(0).getSnipplets().size() >= 0) {
+            item.setTitle(highlights.get(0).getSnipplets().get(0));
+        }
+    }
+    map.put("list", items.getContent());
+    return map;
+}
+```
+
+但是此时HTML中显示的是HTML代码，不是解析后的页面。这是AngularJS为了防止html攻击采取的安全机制。此时需要用到AngularJS的`$sce`服务中的`trustAsHtml`方法。由于该方法具有通用性，定义在`filter`过滤器中（放入base.js）
+
+```js
+app.filter("trustHtml",['$sce',function ($sce) {
+    return function (data) {
+        return $sce.trustAsHtml(data);
+    }
+}])
+```
+
+HTML中就不能使用`{{}}`来绑定了，需要使用`ng-bing-html`
+
+```html
+<div class="attr" ng-bind-html="item.title | trustHtml"></div>
+```
+
+
+
+### 6 分组查询
+
+service中添加私有方法并调用
+
+```java
+/**
+ * 分组查询商品分类列表
+ */
+private List searchCategoryList(Map searchMap){
+    List<String> list = new ArrayList<>();
+    //关键字的条件查询（利用复制域），相当于where
+    Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
+    Query query = new SimpleQuery(criteria);
+    //设置分组选项，相当于group by。可能有多个分组（继续addGroupByField即可）
+    GroupOptions groupOptions = new GroupOptions().addGroupByField("item_category");
+    query.setGroupOptions(groupOptions);
+    //分组页
+    GroupPage<TbItem> items = solrTemplate.queryForGroupPage(query, TbItem.class);
+    //分组结果
+    GroupResult<TbItem> item_category = items.getGroupResult("item_category");
+    //分组entry页
+    Page<GroupEntry<TbItem>> groupEntries = item_category.getGroupEntries();
+    //分组entryj集合，便利获取值
+    List<GroupEntry<TbItem>> content = groupEntries.getContent();
+    for (GroupEntry<TbItem> tbItemGroupEntry : content) {
+        list.add(tbItemGroupEntry.getGroupValue());
+    }
+    return list;
+}
+```
+
+HTML中遍历
+
+```html
+<div ng-if="resultMap.categoryList!=null" >
+    <a ng-repeat="category in resultMap.categoryList" href="#{{$index}}">{{category}} </a>
+</div>
+```
+
+
+
+### 7 过滤查询（以上所有代码）
+
+```java
+@Service(timeout = 5000)//推荐写在服务提供方。所两方同时写，以消费方为准
+public class ItemSearchServiceImpl implements ItemSearchService {
+
+    @Autowired
+    private SolrTemplate solrTemplate;
+
+    /**
+     * 搜索
+     */
+    @Override
+    public Map search(Map searchMap) {
+        //去掉搜索关键字中的空格
+        String  keywords = (String) searchMap.get("keywords");
+        searchMap.put("keywords",keywords.replace(" ",""));
+        
+        Map map = new HashMap<>();
+        //1.查询列表数据
+        map.putAll(searchList(searchMap));
+        //2.分组查询商品分类列表
+        List<String> categoryList = searchCategoryList(searchMap);
+        map.put("categoryList", categoryList);
+        //3.根据分类名称查询品牌和规格列表
+        String category = (String) searchMap.get("category");
+        if ("".equals(category)) { //若没选择分类，按第一个分类查询
+            if (categoryList.size() > 0) {
+                map.putAll(searchBrandAndSpecList(categoryList.get(0)));
+            }
+        } else { //若选择了分类，按选择的分类名称查询
+            map.putAll(searchBrandAndSpecList(category));
+        }
+        return map;
+    }
+
+    /**
+     * 列表查询（过滤查询等等）
+     */
+    private Map searchList(Map searchMap) {
+        Map map = new HashMap();
+
+        //1.1关键字查询（利用复制域）
+        Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
+        HighlightQuery query = new SimpleHighlightQuery(criteria);
+        //高亮选项设置
+        HighlightOptions highlightOptions = new HighlightOptions()
+            .addField("item_title")//高亮Filed域
+            .setSimplePrefix("<span style='color: red;'>")//HTML前缀
+            .setSimplePostfix("</span>");//HTML后缀
+        query.setHighlightOptions(highlightOptions);//设置高亮设置
+
+        //1.2按照商品分类过滤
+        if (!"".equals(searchMap.get("category"))) { //若用户选择了分类
+            Criteria filterCriteria = new Criteria("item_category").is(searchMap.get("category"));
+            FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+            query.addFilterQuery(filterQuery);
+        }
+
+        //1.3按照品牌过滤
+        if (!"".equals(searchMap.get("brand"))) { //若用户选择了品牌
+            Criteria filterCriteria = new Criteria("item_brand").is(searchMap.get("brand"));
+            FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+            query.addFilterQuery(filterQuery);
+        }
+
+        //1.4按照规格过滤
+        if (searchMap.get("spec") != null) { //若用户选择了规格
+
+            Map<String, String> specMap = (Map<String, String>) searchMap.get("spec");
+            Set<Map.Entry<String, String>> entries = specMap.entrySet();
+            for (Map.Entry<String, String> entry : entries) {
+                System.out.println(entry.getKey() + "====" + entry.getValue());
+                Criteria filterCriteria = new Criteria("item_spec_" + entry.getKey()).is(entry.getValue());
+                FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+                query.addFilterQuery(filterQuery);
+            }
+        }
+        
+        //1.5按照价格过滤
+        if (!"".equals(searchMap.get("price"))){
+            String price = (String) searchMap.get("price");
+            String[] split = price.split("-");
+
+            Criteria filterCriteria = new Criteria("item_price");
+            if (!split[0].equals("0")){ //起始条件
+                filterCriteria.greaterThanEqual(split[0]);//大于等于
+            }
+            if (!split[1].equals("*")){ //终止条件
+                filterCriteria.lessThanEqual(split[1]); //小于等于
+            }
+            FilterQuery filterQuery = new SimpleFilterQuery(filterCriteria);
+            query.addFilterQuery(filterQuery);
+        }
+        
+        //1.6分页
+        Integer pageNum = (Integer) searchMap.get("pageNum");//当前页
+        if (pageNum==null){
+            pageNum = 1;
+        }
+        Integer pageSize = (Integer) searchMap.get("pageSize");//每页记录数
+        if (pageSize==null){
+            pageSize = 20;
+        }
+        query.setOffset((pageNum-1)*pageSize);//起始索引（不是页码）
+        query.setRows(pageSize);//每页记录数
+        //在最后返回getContent()后还需传递pages、total；
+
+        //1.7排序（根据传入的Field字段）
+        String  sortValue = (String) searchMap.get("sort");//升序或降序
+        String sortField = (String) searchMap.get("sortField");//排序的Field字段
+        if (sortValue!=null && !sortValue.equals("")){
+            if (sortValue.equals("ASC")){
+                Sort sort = new Sort(Sort.Direction.ASC,"item_"+sortField);
+                query.addSort(sort);
+            } else if (sortValue.equals("DESC")){
+                Sort sort = new Sort(Sort.Direction.DESC,"item_"+sortField);
+                query.addSort(sort);
+            }
+        }
+        
+        //高亮页对象
+        HighlightPage<TbItem> items = solrTemplate.queryForHighlightPage(query, TbItem.class);
+
+        //遍历并设置高亮
+        List<HighlightEntry<TbItem>> highlighted = items.getHighlighted();//高亮entry集合（每条记录）
+        for (HighlightEntry<TbItem> entry : highlighted) {
+            //高亮列表（高亮Filed域个数可能多个）。并且每个Filed域可能存储多值（此处没有）
+            TbItem item = entry.getEntity();//获取源实体类
+            List<HighlightEntry.Highlight> highlights = entry.getHighlights();
+            if (highlights.size() > 0 && highlights.get(0).getSnipplets().size() > 0) {
+                item.setTitle(highlights.get(0).getSnipplets().get(0));
+            }
+        }
+
+        map.put("list", items.getContent());//当前页所有数据
+        map.put("pages",items.getTotalPages());//总页数
+        map.put("total",items.getTotalElements());//总记录数
+        return map;
+    }
+
+    /**
+     * 分组查询商品分类列表
+     */
+    private List searchCategoryList(Map searchMap) {
+        List<String> list = new ArrayList<>();
+        //关键字的条件查询（利用复制域），相当于where
+        Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
+        Query query = new SimpleQuery(criteria);
+        //设置分组选项，相当于group by。可能有多个分组（继续addGroupByField即可）
+        GroupOptions groupOptions = new GroupOptions().addGroupByField("item_category");
+        query.setGroupOptions(groupOptions);
+        //分组页
+        GroupPage<TbItem> items = solrTemplate.queryForGroupPage(query, TbItem.class);
+        //分组结果
+        GroupResult<TbItem> item_category = items.getGroupResult("item_category");
+        //分组entry页
+        Page<GroupEntry<TbItem>> groupEntries = item_category.getGroupEntries();
+        //分组entryj集合，便利获取值
+        List<GroupEntry<TbItem>> content = groupEntries.getContent();
+        for (GroupEntry<TbItem> tbItemGroupEntry : content) {
+            list.add(tbItemGroupEntry.getGroupValue());
+        }
+        return list;
+    }
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * Redis查询品牌和规格列表
+     */
+    private Map searchBrandAndSpecList(String categoryName) {
+        Map map = new HashMap();
+        //1.根据商品分类名称得到模板id
+        Long categoryId = (Long) redisTemplate.boundHashOps("itemCat").get(categoryName);
+        if (categoryId != null) {
+            //2.根据模板id获取品牌列表
+            List brandList = (List) redisTemplate.boundHashOps("brandList").get(categoryId);
+            map.put("brandList", brandList);
+            //3.根据模板id获取规格列表
+            List specdList = (List) redisTemplate.boundHashOps("specList").get(categoryId);
+            map.put("specList", specdList);
+        }
+        return map;
+    }
+    
+    //审核通过时导入SKU数据
+    @Override
+    public void importList(List list){
+        solrTemplate.saveBeans(list);
+        solrTemplate.commit();
+    }
+
+    //删除商品时同时删除solr中数据
+    @Override
+    public void deleteByGoodsIds(List goodsIds) {
+        Criteria criteria = new Criteria("item_goodsid").in(goodsIds);
+        Query query = new SimpleQuery(criteria);
+        solrTemplate.delete(query);
+        solrTemplate.commit();
+    }
+}
+```
+
+
+
+### 8 更新索引库
+
+> 实时更新solr库，而不总是批量导入。还需实现删除方法。查看7中代码。理解即可
 
 
 
@@ -5889,7 +7036,7 @@ jdbc.password=w1111
 * `web.xml`配置：在项目服务器启动时创建**`DispatcherServlet`前端控制器**的并加载`springmvc.xml`配置的容器。
 * `web.xml`配置：**`ContextLoaderListener`监听器**，在项目服务器启动时加载所有`applicationContext*.xml`的容器。
   * `classpath`和`classpath*`都是加载类路径下的资源和依赖的jar包中的资源（先后顺序）
-    * `classpath`只会返回第一个匹配的资源
+    * `classpath`只会返回第一个匹配的资源（有误！！！）
     * `classpath*`会返回路径下匹配的所有资源，可以使用通配符
 * `web.xml`配置：**`CharacterEncodingFilter`编码过滤器**，设置Request、Response编码
 * `springmvc.xml`中配置处理器映射器、处理器适配器、视图解析器、释放静态资源
