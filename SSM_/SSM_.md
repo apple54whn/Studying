@@ -350,7 +350,7 @@ nexus仓库类型（默认在 sonatype-work 目录中）
 
 ### 6.3 安装第三方jar包到本地仓库
 
-【注意】：powershell失败，但是cmd执行成功。后续oracle的maven坐标添加不成功需要使用这个方法。
+【注意】powershell失败，但是cmd执行成功。后续oracle的maven坐标添加需要使用这个方法。Zip包安装失败！（why？）
 
 * cmd进入jar包所在目录并运行
 
