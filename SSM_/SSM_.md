@@ -5559,9 +5559,1667 @@ public Result add(@RequestBody TbSeller seller){
 
 
 
-# 第六部分 Spring Data
+# 第二部分 Spring Data
 
-## 1 Spring Data Redis
+## 1 Spring Data JPA
+
+### 1 ORM、Hibernate与JPA的概述
+
+#### 1.1 ORM
+
+**ORM（Object-Relational Mapping）** 表示**对象关系映射**。简单的说：ORM就是**建立实体类和数据库表之间的关系**（包括表和字段），从而达到操作实体类就相当于操作数据库表的目的。解决了可能会写特别多数据访问层的代码、从数据库保存数据、修改数据、删除数据等重复代码问题。
+
+常见的orm框架：~~Mybatis（ibatis）~~、Hibernate
+
+
+
+#### 1.2 Hibernate
+
+Hibernate是一个开放源代码的对象关系映射框架，它对JDBC进行了非常**轻量级**的对象封装，它将POJO与数据库表建立映射关系，是一个**全自动的ORM框架**。Hibernate可以自动生成SQL语句，自动执行，使得Java程序员可以随心所欲的使用对象编程思维来操纵数据库。
+
+
+
+#### 1.3 JPA
+
+**JPA（Java Persistence API）**， 即**Java 持久化API**，是SUN公司推出的一套**基于ORM的规范**（操作ORM框架，JDBC是操作不同数据库），内部是由一系列的接口和抽象类构成。
+
+------
+
+JPA的优势：
+
+- **1.** **标准化**
+
+  JPA 是 JCP 组织发布的 Java EE 标准之一，因此任何声称符合 JPA 标准的框架都遵循同样的架构，提供相同的访问API，这保证了基于JPA开发的企业应用能够经过少量的修改就能够在不同的JPA框架下运行。
+
+- **2.** **容器级特性的支持**
+
+  JPA框架中支持大数据集、事务、并发等容器级事务，使得 JPA 超越了简单持久化框架的局限，在企业应用发挥更大作用。
+
+- **3.** **简单方便**
+
+  JPA的主要目标之一就是提供更加简单的编程模型：在JPA框架下创建实体和创建Java 类一样简单，没有任何的约束和限制，只需要使用 javax.persistence.Entity进行注释，JPA的框架和接口也都非常简单，没有太多特别的规则和设计模式的要求，开发者可以很容易的掌握。JPA基于非侵入式原则设计，因此可以很容易的和其它框架或者容器集成
+
+- **4.** **查询能力**
+
+  JPA的查询语言是**面向对象**而非面向数据库的，它以面向对象的自然语法构造查询语句，可以看成是Hibernate HQL的等价物。JPA定义了独特的JPQL（Java Persistence Query Language），JPQL是EJB QL的一种扩展，它是针对实体的一种查询语言，操作对象是实体，而不是关系数据库的表，而且能够支持批量更新和修改、JOIN、GROUP BY、HAVING 等通常只有 SQL 才能够提供的高级查询特性，甚至还能够支持子查询。
+
+- **5.** **高级特性**
+
+  JPA 中能够支持面向对象的高级特性，如类之间的继承、多态和类之间的复杂关系，这样的支持能够让开发者最大限度的使用面向对象的模型设计企业应用，而不需要自行处理这些特性在关系数据库的持久化。
+
+------
+
+JPA和Hibernate的关系就像JDBC和JDBC驱动的关系，JPA是规范，Hibernate除了作为ORM框架之外，它也是一种JPA实现。JPA怎么取代Hibernate呢？JDBC规范可以驱动底层数据库吗？答案是否定的，也就是说，如果使用JPA规范进行数据库操作，底层需要Hibernate作为其实现类完成数据持久化工作。
+
+
+
+### 2 JPA的API介绍
+
+#### 2.1 Persistence
+
+**`Persistence`对象主要作用是用于获取`EntityManagerFactory`对象**的 。通过调用该类的`createEntityManagerFactory()`静态方法，根据配置文件中**持久化单元名称**创建`EntityManagerFactory`。
+
+#### 2.2 EntityManagerFactory
+
+`EntityManagerFactory` 接口主要用`createEntityManager()`来创建 `EntityManager` 实例
+
+由于**`EntityManagerFactory`是一个==线程安全==的对象**（即多个线程访问同一个`EntityManagerFactory` 对象不会有线程安全问题），并且`EntityManagerFactory` 的创建极其浪费资源，所以在使用JPA编程时，我们可以对`EntityManagerFactory`
+的创建进行优化，只需要做到**一个工程只存在一个`EntityManagerFactory`** 即可
+
+#### 2.3 EntityManager
+
+在 JPA 规范中, **`EntityManager`是完成持久化操作的核心对象**。实体类作为普通 java对象，只有在调用`EntityManager`将其持久化后才会变成持久化对象。**EntityManager对象在一组实体类与底层数据源之间进行 O/R 映射的管理**。它可以用来管理和更新 Entity Bean, 根椐主键查找 Entity Bean, 还可以通过JPQL语句查询实体。
+
+我们可以通过调用`EntityManager`的方法完成**获取事务**，以及**持久化数据库**的操作
+
+- **`getTransaction` **: 获取事务对象
+- **`persist`** ： 保存操作
+- **`find/getReference` **： 根据id查询
+- **`merge` **： 更新操作
+- **`remove`** ： 删除操作
+
+#### 2.4 EntityTransaction
+
+在 JPA 规范中, EntityTransaction是完成事务操作的核心对象，对于EntityTransaction在我们的java代码中承接的功能比较简单
+
+- `begin`：开启事务
+- `commit`：提交事务
+- `rollback`：回滚事务
+
+
+
+### 3 JPA的CRUD入门案例
+
+#### 3.1 Maven坐标导入
+
+```xml
+<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.hibernate.version>5.0.7.Final</project.hibernate.version>
+</properties>
+
+<dependencies>
+    <!-- Mysql and MariaDB -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.12</version>
+    </dependency>
+
+    <!-- hibernate对jpa的支持包 -->
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${project.hibernate.version}</version>
+    </dependency>
+
+    
+    <!-- c3p0 -->
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-c3p0</artifactId>
+        <version>${project.hibernate.version}</version>
+    </dependency>
+    <!-- junit -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- log日志 -->
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+    </dependency>
+</dependencies>
+```
+
+#### 3.2 persistence.xml配置文件
+
+1. JPA的核心配置文件：`META-INF/persistence.xml`
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+   
+       <!--配置持久化单元
+           name：持久化单元名称
+           transaction-type：事务类型
+               RESOURCE_LOCAL：本地事务管理
+               JTA：分布式事务管理 -->
+       <persistence-unit name="myJpa" transaction-type="RESOURCE_LOCAL">
+           <!--配置JPA规范的服务提供商（这里是Hibernate） -->
+           <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+           <properties>
+               <!-- 数据库驱动 -->
+               <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+               <!-- 数据库地址 -->
+               <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3308/jpa?serverTimezone=GMT%2B8" />
+               <!-- 数据库用户名 -->
+               <property name="javax.persistence.jdbc.user" value="root" />
+               <!-- 数据库密码 -->
+               <property name="javax.persistence.jdbc.password" value="w111151" />
+   
+   
+               <!--JPA提供者的可选配置：我们的JPA规范的提供者为hibernate，所以JPA的核心配置中兼容Hibernate的配置-->
+               <!--显示sql，false | true-->
+               <property name="hibernate.show_sql" value="true" />
+               <property name="hibernate.format_sql" value="true" />
+               <!--自动创建数据库表
+                   create : 程序运行时创建数据库表（如果有表，先删除表再创建）
+                   update ：程序运行时创建表（如果有表，不会创建表）
+                   none   ：不会创建表  -->
+               <property name="hibernate.hbm2ddl.auto" value="update" />
+           </properties>
+   
+       </persistence-unit>
+   </persistence>
+   ```
+
+
+
+#### 3.3 ==注解实体类和数据库映射关系==
+
+1. 创建客户的数据库表（不创建也行）
+
+2. **在实体类上使用JPA注解的形式配置映射关系**
+
+   所有的注解都是使用JPA的规范提供的注解，导入`javax.persistence`下注解包
+
+   ```java
+   @Entity
+   @Table(name = "cst_customer")
+   public class Customer {
+       
+       @Id
+       @GeneratedValue(strategy = GenerationType.IDENTITY)
+       @Column(name = "cust_id")
+       private Long custId; //客户的主键
+   
+       @Column(name = "cust_name")
+       private String custName;//客户名称
+   
+       @Column(name = "cust_source")
+       private String custSource;//客户来源
+   
+       @Column(name = "cust_level")
+       private String custLevel;//客户级别
+   
+       @Column(name = "cust_industry")
+       private String custIndustry;//客户所属行业
+   
+       @Column(name = "cust_phone")
+       private String custPhone;//客户的联系方式
+   
+       @Column(name = "cust_address")
+       private String custAddress;//客户地址
+       
+       //getter setter   
+   }
+   ```
+
+   - **`@Entity`**
+
+     - 作用：指定当前类是**实体类**。
+
+   - **`@Table`**
+
+     - 作用：指定**实体类和表之间的对应关系**。
+     - 属性：
+       - `name`：指定数据库**表的名称**，不指定则为类名首字母小写
+
+   - **`@Id`**
+
+     - 作用：指定当前字段是**主键**。
+
+   - **`@GeneratedValue`**
+
+     - 作用：指定**主键的生成策略**。
+
+     - 属性：
+
+       - **`strategy`** ：指定主键生成策略。JPA提供的四种标准用法为`TABLE`,`SEQUENCE`,`IDENTITY`,`AUTO`。
+
+         - **`IDENTITY`**：主键由数据库**自动生成**（主要是自动增长型，必须数据库底层支持，如MySQL）
+
+           ```java
+           @Id  
+           @GeneratedValue(strategy = GenerationType.IDENTITY) 
+           private Long custId;
+           ```
+
+         - **`SEQUENCE`**：根据底层数据库的**序列**来生成主键，条件是数据库支持序列，如Oracle。
+
+           ```java
+           @Id  
+           @GeneratedValue(strategy = GenerationType.SEQUENCE,generator="payablemoney_seq")  
+           @SequenceGenerator(name="payablemoney_seq", sequenceName="seq_payment")  
+           private Long custId;
+           ```
+
+           ```java
+           //@SequenceGenerator源码中的定义
+           @Target({TYPE, METHOD, FIELD})   
+           @Retention(RUNTIME)  
+           public @interface SequenceGenerator {  
+               //表示该表主键生成策略的名称，它被引用在@GeneratedValue中设置的“generator”值中
+               String name();  
+               //属性表示生成策略用到的数据库序列名称。
+               String sequenceName() default "";  
+               //表示主键初识值，默认为0
+               int initialValue() default 0;  
+               //表示每次主键值增加的大小，例如设置1，则表示每次插入新记录后自动加1，默认为50
+               int allocationSize() default 50;  
+           }
+           ```
+
+         - `AUTO`：主键由程序控制（测试了下使用的是TABLE）
+
+           ```java
+           @Id  
+           @GeneratedValue(strategy = GenerationType.AUTO)  
+           private Long custId;
+           ```
+
+         - `TABLE`：使用一个特定的数据库表格来保存主键
+
+           ```java
+           @Id  
+           @GeneratedValue(strategy = GenerationType.TABLE, generator="payablemoney_gen")  
+           @TableGenerator(name = "pk_gen",  
+                           table="tb_generator",  
+                           pkColumnName="gen_name",  
+                           valueColumnName="gen_value",  
+                           pkColumnValue="PAYABLEMOENY_PK",  
+                           allocationSize=1  
+                          ) 
+           private Long custId;
+           ```
+
+           ```java
+           //@TableGenerator的定义：
+           @Target({TYPE, METHOD, FIELD})   
+           @Retention(RUNTIME)  
+           public @interface TableGenerator {  
+               //表示该表主键生成策略的名称，它被引用在@GeneratedValue中设置的“generator”值中
+               String name();  
+               //表示表生成策略所持久化的表名，例如，这里表使用的是数据库中的“tb_generator”。
+               String table() default "";  
+               //catalog和schema具体指定表所在的目录名或是数据库名
+               String catalog() default "";  
+               String schema() default "";  
+               //属性的值表示在持久化表中，该主键生成策略所对应键值的名称。例如在“tb_generator”中将“gen_name”作为主键的键值
+               String pkColumnName() default "";  
+               //属性的值表示在持久化表中，该主键当前所生成的值，它的值将会随着每次创建累加。例如，在“tb_generator”中将“gen_value”作为主键的值 
+               String valueColumnName() default "";  
+               //属性的值表示在持久化表中，该生成策略所对应的主键。例如在“tb_generator”表中，将“gen_name”的值为“CUSTOMER_PK”。 
+               String pkColumnValue() default "";  
+               //表示主键初识值，默认为0。 
+               int initialValue() default 0;  
+               //表示每次主键值增加的大小，例如设置成1，则表示每次创建新记录后自动加1，默认为50。
+               int allocationSize() default 50;  
+               UniqueConstraint[] uniqueConstraints() default {};  
+           } 
+           /*==================================================================*/
+           //这里应用表tb_generator，定义为 ：
+           CREATE TABLE  tb_generator (  
+               id NUMBER NOT NULL,  
+               gen_name VARCHAR2(255) NOT NULL,  
+               gen_value NUMBER NOT NULL,  
+               PRIMARY KEY(id)  
+           )
+           
+           ```
+
+   - **`@Column`**
+
+     - 作用：指定实体类属性和数据库表之间的对应关系
+
+     - 属性：
+
+       - `name`：指定数据库表的列名称。不指定则为属性名
+       - `unique`：是否唯一  
+       - `nullable`：是否可以为空 
+       - `inserttable`：是否可以插入          		
+       - `updateable`：是否可以更新          		
+       - `columnDefinition`: 定义建表时创建此列的DDL          		
+       - `secondaryTable`: 从表名。如果此列不建在主表上（默认建在主表），该属性定义该列所在从表的名字搭建开发环境[重点]
+
+       
+
+   - **`@OneToMany`**：建立一对多的关系映射
+
+     - 属性：
+       - **`mappedBy`**：指定**在从表实体类中引用主表对象的名称**，即**主表放弃外键维护**或**被维护表放弃维护中间表**
+       - **`fetch`**：指定是否采用**延迟加载**，枚举类`FetchType`
+         - `LAZY`（**默认**），`EAGER`
+       - **`cascade`**：指定要使用的**级联**操作，枚举类`CascadeType`
+         - `ALL`，`PERSIST`，`MERGE`，`REMOVE`，`REFRESH`，`DETACH`；
+       - `orphanRemoval`：是否使用孤儿删除，true；false（默认）
+       - `targetEntity`：指定多的多方的类的字节码，可省略会自动推倒
+
+   - **`@ManyToOne`**：建立多对一的关系
+
+     - 属性：
+       - `fetch`：指定是否采用**延迟**加载（同上）
+       - `cascade`：指定要使用的**级联**操作（同上）
+       - `optional`：关联是否可选。如果设置为false，则必须始终存在非空关系。默认为true
+       - `targetEntity`：指定一的一方实体类字节码，可省略会自动推导
+
+   - **`ManyToMany`**：用于映射多对多关系
+
+     - 属性：
+       - `fetch`：指定是否采用**延迟**加载（同上）
+       - `cascade`：指定要使用的**级联**操作（同上）
+       - `targetEntity`：配置目标的实体类。映射多对多的时候不用写。可省略会自动推导
+
+   - `OneToOne`
+
+   - **`@JoinColumn`**：用于定义**主键字段和外键字段的对应关系**，主要用于**从表中定义外键的引用**
+
+     - 属性：
+       - `name`：指定**外键字段的名称**，不配置则根据被维护表中属性名和`referencedColumnName`组合
+       - `referencedColumnName`：指定**引用主表的主键字段名称**
+       - `unique`：是否唯一。默认false
+       - `nullable`：是否允许为空。默认true。
+       - `insertable`：是否允许插入。默认true。
+       - `updatable`：是否允许更新。默认true。
+       - `columnDefinition`：列的定义信息。
+
+   - **`@JoinTable`**：针对**中间表的配置**，主要**用于维护表来设置**
+
+     - 属性：
+       - `name`：配置**中间表的名称**，不配置则自动根据维护表和被维护表的类名组合来生成
+       - `@joinColumns`：需要中间表的外键字段**关联当前实体类所对应表的主键字段**
+       - `@inverseJoinColumn`：需要中间表的外键字段**关联对方表的主键字段**
+
+#### 3.4 基本CRUD
+
+1. 工具类
+
+   ```java
+   public final class JPAUtil {
+       // JPA的实体管理器工厂：相当于Hibernate的SessionFactory
+       private static EntityManagerFactory em;
+       // 使用静态代码块赋值
+       static {
+           // 注意：该方法参数必须和persistence.xml中persistence-unit标签name属性取值一致
+           em = Persistence.createEntityManagerFactory("myJpa");
+       }
+   
+       /**
+   	 * 使用管理器工厂生产一个管理器对象
+   	 */
+       public static EntityManager getEntityManager() {
+           return em.createEntityManager();
+       }
+   }
+   
+   ```
+
+2. **CRUD**
+
+   ```java
+   /**
+    * Jpa的操作步骤
+    * 1.加载配置文件创建工厂（实体管理器工厂）对象
+    * 2.通过实体管理器工厂获取实体管理器
+    * 3.获取事务对象，开启事务
+    * 4.完成增删改查操作
+    * 5.提交事务（回滚事务）
+    * 6.释放资源
+    **/
+   public class JPATest {
+   
+       private EntityManager entityManager;
+       private EntityTransaction transaction;
+   
+       @Before
+       public void init() {
+           //通过工具类获取EntityManager对象
+           entityManager = JPAUtil.getEntityManager();
+           //获取事务对象，开启事务
+           transaction = entityManager.getTransaction();
+           transaction.begin();
+       }
+   
+       @After
+       public void destroy() {
+           //释放资源，工厂对象不用释放，其他方法还需要使用
+           entityManager.close();
+       }
+   
+       /**
+        * 保存客户
+        */
+       @Test
+       public void testSave() {
+           Customer customer = new Customer();
+           customer.setCustName("博学谷");
+           customer.setCustPhone("10086");
+           try {
+               //保存
+               entityManager.persist(customer);
+               //提交事务
+               transaction.commit();
+           } catch (Exception e) {
+               //或回滚事务
+               transaction.rollback();
+               e.printStackTrace();
+           }
+       }
+   
+       /**
+        * 根据ID查询客户
+        * find为立即加载
+        */
+       @Test
+       public void testFind() {
+           try {
+               //第一个参数为要封装的对象的字节码，第二个参数为主键
+               Customer customer = entityManager.find(Customer.class, 3L);
+               System.out.println(customer.getCustName());
+               transaction.commit();
+           } catch (Exception e) {
+               e.printStackTrace();
+               transaction.rollback();
+           }
+       }
+   
+       /**
+        * 根据ID查询客户
+        * getReference为延迟加载（懒加载），使用的时候才查询数据库。一般使用这个！
+        * （IDEA需要去掉Debug中几个选项才可以看到）
+        */
+       @Test
+       public void testReference() {
+           try {
+               //第一个参数为要封装的对象的字节码，第二个参数为主键
+               Customer customer = entityManager.getReference(Customer.class, 4L);
+               System.out.println(customer.getCustName());
+               transaction.commit();
+           } catch (Exception e) {
+               e.printStackTrace();
+               transaction.rollback();
+           }
+       }
+   
+       /**
+        * 跟新客户信息（先根据ID查询，再修改对象并Merge更新）
+        */
+       @Test
+       public void testMerge() {
+           try {
+               Customer customer = entityManager.getReference(Customer.class, 3L);
+               customer.setCustIndustry("IT666");
+               entityManager.merge(customer);
+               transaction.commit();
+           } catch (Exception e) {
+               e.printStackTrace();
+               transaction.rollback();
+           }
+       }
+   
+       /**
+        * 删除客户（要先根据ID查询，再删除该对象）
+        */
+       @Test
+       public void testRemove() {
+           try {
+               Customer customer = entityManager.getReference(Customer.class, 4L);
+               entityManager.remove(customer);
+               transaction.commit();
+           } catch (Exception e) {
+               e.printStackTrace();
+               transaction.rollback();
+           }
+       }
+   }
+   
+   ```
+
+#### 3.5 JPQL查询
+
+JPQL（Java Persistence Query Language）。基于首次在EJB2.0中引入的EJB查询语言(EJB QL)，Java持久化查询语言(JPQL)是一种可移植的查询语言，旨在以面向对象表达式语言的表达式，将SQL语法和简单查询语义绑定在一起，使用这种语言编写的查询是可移植的，可以被编译成所有主流数据库服务器上的SQL。
+
+其特征与原生SQL语句类似，并且完全**面向对象**，通过**类名**和**属性**访问，而**不是表名和表中字段**。（不支持`SELECT *`）
+
+```java
+/**
+ * 进行jpql查询
+ * 1.根据jpql语句创建query查询对象
+ * 2.对参数进行赋值
+ * 3.查询，并得到返回结果
+ **/
+public class JPQLTest {
+
+    private EntityManager entityManager;
+    private EntityTransaction transaction;
+
+    @Before
+    public void init() {
+        //通过工具类获取EntityManager对象
+        entityManager = JPAUtil.getEntityManager();
+        //获取事务对象，开启事务
+        transaction = entityManager.getTransaction();
+        transaction.begin();
+    }
+
+    @After
+    public void destroy() {
+        //释放资源，工厂对象不用释放，其他方法还需要使用
+        entityManager.close();
+    }
+
+    /**
+     * 查找所有
+     */
+    @Test
+    public void testFindAll() {
+        try {
+            String jpql = "from cn.itcast.domain.Customer";//也可以省略掉全限定类名，只写类名
+            //创建Query查询对象，这个对象才是执行jpql的对象
+            Query query = entityManager.createQuery(jpql);
+            List<Customer> resultList = query.getResultList();
+
+            transaction.commit();
+            for (Customer customer : resultList) {
+                System.out.println(customer.getCustName());
+            }
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 排序查询（根据ID倒序查询所有客户）
+     */
+    @Test
+    public void testOrder() {
+        try {
+            String jpql = "from Customer order by custId desc";//也可以省略掉全限定类名，只写类名
+            //创建Query查询对象，这个对象才是执行jpql的对象
+            Query query = entityManager.createQuery(jpql);
+            List<Customer> resultList = query.getResultList();
+
+            transaction.commit();
+            for (Customer customer : resultList) {
+                System.out.println(customer.getCustName());
+            }
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 统计查询
+     */
+    @Test
+    public void testCount() {
+        try {
+            String jpql = "select count(custId) from Customer";//也可以省略掉全限定类名，只写类名
+            //创建Query查询对象，这个对象才是执行jpql的对象
+            Query query = entityManager.createQuery(jpql);
+            Long count = (Long) query.getSingleResult();
+
+            transaction.commit();
+            System.out.println(count);
+
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 分页查询
+     */
+    @Test
+    public void testPage() {
+        try {
+            String jpql = "from Customer";//也可以省略掉全限定类名，只写类名
+            //创建Query查询对象，这个对象才是执行jpql的对象
+            Query query = entityManager.createQuery(jpql);
+            query.setFirstResult(0);//起始索引
+            query.setMaxResults(2);//每页查询条数
+            List<Customer> resultList = query.getResultList();//此处为查询前两条
+
+            transaction.commit();
+            for (Customer customer : resultList) {
+                System.out.println(customer.getCustName());
+            }
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 条件查询
+     */
+    @Test
+    public void testCondition() {
+        try {
+            String jpql = "from Customer where custName like ?";//也可以省略掉全限定类名，只写类名
+            //创建Query查询对象，这个对象才是执行jpql的对象
+            Query query = entityManager.createQuery(jpql);
+            query.setParameter(1, "传智播客%");//第1个参数：占位符索引位置，从1开始；第2个参数：值
+            List<Customer> resultList = query.getResultList();//此处为查询前两条
+
+            transaction.commit();
+            for (Customer customer : resultList) {
+                System.out.println(customer.getCustName());
+            }
+        } catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+
+
+
+
+### 4 Spring Data JPA
+
+> Spring Data JPA 让我们解脱了DAO层的操作，基本上所有CRUD都可以依赖于它来实现,在实际的工作工程中，推荐使用Spring Data JPA + ORM（如：Hibernate）完成操作，这样在切换不同的ORM框架时提供了极大的方便，同时也使数据库层操作更加简单，方便解耦。
+>
+> Spring Data JPA 极大简化了数据库访问层代码。 如何简化的呢？ 使用了Spring Data JPA，我们的dao层中只需要写接口，就自动具有了增删改查、分页查询等方法。
+
+Spring Data JPA 封装了 JPA ，JPA 规范的一个实现为 Hibernate ，Hibernate 又封装了 JDBC ，JDBC 来操作数据库如MySQL
+
+#### 4.1 Maven坐标导入
+
+```xml
+<properties>
+    <spring.version>5.0.2.RELEASE</spring.version>
+    <hibernate.version>5.0.7.Final</hibernate.version>
+    <slf4j.version>1.6.6</slf4j.version>
+    <log4j.version>1.2.12</log4j.version>
+    <c3p0.version>0.9.1.2</c3p0.version>
+    <mysql.version>8.0.12</mysql.version>
+</properties>
+
+<dependencies>
+    <!-- junit单元测试 -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- spring beg -->
+    <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>1.6.8</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <!-- spring对orm框架的支持包-->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <!-- spring end -->
+
+    <!-- hibernate beg -->
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${hibernate.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>5.2.1.Final</version>
+    </dependency>
+    <!-- hibernate end -->
+
+    <!-- c3p0 beg -->
+    <dependency>
+        <groupId>c3p0</groupId>
+        <artifactId>c3p0</artifactId>
+        <version>${c3p0.version}</version>
+    </dependency>
+    <!-- c3p0 end -->
+
+    <!-- log end -->
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>
+    <!-- log end -->
+
+
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql.version}</version>
+    </dependency>
+
+    <!-- spring data jpa 的坐标-->
+    <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-jpa</artifactId>
+        <version>1.9.0.RELEASE</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <!-- el beg 使用spring data jpa 必须引入 -->
+    <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>2.2.4</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>2.2.4</version>
+    </dependency>
+    <!-- el end -->
+</dependencies>
+
+```
+
+
+
+#### 4.2 Spring Data JPA 配置文件
+
+applicationContext.xml
+
+```xml
+<!--spring 和 spring data jpa的配置-->
+
+<!-- 1.创建entityManagerFactory对象交给spring容器管理-->
+<bean id="entityManagerFactoty" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <!--配置的扫描的包（实体类所在的包） -->
+    <property name="packagesToScan" value="cn.itcast.domain" />
+    <!-- jpa的实现厂家 -->
+    <property name="persistenceProvider">
+        <bean class="org.hibernate.jpa.HibernatePersistenceProvider"/>
+    </property>
+
+    <!--jpa的供应商适配器 -->
+    <property name="jpaVendorAdapter">
+        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            <!--配置是否自动创建数据库表 -->
+            <property name="generateDdl" value="false" />
+            <!--指定数据库类型 -->
+            <property name="database" value="MYSQL" />
+            <!--数据库方言：支持的特有语法 -->
+            <property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+            <!--是否显示sql -->
+            <property name="showSql" value="true" />
+        </bean>
+    </property>
+
+    <!--jpa的方言 ：高级的特性 -->
+    <property name="jpaDialect" >
+        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+    </property>
+
+    <!--注入jpa的配置信息。在多表操作时为了方便会使用到create和update
+            加载jpa的基本配置信息和jpa实现方式（hibernate）的配置信息
+            hibernate.hbm2ddl.auto : 自动创建数据库表
+                create ： 每次都会重新创建数据库表
+                update：有表不会重新创建，没有表会重新创建表
+        -->
+    <property name="jpaProperties" >
+        <props>
+            <prop key="hibernate.hbm2ddl.auto">create</prop>
+        </props>
+    </property>
+
+</bean>
+
+<!--2.创建数据库连接池 -->
+<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <property name="user" value="root"/>
+    <property name="password" value="w111151"/>
+    <property name="jdbcUrl" value="jdbc:mysql://localhost:3308/jpa?serverTimezone=GMT%2B8"/>
+    <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+</bean>
+
+<!--3.整合spring dataJpa-->
+<jpa:repositories base-package="cn.itcast.dao" transaction-manager-ref="transactionManager"
+                  entity-manager-factory-ref="entityManagerFactoty" />
+
+<!--4.配置事务管理器 -->
+<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactoty"/>
+</bean>
+
+<!----------------------------5.声明式事务，暂时用不到，直接使用注解配置@Transactional ------------------------->
+<!-- 4.txAdvice-->
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes>
+        <tx:method name="save*" propagation="REQUIRED"/>
+        <tx:method name="insert*" propagation="REQUIRED"/>
+        <tx:method name="update*" propagation="REQUIRED"/>
+        <tx:method name="delete*" propagation="REQUIRED"/>
+        <tx:method name="get*" read-only="true"/>
+        <tx:method name="find*" read-only="true"/>
+        <tx:method name="*" propagation="REQUIRED"/>
+    </tx:attributes>
+</tx:advice>
+
+<!-- 5.aop-->
+<aop:config>
+    <aop:pointcut id="pointcut" expression="execution(* cn.itcast.service.*.*(..))" />
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut" />
+</aop:config>
+<!---------------------------------------暂时用不到---------------------------------------->
+
+<!-- 6. 配置包扫描-->
+<context:component-scan base-package="cn.itcast"/>
+```
+
+
+
+#### 4.3 注解实体类和数据库映射关系
+
+同3.3一致
+
+```java
+@Entity
+@Table(name = "cst_customer")
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cust_id")
+    private Long custId; //客户的主键
+
+    @Column(name = "cust_name")
+    private String custName;//客户名称
+
+    @Column(name = "cust_source")
+    private String custSource;//客户来源
+
+    @Column(name = "cust_level")
+    private String custLevel;//客户级别
+
+    @Column(name = "cust_industry")
+    private String custIndustry;//客户所属行业
+
+    @Column(name = "cust_phone")
+    private String custPhone;//客户的联系方式
+
+    @Column(name = "cust_address")
+    private String custAddress;//客户地址
+
+    //getter setter   
+}
+```
+
+
+
+#### 4.4 Spring Data JPA规范Dao接口
+
+> 别忘了接口之间是可以多继承的！！！
+
+```java
+/**
+ * JpaRepository<实体类类型，主键类型>：用来完成基本CRUD操作
+ * JpaSpecificationExecutor<实体类类型>：用于复杂查询（分页等查询操作）
+ */
+public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+}
+```
+
+![](images/springdatajpa的运行过程.png)
+
+#### 4.5 基本CRUD和复杂查询
+
+##### 1、接口中的定义好的方法
+
+> 以下是继承了JpaRepository接口后获得的
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:applicationContext.xml")//locations可省略
+public class CustomerDaoTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+
+    /**
+     * 根据ID查询（立即加载，底层调用find()方法）
+     */
+    @Test
+    public void testFindOne() {
+        Customer customer = customerDao.findOne(3L);
+        System.out.println(customer);
+    }
+
+    /**
+     * 根据ID查询（延迟加载，底层调用getReference()方法）
+     * 返回的是动态代理对象；什么时候用，什么时候查询（IDEA需要去掉Debug中几个选项才可以看到）
+     */
+    @Test
+    @Transactional
+    public void testGetOne() {
+        Customer customer = customerDao.getOne(3L);
+        System.out.println(customer);
+    }
+
+    /**
+     * 查询所有
+     */
+    @Test
+    public void testFindAll() {
+        List<Customer> customerList = customerDao.findAll();
+        System.out.println(customerList);
+    }
+
+    /**
+     * 保存或更新（！！！不要直接使用这个来更新，否则会将其他没有值的数据置null。）
+     * 根据传递的对象是否包含主键ID，不包含则是保存；包含则是先根据ID查询数据，并更新
+     *
+     * 更新需要根据ID手动查找，然后修改再保存！！！
+     */
+    @Test
+    public void testSave() {
+        Customer customer = new Customer();
+        customer.setCustName("黑马程序员");
+        customer.setCustAddress("西安");
+        customerDao.save(customer);
+    }
+    @Test
+    public void testUpdate() {
+        Customer customer = new Customer();
+        customer.setCustId(8L);
+        customer.setCustName("黑马程序员牛逼");
+        customer.setCustAddress("西安");
+        customer.setCustLevel("VIP");
+        customerDao.save(customer);
+    }
+
+    /**
+     * 根据ID删除（底层是先查询，若有再删除）
+     */
+    @Test
+    public void testDelete() {
+        customerDao.delete(8L);
+    }
+
+    /**
+     * 统计查询
+     */
+    @Test
+    public void testCount() {
+        long count = customerDao.count();
+        System.out.println(count);
+    }
+
+    /**
+     * 根据ID判断是否存在该数据（可以根据查询的对象是否为null；或统计出的数量是否大于0（这里底层用的是这个））
+     */
+    @Test
+    public void testExists() {
+        boolean exists = customerDao.exists(7L);
+        System.out.println(exists);
+    }
+}
+```
+
+
+
+##### 2、JPQL的查询方式
+
+- 特有的查询：需要在**Dao接口上配置方法**
+- 在新添加的方法上，使用**`@Query`注解的形式配置JPQL查询语句**
+
+```java
+public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+
+    /**
+     * 根据客户名称查询客户。使用JPQL查询
+     * ?1代表参数的占位符，其中1对应方法中的参数索引
+     */
+    @Query("from Customer where custName = ?1")
+    Customer findByName(String custName);
+
+    /**
+     * 根据客户名称和客户ID查询客户。使用JPQL查询
+     * ?1代表参数的占位符，其中1对应方法中的参数索引。不指定则按照方法中参数位置对应
+     */
+    @Query("from Customer where custName = ?1 and custId=?2")
+    Customer findByNameAndId(String custName,Long custId);
+
+
+    /**
+     * 根据ID更新客户名称。使用JPQL
+     * ?1代表参数的占位符，其中1对应方法中的参数索引。不指定则按照方法中参数位置对应
+     */
+    @Query("update Customer set custName = ?1 where custId = ?2")
+    @Modifying//代表是更新操作
+    void updateNameById(String custName,Long custId);
+}
+
+```
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:applicationContext.xml")//locations可省略
+public class JPQLTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+
+    @Test
+    public void testFindByName() {
+        Customer customer = customerDao.findByName("传智播客6");
+        System.out.println(customer);
+    }
+
+    @Test
+    public void testFindByNameAndId() {
+        Customer customer = customerDao.findByNameAndId("传智播客", 5L);
+        System.out.println(customer);
+    }
+
+    /**
+     * Spring Data JPA中使用JPQL完成 更新、删除操作需要手动添加事务，但默认执行后会回滚事务，需要添加注解设置为不回滚
+     */
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void testUpdateNameById() {
+        customerDao.updateNameById("传智播客最牛逼", 5L);
+    }
+}
+
+```
+
+
+
+##### 3、SQL 语句查询（了解）
+
+- 特有的查询：需要在**Dao接口上配置方法**
+- 在新添加的方法上，使用**`@Query`注解的形式配置SQL查询语句**，还需设置`nativeQuery`属性
+
+```java
+public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+    /**
+     * 使用SQL查询全部客户/模糊查询
+     * nativeQuery：默认false为JPQL查询，true为SQL查询
+     */
+    //@Query(value = "select * from cst_customer", nativeQuery = true)
+    @Query(value = "select * from cst_customer where cust_name like ?1", nativeQuery = true)
+    List<Object[]> findBySQL(String name);
+}
+
+```
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:applicationContext.xml")//locations可省略
+public class JPQLTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+    @Test
+    public void testFindBySQL() {
+        List<Object[]> list = customerDao.findBySQL("传智播客%");
+        for (Object[] obj : list) {
+            System.out.println(Arrays.toString(obj));
+        }
+    }
+}
+
+```
+
+
+
+##### 4、方法名称规则查询
+
+方法命名规则查询就是根据方法的名字，就能创建查询，是对JPQL更深层次封装。只需要按照Spring Data JPA提供的方法命名规则定义方法的名称，不需要配置JPQL语句就可以完成查询工作。Spring Data JPA在程序执行的时候会根据方法名称进行解析，并自动生成查询语句进行查询。
+
+按照Spring Data JPA 定义的规则，查询方法以**`findBy`**开头，涉及条件查询时，**条件的属性用条件关键字连接**，要注意的是：条件**属性首字母需大写**。框架在进行方法名解析时，会先把方法名多余的前缀截取掉，然后对剩下部分进行解析。
+
+```java
+public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+    /**
+     * 方法名称查询（精准匹配）
+     */
+    Customer findByCustName(String custName);
+
+    /**
+     * 方法名称查询（like模糊匹配）
+     */
+    List<Customer> findByCustNameLike(String custName);
+
+    /**
+     * 方法名称查询（使用客户名称模糊匹配和客户行业精准匹配）
+     */
+    List<Customer> findByCustNameLikeAndCustIndustry(String custName,String custIndustry);
+}
+
+```
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:applicationContext.xml")//locations可省略
+public class JPQLTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+
+    /**
+     * 测试方法命名查询
+     */
+    @Test
+    public void testFindByCustName(){
+        Customer customer = customerDao.findByCustName("传智播客6");
+        System.out.println(customer);
+    }
+
+    /**
+     * 测试方法命名查询（模糊匹配）
+     */
+    @Test
+    public void testFindByCustNameLike(){
+        List<Customer> customerList = customerDao.findByCustNameLike("传智%");
+        System.out.println(customerList);
+    }
+
+    /**
+     * 测试方法命名查询（使用客户名称模糊匹配和客户行业精准匹配）
+     */
+    @Test
+    public void testFindByCustNameLikeAndCustIndustry(){
+        List<Customer> customerList = customerDao.findByCustNameLikeAndCustIndustry("传智%","IT");
+        System.out.println(customerList);
+    }
+}
+
+```
+
+
+
+具体的关键字，使用方法和生产成SQL如下表所示
+
+|    **Keyword**    |                 **Sample**                 |                           **JPQL**                           |
+| :---------------: | :----------------------------------------: | :----------------------------------------------------------: |
+|        And        |         findByLastnameAndFirstname         |        …   where x.lastname = ?1 and x.firstname = ?2        |
+|        Or         |         findByLastnameOrFirstname          |        …   where x.lastname = ?1 or x.firstname = ?2         |
+|     Is,Equals     | findByFirstnameIs,   findByFirstnameEquals |                  …   where x.firstname = ?1                  |
+|      Between      |           findByStartDateBetween           |           …   where x.startDate between ?1 and ?2            |
+|     LessThan      |             findByAgeLessThan              |                     …   where x.age < ?1                     |
+|   LessThanEqual   |           findByAgeLessThanEqual           |                     …   where x.age ⇐ ?1                     |
+|    GreaterThan    |            findByAgeGreaterThan            |                     …   where x.age > ?1                     |
+| GreaterThanEqual  |         findByAgeGreaterThanEqual          |                    …   where x.age >= ?1                     |
+|       After       |            findByStartDateAfter            |                  …   where x.startDate > ?1                  |
+|      Before       |           findByStartDateBefore            |                  …   where x.startDate < ?1                  |
+|      IsNull       |              findByAgeIsNull               |                   …   where x.age is null                    |
+| IsNotNull,NotNull |            findByAge(Is)NotNull            |                   …   where x.age not null                   |
+|       Like        |            findByFirstnameLike             |                …   where x.firstname like ?1                 |
+|      NotLike      |           findByFirstnameNotLike           |              … where   x.firstname not like ?1               |
+|   StartingWith    |        findByFirstnameStartingWith         | …   where x.firstname like ?1 (parameter bound with appended %) |
+|    EndingWith     |         findByFirstnameEndingWith          | …   where x.firstname like ?1 (parameter bound with prepended %) |
+|    Containing     |         findByFirstnameContaining          | …   where x.firstname like ?1 (parameter bound wrapped in %) |
+|      OrderBy      |        findByAgeOrderByLastnameDesc        |        …   where x.age = ?1 order by x.lastname desc         |
+|        Not        |             findByLastnameNot              |                  …   where x.lastname <> ?1                  |
+|        In         |        findByAgeIn(Collection ages)        |                    …   where x.age in ?1                     |
+|       NotIn       |       findByAgeNotIn(Collection age)       |                  …   where x.age not in ?1                   |
+|       TRUE        |             findByActiveTrue()             |                  …   where x.active = true                   |
+|       FALSE       |            findByActiveFalse()             |                  …   where x.active = false                  |
+|    IgnoreCase     |         findByFirstnameIgnoreCase          |           …   where UPPER(x.firstame) = UPPER(?1)            |
+
+
+
+
+
+#### 4.6 Specification 动态查询
+
+> 以下是继承了JpaSpecificationExecutor接口后获得的
+
+Spring Data JPA中可以通过`JpaSpecificationExecutor`接口查询。相比JPQL，其优势是类型安全，更加的面向对象。
+
+- `T findOne(Specification<T> spec);`  //查询单个对象
+- `List<T> findAll(Specification<T> spec);`  //查询列表
+- `Page<T> findAll(Specification<T> spec, Pageable pageable);`
+  - Pageable：分页参数
+  - 返回值：Spring Data JPA提供的分页Bean
+- `List<T> findAll(Specification<T> spec, Sort sort);`//排序查询
+- `long count(Specification<T> spec);`//统计查询
+
+对于`JpaSpecificationExecutor`，这个接口基本是围绕着`Specification`接口来定义的。我们可以简单的理解为，**`Specification`构造的就是查询条件**。
+
+```java
+/**
+  *	root	：Root接口，代表查询的根对象，可以通过root获取实体中的属性
+  *	query	：代表一个顶层查询对象，用来自定义查询（用的少，但是很强大）
+  *	cb		：用来构建查询，此对象里有很多条件方法
+  **/
+public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb);
+
+```
+
+```java
+/**
+ * 1.实现Specification接口（提供泛型：查询的对象类型）
+ * 2.实现toPredicate方法（构造查询条件）
+ * 3.需要借助方法参数中的两个参数（
+ * root：获取需要查询的对象属性（不是数据库中字段名！！）
+ * CriteriaBuilder：构造查询条件的，内部封装了很多的查询条件（模糊匹配，精准匹配）
+ **/
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext.xml")
+public class SpecTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+
+    /**
+     * 单条件查询，根据客户名称查询单个客户对象（equal）
+     */
+    @Test
+    public void testFindOne1() {
+        Specification<Customer> specification = new Specification<Customer>() {
+            public Predicate toPredicate(Root<Customer> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                //1.获取比较的属性
+                Path<Object> custName = root.get("custName");
+                //2.构造查询条件
+                //第1个参数为比较的属性（Path对象）；第2个参数为要比较的值
+                return criteriaBuilder.equal(custName, "博学谷");
+            }
+        };
+        Customer customer = customerDao.findOne(specification);
+        System.out.println(customer);
+    }
+
+    /**
+     * 多条件查询，根据客户名和客户所属行业查询单个客户（equal，and）
+     */
+    @Test
+    public void testFindOne2() {
+
+        Specification<Customer> specification = (root, criteriaQuery, criteriaBuilder) -> {
+            Path<Object> custName = root.get("custName");
+            Path<Object> custIndustry = root.get("custIndustry");
+
+            Predicate predicate1 = criteriaBuilder.equal(custName, "传智播客");
+            Predicate predicate2 = criteriaBuilder.equal(custIndustry, "IT");
+            //组合谓词
+            return criteriaBuilder.and(predicate1, predicate2);//还有or等等方法来组合
+        };
+        Customer customer = customerDao.findOne(specification);
+        System.out.println(customer);
+    }
+
+    /**
+     * 普通查询；排序查询；分页查询，根据客户名模糊匹配查询客户列表（like）；
+     * equal ：直接的到path对象（属性），然后进行比较即可
+     * gt，lt,ge,le,like : 得到Path对象，根据Path指定比较的参数类型，再去进行比较
+     */
+    @Test
+    public void testFindAll1() {
+        Specification<Customer> specification = ((root, criteriaQuery, criteriaBuilder) -> {
+            Path<Object> custName = root.get("custName");
+            return criteriaBuilder.like(custName.as(String.class), "%传智%");//或在获取Path时直接封装为String类型
+        });
+        //普通查询
+        List<Customer> customerList1 = customerDao.findAll(specification);
+
+        //排序查询
+        //第一个参数：排序的顺序（倒序，正序）；第二个参数：排序的属性名称（不是字段名！）
+        Sort sort = new Sort(Sort.Direction.DESC, "custId");
+        List<Customer> customerList2 = customerDao.findAll(specification, sort);
+
+        //分页查询
+        Pageable pageable = new PageRequest(0, 2);//页码（从0开始），每页显示条数
+        Page<Customer> customerPage = customerDao.findAll(specification, pageable);
+        System.out.println("总记录数:" + customerPage.getTotalElements());
+        System.out.println("总页数:" + customerPage.getTotalPages());
+        System.out.println("分页查询的数据:" + customerPage.getContent());
+    }
+
+
+    /**
+	 * Specification的多表查询
+	 */
+    @Test
+    public void testFind() {
+        Specification<LinkMan> specification = (root, criteriaQuery, criteriaBuilder) ->  {
+                //Join代表链接查询，通过root对象获取
+                //创建的过程中，第一个参数为关联对象的属性名称，第二个参数为连接查询的方式（inner，left，right）
+                //JoinType.LEFT : 左外连接,JoinType.INNER：内连接,JoinType.RIGHT：右外连接
+                Join<LinkMan, Customer> join = root.join("customer",JoinType.INNER);
+                return criteriaBuilder.like(join.get("custName").as(String.class),"传智播客1");
+            }
+        };
+        List<LinkMan> list = linkManDao.findAll(specification);
+        for (LinkMan linkMan : list) {
+            System.out.println(linkMan);
+        }
+    }
+}
+
+```
+
+> 方法对应关系
+>
+> | 方法名称                    | Sql对应关系            |
+> | --------------------------- | ---------------------- |
+> | equle                       | filed =   value        |
+> | gt（greaterThan ）          | filed   > value        |
+> | lt（lessThan ）             | filed   < value        |
+> | ge（greaterThanOrEqualTo ） | filed   >= value       |
+> | le（ lessThanOrEqualTo）    | filed   <= value       |
+> | notEqule                    | filed   != value       |
+> | like                        | filed   like value     |
+> | notLike                     | filed   not like value |
+
+
+
+#### 4.7 多表操作
+
+在实际开发中，我们数据库的表难免会有相互的关联关系，在操作表的时候就有可能会涉及到多张表的操作。而在这种实现了ORM思想的框架中（如JPA），可以让我们通过操作实体类就实现对数据库表的操作。所以今天我们的学习重点是：掌握配置实体之间的关联关系。
+
+- 第一步：首先确定两张表之间的关系。（如果关系确定错了，后面做的所有操作就都不可能正确。）
+
+- 第二步：在数据库中实现两张表的关系
+
+- 第三步：在实体类中描述出两个实体的关系
+
+- 第四步：配置出实体类和数据库表的关系映射（重点）
+
+
+
+##### 1、一对多
+
+案例：客户和联系人的案例（一对多关系，一个客户可以具有多个联系人，一个联系人从属于一家公司）
+
+- 客户：一家公司
+- 联系人：这家公司的员工
+
+分析步骤：
+
+1. 明确表关系：一对多关系
+2. 确定表关系（外键）
+   - **主表**：客户表
+   - **从表**：联系人表，在从表添加**外键**
+3. 编写实体类，再实体类中描述表关系（**包含关系**）
+   - 客户：再客户的实体类中包含一个联系人的集合
+   - 联系人：在联系人的实体类中包含一个客户的对象
+4. 配置映射关系
+   - 使用 **JPA 注解配置一对多映射关系**
+
+```java
+@Entity
+@Table(name = "cst_customer")
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cust_id")
+    private Long custId; //客户的主键
+
+    
+    @OneToMany(mappedBy = "customer")//主表放弃维护外键
+    private Set<LinkMan> linkMans = new HashSet<>();
+
+    @Column(name = "cust_name")
+    private String custName;//客户名称
+    
+    ...
+}
+```
+
+```java
+@Entity
+@Table(name = "cst_linkman")
+public class LinkMan implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "lkm_id")
+    private Long lkmId;
+
+    @ManyToOne
+    @JoinColumn(name = "lkm_cust_id",referencedColumnName = "cust_id")
+    private Customer customer;
+
+    @Column(name = "lkm_name")
+    private String lkmName;
+    ...
+}
+```
+
+------
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext.xml")
+public class One2ManyTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+
+    @Autowired
+    private LinkManDao linkManDao;
+
+    @Test
+    @Transactional//开启事务
+    @Rollback(false)//不回滚
+    public void testSave() {
+        Customer customer = new Customer();
+        customer.setCustName("腾讯");
+        LinkMan linkMan = new LinkMan();
+        linkMan.setLkmName("小马");
+
+        customer.getLinkMans().add(linkMan);
+        linkMan.setCustomer(customer);
+
+        customerDao.save(customer);
+        linkManDao.save(linkMan);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(false)//设置为不回滚
+    public void testDelete() {
+        customerDao.delete(3L);
+    }
+}
+```
+
+**删除操作的说明如下**
+
+- 删除从表数据：可以随时任意删除
+
+- 删除主表数据：
+
+  - 没有从表数据引用：随便删
+
+  - 有从表数据：
+
+    - 在默认情况下，它会把外键字段置为null，然后删除主表数据。如果在数据库的表结构上，外键字段有非空约束，默认情况就会报错了
+
+    - 如果配置了放弃维护关联关系的权利，则不能删除（与外键字段是否允许为null，没有关系）因为在删除时，它根本不会去更新从表的外键字段了
+
+    - 如果还想删除，使用级联删除引用（在实际开发中，级联删除请慎用！(在一对多的情况下)）
+
+      
+
+**级联**：操作一个对象的同时操作他的关联对象
+
+- 级联操作：
+  1.需要**区分操作主体**
+  2.需要在操作主体的实体类上（主表或维护表），添加级联属性`cascade`（需要添加到多表映射关系的注解上）
+- 级联添加，案例：当我保存一个客户的同时保存联系人（在代码中只需保存客户！）
+- 级联删除，案例：当我删除一个客户的同时删除此客户的所有联系人，有中间表会先删除中间表（在代码中只需删除客户！）
+
+
+
+##### 2、多对多
+
+案例：用户和角色（多对多关系）
+
+分析步骤：
+
+1. 明确表关系：多对多关系
+2. 确定表关系（中间表）
+3. 编写实体类，再实体类中描述表关系（**包含关系**）
+   - 用户：包含角色的集合
+   - 角色：包含用户的集合
+4. 配置映射关系
+   - 使用 **JPA 注解配置多对多映射关系**
+
+```java
+@Entity
+@Table//不配置name则为类目首字母小写
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column//不配置字段名则为属性名
+    private Long userId;
+
+    @ManyToMany
+    //维护中间表
+    @JoinTable(
+        name = "sys_user_role",
+        //当前对象在中间表中的外键
+        joinColumns = {@JoinColumn(name = "sys_user_id",referencedColumnName = "userId")},
+        //对方对象在中间表中的外键
+        inverseJoinColumns = {@JoinColumn(name = "sys_role_id",referencedColumnName = "roleId")}
+    )
+    private Set<Role> roles = new HashSet<>();
+    ...
+}
+
+```
+
+```java
+@Entity
+@Table
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private Long roleId;
+    
+    @ManyToMany(mappedBy = "roles")//被维护表放弃维护中间表！
+    private Set<User> users = new HashSet<>();
+    ...
+}
+
+```
+
+其他删除/级联等同一对多，删除时会先删除中间表数据
+
+
+
+##### 3、对象导航查询
+
+对象图导航检索方式是根据已经加载的对象，导航到他的关联对象。它利用类与类之间的关系来检索对象。例如：我们通过ID查询方式查出一个客户，可以调用Customer类中的getLinkMans()方法来获取该客户的所有联系人。对象导航查询的使用要求是：两个对象之间必须存在关联关系。
+
+对象导航查询
+
+- **从一方查询多方：默认延迟加载**
+- **从多方查询一方：默认立即加载**
+
+可以修改配置将其改为立即加载（不推荐！），**fetch配置在多表关系中主体（或一方或多方）的注解上**，查看3.3
+
+
+
+##### 4、Specification的多表查询
+
+代码查看4.6
+
+
+
+
+
+
+
+## 2 Spring Data Redis
 
 > Spring-data-redis是spring大家族的一部分，提供了在srping应用中通过简单的配置访问redis服务，对reids底层开发包(Jedis,  JRedis, and RJC)进行了高度封装，RedisTemplate提供了redis各种操作、异常处理及序列化，支持发布订阅，并对spring 3.1 cache进行了实现
 
@@ -5583,9 +7241,9 @@ spring-data-redis针对jedis提供了如下功能：
 
 ### 1 环境搭建
 
-* 首先要开启Redis服务
+- 首先要开启Redis服务
 
-* Maven依赖引入（Spring相关、JUnit），还需要 Jedis 和 SpringDataRedis 依赖
+- Maven依赖引入（Spring相关、JUnit），还需要 Jedis 和 SpringDataRedis 依赖
 
   ```xml
   <!-- 缓存 -->
@@ -5601,7 +7259,7 @@ spring-data-redis针对jedis提供了如下功能：
   </dependency>	
   ```
 
-* resources/properties目录下的`redis-config.properties`配置文件
+- resources/properties目录下的`redis-config.properties`配置文件
 
   ```properties
   # Redis settings 
@@ -5621,7 +7279,7 @@ spring-data-redis针对jedis提供了如下功能：
   redis.testOnBorrow=true
   ```
 
-* resources/spring目录下的Spring配置文件`applicationContext-redis.xml`
+- resources/spring目录下的Spring配置文件`applicationContext-redis.xml`
 
   ```xml
   <context:property-placeholder location="classpath*:properties/*.properties" />   
@@ -5642,7 +7300,7 @@ spring-data-redis针对jedis提供了如下功能：
 
 ### 2 不同类型value
 
-* String
+- String
 
   ```java
   @RunWith(SpringJUnit4ClassRunner.class)
@@ -5667,9 +7325,10 @@ spring-data-redis针对jedis提供了如下功能：
           redisTemplate.delete("StringName");//还可以传入集合，删除集合中所有key对应的key-value
       }
   }
+  
   ```
 
-* List
+- List
 
   ```java
   @RunWith(SpringJUnit4ClassRunner.class)
@@ -5716,9 +7375,10 @@ spring-data-redis针对jedis提供了如下功能：
           redisTemplate.delete("ListName");//删除ListName对应的List集合。直接打印显示“[]”。还可以传入集合
       }
   }
+  
   ```
 
-* Set
+- Set
 
   ```java
   @RunWith(SpringJUnit4ClassRunner.class)
@@ -5751,9 +7411,10 @@ spring-data-redis针对jedis提供了如下功能：
           redisTemplate.delete("SetName");//删除SetName对应的Set集合。直接打印显示“[]”。还可以传入集合
       }
   }
+  
   ```
 
-* ZSet（方法和Set基本一致，除了查找有个`range()`方法）
+- ZSet（方法和Set基本一致，除了查找有个`range()`方法）
 
   ```java
   @RunWith(SpringJUnit4ClassRunner.class)
@@ -5787,7 +7448,7 @@ spring-data-redis针对jedis提供了如下功能：
   }
   ```
 
-* Hash（即map类型，用得比较多）
+- Hash（即map类型，用得比较多）
 
   ```java
   @RunWith(SpringJUnit4ClassRunner.class)
@@ -5831,15 +7492,510 @@ spring-data-redis针对jedis提供了如下功能：
           redisTemplate.delete("HashName");//删除HashName对应的Map集合。直接打印显示“{}”。还可以传入集合
       }
   }
+  
   ```
 
-  
+
+
+## 3 全文检索技术-Lucene
+
+### 1 什么是全文检索
+
+#### 1.1 数据分类
+
+- **结构化数据**：指具有固定格式或有限长度的数据，如数据库，元数据等
+- **非结构化数据**：指不定长或无固定格式的数据，如邮件，word文档等磁盘上的文件
+
+#### 1.2 结构化数据搜索
+
+​	常见的**结构化数据**也就是**数据库中**的数据。在数据库中搜索很容易实现，通常都是使用sql语句进行查询，而且能很快的得到查询结果（数据库中的数据存储是有规律的，有行有列而且数据格式、数据长度都是固定的）。
+
+#### 1.3 非结构化数据查询方法
+
+- **顺序扫描法**(Serial Scanning)：如对于每一个文档，从头看到尾......
+
+- **全文检索**(Full-text Search)：
+
+  ​	将非结构化数据中的一部分信息提取出来，重新组织，使其变得有一定结构，然后对此有一定结构的数据进行搜索，从而达到搜索相对较快的目的。这部分**从非结构化数据中提取出的然后重新组织的信息**，我们称之**索引**。
+
+  ​	例如：字典。字典的拼音表和部首检字表就相当于字典的索引，对每一个字的解释是非结构化的，如果字典没有音节表和部首检字表，在茫茫辞海中找一个字只能顺序扫描。然而字的某些信息可以提取出来进行结构化处理，比如读音，就比较结构化，分声母和韵母，分别只有几种可以一一列举，于是将读音拿出来按一定的顺序排列，每一项读音都指向此字的详细解释的页数。我们搜索时按结构化的拼音搜到读音，然后按其指向的页数，便可找到我们的非结构化数据——也即对字的解释。
+
+  ​	**这种先建立索引，再对索引进行搜索的过程就叫全文检索(Full-text Search)。**虽然创建索引的过程也是非常耗时的，但是**索引**一旦创建就可以**多次使用**，全文检索主要处理的是查询，所以耗时间创建索引是值得的。
+
+#### 1.4 如何实现全文检索
+
+​	可以使用Lucene实现全文检索。Lucene是apache下的一个开放源代码的全文检索引擎工具包。提供了完整的查询引擎和索引引擎，部分文本分析引擎。Lucene的目的是为软件开发人员提供一个简单易用的工具包，以方便的在目标系统中实现全文检索的功能。
+
+#### 1.5 全文检索的应用场景
+
+​	对于**数据量大**、**数据结构不固定的数据**可采用全文检索方式搜索，比如百度、Google等**搜索引擎**、**论坛站内搜索**、**电商网站站内搜索**等。
 
 
 
-## 2 Spring Data Solr
+### 2 Lucene实现全文检索的流程
+
+![1549724395120](images/1549724395120.png)
+
+- 绿色表示索引过程，对要搜索的原始内容进行索引构建一个索引库，索引过程包括：
+
+  确定原始内容即要搜索的内容（原始文档）—>采集文档—>创建文档—>分析文档—>索引文档
+
+- 红色表示搜索过程，从索引库中搜索内容，搜索过程包括：
+
+  用户通过搜索界面—>创建查询—>执行搜索，从索引库搜索—>渲染搜索结果
 
 
+
+#### 2.1 创建索引
+
+> 将用户要搜索的文档内容创建索引，索引存储在索引库（index）中
+
+1. **获得原始文档**
+
+   原始文档是指**要索引和搜索的内容**。原始内容包括互联网上的网页（爬虫）、数据库中的数据、磁盘上的文件等
+
+2. **创建文档对象**
+
+   获取原始内容的目的是为了索引，在索引前需要将原始内容创建成文档（**Document**），文档中包括**一个一个的域（Field，如文件名/文件内容/大小等）**，域中存储内容（key-value类型）
+
+   注意：每个Document可以有多个Field，不同的Document可以有不同的Field，同一个Document可以有相同的Field（域名和域值都相同）。**每个文档都有一个唯一的编号，就是文档ID**。
+
+3. **分析文档**
+
+   将原始内容创建为包含域（Field）的文档（Document），需要再对域中的内容进行分析，分析的过程是经过对原始文档**提取单词**、将**字母转为小写**、**去除标点符号**、**去除停用词等**过程生成最终的语汇单元，可以将语汇单元理解为一个一个的单词。
+
+   **每个单词叫做一个Term**，不同的域中拆分出来的相同的单词是不同的Term。**Term中**包含两部分一部分是**文档的域名**，另一部分是**单词的内容**。
+
+4. **创建索引**
+
+   对所有文档分析得出的语汇单元进行索引，索引的目的是为了搜索，最终要实现**只搜索被索引的语汇单元**从而**找到Document（文档）**
+
+   注意：创建索引是对语汇单元索引，==**通过词语（内容）找文档**==，这种索引的结构叫==**倒排索引结构**==。
+
+   传统方法是根据**文件找到该文件的内容**，在文件内容中匹配搜索关键字，这种方法是顺序扫描方法，数据量大、搜索慢。
+
+   **倒排索引结构也叫反向索引结构，包括索引和文档两部分，索引即词汇表，它的规模较小，而文档集合较大。**
+
+   ![1549726346135](images/1549726346135.png)
+
+#### 2.2 查询索引
+
+> 查询索引也是搜索的过程。搜索就是用户输入关键字，从索引（index）中进行搜索的过程。根据关键字搜索索引，根据索引找到对应的文档，从而找到要搜索的内容（此处案例指磁盘上的文件）
+
+1. **用户查询接口**
+
+   全文检索系统提供用户搜索的界面供用户提交**搜索的关键字**，搜索完成展示搜索结果。
+
+   > Lucene不提供制作用户搜索界面的功能，需要根据自己的需求开发搜索界面
+
+2. **创建查询**
+
+   用户输入查询关键字执行搜索之前需要先**构建一个查询对象**，查询对象中可以指定查询要搜索的**Field**文档域、**查询关键字**等，查询对象会生成具体的查询语法，例如：语法 “fileName:lucene”表示要搜索Field域的文件名为“lucene”的文档
+
+3. **执行查询**
+
+   搜索索引过程：根据查询语法**在倒排索引词典表中分别找出对应搜索词的索引**，从而找到索引所链接的**文档链表**。
+
+   比如搜索语法为“fileName:lucene”表示搜索出fileName域中包含Lucene的文档。搜索过程就是**在索引上查找域为fileName，并且关键字为Lucene的Term，并根据Term找到文档id列表**。
+
+4. **渲染结果**
+
+   以一个友好的界面将查询结果展示给用户，用户根据搜索结果找自己想要的信息，为了帮助用户很快找到自己的结果，提供了很多展示的效果，比如搜索结果中将关键字高亮显示，百度提供的快照等。
+
+
+
+### 3 Demo
+
+> 实现一个文件的搜索功能，通过关键字搜索文件，凡是文件名或文件内容包括关键字的文件都需要找出来。还可以根据中文词语进行查询，并且需要支持多个条件查询。
+
+1. Lucene是开发全文检索功能的工具包，从[官方网站](http://lucene.apache.org/)下载如`lucene-7.4.0`（要求JDK1.8以上），并解压
+
+   其中core为核心包；analysis为分析包；queryparse为查询分析器
+
+   需要使用的有：`lucene-core-7.4.0.jar` `lucene-analyzers-common-7.4.0.jar`，还需要`common-io`来操作文件
+
+2. **创建索引**
+
+   1. 创建一个java工程，并导入jar包
+
+   2. 创建`Directory`对象，指定索引库的存放位置
+
+   3. 创建一个`IndexWriterConfig`对象
+
+   4. 创建一个`IndexWriter`对象。
+
+   5. 创建`Document`对象
+
+   6. 创建`Field`对象，将field**添加**到Document对象中
+
+   7. 使用`IndexWriter`对象将`Document`对象写入索引库，此过程进行索引创建。并将索引和`Document`对象写入索引库。
+
+   8. 关闭`IndexWriter`对象。
+
+      ```java
+      @Test
+      public void createIndex() throws IOException {
+          //1.指定索引库存放的路径，存入磁盘
+          Directory directory = FSDirectory.open(new File("C:\\Develop\\lucene-7.4.0\\index").toPath());
+          //索引库还可以存放到内存中
+          //Directory directory = new RAMDirectory();
+      
+          //2.创建IndexWriterConfig对象，若不指定参数则为使用标准分析器
+          IndexWriterConfig config = new IndexWriterConfig(new IKAnalyzer());
+          //3.创建IndexWriter对象
+          IndexWriter indexWriter = new IndexWriter(directory,config);
+          //原始文档的路径
+          File dir = new File("F:\\00000\\0000000博学谷JavaEE\\5-流行框架\\1 lucene\\02.参考资料\\searchsource");
+          File[] files = dir.listFiles();
+          for (File file : files) {
+              //文件名
+              String fileName = file.getName();
+              //文件内容
+              String fileContent = FileUtils.readFileToString(file,"UTF-8");
+              //文件路径
+              String filePath = file.getPath();
+              //文件的大小
+              long fileSize  = FileUtils.sizeOf(file);
+              //4.创建文件名域
+              //第一个参数：域的名称；第二个参数：域的内容；第三个参数：是否存储
+              Field fileNameField = new TextField("filename", fileName, Field.Store.YES);
+              //文件内容域
+              Field fileContentField = new TextField("content", fileContent, Field.Store.YES);
+              //文件路径域（不分析、不索引、只存储）
+              Field filePathField = new TextField("path", filePath, Field.Store.YES);
+              //文件大小域
+              Field fileSizeField = new TextField("size", fileSize + "", Field.Store.YES);
+      
+              //5.创建document对象
+              Document document = new Document();
+              document.add(fileNameField);
+              document.add(fileContentField);
+              document.add(filePathField);
+              document.add(fileSizeField);
+              //6.创建索引，并写入索引库
+              indexWriter.addDocument(document);
+          }
+          //7.关闭Indexwriter对象
+          indexWriter.close();
+      }
+      ```
+
+3. 可以使用luke-7.4.0（利用JavaFx开发的应用，版本和lucene对应）查看index目录中索引库的信息，软件要求JDK9.0以上
+
+4. **查询索引库**
+
+   1. 创建一个`Directory`对象，也就是索引库存放的位置。
+
+   2. 创建一个`IndexReader`对象，需要指定`Directory`对象。
+
+   3. 创建一个`Indexsearcher`对象，需要指定`IndexReader`对象
+
+   4. 创建一个`Query`对象`TermQuery`，指定查询的**域**和查询的**关键词**。
+
+   5. 执行查询，得到`TopDocs`对象
+
+   6. 返回查询结果。遍历查询结果并输出。
+
+   7. 关闭`IndexReader`对象。
+
+      ```java
+      @Test
+      public void searchIndex() throws Exception {
+          //1.指定索引库存放的路径
+          Directory directory = FSDirectory.open(new File("C:\\Develop\\lucene-7.4.0\\index").toPath());
+          //2.创建IndexReader对象
+          IndexReader indexReader = DirectoryReader.open(directory);
+          //3.创建IndexSearcher对象
+          IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+          //4.创建查询，指定查询的域和查询的关键词
+          Query query = new TermQuery(new Term("content", "spring"));
+          //执行查询
+          //第一个参数是查询对象，第二个参数是查询结果返回的最大值
+          TopDocs topDocs = indexSearcher.search(query, 10);
+          //查询结果的总条数
+          System.out.println("查询结果的总条数："+ topDocs.totalHits);
+          //遍历查询结果
+          //topDocs.scoreDocs存储了document对象的id
+          for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+              //scoreDoc.doc属性就是document对象的id
+              //根据document的id找到document对象
+              Document document = indexSearcher.doc(scoreDoc.doc);
+              System.out.println(document.get("filename"));
+              //System.out.println(document.get("content"));
+              System.out.println(document.get("path"));
+              System.out.println(document.get("size"));
+              System.out.println("-------------------------");
+          }
+          //关闭Indexreader对象
+          indexReader.close();
+      }
+      ```
+
+
+
+### 4 分析器
+
+查看分析器的分词效果
+
+1. 创建一个标准分析器对象`Analyzer`
+
+2. 获得`TokenStream`对象
+
+3. 添加一个引用，可以获得每个关键词
+
+4. 将指针调整到列表的头部
+
+5. 遍历关键词列表，通过`incrementToken`方法判断列表是否结束
+
+6. 关闭`TokenStream`
+
+   ```java
+   @Test
+   public void testTokenStream() throws Exception {
+       //创建一个标准分析器对象，对中文分词只能按字分
+       //Analyzer analyzer = new StandardAnalyzer();
+       
+       //创建一个IKAnalyzer分析器对象
+       Analyzer analyzer = new IKAnalyzer();
+       //获得tokenStream对象
+       //第一个参数：Field，可以随便给一个（这里只是测试）；第二个参数：要分析的文本内容
+       TokenStream tokenStream = analyzer.tokenStream("test", "The Spring Framework provides a comprehensive programming and configuration model.");
+       //添加一个引用，可以获得每个关键词
+       CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
+       //添加一个偏移量的引用，记录了关键词的开始位置以及结束位置
+       OffsetAttribute offsetAttribute = tokenStream.addAttribute(OffsetAttribute.class);
+       //将指针调整到列表的头部
+       tokenStream.reset();
+       //遍历关键词列表，通过incrementToken方法判断列表是否结束
+       while(tokenStream.incrementToken()) {
+           //关键词的起始位置
+           System.out.println("start->" + offsetAttribute.startOffset());
+           //取关键词，直接打印调用toString()方法
+           System.out.println(charTermAttribute);
+           //结束位置
+           System.out.println("end->" + offsetAttribute.endOffset());
+       }
+       tokenStream.close();
+   }
+   ```
+
+
+
+#### 4.1 中文分析器
+
+- Lucene自带中文分词器
+
+  - StandardAnalyzer：单字分词
+  - SmartChineseAnalyzer：对中文支持较好，但扩展性差，扩展词库，禁用词库和同义词库等不好处理
+
+- **IKAnalyzer**
+
+  1. 把`IK-Analyzer-1.0-SNAPSHOT.jar`包添加到工程中
+
+  2. 把配置文件和扩展词典和停用词词典添加到classpath下
+
+     注意：hotword.dic和ext_stopword.dic文件的格式为UTF-8，注意是无BOM 的UTF-8 编码
+
+  3. 使用自定义分析器`IndexWriterConfig config = new IndexWriterConfig(new IKAnalyzer());`
+
+
+
+### 5 索引库的维护（Field及增删改）
+
+#### 5.1 Field域的属性
+
+- **是否分析**：是否对域的内容进行**分词**处理。前提是我们要对域的内容进行查询。
+
+- **是否索引**：将Field分析后的词或整个Field值进行索引，只有索引方可搜索到。
+
+  比如：商品名称、商品简介分析后进行索引，订单号、身份证号不用分析但也要索引，这些将来都要作为**查询条件**。
+
+- **是否存储**：将Field值存储在文档中，存储在文档中的Field才可以从Document中获取。
+
+  比如：商品名称、订单号，凡是将来要从Document中获取的Field都要存储。**是否要将内容展示给用户**。
+
+|                           Field类                            |        数据类型        | Analyzed是否分析 | Indexed是否索引 | Stored是否存储 |                             说明                             |
+| :----------------------------------------------------------: | :--------------------: | :--------------: | :-------------: | :------------: | :----------------------------------------------------------: |
+|              StoredField(FieldName, FieldValue)              | 重载方法，支持多种类型 |        N         |        N        |       Y        | 这个Field用来构建不同类型Field   不分析，不索引，但要Field存储在文档中 |
+|            LongPoint(String name, long... point)             |         Long型         |        Y         |        Y        |       N        | 可以使用LongPoint、IntPoint等类型存储数值类型的数据。让数值类型可以进行索引。但是不能存储数据，如果想存储数据还需要使用StoredField。 |
+|       StringField(FieldName,   FieldValue,Store.YES))        |         字符串         |        N         |        Y        |      Y或N      | 这个Field用来构建一个字符串Field，但是不会进行分析，会将整个串存储在索引中，比如(订单号,姓名等)   是否存储在文档中用Store.YES或Store.NO决定 |
+| TextField(FieldName, FieldValue, Store.NO)或   TextField(FieldName, reader) |    字符串   或   流    |        Y         |        Y        |      Y或N      | 如果是一个Reader, lucene猜测内容比较多,会采用Unstored的策略. |
+
+修改之前的创建索引中方法
+
+```java
+//不同的document可以有不同的域，同一个document可以有相同的域。
+document.add(new TextField("filename", "新添加的文档", Field.Store.YES));
+document.add(new TextField("content", "新添加的文档的内容", Field.Store.NO));
+//LongPoint创建索引
+document.add(new LongPoint("size", 1000l));
+//StoreField存储数据
+document.add(new StoredField("size", 1000l));
+//不需要创建索引的就使用StoreField存储
+document.add(new StoredField("path", "d:/temp/1.txt"));
+
+```
+
+
+
+#### 5.2 索引库增删改
+
+```java
+public class IndexManager {
+
+    private IndexWriter indexWriter;
+
+    @Before
+    public void init() throws Exception {
+        //创建一个IndexWriter对象，需要使用IKAnalyzer作为分析器
+        indexWriter =
+                new IndexWriter(FSDirectory.open(new File("C:\\temp\\index").toPath()),
+                        new IndexWriterConfig(new IKAnalyzer()));
+    }
+
+    @Test
+    public void addDocument() throws Exception {
+        //创建一个IndexWriter对象，需要使用IKAnalyzer作为分析器
+        IndexWriter indexWriter =
+                new IndexWriter(FSDirectory.open(new File("C:\\temp\\index").toPath()),
+                new IndexWriterConfig(new IKAnalyzer()));
+        //创建一个Document对象
+        Document document = new Document();
+        //向document对象中添加域
+        document.add(new TextField("name", "新添加的文件", Field.Store.YES));
+        document.add(new TextField("content", "新添加的文件内容", Field.Store.NO));
+        document.add(new StoredField("path", "c:/temp/helo"));
+        // 把文档写入索引库
+        indexWriter.addDocument(document);
+        //关闭索引库
+        indexWriter.close();
+    }
+
+    //将索引目录的索引信息全部删除，直接彻底删除，无法恢复！！！！！
+    @Test
+    public void deleteAllDocument() throws Exception {
+        //删除全部文档
+        indexWriter.deleteAll();
+        //关闭索引库
+        indexWriter.close();
+    }
+
+    @Test
+    public void deleteDocumentByQuery() throws Exception {
+        indexWriter.deleteDocuments(new Term("name", "apache"));//参数为Query也可以，好像只是再封装了一层
+        indexWriter.close();
+    }
+
+    //原理是先删除！！！后添加！！！
+    @Test
+    public void updateDocument() throws Exception {
+        //创建一个新的文档对象
+        Document document = new Document();
+        //向文档对象中添加域
+        document.add(new TextField("name", "更新之后的文档", Field.Store.YES));
+        document.add(new TextField("name1", "更新之后的文档2", Field.Store.YES));
+        document.add(new TextField("name2", "更新之后的文档3", Field.Store.YES));
+        //更新操作
+        indexWriter.updateDocument(new Term("name", "spring"), document);
+        //关闭索引库
+        indexWriter.close();
+    }
+}
+
+```
+
+
+
+#### 5.3 索引库查询
+
+对要搜索的信息创建Query查询对象，Lucene会根据Query查询对象生成最终的查询语法，类似关系数据库Sql语法一样Lucene也有自己的查询语法，比如：“name:lucene”表示查询Field的name为“lucene”的文档信息。可通过两种方法创建查询对象：
+
+- 使用Lucene提供Query子类
+
+  - **TermQuery**，根据**域**和**关键词**进行查询，**TermQuery不使用分析器所以建议匹配不分词的Field域查询**，比如订单号
+  - LongPoint.**newRangeQuery**，**数值范围查询**
+
+- 使用**QueryParse**解析查询表达式（**先分词**，再查询，需要指定**默认查找Field**和**分析器**）
+
+  - 通过QueryParser也可以创建Query，QueryParser提供一个Parse方法，此方法可以直接根据查询语法来查询。Query对象执行的查询语法可通过`System.out.println(query);`查询。
+
+    需要使用到分析器。建议创建索引时使用的分析器和查询索引时使用的分析器要一致。
+
+    需要加入queryParser依赖的`lucene-queryparser-7.4.0.jar`包
+
+```java
+public class SearchIndex {
+    private IndexReader indexReader;
+    private IndexSearcher indexSearcher;
+    @Before
+    public void init() throws Exception {
+        indexReader = DirectoryReader.open(FSDirectory.open(new File("C:\\temp\\index").toPath()));
+        indexSearcher = new IndexSearcher(indexReader);
+    }
+
+    @Test
+    public void testTermQuery() throws Exception {
+        //创建一个Query对象
+        Query query = new TermQuery(new Term("content", "lucene"));
+        printResult(query);
+    }
+    
+    
+    //数值范围查询
+    @Test
+    public void testRangeQuery() throws Exception {
+        //创建一个Query对象
+        Query query = LongPoint.newRangeQuery("size", 0L, 100L);
+        printResult(query);
+    }
+
+    @Test
+    public void testQueryParser() throws Exception {
+        //创建一个QueryPaser对象，两个参数
+        //参数1：默认搜索域，参数2：分析器对象
+        QueryParser queryParser = new QueryParser("name", new IKAnalyzer());
+        //使用QueryPaser对象创建一个Query对象
+        Query query = queryParser.parse("lucene是一个Java开发的全文检索工具包");
+        //执行查询
+        printResult(query);
+    }
+
+
+//========================================================================================
+    private void printResult(Query query) throws Exception {
+        //执行查询
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        System.out.println("总记录数：" + topDocs.totalHits);
+        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        for (ScoreDoc doc:scoreDocs){
+            //取文档id
+            int docId = doc.doc;
+            //根据id取文档对象
+            Document document = indexSearcher.doc(docId);
+            System.out.println(document.get("name"));
+            System.out.println(document.get("path"));
+            System.out.println(document.get("size"));
+            //System.out.println(document.get("content"));
+            System.out.println("-----------------寂寞的分割线");
+        }
+        indexReader.close();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 4 Spring Data Solr
 
 ​	大多数搜索引擎应用都必须具有某种搜索功能，问题是搜索功能往往是巨大的资源消耗，并且它们由于沉重的数据库加载而拖垮你的应用的性能。这就是为什么转移负载到一个**外部的搜索服务器**是一个不错的主意，**Apache Solr**是一个流行的开源搜索服务器，它通过使用类似**REST的HTTP API**，这就确保你能从几乎==**任何编程语言来使用solr**==。
 
@@ -5907,12 +8063,12 @@ IK Analyzer配置：
 
 域相当于数据库的表字段，用户存放数据，因此用户根据业务需要去定义相关的Field（域），一般来说，每一种对应着一种数据，用户对同一种数据进行相同的操作。域的常用属性：
 
-* name：指定域的名称
-* type：指定域的类型
-* indexed：是否索引（要搜索的域）
-* stored：是否存储
-* required：是否必须
-* multiValued：是否多值
+- name：指定域的名称
+- type：指定域的类型
+- indexed：是否索引（要搜索的域）
+- stored：是否存储
+- required：是否必须
+- multiValued：是否多值
 
 ##### 1.3.1 基本域
 
@@ -5950,6 +8106,8 @@ IK Analyzer配置：
 
 ```xml
 <dynamicField name="item_spec_*" type="string" indexed="true" stored="true" />	
+
+
 ```
 
 
@@ -5968,7 +8126,7 @@ Spring Data Solr就是为了方便Solr的开发所研制的一个框架，其底
 
 #### 2.1 环境搭建
 
-* Maven依赖
+- Maven依赖
 
   ```xml
   <dependency>
@@ -5977,9 +8135,11 @@ Spring Data Solr就是为了方便Solr的开发所研制的一个框架，其底
       <version>1.5.5.RELEASE</version>
   </dependency>
   <!--Demo中还会用到JUnit和Spring与JUnit整合-->
+  
+  
   ```
 
-* resources下创建`applicationContext-solr.xml`
+- resources下创建`applicationContext-solr.xml`
 
   ```xml
   <!-- solr服务器地址，其实就是配置了一个bean -->
@@ -5989,6 +8149,8 @@ Spring Data Solr就是为了方便Solr的开发所研制的一个框架，其底
   <bean id="solrTemplate" class="org.springframework.data.solr.core.SolrTemplate">
       <constructor-arg ref="solrServer" />
   </bean>
+  
+  
   ```
 
 #### 2.2 `@Field` 、`@Dynamic`注解
@@ -6032,6 +8194,8 @@ public class TbItem implements Serializable{
     private Date updateTime;//后添加的，排序需要
     .......
 }
+
+
 ```
 
 #### 2.3 增加（修改）
@@ -6059,6 +8223,8 @@ public class TestTemplate {
         solrTemplate.commit();//必须commit
     }
 }
+
+
 ```
 
 #### 2.4 按主键删除
@@ -6069,6 +8235,8 @@ public void deleteById(){
     solrTemplate.deleteById("1");//自动转换
     solrTemplate.commit();
 }
+
+
 ```
 
 #### 2.5 删除所有（条件）
@@ -6080,6 +8248,8 @@ public void deleteAll(){
     solrTemplate.delete(query);
     solrTemplate.commit();
 }
+
+
 ```
 
 #### 2.5 按主键查询
@@ -6090,6 +8260,7 @@ public void getById(){
     TbItem item = solrTemplate.getById(1L, TbItem.class);
     System.out.println(item.getTitle());
 }
+
 ```
 
 #### 2.6 条件查询（含分页查询）
@@ -6163,7 +8334,6 @@ public void testAddList(){
 ### 3 批量数据导入
 
 > 可以使用Solr自带插件来导入，但不灵活，推荐查询增加的方式，根据条件筛选数据并导入Solr中
->
 
 ```java
 //审核通过才导入
@@ -6208,6 +8378,8 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         return map;
     }
 }
+
+
 ```
 
 `ItemSearchController`
@@ -6224,6 +8396,7 @@ public class ItemSearchController {
         return itemSearchService.search(searchMap);
     }
 }
+
 ```
 
 `ItemSearchService.js`
@@ -6234,6 +8407,7 @@ app.service("itemSearchService",function ($http) {
         return $http.post("/itemsearch/search.do",searchMap);
     }
 })
+
 ```
 
 `ItemSearchController.js`
@@ -6246,6 +8420,7 @@ app.controller("itemSearchController",function ($scope,itemSearchService) {
         })
     }
 })
+
 ```
 
 HTML遍历展示即可
@@ -6576,7 +8751,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
 
 
-# 第六部分 整合SSM
+# 第七部分 整合SSM
 
 整合的思路：
 
