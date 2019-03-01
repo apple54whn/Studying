@@ -3420,7 +3420,7 @@ Linux三种文件类型
 
 ## Linux远程连接
 
-SecureCRT软件：按`Alt+SFTP`可传输文件`put d:\zookeeper-3.4.6.tar.gz`
+SecureCRT软件：按`Alt+P`可打开sftp来传输文件，如`put d:\zookeeper-3.4.6.tar.gz`
 
 XShell
 

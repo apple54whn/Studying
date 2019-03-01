@@ -852,9 +852,9 @@ spring.datasource.username=root
 spring.datasource.password=w111151
 
 #spring集成Mybatis环境
-#pojo别名扫描包
+#pojo别名扫描包，不配置也行，需要指定全类名
 mybatis.type-aliases-package=com.example.domain
-#加载Mybatis映射文件
+#加载Mybatis映射文件，不配置也行，只需要*mapper.xml在@Mapper注解的接口的同一包中！
 mybatis.mapper-locations=classpath:mapper/*Mapper.xml
 ```
 
@@ -953,7 +953,7 @@ com.example.controller.UserController
 public class UserController {
 
     @Autowired
-    private UserMapper userMapper;//报错，没有此类型的bean。但是可以使用，在运行期会创建好bean
+    private UserMapper userMapper;//报错，没有此类型的bean。但是可以使用，在运行期会创建好bean。还可以添加component之类注解
 
     @RequestMapping("/queryUser")
     public List<User> queryUser() {
@@ -986,7 +986,7 @@ public class UserController {
 
 ```java
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringbootMybatisApplication.class)//Spring Boot 引导类
+@SpringBootTest(classes = SpringbootMybatisApplication.class)//不用指定会从main下自动找启动类，加载Spring容器
 public class MapperTest {
 
     @Autowired
@@ -1038,6 +1038,29 @@ public final class SpringRunner extends SpringJUnit4ClassRunner
 #### 5.3.3 数据库连接和JPA配置
 
 在application.properties/yml中添加数据库的连接信息、Spring Boot 集成Spring Data JPA的配置
+
+```yaml
+spring:
+  #DB Configuration:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/test?serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: w111151
+  #JPA Configuration:
+  jpa:
+    database: mysql
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      #命名策略，瞎选的
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        #Hibernate 4 naming strategy fully qualified name. Not supported with Hibernate 5
+        #strategy: org.hibernate.cfg.ImprovedNamingStrategy
+```
 
 ```properties
 #DB Configuration:
@@ -1141,6 +1164,16 @@ public class JpaTest {
 ```
 
 #### 5.4.2 配置redis的连接信息
+
+```yaml
+spring: 
+  redis:
+    #url包括以下host，port，password
+    url: redis://user:password@example.com:6379
+    host: localhost
+    port: 6379
+    password: w111151
+```
 
 ```properties
 #Redis
@@ -3177,6 +3210,13 @@ public class CustomerDaoTest {
 
     @Autowired
     private CustomerDao customerDao;
+    
+    @Test
+    public void testFindById() {
+        Optional<Customer> optional = customerDao.findById(3L);
+        System.out.println(optional.orElse(null));
+    }
+    
 
     /**
      * 根据ID查询（立即加载，底层调用find()方法）
@@ -3327,47 +3367,13 @@ public class JPQLTest {
 
 
 
-##### 3、SQL 语句查询（了解）
-
-- 特有的查询：需要在**Dao接口上配置方法**
-- 在新添加的方法上，使用**`@Query`注解的形式配置SQL查询语句**，还需设置`nativeQuery`属性
-
-```java
-public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
-    /**
-     * 使用SQL查询全部客户/模糊查询
-     * nativeQuery：默认false为JPQL查询，true为SQL查询
-     */
-    //@Query(value = "select * from cst_customer", nativeQuery = true)
-    @Query(value = "select * from cst_customer where cust_name like ?1", nativeQuery = true)
-    List<Object[]> findBySQL(String name);
-}
-```
-
-```java
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:applicationContext.xml")//locations可省略
-public class JPQLTest {
-
-    @Autowired
-    private CustomerDao customerDao;
-    @Test
-    public void testFindBySQL() {
-        List<Object[]> list = customerDao.findBySQL("传智播客%");
-        for (Object[] obj : list) {
-            System.out.println(Arrays.toString(obj));
-        }
-    }
-}
-```
-
-
-
-##### 4、方法名称规则查询
+##### 3、方法名称规则查询
 
 方法命名规则查询就是根据方法的名字，就能创建查询，是对JPQL更深层次封装。只需要按照Spring Data JPA提供的方法命名规则定义方法的名称，不需要配置JPQL语句就可以完成查询工作。Spring Data JPA在程序执行的时候会根据方法名称进行解析，并自动生成查询语句进行查询。
 
-按照Spring Data JPA 定义的规则，查询方法以**`findBy`**开头，涉及条件查询时，**条件的属性用条件关键字连接**，要注意的是：条件**属性首字母需大写**。框架在进行方法名解析时，会先把方法名多余的前缀截取掉，然后对剩下部分进行解析。
+按照Spring Data JPA 定义的规则，查询方法以**`findBy`**开头，涉及条件查询时，**条件的属性用条件关键字连接**，要注意的是：条件**属性首字母需大写**。框架在进行方法名解析时，会先把方法名多余的前缀截取掉，然后对剩下部分进行解析。也可以**删除**。
+
+会根据**先后顺序**传参！！名称无所谓
 
 ```java
 public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
@@ -3455,6 +3461,42 @@ public class JPQLTest {
 |       TRUE        |             findByActiveTrue()             |                  …   where x.active = true                   |
 |       FALSE       |            findByActiveFalse()             |                  …   where x.active = false                  |
 |    IgnoreCase     |         findByFirstnameIgnoreCase          |           …   where UPPER(x.firstame) = UPPER(?1)            |
+
+
+
+##### 4、SQL 语句查询
+
+- 特有的查询：需要在**Dao接口上配置方法**
+- 在新添加的方法上，使用**`@Query`注解的形式配置SQL查询语句**，还需设置`nativeQuery`属性
+
+```java
+public interface CustomerDao extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+    /**
+     * 使用SQL查询全部客户/模糊查询
+     * nativeQuery：默认false为JPQL查询，true为SQL查询
+     */
+    //@Query(value = "select * from cst_customer", nativeQuery = true)
+    @Query(value = "select * from cst_customer where cust_name like ?1", nativeQuery = true)
+    List<Object[]> findBySQL(String name);
+}
+```
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:applicationContext.xml")//locations可省略
+public class JPQLTest {
+
+    @Autowired
+    private CustomerDao customerDao;
+    @Test
+    public void testFindBySQL() {
+        List<Object[]> list = customerDao.findBySQL("传智播客%");
+        for (Object[] obj : list) {
+            System.out.println(Arrays.toString(obj));
+        }
+    }
+}
+```
 
 
 
@@ -3558,7 +3600,7 @@ public class SpecTest {
         List<Customer> customerList2 = customerDao.findAll(specification, sort);
 
         //分页查询
-        Pageable pageable = new PageRequest(0, 2);//页码（从0开始），每页显示条数
+        Pageable pageable = PageRequest.of(0,2);//页码（从0开始），每页显示条数
         Page<Customer> customerPage = customerDao.findAll(specification, pageable);
         System.out.println("总记录数:" + customerPage.getTotalElements());
         System.out.println("总页数:" + customerPage.getTotalPages());
@@ -4096,7 +4138,165 @@ spring-data-redis针对jedis提供了如下功能：
 
 
 
-## 3 全文检索技术-Lucene
+## 3 Spring Data MongoDB
+
+1. 起步依赖
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-data-mongodb</artifactId>
+   </dependency>
+   ```
+
+2. application.yml
+
+   ```yaml
+   spring:
+     data:
+       mongodb:
+         uri: mongodb://root:123@localhost:27017
+         database: xc_cms
+   ```
+
+3. 类似Spring Data JPA，Repository接口只需继承，指定domian和主键类型
+
+   ```java
+   public interface CmsRepository extends MongoRepository<CmsPage,String> {
+   }
+   ```
+
+### 3.1 基本CRUD
+
+继承了MongoRepository之后获得方法
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class CmsPageRepositoryTest {
+
+    @Autowired
+    private CmsPageRepository cmsPageRepository;
+
+    //查询所有
+    @Test
+    public void testFindAll(){
+        List<CmsPage> all = cmsPageRepository.findAll();
+        all.forEach(System.out::println);
+    }
+
+    //分页查询
+    @Test
+    public void testFindPage(){
+        //参数返回的时Pageable对象
+        Page<CmsPage> all = cmsPageRepository.findAll(PageRequest.of(0, 10));//页码（从0开始），每页数据个数
+        System.out.println("总记录数"+all.getTotalElements());
+        System.out.println("总页数"+all.getTotalPages());
+        all.getContent().forEach(System.out::println);
+    }
+
+    //自定义条件查询测试
+    @Test
+    public void testFindAllByExample() {
+        //分页参数
+        int page = 0;//从0开始
+        int size = 10;
+        Pageable pageable = PageRequest.of(page,size);
+
+        //条件值对象
+        CmsPage cmsPage= new CmsPage();
+        //要查询5a751fab6abb5044e0d19ea1站点的页面
+        cmsPage.setSiteId("5b30b052f58b4411fc6cb1cf");
+        //设置模板id条件
+        cmsPage.setTemplateId("5ad9a24d68db5239b8fef199");
+        //设置页面别名
+        cmsPage.setPageAliase("轮播");
+        
+        //条件匹配器
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+            .withMatcher("pageAliase", ExampleMatcher.GenericPropertyMatchers.contains());
+        //ExampleMatcher.GenericPropertyMatchers.contains() 包含关键字
+        //ExampleMatcher.GenericPropertyMatchers.startsWith()//前缀匹配
+        
+        //定义Example条件对象
+        Example<CmsPage> example = Example.of(cmsPage,exampleMatcher);
+        Page<CmsPage> all = cmsPageRepository.findAll(example, pageable);
+        all.getContent().forEach(System.out::println);
+    }
+
+    //修改
+    //Optional是jdk1.8引入的类型，Optional是一个容器对象，它包括了我们需要的对象，使用isPresent方法判断所包
+    //含对象是否为空，isPresent方法返回false则表示Optional包含对象为空，否则可以使用get()取出对象进行操作。
+    //Optional的优点是：
+    //1、提醒你非空判断。
+    //2、将对象非空检测标准化。
+    @Test
+    public void testUpdate() {
+        //查询对象
+        Optional<CmsPage> optional = cmsPageRepository.findById("5b4b1d8bf73c6623b03f8cec");
+        if(optional.isPresent()){
+            CmsPage cmsPage = optional.get();
+            //设置要修改值
+            cmsPage.setPageAliase("test01");
+            //修改
+            CmsPage save = cmsPageRepository.save(cmsPage);
+            System.out.println(save);
+        }
+    }
+
+    //删除
+    @Test
+    public void testDelete() {
+        cmsPageRepository.deleteById("5b17a2c511fe5e0c409e5eb3");
+    }
+
+    //添加
+    @Test
+    public void testInsert(){
+        //定义实体类
+        CmsPage cmsPage = new CmsPage();
+        cmsPage.setSiteId("s01");
+        cmsPage.setTemplateId("t01");
+        cmsPage.setPageName("测试页面");
+        cmsPage.setPageCreateTime(new Date());
+        List<CmsPageParam> cmsPageParams = new ArrayList<>();
+        CmsPageParam cmsPageParam = new CmsPageParam();
+        cmsPageParam.setPageParamName("param1");
+        cmsPageParam.setPageParamValue("value1");
+        cmsPageParams.add(cmsPageParam);
+        cmsPage.setPageParams(cmsPageParams);
+        cmsPageRepository.save(cmsPage);
+        System.out.println(cmsPage);
+    }
+}
+```
+
+### 3.2 方法名称规则查询
+
+同Spring Data JPA一样Spring Data mongodb也提供自定义方法的规则，如下：按照findByXXX，findByXXXAndYYY、countByXXXAndYYY等规则定义方法，实现查询操作。
+
+```java
+public interface CmsPageRepository extends MongoRepository<CmsPage,String> {
+    //根据页面名称查询
+    CmsPage findByPageName(String pageName);
+    //根据页面名称和类型查询
+    CmsPage findByPageNameAndPageType(String pageName,String pageType);
+    //根据站点和页面类型查询记录数
+    int countBySiteIdAndPageType(String siteId,String pageType);
+    //根据站点和页面类型分页查询
+    Page<CmsPage> findBySiteIdAndPageType(String siteId,String pageType, Pageable pageable);
+}
+```
+
+
+
+......
+
+
+
+
+
+## 4 全文检索技术-Lucene
 
 ### 1 什么是全文检索
 
@@ -4591,7 +4791,7 @@ public class SearchIndex {
 
 
 
-## 4 Spring Data Solr
+## 5 Spring Data Solr
 
 ​	大多数搜索引擎应用都必须具有某种搜索功能，问题是搜索功能往往是巨大的资源消耗，并且它们由于沉重的数据库加载而拖垮你的应用的性能。这就是为什么转移负载到一个**外部的搜索服务器**是一个不错的主意，**Apache Solr**是一个流行的开源搜索服务器，它通过使用类似**REST的HTTP API**，这就确保你能从几乎==**任何编程语言来使用solr**==。
 
@@ -5711,32 +5911,1689 @@ public Result add(@RequestBody TbSeller seller){
 
 
 
-# 其他
+# 第四部分 消息队列
 
-## <span name="postman">1 Postman的几种参数格式</span>
+## 1 RabbitMQ
+
+### 1.1 RabbitMQ简介
+
+> 市场上还有哪些消息队列？ActiveMQ，RabbitMQ，ZeroMQ，Kafka，MetaMQ，RocketMQ、Redis。
+
+**MQ**全称为**Message Queue**，即**消息队列**， RabbitMQ是由erlang语言开发，基于**AMQP**（Advanced Message Queue 高级消息队列协议）实现的消息队列，它是一种**应用程序之间的通信方法**，消息队列在分布式系统开发中应用非常广泛。[RabbitMQ 官方地址](http://www.rabbitmq.com/)。
+
+开发中消息队列通常有如下**应用场景**：
+
+- **任务异步处理**：将不需要同步处理的并且耗时长的操作由消息队列通知消息接收方进行异步处理。提高应用程序的响应时间
+- **应用程序解耦合**：MQ相当于一个中介，生产方通过MQ与消费方交互，它将应用程序进行解耦合
+
+为什么使用RabbitMQ呢？
+
+- 使用简单，功能强大
+- 基于AMQP协议
+- 社区活跃，文档完善
+- 高并发性能好，这主要得益于Erlang语言
+- Spring Boot默认已集成RabbitMQ
+
+------
+
+**AMQP**是什么？
+
+Advanced Message Queuing Protocol，一个提供**统一消息服务**的**应用层标准**高级消息队列协议，是应用层协议的一个**开放标准**，为面向消息的中间件设计。基于此协议的客户端与消息中间件可传递消息，并不受客户端/中间件不同产品，不同的开发语言等条件的限制。
+
+**JMS**是什么？
+
+**Java消息服务**（Java Message Service，JMS）应用程序**接口**是一个**Java平台**中关于**面向消息中间件**（MOM）的**API**，用于在两个应用程序之间，或分布式系统中发送消息，进行**异步通信**。Java消息服务是一个与具体平台无关的API，绝大多数MOM提供商都对JMS提供支持。
+
+------
+
+RabbitMQ的**工作原理**
+
+下图是RabbitMQ的基本结构：
+
+![1550827615999](../%E5%AD%A6%E6%88%90%E5%9C%A8%E7%BA%BF/images/1550827615999.png)
+
+组成部分说明如下：（Broker是在Channel中的！！！）
+
+- **Broker**：消息队列服务进程，此进程包括两个部分：**Exchange**和**Queue**。
+  - **Exchange**：消息队列交换机，按一定的规则将消息**路由转发**到某个**队列**，对消息进行过虑。
+  - **Queue**：消息队列，**存储消息的队列**，消息到达队列并转发给指定的消费方。
+- Producer：消息生产者，即生产方客户端，生产方客户端将消息发送到MQ。
+- Consumer：消息消费者，即消费方客户端，接收MQ转发的消息。
+
+消息发布接收流程：
+
+- 发送消息
+  1. 生产者和Broker建立TCP连接。
+  2. 生产者和Broker建立通道。
+  3. 生产者通过通道消息发送给Broker，由Exchange将消息进行转发。
+  4. Exchange将消息转发到指定的Queue（队列）
+- 接收消息
+  1. 消费者和Broker建立TCP连接
+  2. 消费者和Broker建立通道
+  3. 消费者监听指定的Queue（队列）
+  4. 当有消息到达Queue时Broker默认将消息推送给消费者。
+  5. 消费者接收到消息。
+
+### 1.2 快速入门
+
+#### 1.2.1 下载安装
+
+> RabbitMQ由Erlang语言开发，Erlang语言用于并发及分布式系统的开发，在电信领域应用广泛，OTP（Open Telecom Platform）作为Erlang语言的一部分，包含了很多基于Erlang开发的中间件及工具库，安装RabbitMQ需要安装Erlang/OTP，并保持版本匹配，[下载地址](http://www.rabbitmq.com/download.html)。本项目使用Erlang/OTP 20.3版本和RabbitMQ3.7.3版本
+
+1. 下载erlang并安装（可能需要管理员模式）：[Erlang/OTP 20.3](http://erlang.org/download/otp_win64_20.3.exe)
+
+   erlang安装完成需要配置erlang环境变量，例如：
+
+   `ERLANG_HOME=C:\Program Files\erl9.3`，在path中添加`%ERLANG_HOME%\bin;`
+
+2. 下载RabbitMQ并安装（可能需要管理员模式）：[RabbitMQ3.7.3](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.7.3)
+
+
+
+#### 1.2.2 启动
+
+Windows版安装成功后会自动创建RabbitMQ服务并且启动。
+
+- 从开始菜单启动RabbitMQ
+
+  - RabbitMQ Service-install :安装服务
+  - RabbitMQ Service-remove 删除服务
+  - RabbitMQ Service-start 启动
+  - RabbitMQ Service-stop 启动
+
+- 如果没有开始菜单则进入安装目录下`sbin\`目录手动启动
+
+  - `rabbitmq-service.bat install` 安装服务 
+  - `rabbitmq-service.bat stop` 停止服务 
+  - `rabbitmq-service.bat start` 启动服务
+
+- 安装管理插件
+
+  - 安装rabbitMQ的管理插件，方便在浏览器端管理RabbitMQ
+
+    管理员身份运行 `rabbitmq-plugins.bat enable rabbitmq_management`
+
+    启动成功 登录RabbitMQ，输入：http://localhost:15672。初始账号和密码：`guest/guest`
+
+> 安装erlang和rabbitMQ以管理员身份运行。
+>
+> 当卸载重新安装时会出现RabbitMQ服务注册失败，此时需要进入注册表清理，搜索RabbitMQ、ErlSrv，将对应项全部删除
+
+
+
+
+
+#### 1.2.3 HelloWorld
+
+创建maven工程。创建生产者工程和消费者工程，分别加入RabbitMQ java client的依赖。
+
+```xml
+<dependency>
+    <groupId>com.rabbitmq</groupId>
+    <artifactId>amqp-client</artifactId>
+    <version>5.4.3</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <version>2.1.3.RELEASE</version>
+</dependency>
+```
+
+test-rabbitmq-producer：生产者工程
+
+```java
+public class Producer01 {
+
+    //队列
+    private static final String QUEUE = "helloworld";
+
+    public static void main(String[] args) {
+        //1.通过连接工厂创建新的连接和mq建立连接
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口，与监控web端口不一样！！！
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，虚拟机相当于一个独立的mq服务器，RabbitMQ默认虚拟机名称为“/”
+        connectionFactory.setVirtualHost("/");
+
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            //2.创建与RabbitMQ服务的TCP连接
+            connection = connectionFactory.newConnection();
+            //3.创建与Exchange的通道，每个连接可以创建多个通道，每个通道代表一个会话任务
+            channel = connection.createChannel();
+            /**
+             * 4.声明队列，如果RabbitMQ中没有此队列将自动创建
+             * String queue:队列名称
+             * boolean durable:是否持久化，如果持久化，mq重启后队列还在
+             * boolean exclusive:队列是否独占此连接，队列只允许在该连接中访问，如果connection连接关闭队列则自动删除。如果将此							  参数设置true可用于临时队列的创建
+             * boolean autoDelete:队列不再使用时是否自动删除此队列。如果将此参数和exclusive参数设置为true就可以实现临时队列
+             * Map<String, Object> arguments:队列参数，可以设置一个队列的扩展参数，比如：可设置存活时间
+             */
+            channel.queueDeclare(QUEUE, true, false, false, null);
+
+            //消息内容
+            String message = "hello world 黑马程序员" + System.currentTimeMillis();
+            /**
+             * 消息发布方法
+             * String exchange：Exchange的名称，如果没有指定，则使用Default Exchange。每个队列也会绑定那个默认的交换机，但是							  不能显示绑定或解除绑定
+             * String routingKey: 消息的路由Key，是用于Exchange将消息转发到指定的消息队列。如果使用默认交换机，该参数设置为队								列的名称
+             * BasicProperties props : 消息包含的属性
+             * byte[] body：消息体
+             */
+            channel.basicPublish("", QUEUE, null, message.getBytes());
+            System.out.println("send to mq " + message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (channel != null) {
+                    channel.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+
+
+test-rabbitmq-consumer：消费者工程
+
+```java
+public class Consumer01 {
+
+    //队列
+    private static final String QUEUE = "helloworld";
+
+    public static void main(String[] args) throws IOException, TimeoutException {
+        //通过连接工厂设置MabbitMQ所在服务器的ip和端口
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口
+        /*connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");*/
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，每个虚拟机就相当于一个独立的mq
+        connectionFactory.setVirtualHost("/");
+
+        //创建与RabbitMQ服务的TCP连接
+        Connection connection = connectionFactory.newConnection();
+        //创建会话通道,生产者和mq服务所有通信都在channel通道中完成
+        Channel channel = connection.createChannel();
+
+        //声明队列，如果队列在mq 中没有则要创建
+        channel.queueDeclare(QUEUE,true,false,false,null);
+
+        /**
+         * 监听队列
+         * 1、queue 队列名称
+         * 2、autoAck 自动回复，当消费者接收到消息后要告诉mq消息已接收，如果将此参数设置为tru表示会自动回复mq，如果设置为false						要通过编程实现回复
+         * 3、callback，消费方法，当消费者接收到消息要执行的方法
+         */
+        channel.basicConsume(QUEUE,true,new DefaultConsumer(channel){
+            /**
+             * 当消费者接收到消息后此方法将被调用
+             * @param consumerTag  消费者标签，用来标识消费者的，在监听队列时设置channel.basicConsume
+             * @param envelope 信封，消息包的内容，可从中获取消息id，消息routingkey，交换机，消息和重传标志(收到消息失败后是							否需要重新发送)
+             * @param properties 消息属性
+             * @param body 消息内容
+             */
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                //交换机
+                String exchange = envelope.getExchange();
+                //路由key
+                String routingKey = envelope.getRoutingKey();
+                //消息id，mq在channel中用来标识消息的id，可用于确认消息已接收
+                long deliveryTag = envelope.getDeliveryTag();
+                //消息内容
+                String message= new String(body, StandardCharsets.UTF_8);
+                System.out.println("receive message:"+message);
+            }
+        });
+    }
+}
+```
+
+
+
+#### 1.2.4 总结
+
+1、发送端操作流程
+
+1）创建连接
+
+2）创建通道
+
+3）声明队列
+
+4）发送消息
+
+------
+
+2、接收端
+
+1）创建连接
+
+2）创建通道
+
+3）声明队列
+
+4）监听队列
+
+5）接收消息
+
+6）ack回复
+
+
+
+### 1.3 工作模式
+
+RabbitMQ有以下几种工作模式 ：
+
+1、Work queues
+
+2、Publish/Subscribe
+
+3、Routing
+
+4、Topics
+
+5、Header
+
+6、RPC
+
+
+
+#### 1.3.1 Work queues
+
+![1550863766127](../%E5%AD%A6%E6%88%90%E5%9C%A8%E7%BA%BF/images/1550863766127.png)
+
+work queues与入门程序相比，多了一个消费端，两个消费端共同消费同一个队列中的消息。
+
+==**应用场景**：对于**任务过重或任务较多**情况使用工作队列可以**提高任务处理的速度**。==
+
+测试：
+
+1、使用入门程序，启动多个消费者。
+
+2、生产者发送多个消息。
+
+结果：
+
+1、一条消息只会被一个消费者接收；
+
+2、rabbit采用**轮询**的方式将消息是**平均发送给消费者**的；
+
+3、消费者在处理完某条消息后，才会收到下一条消息。
+
+
+
+#### 1.3.2 Publish/subscribe
+
+![1550863881285](../%E5%AD%A6%E6%88%90%E5%9C%A8%E7%BA%BF/images/1550863881285.png)
+
+发布订阅模式：
+
+1、每个消费者监听自己的队列。
+
+2、生产者将消息发给broker，由**交换机将消息转发到绑定此交换机的每个队列**，每个绑定交换机的队列都将接收到消息
+
+==案例：**用户通知**，当用户充值成功或转账完成系统通知用户，通知方式有**短信、邮件**多种方法 。==
+
+
+
+1、生产者
+
+声明Exchange_fanout_inform交换机。声明两个队列并且绑定到此交换机，绑定时和发送消息时均不需要指定routingkey
+
+```java
+public class Producer02_publish {
+    //队列名称
+    private static final String QUEUE_INFORM_EMAIL = "queue_inform_email";
+    private static final String QUEUE_INFORM_SMS = "queue_inform_sms";
+    private static final String EXCHANGE_FANOUT_INFORM="exchange_fanout_inform";
+
+    public static void main(String[] args) {
+        //通过连接工厂创建新的连接和mq建立连接
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，每个虚拟机就相当于一个独立的mq
+        connectionFactory.setVirtualHost("/");
+
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            //建立新连接
+            connection = connectionFactory.newConnection();
+            //创建会话通道,生产者和mq服务所有通信都在channel通道中完成
+            channel = connection.createChannel();
+            //声明队列，如果队列在mq 中没有则要创建
+            /**
+             * 参数明细
+             * 1、queue 队列名称
+             * 2、durable 是否持久化，如果持久化，mq重启后队列还在
+             * 3、exclusive 是否独占连接，队列只允许在该连接中访问，如果connection连接关闭队列则自动删除,如果将此参数设置true							可用于临时队列的创建
+             * 4、autoDelete 自动删除，队列不再使用时是否自动删除此队列，如果将此参数和exclusive参数设置为true就可以实现临时队						列（队列不用了就自动删除）
+             * 5、arguments 参数，可以设置一个队列的扩展参数，比如：可设置存活时间
+             */
+            channel.queueDeclare(QUEUE_INFORM_EMAIL,true,false,false,null);
+            channel.queueDeclare(QUEUE_INFORM_SMS,true,false,false,null);
+            //声明一个交换机
+            /**
+             * 参数明细：
+             * 1、交换机的名称
+             * 2、交换机的类型
+             * fanout：对应的rabbitmq的工作模式是 publish/subscribe
+             * direct：对应的Routing	工作模式
+             * topic：对应的Topics工作模式
+             * headers： 对应的headers工作模式
+             */
+            channel.exchangeDeclare(EXCHANGE_FANOUT_INFORM, BuiltinExchangeType.FANOUT);
+            //进行交换机和队列绑定
+            /**
+             * 参数明细：
+             * 1、queue 队列名称
+             * 2、exchange 交换机名称
+             * 3、routingKey 路由key，作用是交换机根据路由key的值将消息转发到指定的队列中，在发布订阅模式中调协为空字符串
+             */
+            channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_FANOUT_INFORM,"");
+            channel.queueBind(QUEUE_INFORM_SMS,EXCHANGE_FANOUT_INFORM,"");
+            //发送消息
+            /**
+             * 参数明细：
+             * 1、exchange，交换机，如果不指定将使用mq的默认交换机（设置为""）
+             * 2、routingKey，路由key，交换机根据路由key来将消息转发到指定的队列，如果使用默认交换机，routingKey设置为队列的								名称
+             * 3、props，消息的属性
+             * 4、body，消息内容
+             */
+            for(int i=0;i<5;i++){
+                //消息内容
+                String message = "send inform message to user";
+                channel.basicPublish(EXCHANGE_FANOUT_INFORM,"",null,message.getBytes());
+                System.out.println("send to mq "+message);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (channel != null) {
+                    channel.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+2、消费者（2个，类似！）
+
+```java
+public class Consumer02_subscribe_email {
+    //队列名称
+    private static final String QUEUE_INFORM_EMAIL = "queue_inform_email";
+    //不同之处，替换上面的
+    //private static final String QUEUE_INFORM_SMS = "queue_inform_sms";
+    private static final String EXCHANGE_FANOUT_INFORM="exchange_fanout_inform";
+
+
+    public static void main(String[] args) throws IOException, TimeoutException {
+        //通过连接工厂创建新的连接和mq建立连接
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，每个虚拟机就相当于一个独立的mq
+        connectionFactory.setVirtualHost("/");
+        //建立新连接
+        Connection connection = connectionFactory.newConnection();
+        //创建会话通道,生产者和mq服务所有通信都在channel通道中完成
+        Channel channel = connection.createChannel();
+        /**
+         * 1、queue 队列名称
+         * 2、durable 是否持久化，如果持久化，mq重启后队列还在
+         * 3、exclusive 是否独占连接，队列只允许在该连接中访问，如果connection连接关闭队列则自动删除,如果将此参数设置true可用				于临时队列的创建
+         * 4、autoDelete 自动删除，队列不再使用时是否自动删除此队列，如果将此参数和exclusive参数设置为true就可以实现临时队列（				队列不用了就自动删除）
+         * 5、arguments 参数，可以设置一个队列的扩展参数，比如：可设置存活时间
+         */
+        channel.queueDeclare(QUEUE_INFORM_EMAIL,true,false,false,null);
+        //不同之处，替换上面的
+        //channel.queueDeclare(QUEUE_INFORM_SMS,true,false,false,null);
+        /**
+         * 参数明细：
+         * 1、交换机的名称
+         * 2、交换机的类型
+         * fanout：对应的rabbitmq的工作模式是 publish/subscribe
+         * direct：对应的Routing	工作模式
+         * topic：对应的Topics工作模式
+         * headers： 对应的headers工作模式
+         */
+        channel.exchangeDeclare(EXCHANGE_FANOUT_INFORM, BuiltinExchangeType.FANOUT);
+        //进行交换机和队列绑定
+        /**
+         * 1、queue 队列名称
+         * 2、exchange 交换机名称
+         * 3、routingKey 路由key，作用是交换机根据路由key的值将消息转发到指定的队列中，在发布订阅模式中调协为空字符串
+         */
+        channel.queueBind(QUEUE_INFORM_EMAIL, EXCHANGE_FANOUT_INFORM, "");
+        
+        //channel.queueBind(QUEUE_INFORM_SMS, EXCHANGE_FANOUT_INFORM, "");
+        //不同之处，替换上面的
+        //实现消费方法
+        DefaultConsumer defaultConsumer = new DefaultConsumer(channel){
+            /**
+             * 当接收到消息后此方法将被调用
+             * @param consumerTag  消费者标签，用来标识消费者的，在监听队列时设置channel.basicConsume
+             * @param envelope 信封，通过envelope
+             * @param properties 消息属性
+             * @param body 消息内容
+             * @throws IOException
+             */
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                //交换机
+                String exchange = envelope.getExchange();
+                //消息id，mq在channel中用来标识消息的id，可用于确认消息已接收
+                long deliveryTag = envelope.getDeliveryTag();
+                //消息内容
+                String message= new String(body,"utf-8");
+                System.out.println("receive message:"+message);
+            }
+        };
+        //监听队列
+        /**
+         * 参数明细：
+         * 1、queue 队列名称
+         * 2、autoAck 自动回复，当消费者接收到消息后要告诉mq消息已接收，如果将此参数设置为tru表示会自动回复mq，如果设置为false						要通过编程实现回复
+         * 3、callback，消费方法，当消费者接收到消息要执行的方法
+         */
+        channel.basicConsume(QUEUE_INFORM_EMAIL,true,defaultConsumer);
+        //不同之处，替换上面的
+        //channel.basicConsume(QUEUE_INFORM_SMS,true,defaultConsumer);
+    }
+}
+```
+
+publish/subscribe与work queues有什么区别？
+
+- work queues不用定义交换机，而publish/subscribe需要定义交换机
+- publish/subscribe的生产方是**面向交换机**发送消息，work queues的生产方是**面向队列**发送消息(底层使用默认交换机)
+- publish/subscribe需要**设置队列和交换机的绑定**，work queues不需要设置，实质上会将队列绑定到**默认**的交换机
+
+相同点：所以两者实现的发布/订阅的效果是一样的，多个消费端监听同一个队列**不会重复消费消息（轮询分配）**。
+
+实质工作用什么 publish/subscribe还是work queues？
+
+- **建议使用 publish/subscribe**，发布订阅模式比工作队列模式更强大，并且发布订阅模式可以指定自己专用的交换机
+
+
+
+#### 1.3.3 Routing
+
+![1550865043881](../%E5%AD%A6%E6%88%90%E5%9C%A8%E7%BA%BF/images/1550865043881.png)
+
+路由模式：
+
+1、每个消费者监听自己的队列，并且设置routingkey。
+
+2、生产者将消息发给交换机，由交换机根据routingkey来转发消息到指定的队列。
+
+------
+
+1、生产者
+
+声明exchange_routing_inform交换机。声明两个队列并且绑定到此交换机，绑定时需要指定routingkey。发送消息时需要指定routingkey
+
+```java
+public class Producer03_routing {
+    //队列名称
+    private static final String QUEUE_INFORM_EMAIL = "queue_inform_email";
+    private static final String QUEUE_INFORM_SMS = "queue_inform_sms";
+    private static final String EXCHANGE_ROUTING_INFORM="exchange_routing_inform";
+    private static final String ROUTINGKEY_EMAIL="inform_email";
+    private static final String ROUTINGKEY_SMS="inform_sms";
+    public static void main(String[] args) {
+        //通过连接工厂创建新的连接和mq建立连接
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，每个虚拟机就相当于一个独立的mq
+        connectionFactory.setVirtualHost("/");
+
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            //建立新连接
+            connection = connectionFactory.newConnection();
+            //创建会话通道,生产者和mq服务所有通信都在channel通道中完成
+            channel = connection.createChannel();
+            //声明队列，如果队列在mq 中没有则要创建
+            //参数：String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> 						arguments
+            /**
+             * 参数明细
+             * 1、queue 队列名称
+             * 2、durable 是否持久化，如果持久化，mq重启后队列还在
+             * 3、exclusive 是否独占连接，队列只允许在该连接中访问，如果connection连接关闭队列则自动删除,如果将此参数设置true						可用于临时队列的创建
+             * 4、autoDelete 自动删除，队列不再使用时是否自动删除此队列，如果将此参数和exclusive参数设置为true就可以实现临时队							列（队列不用了就自动删除）
+             * 5、arguments 参数，可以设置一个队列的扩展参数，比如：可设置存活时间
+             */
+            channel.queueDeclare(QUEUE_INFORM_EMAIL,true,false,false,null);
+            channel.queueDeclare(QUEUE_INFORM_SMS,true,false,false,null);
+            //声明一个交换机
+            //参数：String exchange, String type
+            /**
+             * 参数明细：
+             * 1、交换机的名称
+             * 2、交换机的类型
+             * fanout：对应的rabbitmq的工作模式是 publish/subscribe
+             * direct：对应的Routing工作模式
+             * topic：对应的Topics工作模式
+             * headers： 对应的headers工作模式
+             */
+            channel.exchangeDeclare(EXCHANGE_ROUTING_INFORM, BuiltinExchangeType.DIRECT);
+            //进行交换机和队列绑定
+            //参数：String queue, String exchange, String routingKey
+            /**
+             * 参数明细：
+             * 1、queue 队列名称
+             * 2、exchange 交换机名称
+             * 3、routingKey 路由key，作用是交换机根据路由key的值将消息转发到指定的队列中，在发布订阅模式中调协为空字符串
+             */
+            channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_ROUTING_INFORM,ROUTINGKEY_EMAIL);
+            channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_ROUTING_INFORM,"inform");
+            channel.queueBind(QUEUE_INFORM_SMS,EXCHANGE_ROUTING_INFORM,ROUTINGKEY_SMS);
+            channel.queueBind(QUEUE_INFORM_SMS,EXCHANGE_ROUTING_INFORM,"inform");
+            //发送消息
+            //参数：String exchange, String routingKey, BasicProperties props, byte[] body
+            /**
+             * 参数明细：
+             * 1、exchange，交换机，如果不指定将使用mq的默认交换机（设置为""）
+             * 2、routingKey，路由key，交换机根据路由key来将消息转发到指定的队列，如果使用默认交换机，routingKey设置为队列的						名称
+             * 3、props，消息的属性
+             * 4、body，消息内容
+             */
+            for(int i=0;i<5;i++){
+                //发送消息的时候指定routingKey
+                String message = "send inform message to user";
+                channel.basicPublish(EXCHANGE_ROUTING_INFORM,"inform",null,message.getBytes());
+                System.out.println("send to mq "+message);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (channel != null) {
+                    channel.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+
+
+2、邮件发送消费者
+
+```java
+public class Consumer03_routing_email {
+    //队列名称
+    private static final String QUEUE_INFORM_EMAIL = "queue_inform_email";
+    private static final String EXCHANGE_ROUTING_INFORM="exchange_routing_inform";
+    private static final String ROUTINGKEY_EMAIL="inform_email";
+
+    public static void main(String[] args) throws IOException, TimeoutException {
+        //通过连接工厂创建新的连接和mq建立连接
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，每个虚拟机就相当于一个独立的mq
+        connectionFactory.setVirtualHost("/");
+
+        //建立新连接
+        Connection connection = connectionFactory.newConnection();
+        //创建会话通道,生产者和mq服务所有通信都在channel通道中完成
+        Channel channel = connection.createChannel();
+
+        /**
+         * 参数明细
+         * 1、queue 队列名称
+         * 2、durable 是否持久化，如果持久化，mq重启后队列还在
+         * 3、exclusive 是否独占连接，队列只允许在该连接中访问，如果connection连接关闭队列则自动删除,如果将此参数设置true可用			于临时队列的创建
+         * 4、autoDelete 自动删除，队列不再使用时是否自动删除此队列，如果将此参数和exclusive参数设置为true就可以实现临时队列（			队列不用了就自动删除）
+         * 5、arguments 参数，可以设置一个队列的扩展参数，比如：可设置存活时间
+         */
+        channel.queueDeclare(QUEUE_INFORM_EMAIL,true,false,false,null);
+        //声明一个交换机
+        //参数：String exchange, String type
+        /**
+         * 参数明细：
+         * 1、交换机的名称
+         * 2、交换机的类型
+         * fanout：对应的rabbitmq的工作模式是 publish/subscribe
+         * direct：对应的Routing	工作模式
+         * topic：对应的Topics工作模式
+         * headers： 对应的headers工作模式
+         */
+        channel.exchangeDeclare(EXCHANGE_ROUTING_INFORM, BuiltinExchangeType.DIRECT);
+        //进行交换机和队列绑定
+        //参数：String queue, String exchange, String routingKey
+        /**
+         * 参数明细：
+         * 1、queue 队列名称
+         * 2、exchange 交换机名称
+         * 3、routingKey 路由key，作用是交换机根据路由key的值将消息转发到指定的队列中，在发布订阅模式中调协为空字符串
+         */
+        channel.queueBind(QUEUE_INFORM_EMAIL, EXCHANGE_ROUTING_INFORM,ROUTINGKEY_EMAIL);
+
+        //实现消费方法
+        DefaultConsumer defaultConsumer = new DefaultConsumer(channel){
+            /**
+             * 当接收到消息后此方法将被调用
+             * @param consumerTag  消费者标签，用来标识消费者的，在监听队列时设置channel.basicConsume
+             * @param envelope 信封，通过envelope
+             * @param properties 消息属性
+             * @param body 消息内容
+             */
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                //交换机
+                String exchange = envelope.getExchange();
+                //消息id，mq在channel中用来标识消息的id，可用于确认消息已接收
+                long deliveryTag = envelope.getDeliveryTag();
+                //消息内容
+                String message= new String(body,"utf-8");
+                System.out.println("receive message:"+message);
+            }
+        };
+        //监听队列
+        //参数：String queue, boolean autoAck, Consumer callback
+        /**
+         * 参数明细：
+         * 1、queue 队列名称
+         * 2、autoAck 自动回复，当消费者接收到消息后要告诉mq消息已接收，如果将此参数设置为tru表示会自动回复mq，如果设置为false					要通过编程实现回复
+         * 3、callback，消费方法，当消费者接收到消息要执行的方法
+         */
+        channel.basicConsume(QUEUE_INFORM_EMAIL,true,defaultConsumer);
+    }
+}
+```
+
+短信发送消费者类似
+
+Routing模式和Publish/subscibe有啥区别？
+
+Routing模式要求队列在绑定交换机时要**指定routingkey**，消息会转发到符合routingkey的队列。
+
+
+
+#### 1.3.4 Topics
+
+![1550865511034](../%E5%AD%A6%E6%88%90%E5%9C%A8%E7%BA%BF/images/1550865511034.png)
+
+带通配符的路由模式
+
+案例：
+
+==**根据用户的通知设置去通知用户**，设置接收Email的用户只接收Email，设置接收sms的用户只接收sms，设置两种通知类型都接收的则两种通知都有效。==
+
+1、生产者
+
+声明交换机，指定topic类型：
+
+```java
+public class Producer04_topics {
+    //队列名称
+    private static final String QUEUE_INFORM_EMAIL = "queue_inform_email";
+    private static final String QUEUE_INFORM_SMS = "queue_inform_sms";
+    private static final String EXCHANGE_TOPICS_INFORM="exchange_topics_inform";
+    private static final String ROUTINGKEY_EMAIL="inform.#.email.#";
+    private static final String ROUTINGKEY_SMS="inform.#.sms.#";
+    public static void main(String[] args) {
+        //通过连接工厂创建新的连接和mq建立连接
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("127.0.0.1");
+        connectionFactory.setPort(5672);//端口
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        //设置虚拟机，一个mq服务可以设置多个虚拟机，每个虚拟机就相当于一个独立的mq
+        connectionFactory.setVirtualHost("/");
+
+        Connection connection = null;
+        Channel channel = null;
+        try {
+            //建立新连接
+            connection = connectionFactory.newConnection();
+            //创建会话通道,生产者和mq服务所有通信都在channel通道中完成
+            channel = connection.createChannel();
+            //声明队列，如果队列在mq 中没有则要创建
+            //参数：String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> 							arguments
+            /**
+             * 参数明细
+             * 1、queue 队列名称
+             * 2、durable 是否持久化，如果持久化，mq重启后队列还在
+             * 3、exclusive 是否独占连接，队列只允许在该连接中访问，如果connection连接关闭队列则自动删除,如果将此参数设置true				可用于临时队列的创建
+             * 4、autoDelete 自动删除，队列不再使用时是否自动删除此队列，如果将此参数和exclusive参数设置为true就可以实现临时队				列（队列不用了就自动删除）
+             * 5、arguments 参数，可以设置一个队列的扩展参数，比如：可设置存活时间
+             */
+            channel.queueDeclare(QUEUE_INFORM_EMAIL,true,false,false,null);
+            channel.queueDeclare(QUEUE_INFORM_SMS,true,false,false,null);
+            //声明一个交换机
+            //参数：String exchange, String type
+            /**
+             * 参数明细：
+             * 1、交换机的名称
+             * 2、交换机的类型
+             * fanout：对应的rabbitmq的工作模式是 publish/subscribe
+             * direct：对应的Routing	工作模式
+             * topic：对应的Topics工作模式
+             * headers： 对应的headers工作模式
+             */
+            channel.exchangeDeclare(EXCHANGE_TOPICS_INFORM, BuiltinExchangeType.TOPIC);
+            //进行交换机和队列绑定
+            //参数：String queue, String exchange, String routingKey
+            /**
+             * 参数明细：
+             * 1、queue 队列名称
+             * 2、exchange 交换机名称
+             * 3、routingKey 路由key，作用是交换机根据路由key的值将消息转发到指定的队列中，在发布订阅模式中调协为空字符串
+             */
+            channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_TOPICS_INFORM,ROUTINGKEY_EMAIL);
+            channel.queueBind(QUEUE_INFORM_SMS,EXCHANGE_TOPICS_INFORM,ROUTINGKEY_SMS);
+            //发送消息
+            //参数：String exchange, String routingKey, BasicProperties props, byte[] body
+            /**
+             * 参数明细：
+             * 1、exchange，交换机，如果不指定将使用mq的默认交换机（设置为""）
+             * 2、routingKey，路由key，交换机根据路由key来将消息转发到指定的队列，如果使用默认交换机，routingKey设置为队列的							名称
+             * 3、props，消息的属性
+             * 4、body，消息内容
+             */
+            for(int i=0;i<5;i++){
+                //发送消息的时候指定routingKey
+                String message = "send email inform message to user";
+                channel.basicPublish(EXCHANGE_TOPICS_INFORM,"inform.email",null,message.getBytes());
+                System.out.println("send to mq "+message);
+            }
+            for(int i=0;i<5;i++){
+                //发送消息的时候指定routingKey
+                String message = "send sms inform message to user";
+                channel.basicPublish(EXCHANGE_TOPICS_INFORM,"inform.sms",null,message.getBytes());
+                System.out.println("send to mq "+message);
+            }
+            for(int i=0;i<5;i++){
+                //发送消息的时候指定routingKey
+                String message = "send sms and email inform message to user";
+                channel.basicPublish(EXCHANGE_TOPICS_INFORM,"inform.sms.email",null,message.getBytes());
+                System.out.println("send to mq "+message);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (channel != null) {
+                    channel.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (IOException | TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+2、消费端
+
+队列绑定交换机指定通配符，统配符规则：中间**以“`.`”分隔**。符号**`#`可以匹配多个词**，符号**`*`可以匹配一个词语**。根据发送时路由决定匹配
+
+```java
+//声明队列
+channel.queueDeclare(QUEUE_INFORM_EMAIL, true, false, false, null);
+channel.queueDeclare(QUEUE_INFORM_SMS, true, false, false, null);
+//声明交换机
+channel.exchangeDeclare(EXCHANGE_TOPICS_INFORM, BuiltinExchangeType.TOPIC);
+//绑定email通知队列
+channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_TOPICS_INFORM,"inform.#.email.#");
+//绑定sms通知队列
+channel.queueBind(QUEUE_INFORM_SMS,EXCHANGE_TOPICS_INFORM,"inform.#.sms.#");
+```
+
+本案例的需求使用Routing工作模式能否实现？
+
+使用Routing模式也可以实现本案例，共设置三个 routingkey，分别是email、sms、all，email队列绑定email和
+all，sms队列绑定sms和all，这样就可以实现上边案例的功能，实现过程比topics复杂。
+
+Topic模式更多加强大，它可以实现Routing、publish/subscirbe模式的功能。
+
+
+
+#### 1.3.4 Header（了解）
+
+Header模式与routing不同的地方在于，header模式取消routingkey，使用header中的 key/value（键值对）匹配队列
+
+案例：
+
+根据用户的通知设置去通知用户，设置接收Email的用户只接收Email，设置接收sms的用户只接收sms，设置两种通知类型都接收的则两种通知都有效。
+
+1、生产者
+
+队列与交换机绑定的代码与之前不同，如下：
+
+```java
+Map<String, Object> headers_email = new Hashtable<String, Object>();
+headers_email.put("inform_type", "email");
+Map<String, Object> headers_sms = new Hashtable<String, Object>();
+headers_sms.put("inform_type", "sms");
+channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_HEADERS_INFORM,"",headers_email);
+channel.queueBind(QUEUE_INFORM_SMS,EXCHANGE_HEADERS_INFORM,"",headers_sms);
+```
+
+通知：
+
+```java
+String message = "email inform to user"+i;
+Map<String,Object> headers = new Hashtable<String, Object>();
+headers.put("inform_type", "email");//匹配email通知消费者绑定的header
+//headers.put("inform_type", "sms");//匹配sms通知消费者绑定的header
+AMQP.BasicProperties.Builder properties = new AMQP.BasicProperties.Builder();
+properties.headers(headers);
+//Email通知
+channel.basicPublish(EXCHANGE_HEADERS_INFORM, "", properties.build(), message.getBytes());
+```
+
+发送邮件消费者：
+
+```java
+channel.exchangeDeclare(EXCHANGE_HEADERS_INFORM, BuiltinExchangeType.HEADERS);
+Map<String, Object> headers_email = new Hashtable<String, Object>();
+headers_email.put("inform_email", "email");
+//交换机和队列绑定
+channel.queueBind(QUEUE_INFORM_EMAIL,EXCHANGE_HEADERS_INFORM,"",headers_email);
+//指定消费队列
+channel.basicConsume(QUEUE_INFORM_EMAIL, true, consumer);
+```
+
+
+
+#### 1.3.5 RPC
+
+![1550866175184](../%E5%AD%A6%E6%88%90%E5%9C%A8%E7%BA%BF/images/1550866175184.png)
+
+RPC即**客户端远程调用服务端**的方法 ，使用MQ可以实现**RPC的异步调用**，基于Direct交换机实现，流程如下：
+
+1、**客户端即是生产者就是消费者**，向RPC请求队列发送RPC调用消息，同时监听RPC响应队列。
+
+2、服务端监听RPC请求队列的消息，收到消息后执行服务端的方法，得到方法返回的结果
+
+3、服务端将RPC方法 的结果发送到RPC响应队列
+
+4、客户端（RPC调用方）监听RPC响应队列，接收到RPC调用结果。
+
+
+
+### 1.4 Spring Boot 整合 RibbitMQ
+
+#### 1.4.1 配置
+
+> 如下配置在生产端和消费端都得存在
+
+使用[spring-boot-starter-amqp](https://github.com/spring-projects/spring-amqp)会自动添加spring-rabbit依赖。再配合test、和logging测试
+
+配置文件：配置连接rabbitmq的参数
+
+```yaml
+server:
+  port: 44000
+spring:
+  application:
+    name: test-rabbitmq-producer
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    virtualHost: /
+```
+
+定义`RabbitConfig`类，配置Exchange、Queue、及绑定交换机。本例配置Topic交换机。
+
+==【注意】**生产方一般不配置队列！一般由监听方配置！当然都配置也行**==
+
+```java
+@Configuration
+public class RabbitmqConfig {
+    public static final String QUEUE_INFORM_EMAIL = "queue_inform_email";//以下可以配置在配置文件中
+    public static final String QUEUE_INFORM_SMS = "queue_inform_sms";
+    public static final String EXCHANGE_TOPICS_INFORM="exchange_topics_inform";
+    public static final String ROUTINGKEY_EMAIL="inform.#.email.#";
+    public static final String ROUTINGKEY_SMS="inform.#.sms.#";
+
+    //声明交换机。ExchangeBuilder提供了fanout、direct、topic、header交换机类型的配置
+    @Bean(EXCHANGE_TOPICS_INFORM)
+    public Exchange EXCHANGE_TOPICS_INFORM(){
+        //durable(true) 持久化，mq重启之后交换机还在
+        return ExchangeBuilder.topicExchange(EXCHANGE_TOPICS_INFORM).durable(true).build();
+    }
+
+    //声明QUEUE_INFORM_EMAIL队列
+    @Bean(QUEUE_INFORM_EMAIL)
+    public Queue QUEUE_INFORM_EMAIL(){
+        return new Queue(QUEUE_INFORM_EMAIL);
+    }
+    //声明QUEUE_INFORM_SMS队列
+    @Bean(QUEUE_INFORM_SMS)
+    public Queue QUEUE_INFORM_SMS(){
+        return new Queue(QUEUE_INFORM_SMS);
+    }
+
+    //ROUTINGKEY_EMAIL队列绑定交换机，指定routingKey
+    @Bean
+    public Binding BINDING_QUEUE_INFORM_EMAIL(@Qualifier(QUEUE_INFORM_EMAIL) Queue queue,
+                                              @Qualifier(EXCHANGE_TOPICS_INFORM) Exchange exchange){
+        return BindingBuilder.bind(queue).to(exchange).with(ROUTINGKEY_EMAIL).noargs();
+    }
+    //ROUTINGKEY_SMS队列绑定交换机，指定routingKey
+    @Bean
+    public Binding BINDING_ROUTINGKEY_SMS(@Qualifier(QUEUE_INFORM_SMS) Queue queue,
+                                          @Qualifier(EXCHANGE_TOPICS_INFORM) Exchange exchange){
+        return BindingBuilder.bind(queue).to(exchange).with(ROUTINGKEY_SMS).noargs();
+    }
+}
+```
+
+#### 1.4.2 生产端
+
+使用RarbbitTemplate发送消息
+
+```java
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class Producer05_topics_springboot {
+    @Autowired
+    RabbitTemplate rabbitTemplate;//直接注入，不用配置bean
+    @Test
+    public void testSendByTopics(){
+        for (int i=0;i<5;i++){
+            String message = "sms email inform to user"+i;
+            rabbitTemplate.convertAndSend(RabbitmqConfig.EXCHANGE_TOPICS_INFORM,"inform.sms.email",message);
+            System.out.println("Send Message is:'" + message + "'");
+        }
+    }
+}
+```
+
+#### 1.4.3 消费端
+
+使用@RabbitListener注解监听队列
+
+```java
+@Component
+public class ReceiveHandler {
+    //监听email队列
+    @RabbitListener(queues = {RabbitmqConfig.QUEUE_INFORM_EMAIL})
+    public void receive_email(String msg,Message message,Channel channel){
+        System.out.println(msg);
+    }
+    //监听sms队列
+    @RabbitListener(queues = {RabbitmqConfig.QUEUE_INFORM_SMS})
+    public void receive_sms(String msg,Message message,Channel channel){
+        System.out.println(msg);
+    }
+}
+```
+
+
+
+
+
+
+
+# 前后端分离工具介绍
+
+**当接口定义完成**，可以**使用工具生成接口文档**，前端人员查看接口文档即可进行前端开发，这样前端和服务人员并行开发，大大提高了生产效率。
+
+## 1 Swagger
+
+### 1 Swagger 简介
+
+OpenAPI规范（OpenAPI Specification 简称OAS）是Linux基金会的一个项目，试图通过定义一种用来描述API格式或API定义的语言，来规范RESTful服务开发过程，目前版本是V3.0，并且已经发布并开源在[github](https://github.com/OAI/OpenAPI-Specification)上。
+
+[Swagger](https://swagger.io/)是全球最大的OpenAPI规范（OAS）API开发工具框架，支持从设计和文档到测试和部署的整个API生命周期的开发。
+
+Spring Boot 可以集成Swagger，生成Swagger接口。
+
+Swagger接口生成工作原理：
+
+1. 系统启动，扫描到api工程中的Swagger2Configuration类
+2. 在此类中指定了包路径如`com.xuecheng`，找到在此包下及子包下标记有@RestController注解的controller类
+3. 根据controller类中的Swagger注解生成接口文档（也会扫描该类所实现的接口）
+4. 启动cms服务工程，查看接口文档，请求：如http://localhost:31001/swagger-ui.html
+
+```xml
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+    <version>2.7.0</version>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+    <version>2.7.0</version>
+</dependency>
+```
+
+Swagger配置类
+
+```java
+package com.xuecheng.api.config;
+
+@Configuration
+@EnableSwagger2//开启！
+public class Swagger2Configuration {
+    @Bean
+    public Docket createRestApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo())
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.xuecheng"))//扫描该包中所有@RestController注解类的所有方法
+            .paths(PathSelectors.any())
+            .build();
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+            .title("学成网api文档")
+            .description("学成网api文档")
+            //.termsOfServiceUrl("/")
+            .version("1.0")
+            .build();
+    }
+}
+```
+
+### 2 Swagger常用注解
+
+在Java类中添加Swagger的注解即可生成Swagger接口，常用Swagger注解如下：
+
+- @**Api**：用在请求的**类**上，表示对类的说明
+  - value "说明该类的用途、作用。没用，不显示"
+  -  description "说明该类的用途、作用。显示"
+
+- @**ApiOperation**：用在请求的**方法**上，说明方法的用途、作用 
+  - value="说明方法的用途、作用"
+- @ApiParam：单个参数描述
+- @ApiResponse：HTTP响应其中1个描述
+- @ApiResponses：HTTP响应整体描述
+- @ApiIgnore：使用该注解忽略这个API
+- @ApiError ：发生错误返回的信息
+- @**ApiImplicitParam**：一个请求参数
+- @**ApiImplicitParams**：多个请求参数
+- @ApiModel：用对象来接收参数，不显示
+- @**ApiModelProperty**：用**对象接收参数**时，**描述对象的一个字段**
+
+@ApiImplicitParam属性：
+
+|     属性     |  取值  |                     作用                      |
+| :----------: | :----: | :-------------------------------------------: |
+|  paramType   |        |                 查询参数类型                  |
+|              |  path  |             以地址的形式提交数据              |
+|              | query  |          直接跟参数完成自动映射赋值           |
+|              |  body  |           以流的形式提交 仅支持POST           |
+|              | header |        参数在request headers 里边提交         |
+|              |  form  |        以form表单的形式提交 仅支持POST        |
+|   dataType   |        | 参数的数据类型 只作为标志说明，并没有实际验证 |
+|              |  Long  |                                               |
+|              | String |                                               |
+|     name     |        |                  接收参数名                   |
+|    value     |        |              接收参数的意义描述               |
+|   required   |        |                 参数是否必填                  |
+|              |  true  |                     必填                      |
+|              | false  |                    非必填                     |
+| defaultValue |        |                    默认值                     |
+
+可以写在接口上，也可以写在实现类上（怎么选则？？？）
+
+```java
+package com.xuecheng.api.cms;
+
+@Api(value="cms页面管理接口",description = "cms页面管理接口，提供页面的增、删、改、查")
+public interface CmsPageControllerApi {
+    //页面查询
+    @ApiOperation("分页查询页面列表")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name="page",value = "页码",required=true,paramType="path",dataType="int"),
+        @ApiImplicitParam(name="size",value = "每页记录数",required=true,paramType="path",dataType="int")
+    })
+    QueryResponseResult findList(int page, int size, QueryPageRequest queryPageRequest);
+}
+```
+
+用对象接收参数时，写模型上
+
+```java
+@Data
+//由于继承了RequestData，父类有@Data注解，所以在注解该类@Data时报警告。不写可以在swaggerui看到，但不知道是否有其他影响
+@EqualsAndHashCode(callSuper = true)
+public class QueryPageRequest extends RequestData {
+
+    //站点id
+    @ApiModelProperty("站点id")
+    private String siteId;
+    //页面ID
+    @ApiModelProperty("页面ID")
+    private String pageId;
+    //页面名称
+    @ApiModelProperty("页面名称")
+    private String pageName;
+    //页面别名
+    @ApiModelProperty("页面别名")
+    private String pageAliase;
+    //模版id
+    @ApiModelProperty("模版id")
+    private String templateId;
+}
+```
+
+
+
+## <span name="postman">2 Postman</span>
+
+### 2.1 Postman的几种参数格式
 
 - form-data
 
-  > 即multipart/form-data，它将表单的数据组织成Key-Value形式，用分隔符boundary（boundary可任意设置）处理成一条消息。由于有boundary隔离，所以既可以上传文件，也可以上传参数
+  即multipart/form-data，它将表单的数据组织成Key-Value形式，用分隔符boundary（boundary可任意设置）处理成一条消息。由于有boundary隔离，所以既可以上传文件，也可以上传参数
 
 - x-www-form-urlencoded
 
-  > 即application/x-www-from-urlencoded，将表单内的数据转换为Key-Value
+  即 Content-Type : application/x-www-from-urlencoded，将表单内的数据转换为Key-Value
 
 - raw
 
-  > 可以上传任意格式的文本，text、json、xml、html等
+  可以上传任意格式的文本，text、json、xml、html等
 
 - binary 
 
-  > 即Content-Type:application/octet-stream，只可以上传二进制数据，通常用来上传文件。由于没有键值，所以一次只能上传一个文件
+  即Content-Type : application/octet-stream，只可以上传二进制数据，通常用来上传文件。由于没有键值，所以一次只能上传一个文件
 
-- 注意：multipart/form-data与x-www-form-urlencoded**区别**
+【注意】：multipart/form-data与x-www-form-urlencoded**区别**
 
-  - html中的form 表单有**两种：**
-    - **application/x-www-form-urlencoded**是默认的MIME内容编码类型，它在传输比较大的二进制或者文本数据时效率极低
-      - MIME：简单说，MIME类型就是设定某种扩展名的文件用一种应用程序来打开的方式类型。服务器会将它们发送的多媒体数据的类型告诉浏览器，而通知手段就是说明该多媒体数据的MIME类型，服务器将 MIME标志符放入传送的数据中来告诉浏览器使用哪种插件读取相关文件
-    - **multipart/form-data**：既可以上传文件等二进制数据，也可以上传表单键值对，只是最后会转化为一条信息。当设置multipart/form-data，http会忽略 contentType 属性。
+- html中的form 表单有**两种：**
+  - **application/x-www-form-urlencoded**是默认的MIME内容编码类型，它在传输比较大的二进制或者文本数据时效率极低
+    - MIME：简单说，MIME类型就是设定某种扩展名的文件用一种应用程序来打开的方式类型。服务器会将它们发送的多媒体数据的类型告诉浏览器，而通知手段就是说明该多媒体数据的MIME类型，服务器将 MIME标志符放入传送的数据中来告诉浏览器使用哪种插件读取相关文件
+  - **multipart/form-data**：既可以上传文件等二进制数据，也可以上传表单键值对，只是最后会转化为一条信息。当设置multipart/form-data，http会忽略 contentType 属性。
+
+
+
+
+
+# 模板引擎介绍
+
+## 1 FreeMarker
+
+freemarker是一个用Java开发的模板引擎。模板+数据模型=输出
+
+![1550741167891](images/1550741167891.png)
+
+Freemaker并不关心数据的来源，只是根据模板的内容，将数据模型在模板中显示并输出文件（通常为html，也可以生成其它格式的文本文件）
+
+数据模型：数据模型在java中可以是基本类型也可以List、Map、Pojo等复杂类型
+
+### 1 入门
+
+创建Spring Boot+Freemarker工程用于测试模板。依赖如下：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-freemarker</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+<!--HTTP客户端。类似HttpClient-->
+<dependency>
+    <groupId>com.squareup.okhttp3</groupId>
+    <artifactId>okhttp</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-io</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+</dependency>
+```
+
+配置application.yml和 logback-spring.xml
+
+```yaml
+server:
+  port: 8088 #服务端口
+
+spring:
+  application:
+    name: test‐freemarker #指定服务名
+  freemarker:
+    cache: false #关闭模板缓存，方便测试
+    settings:
+      template_update_delay: 0 #检查模板更新延迟时间，设置为0表示立即检查，如果时间大于0会有缓存不方便进行模板测试
+```
+
+创建模型类
+
+```java
+@Data
+public class Student {
+    private String name;//姓名
+    private int age;//年龄
+    private Date birthday;//生日
+    private Float money;//钱包
+    private List<Student> friends;//朋友列表
+    private Student bestFriend;//最好的朋友
+}
+```
+
+**创建模板**：在`src/main/resources/templates`下存放模板`.ftl`
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf‐8">
+        <title>Hello World!</title>
+    </head>
+    <body>
+        Hello ${name}!
+    </body>
+</html>
+```
+
+启动类略
+
+
+
+### 2 FreeMaker基础
+
+定义模型数据
+
+```java
+@RequestMapping("/test1")
+    public String freemarker(Map<String, Object> map) {
+
+        //向数据模型放数据
+        //1.String
+        map.put("name", "黑马程序员");
+        Student stu1 = new Student();
+        stu1.setName("小明");
+        stu1.setAge(18);
+        stu1.setMoney(1000.86F);
+        stu1.setBirthday(new Date());
+        Student stu2 = new Student();
+        stu2.setName("小红");
+        stu2.setMoney(200.1F);
+        stu2.setAge(19);
+        stu2.setBirthday(new Date());
+        List<Student> friends = new ArrayList<>();
+        friends.add(stu1);
+        stu2.setFriends(friends);
+        stu2.setBestFriend(stu1);
+        //2.List
+        List<Student> stus = new ArrayList<>();
+        stus.add(stu1);
+        stus.add(stu2);
+
+        //3.对象
+        map.put("stus", stus);
+
+        //4.Map
+        HashMap<String, Student> stuMap = new HashMap<>();
+        stuMap.put("stu1", stu1);
+        stuMap.put("stu2", stu2);
+        map.put("stu1", stu1);
+
+        //向数据模型放数据
+        map.put("stuMap", stuMap);
+
+        //返回模板文件名称
+        return "test1";
+    }
+```
+
+
+
+#### 2.1 核心指令
+
+```
+1、注释，即<#‐‐和‐‐>，介于其之间的内容会被freemarker忽略
+2、插值（Interpolation）：即${..}部分,freemarker会用真实的值代替${..}
+3、FTL指令：和HTML标记类似，名字前加#予以区分，Freemarker会解析标签中的表达式或逻辑。
+4、文本，仅文本信息，这些不是freemarker的注释、插值、FTL指令的内容会被freemarker忽略解析，直接输出内容。
+```
+
+- assign：此指令用于在页面上定义一个变量
+
+  - 定义简单类型
+
+    ```
+    <#assign linkman="周先生">
+    联系人：${linkman}
+    ```
+
+  - 定义对象类型
+
+    ```
+    <#assign info={"mobile":"13301231212",'address':'北京市昌平区王府街'} >
+    电话：${info.mobile}  地址：${info.address}
+    ```
+
+- include：此指令用于模板文件的嵌套
+
+  - 创建模板文件head.ftl
+
+  - 我们修改test.ftl，在模板文件中使用include指令引入刚才我们建立的模板
+
+    ```
+    <#include "head.ftl">
+    ```
+
+- **#if**：判断（可以用==、=）
+
+  ```
+  <#if success==true>
+  你已通过实名认证
+  <#else>  
+  你未通过实名认证
+  </#if>
+  ```
+
+  在代码中对str变量赋值
+
+  ```java
+  map.put("success", true);
+  ```
+
+- **#list**：遍历（xx_index为循环的下标，从0开始）
+
+  ```
+  <#list goodsList as goods>
+  	${goods_index+1} 商品名称： ${goods.name} 价格：${goods.price}<br>
+  </#list>
+  ```
+
+  
+
+#### 2.3 内建函数
+
+内建函数语法格式： `变量?函数名称`
+
+- 获取集合大小
+
+  ```
+  共  ${goodsList?size}  条记录
+  ```
+
+- 转换JSON字符串为对象
+
+  ```
+  <#assign text="{'bank':'工商银行','account':'10101920201920212'}" />
+  <#assign data=text?eval />
+  开户行：${data.bank}  账号：${data.account}
+  ```
+
+- 日期格式化
+
+  ```
+  当前日期：${today?date} <br>
+  当前时间：${today?time} <br>   
+  当前日期+时间：${today?datetime} <br>        
+  日期格式化：  ${today?string("yyyy年MM月")}
+  ```
+
+- 数字转换为字符串：数字会以每三位一个分隔符显示，不需要这个分隔符，使用内建函数c
+
+  ```
+  累计积分：${point?c}
+  ```
+
+#### 2.4 空值处理
+
+**空值处理运算符**：在模板中使用了变量但是在代码中没有对变量赋值，那么运行生成时会抛出异常
+
+- 判断某变量**是否存在**:“`??`”。如果该变量存在,返回true,否则返回false
+
+  ```
+  <#if aaa??>
+  aaa变量存在
+  <#else>
+  aaa变量不存在
+  </#if>
+  ```
+
+- **缺失变量默认值**:“`!`”：使用!对null值做转换处理，值可以自定义。**如果是嵌套对象则建议使用（）括起来，表示其中任意为null都做处理**
+
+  ```
+  ${aaa!'-'}
+   <#-- 当aaa为null则返回！后边的内容-  -->
+  ```
+
+#### 2.5 运算符
+
+- 算数运算符：`+, - , * , / , %`
+- 逻辑运算符：`&&、||、!`，只能作用于布尔值
+- 比较运算符
+  - `=`或者`==`:判断两个值是否相等. 
+  - `!=`:判断两个值是否不等. 
+  - `>`或者`gt`:判断左边值是否大于右边值（有时需要括号括起来，否则和标签的小于号对应上，下面的同理）
+  - `>=`或者`gte`:判断左边值是否大于等于右边值 
+  - `<`或者`lt`:判断左边值是否小于右边值 
+  - `<=`或者`lte`:判断左边值是否小于等于右边值 
+
+**注意**:  =和!=可以用于字符串,数值和日期来比较是否相等,但=和!=两边必须是相同类型的值,否则会产生错误,而且FreeMarker是精确比较,"x","x ","X"是不等的.其它的运行符可以作用于数字和日期,但不能作用于字符串,大部分的时候,使用gt等字母运算符代替>会有更好的效果,因为 FreeMarker会把>解释成FTL标签的结束字符,当然,也可以使用括号来避免这种情况,如:<#if (x>y)> 
+
+```ftl
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hello World!</title>
+</head>
+<body>
+Hello ${name}!
+<br/>
+<table>
+    <tr>
+        <td>序号</td>
+        <td>姓名</td>
+        <td>年龄</td>
+        <td>钱包</td>
+    </tr>
+    <#list stus as stu>
+        <tr>
+            <td>${stu_index + 1}</td>
+            <td <#if stu.name =='小明'>style="background:red;"</#if>>${stu.name}</td>
+            <td>${stu.age}</td>
+            <td >${stu.money}</td>
+        </tr>
+    </#list>
+
+</table>
+<br/><br/>
+输出stu1的学生信息：<br/>
+姓名：${stuMap['stu1'].name}<br/>
+年龄：${stuMap['stu1'].age}<br/>
+输出stu1的学生信息：<br/>
+姓名：${stu1.name}<br/>
+年龄：${stu1.age}<br/>
+遍历输出两个学生信息：<br/>
+<table>
+    <tr>
+        <td>序号</td>
+        <td>姓名</td>
+        <td>年龄</td>
+        <td>钱包</td>
+    </tr>
+<#list stuMap?keys as k>
+<tr>
+    <td>${k_index + 1}</td>
+    <td>${stuMap[k].name}</td>
+    <td>${stuMap[k].age}</td>
+    <td >${stuMap[k].money}</td>
+</tr>
+</#list>
+</table>
+</br>
+<table>
+    <tr>
+        <td>姓名</td>
+        <td>年龄</td>
+        <td>出生日期</td>
+        <td>钱包</td>
+        <td>最好的朋友</td>
+        <td>朋友个数</td>
+        <td>朋友列表</td>
+    </tr>
+    <#if stus??>
+    <#list stus as stu>
+        <tr>
+            <td>${stu.name!''}</td>
+            <td>${stu.age}</td>
+            <td>${(stu.birthday?date)!''}</td>
+            <td>${stu.money}</td>
+            <td>${(stu.bestFriend.name)!''}</td>
+            <td>${(stu.friends?size)!0}</td>
+            <td>
+                <#if stu.friends??>
+                <#list stu.friends as firend>
+                    ${firend.name!''}<br/>
+                </#list>
+                </#if>
+            </td>
+        </tr>
+    </#list>
+    </#if>
+
+</table>
+<br/>
+<#assign text="{'bank':'工商银行','account':'10101920201920212'}" />
+<#assign data=text?eval />
+开户行：${data.bank}  账号：${data.account}
+
+</body>
+</html>
+```
+
+
+
+### 3 静态化测试
+
+#### 3.1 使用模板文件静态化
+
+需要将上面的resources目录复制到test中，配置文件可以删掉
+
+```java
+@Test
+public void generateHtml() throws IOException, TemplateException {
+    //1.创建一个配置对象
+    Configuration configuration = new Configuration(Configuration.getVersion());
+    //2.设置模板所在目录
+    String classpath = this.getClass().getResource("/").getPath();
+    configuration.setDirectoryForTemplateLoading(new File(classpath+"/templates/"));
+    //3.设置字符集
+    configuration.setDefaultEncoding("UTF-8");
+    //4.获取模板对象
+    Template template = configuration.getTemplate("test1.ftl");
+    //5.创建数据模型
+    Map map = this.getMap();//之前写的数据模型
+    //7.输出
+    template.process(map,new FileWriter("d:\\test1.html"));
+}
+```
+
+
+
+#### 3.2 使用模板字符串静态化
+
+模板文件可能是用户输入的字符串（或者通过模板文件获取字符串），就可以这样来做。比较灵活
+
+```java
+@Test
+public void generateHtml2() throws IOException, TemplateException {
+    //1.创建一个配置对象
+    Configuration configuration = new Configuration(Configuration.getVersion());
+    //2.模板字符串
+    String templateString="" +
+        "<html>\n" +
+        " <head></head>\n" +
+        " <body>\n" +
+        " 名称：${name}\n" +
+        " </body>\n" +
+        "</html>";
+    //3.字符串模板加载器加载模板字符串
+    StringTemplateLoader loader = new StringTemplateLoader();
+    loader.putTemplate("template",templateString);
+    //4.配置字符串模板加载器
+    configuration.setTemplateLoader(loader);
+    //5.获取模板对象
+    Template template = configuration.getTemplate("template", "UTF-8");
+    //6.创建数据模型
+    Map map = this.getMap();//之前写的数据模型
+    //7.输出
+    template.process(map,new FileWriter("d:\\test2.html"));
+}
+```
+
+
+
+
+
+## 2 Thymeleaf
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

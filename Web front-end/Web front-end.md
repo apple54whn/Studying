@@ -192,6 +192,8 @@
       <input type="submit" value="注册"/>
       ```
 
+      可以使用form的`onsubmit`事件，如`onsubmit = "return checkForm()"`，必须加return，并且方法返回boolean类型，true提交，false不提交
+
     - **image**：图片提交按钮`<input type="image" src="图片路径"/> `
 
     - **reset**：重置按钮`<input type="reset"/> `，也可以指定value更改按钮显示信息
@@ -478,6 +480,161 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 
 
+## 2.5 CSS 框架
+
+### 1 bootstrap
+
+> 详细内容访问[Bootstrap中文网](http://www.bootcss.com/)
+
+- **引入依赖**
+
+  - css：`bootstrap.css`
+  - js：`jquery.js`、`popper.js`(用于弹窗、提示、下拉菜单。版本3没有这个)、`bootstrap.js`
+
+- **响应式布局**：一个网站可以兼容多个终端
+
+  ```html
+  <meta charset="UTF-8">
+  <!--响应式 meta 标签;viewport宽度；初始缩放值；最小/最大缩放值；是否允许用户缩放-->
+  <!--还有minimum-scale；maximum-scale；user-scalable=true/false-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--文档兼容模式-->
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  ```
+
+  - viewport
+    - 移动设备上的就是**设备的屏幕上能用来显示我们的网页的那一块区域**
+  - px
+    - css中1px并不等于设备的1px
+
+- 步骤
+
+  1. 定义布局容器：`container`、`.container-fluid`
+  2. 定义行：`row`
+  3. 定义列：`col-xs-*`、`col-sm-*`、`col-md-*`、`col-lg-*`、`hidden-**`（可以让元素在某个屏幕大小设备**不显示**）
+
+#### 1.1 布局容器
+
+- Bootstrap 需要为页面内容和栅格系统包裹一个容器
+  - `.container` **类**用于固定宽度（根据不同设备左右有固定留白，但xs没有留白）并支持响应式布局的容器
+  - `.container-fluid` **类**用于 100% 宽度，占据全部视口（viewport）的容器
+
+#### 1.2 栅格系统
+
+Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，随着屏幕或视口(viewport)尺寸的增加，系统会自动分为最多**12列**
+
+- 栅格系统用于通过一系列的行（row）与列（column）的组合来创建页面布局，你的内容就可以放入这些创建好的布局中。工作**原理**如下：
+  - “行（row）”必须包含在 `.container` （固定宽度）或 `.container-fluid` （100% 宽度）中，以便为其赋予合适的排列（**aligment**）和内补（**padding**）。
+  - 通过“行（row）”在水平方向创建一组“列（column）”。
+  - 你的内容应当放置于“列（column）”内，并且，只有“列（column）”可以作为“行（row）”的直接子元素。
+  - 类似 `.row` 和 `.col-xs-4` 这种预定义的类，可以用来快速创建栅格布局。Bootstrap 源码中定义的 mixin 也可以用来创建语义化的布局。
+  - 通过为“**列（column）”设置 `padding` 属性**，从而创建列与列之间的间隔（gutter）。通过**为 `.row` 元素设置负值 `margin`** 从而抵消掉为 `.container` 元素设置的 `padding`，也就间接为“行（row）”所包含的“列（column）”抵消掉了`padding`。==多列嵌套时，可以通过==`padding:0`==来取消内边距，使得元素占满viewport==
+  - 负值的`margin`就是下面的示例为什么是向外突出的原因。在栅格列中的内容排成一行。
+  - 栅格系统中的列是通过指定1到12的值来表示其**跨越的范围**。例如，三个等宽的列可以使用三个 `.col-xs-4` 来创建。
+  - 如果一“行（row）”中包含了的“列（column）”大于 12，多余的“列（column）”所在的元素将被作为一个整体**另起一行排列**。
+  - **向上兼容且不向下兼容**：**栅格类适用于与屏幕宽度大于或等于分界点大小的设备** ， 并且**针对小屏幕设备覆盖栅格类（可能每个列占一行）**。 因此，在元素上应用任何 `.col-md-*`栅格类适用于与屏幕宽度大于或等于分界点大小的设备 ， 并且针对小屏幕设备覆盖栅格类。 因此，在元素上应用任何 `.col-lg-*`不存在， 也影响大屏幕设备。
+
+#### 1.3 全局CSS样式、组件、插件
+
+**全局CSS样式**
+
+- 按钮： `<button>` (建议使用)、`<a>`、 `<input>` 。`class="btn btn-default"`
+- 图片：`img-responsive"`、`img-rounded`(方)、`img-circle`(圆)、`img-thumbnail`(相框)
+- 表格：`table`、`table-bordered`、`table-hover`
+- 表单：
+
+**组件**
+
+- 导航条
+- 分页：！！！
+
+**插件**
+
+- 轮播图
+
+#### 1.4 其他详细的看文档去吧！
+
+
+
+### 2 AdminLTE
+
+- AdminLTE简介
+
+  AdminLTE是一款建立在bootstrap和jquery之上的开源的模板主题工具，它提供了一系列响应的、 可重复使用的组件，并内置了多个模板页面；同时自适应多种屏幕分辨率，兼容PC和移动端。通 过AdminLTE，我们可以快速的创建一个响应式的Html5网站。AdminLTE框架在网页架构与设计 上，有很大的辅助作用，尤其是前端架构设计师，用好AdminLTE 不但美观，而且可以免去写很大 CSS与JS的工作量。从GitHub获取[AdminLTE源码](https://github.com/almasaeed2010/AdminLTE)
+
+  AdminLTE依赖于两个框架Bootstrap3与JQuery1.11+
+
+- AdminLTE结构介绍
+
+  ```
+  AdminLTE/ 
+  ├── dist/ 
+  │   ├── CSS/ 
+  │   ├── JS 
+  │   ├── img 
+  ├── build/ 
+  │   ├── less/ 
+  │   │   ├── AdminLTE's Less files 
+  │   └── Bootstrap-less/ (Only for reference. No modifications have been made) 
+  │       ├── mixins/
+  │       ├── variables.less 
+  │       ├── mixins.less 
+  └── plugins/    
+      ├── All the customized plugins CSS and JS files
+  ```
+
+- AdminLTE布局与皮肤
+
+  - 布局
+
+    `.wrapper`包住了body下的所有代码
+
+    `.main-header`里是网站的logo和导航栏的代码
+
+    `.main-sidebar`里是用户面板和侧边栏菜单的代码
+
+    `.content-wrapper`里是页面的页面和内容区域的代码 
+
+    `.main-footer`里是页脚的代码
+
+    `.control-sidebar`里是页面右侧侧边栏区域的代码
+
+  - 布局选项
+
+    `fixed`：固定
+
+    `layout-boxed`：盒子布局
+
+    `layout-top-nav`：顶部隐藏
+
+    `sidebar-collapse`：侧边栏隐藏
+
+    `sidebar-mini`：侧边栏隐藏时有小图标
+
+  - 皮肤
+
+    `skin-blue`：蓝色
+
+    `skin-black`：黑色
+
+    `skin-purple`：紫色
+
+    `skin-yellow`：黄色 
+
+    `skin-red`：红色
+
+    `skin-green`：绿色
+
+
+
+- **AdminLTE2-IT黑马-定制版**
+
+  传智播客研究院针对英文版本AdminLTE进行了汉化，并优化与定制了部分页面，方便我们的学习 与使用。后续SSM综合练习课程中使用的界面就是基于AdminLTE2-IT黑马-定制版。从GitHub[获取源码](https://github.com/itheima2017/adminlte2-itheima)，也可以[在线进行浏览](http://research.itcast.cn/adminlte2-itcast/release/dist/pages/all-admin-index.html)。
+
+  minLTE2-IT黑马-定制版是基于FIS3进行开发，在目录结构中assets、modules、pages、 plugins都是前端开发时所使用到的，最终发布的就是release。所以对于我们使用AdminLTE2-IT黑 马-定制版来说，我们只需要**关注release目录**下的结构就可以。
+
+  在release目录下有**css、img、pages、plugins**目录。前两者就不在解决pages是产生的一些定制的页面，而plugins中是相关的插件，例如jquery、bootstrap等相关的css与js文件。
+
 
 
 
@@ -488,9 +645,9 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
   - 运行在**客户端浏览器**中的。每一个浏览器都有JavaScript的解析引擎
   - **脚本语言**：**不需要编译**，直接就可以被浏览器解析执行了
 
-- JavaScript是==基于**对象**和**事件**驱动的语言==
+- JavaScript是==基于**对象**和**事件**驱动的语言==？？？
 - **和Java区别**
-  - JavaScript 是**基于对象**的，java是面向对象
+  - JavaScript 是**基于对象**的？？？，java是面向对象
   - JavaScript是**弱类型**的语言，java是强类型的语言
   - JavaScript只需**解析**就可以执行，而java需要先编译成字节码文件，再执行
 - **特点：**
@@ -815,6 +972,22 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 - **闭包**：指的是词法表示包括不被计算的变量的函数，也就是说，**函数可以使用函数之外定义的变量**
 - 。。。
 
+### 3.2.9 JSON
+
+随着ES5的发布，新的标准内置了JSON对象，用于JSON对象和JSON字符串之间的转换操作。JSON作为全局对象，我们可以直接调用，它有如下两个函数：
+
+* `JSON.parse(string)`：负责将字符串转换为JOSN对象并返回
+
+* `JSON.stringify(value[, replacer[, space]])`：负责将数据转换为JSON字符串并返回
+
+  value就是我们需要转换的对象。可以是null, boolean, number, string, JSONObject, JSONArray
+
+  replacer可以是一个数组或者一个函数，如果传入一个数组，则相当于一个白名单，只有出现在数组中的属性名对应的键值对才会出现结果中，如果指定一个函数，我们可以实现一些逻辑来过滤或更改将要出现在结果中的数据
+
+  最后一个参数是缩进空格，我们可以指定一个数字，表示缩进几个空格，还可以指定一个字符串，表示以指定字符串代替空格出现在缩进中
+
+
+
 ## 3.3 BOM
 
 > BOM(browser object model)：浏览器对象模型。对象(首字母大写)的引用有如下：
@@ -1009,6 +1182,7 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 - 获取：通过`document`来获取和创建
 - 属性
   - **`innerHTML`**：返回一个字符串，等同于**该元素包含的所有 HTML 代码**，该属性**可读写**。用来设置某个节点的内容
+  - `innerText`：同上，但是只显示文本代码，不带标签的！！，设置内容也不会解析为HTML
   - `textContent`：显示文本或插入的是文本时使用来替代上面方法。原样显示，不像上面方法会转为`&**;`来显示
   - `value`：代表的是元素的value属性，一般用于**`input`标签值的获取**，**`select`**标签值也可以使用
   - `style`：用来读写该元素的行内样式信息，配合CSS。如display可取值none、block、inner
@@ -1022,6 +1196,8 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 
 
 ### 3.4.5 Event
+
+Event Handlers：
 
 - **点击事件**
 
@@ -1041,6 +1217,9 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
 - **表单事件**
 
   - **`onsubmit`**：表单提交按钮按下时触发的事件(**表单校验**)**在form后注册函数，有返回值true/false**，控制提交与否
+
+    必须写`return 函数名`否则不能获取到返回的boolean值
+
   - **`onreset`**：重置按钮按下时
 
 - **加载事件**
@@ -1069,6 +1248,8 @@ CSS（cascading style sheets，**层叠样式表**）：多个样式可以作用
   - `onkeydown`：某个键盘按键被按下
   - `onkeyup`：某个键盘按键被松开
   - `onkeypress`：某个键盘按键被按下并松开
+
+其他的查看W3C中Event对象吧
 
 
 
@@ -2002,154 +2183,1737 @@ mapper.writeValue(response.getWriter(),map);
 
 
 
-# 6 bootstrap
+# 6 Vue
 
-> 详细内容访问[Bootstrap中文网](http://www.bootcss.com/)
+> 读音 /vjuː/，类似于 view
 
-- **引入依赖**
+* [Vue](https://cn.vuejs.org/)是一套用于构建用户界面的**渐进式框架**（根据需要选则特性）。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注**视图层**，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。Vue 不支持 IE8 及以下版本
 
-  - css：`bootstrap.css`
-  - js：`jquery.js`、`popper.js`(用于弹窗、提示、下拉菜单。版本3没有这个)、`bootstrap.js`
+* Vue的使用
 
-- **响应式布局**：一个网站可以兼容多个终端
+  * 在html页面使用**script**引入vue.js的库即可使用
+  * 使用**npm管理依赖**。使用webpack打包工具对vue.js应用打包。大型应用推荐此方案。
+  * **Vue-CLI脚手架**。使用vue.js官方提供的CLI脚本架很方便去创建vue.js工程雏形。
+
+* Vue借鉴了**MVVM**模式，MVVM拆分解释为：
+
+  * Model：负责数据存储
+
+  * View：负责页面展示
+
+  * View Model：**负责业务逻辑处理**（比如Ajax请求等），对数据进行加工后交给视图展示
+
+    MVVM要解决的问题是**将业务逻辑代码**与**视图代码**进行完全**分离**，使各自的职责更加清晰，后期代码维护更加简单
+
+    ![1550506617716](images/1550506617716.png)
+
+  
+
+  
+
+## 1 Vue 语法
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="utf-8" />
+        <title>快速入门</title>
+        <script src="js/vuejs-2.5.16.js"></script>
+    </head>
+    <body>
+        <!--相当于MVVM中View视图-->
+        <div id="app">
+            {{message}}<!--vue的插值表达式，数据的双向绑定-->
+            {{flag?"正确":"错误"}}
+            {{Number.parseInt(number)++}}
+        </div>
+    </body>
+    <script>
+        //相当于MVVM中ViewModel
+        const vue = new Vue({
+            el:"#app",//由Vue的VM接管id为app的区域
+            data:{ //Model数据
+                message:"Hello Vue 777",
+                flag:false,
+                number:100,
+            }
+        });
+    </script>
+</html>
+```
+
+### 1.1 插值表达式`{{}}`
+
+数据绑定最常见的形式就是使用“Mustache”语法 (双大括号) 的文本插值，Mustache 标签将会被替代为对应数据对象上属性的值。无论何时，绑定的数据对象上属性发生了改变，插值处的内容都会更新。Vue.js 提供了完全的 JavaScript 表达式支持。
+
+```html
+{{ number + 1 }}
+{{ ok ? 'YES' : 'NO' }}
+```
+
+这些表达式会**在所属 Vue 实例的数据作用域下作为 JavaScript 被解析**。有个限制就是，**每个绑定都只能包含单个表达式**，所以下面的例子都不会生效。不能写在dom的属性中！！！
+
+```html
+<!-- 这是语句，不是表达式 -->
+{{ var a = 1 }}
+<!-- 流控制也不会生效，请使用三元表达式 -->
+{{ if (ok) { return message } }}
+```
+
+
+
+### 1.2 `v-text`与`v-html`
+
+解决网速慢时**插值表达式闪烁问题（显示了插值表达式，体验很不好）**，使用`v-text`
+
+```html
+<body>
+    <div id="app">
+        <div v-html="message"></div> <!--解析HTML展示-->
+        <div v-text="message"></div> <!--原样文本展示-->
+    </div>
+</body>
+<script>
+    //view model
+    new Vue({
+        el:"#app",
+        data:{
+            message:'<h1>hello</h1>'
+        }
+    });
+
+    //传统JS，HTML略
+    onload = function () {
+        document.getElementById("div1").innerHTML = '<h1>hello</h1>';//解析HTML展示
+        document.getElementById("div2").innerText = '<h1>hello</h1>';//原样文本展示
+    }
+</script>
+```
+
+
+
+### 1.3 `v-bind:` & `:`
+
+`v‐bind`可以将数据对象绑定在dom的**任意属性中**。但是没有双向绑定特性！
+
+`v‐bind`可以给dom对象绑定**一个或多个特性**，例如动态绑定style和class
+
+```html
+<body>
+    <div id="app">
+        <a v-bind:href="a1">qq</a>
+        <div v‐bind:style="{ fontSize: size + 'px' }"></div>
+    </div>
+</body>
+<script>
+    //view model
+    new Vue({
+        el:"#app",
+        data:{
+            a1: 'https://www.qq.com',
+            size: 16
+        }
+    });
+</script>
+```
+
+
+
+### 1.4 `v-model`
+
+**双向绑定**。仅能在以下元素中使用：`input` `select` `textarea` `componets`(Vue中组件)
+
+```html
+<body>
+    <div id="app">
+        用户名：<input type="text" name="username" v-model="user.username">
+        密  码：<input type="text" name="password" v-model="user.password"><!--为了展示方便，不用password-->
+        <input type="button" @click="fun" value="获取">
+    </div>
+</body>
+<script>
+    //view model
+    new Vue({
+        el:"#app",
+        data:{
+            user:{username:"",password:""}
+        },
+        methods:{
+            fun:function () {
+                alert(this.user.username+"====="+this.user.password);
+                this.user.username = 'zhangsan';
+                this.user.password = '123456';
+            }
+        }
+    });
+</script>
+```
+
+
+
+### 1.5 `v-on:`&`@`
+
+可以用 `v-on` 指令监听 DOM **事件**，并在触发时运行一些 JavaScript 代码。`v-on:事件名称`简化写法`@事件名称`
+
+* `v-on:click`：点击事件
 
   ```html
-  <meta charset="UTF-8">
-  <!--响应式 meta 标签;viewport宽度；初始缩放值；最小/最大缩放值；是否允许用户缩放-->
-  <!--还有minimum-scale；maximum-scale；user-scalable=true/false-->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--文档兼容模式-->
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <body>
+      <div id="app">
+          {{message}}  
+          <button v-on:click="fun('改变的内容')">vue的onclick</button>
+      </div>
+  </body>
+  <script>
+      //view model
+      new Vue({
+          el:"#app",
+          data:{
+              message:"hello vue"
+          },
+          methods: {
+              fun:function(msg){
+                  alert("hello");
+                  this.message = msg;
+              },
+          }
+      })
+  </script>
   ```
 
-  - viewport
-    - 移动设备上的就是**设备的屏幕上能用来显示我们的网页的那一块区域**
-  - px
-    - css中1px并不等于设备的1px
+* `v-on:keydown`：键盘按下事件和阻止事件默认行为
 
-- 步骤
-  1. 定义布局容器：`container`、`.container-fluid`
-  2. 定义行：`row`
-  3. 定义列：`col-xs-*`、`col-sm-*`、`col-md-*`、`col-lg-*`、`hidden-**`（可以让元素在某个屏幕大小设备**不显示**）
-
-## 6.1 布局容器
-
-- Bootstrap 需要为页面内容和栅格系统包裹一个容器
-  - `.container` **类**用于固定宽度（根据不同设备左右有固定留白，但xs没有留白）并支持响应式布局的容器
-  - `.container-fluid` **类**用于 100% 宽度，占据全部视口（viewport）的容器
-
-## 6.2 栅格系统
-
-Bootstrap提供了一套响应式、移动设备优先的流式栅格系统，随着屏幕或视口(viewport)尺寸的增加，系统会自动分为最多**12列**
-
-- 栅格系统用于通过一系列的行（row）与列（column）的组合来创建页面布局，你的内容就可以放入这些创建好的布局中。工作**原理**如下：
-  - “行（row）”必须包含在 `.container` （固定宽度）或 `.container-fluid` （100% 宽度）中，以便为其赋予合适的排列（**aligment**）和内补（**padding**）。
-  - 通过“行（row）”在水平方向创建一组“列（column）”。
-  - 你的内容应当放置于“列（column）”内，并且，只有“列（column）”可以作为“行（row）”的直接子元素。
-  - 类似 `.row` 和 `.col-xs-4` 这种预定义的类，可以用来快速创建栅格布局。Bootstrap 源码中定义的 mixin 也可以用来创建语义化的布局。
-  - 通过为“**列（column）”设置 `padding` 属性**，从而创建列与列之间的间隔（gutter）。通过**为 `.row` 元素设置负值 `margin`** 从而抵消掉为 `.container` 元素设置的 `padding`，也就间接为“行（row）”所包含的“列（column）”抵消掉了`padding`。==多列嵌套时，可以通过==`padding:0`==来取消内边距，使得元素占满viewport==
-  - 负值的`margin`就是下面的示例为什么是向外突出的原因。在栅格列中的内容排成一行。
-  - 栅格系统中的列是通过指定1到12的值来表示其**跨越的范围**。例如，三个等宽的列可以使用三个 `.col-xs-4` 来创建。
-  - 如果一“行（row）”中包含了的“列（column）”大于 12，多余的“列（column）”所在的元素将被作为一个整体**另起一行排列**。
-  - **向上兼容且不向下兼容**：**栅格类适用于与屏幕宽度大于或等于分界点大小的设备** ， 并且**针对小屏幕设备覆盖栅格类（可能每个列占一行）**。 因此，在元素上应用任何 `.col-md-*`栅格类适用于与屏幕宽度大于或等于分界点大小的设备 ， 并且针对小屏幕设备覆盖栅格类。 因此，在元素上应用任何 `.col-lg-*`不存在， 也影响大屏幕设备。
-
-## 6.3 全局CSS样式、组件、插件
-
-**全局CSS样式**
-
-- 按钮： `<button>` (建议使用)、`<a>`、 `<input>` 。`class="btn btn-default"`
-- 图片：`img-responsive"`、`img-rounded`(方)、`img-circle`(圆)、`img-thumbnail`(相框)
-- 表格：`table`、`table-bordered`、`table-hover`
-- 表单：
-
-**组件**
-
-- 导航条
-- 分页：！！！
-
-**插件**
-
-- 轮播图
-
-## 6.4 其他详细的看文档去吧！
-
-
-
-# 7 AdminLTE
-
-- AdminLTE简介
-
-  AdminLTE是一款建立在bootstrap和jquery之上的开源的模板主题工具，它提供了一系列响应的、 可重复使用的组件，并内置了多个模板页面；同时自适应多种屏幕分辨率，兼容PC和移动端。通 过AdminLTE，我们可以快速的创建一个响应式的Html5网站。AdminLTE框架在网页架构与设计 上，有很大的辅助作用，尤其是前端架构设计师，用好AdminLTE 不但美观，而且可以免去写很大 CSS与JS的工作量。从GitHub获取[AdminLTE源码](https://github.com/almasaeed2010/AdminLTE)
-
-  AdminLTE依赖于两个框架Bootstrap3与JQuery1.11+
-
-- AdminLTE结构介绍
-
-  ```
-  AdminLTE/ 
-  ├── dist/ 
-  │   ├── CSS/ 
-  │   ├── JS 
-  │   ├── img 
-  ├── build/ 
-  │   ├── less/ 
-  │   │   ├── AdminLTE's Less files 
-  │   └── Bootstrap-less/ (Only for reference. No modifications have been made) 
-  │       ├── mixins/
-  │       ├── variables.less 
-  │       ├── mixins.less 
-  └── plugins/    
-      ├── All the customized plugins CSS and JS files
+  ```html
+  <body>
+      <div id="app">
+          Vue:<input type="text" v-on:keydown="fun1($event)"><hr/> <!--不传递evnet也可以实现-->
+          JS:<input type="text" onkeydown="fun0();">
+      </div>
+  </body>
+  <script>
+      // view model
+      new Vue({
+          el:"#app",
+          methods:{
+              fun1:function (event) { //不传递evnet也可以实现
+                  let keyCode = event.keyCode;//过时了。。。
+                  if (keyCode<48 || keyCode>57){
+                      event.preventDefault();
+                  }
+              }
+          }
+      });
+      //原生JS
+      function fun0() {
+          //window、document、event对象都可以不定义直接使用
+          let keyCode = event.keyCode;//过时了。。。
+          if (keyCode<48 || keyCode>57){
+              event.preventDefault();//通知浏览器不要执行与事件关联的默认动作，此案例为键盘按下事件则不会显示按的符号
+              //但是没啥用，写中文时直接回车就把字母显示在对input框中了
+          }
+      }
+  </script>
   ```
 
-- AdminLTE布局与皮肤
+* `v-on:mouseover`鼠标移到到目标上面
 
-  - 布局
+  ```html
+  <body>
+      Vue:<div id="app">
+      <div v-on:mouseover="vfun1();" id="div">
+          <textarea @mouseover="vfun2($event);">这是一个文件域</textarea> <!--不传递evnet也可以实现-->
+      </div>
+      </div>
+      JS:<div>
+      <div onmouseover="fun1()" id="div">
+          <textarea onmouseover="fun2()">这是一个文件域</textarea>
+      </div>
+      </div>
+  
+  </body>
+  <script>
+      //view model
+      new Vue({
+          el:"#app",
+          methods:{
+              vfun1:function () {
+                  alert("div");
+              },
+              vfun2:function (event) {//不传递evnet也可以实现
+                  alert("textarea");
+                  event.stopPropagation();
+              }
+          }
+      });
+  
+      //由于div包裹textarea，在鼠标移动到textarea上会先后弹出textarea、div，解决方法如下
+      function fun1() {
+          alert("div")
+      }
+      function fun2() {
+          alert("textarea");
+          event.stopPropagation();//利用event对象不再派发事件的方法，停止事件传播
+      }
+  </script>
+  ```
 
-    `.wrapper`包住了body下的所有代码
+* **事件修饰符**
 
-    `.main-header`里是网站的logo和导航栏的代码
+  Vue.js 为 v-on 提供了事件修饰符来处理 DOM 事件细节，如：event.preventDefault() 或 event.stopPropagation()。
 
-    `.main-sidebar`里是用户面板和侧边栏菜单的代码
+  Vue.js通过由点(.)表示的指令后缀来调用修饰符：
 
-    `.content-wrapper`里是页面的页面和内容区域的代码 
+  * `.stop`：停止事件传播，不再派发事件
+  * `.prevent`：停止事件的默认动作
+  * `.capture`
+  * `.self`
+  * `.once`
 
-    `.main-footer`里是页脚的代码
+  ```html
+  <!--案例1：不让表单提交-->
+  <body>
+      Vue:<div id="app">
+      <form action="http://www.qq.com" method="post" @submit.prevent> <!--.stop类似-->
+          <input type="submit" value="提交">
+      </form>
+      </div>
+  
+      JS: <div>
+      <form action="http://www.qq.com" method="post" onsubmit="return checkForm();">
+          <input type="submit" value="提交">
+      </form>
+      </div>
+  </body>
+  <script>
+      //view model
+      new Vue({
+          el:"#app",
+      });
+  
+      //原生JS
+      function checkForm() {
+          return false;
+      };
+  </script>
+  ```
 
-    `.control-sidebar`里是页面右侧侧边栏区域的代码
+* **按键修饰符**
 
-  - 布局选项
+  Vue 允许为 `v-on` 在监听**键盘事件时**添加**按键修饰符**：
 
-    `fixed`：固定
+  全部的按键别名：
 
-    `layout-boxed`：盒子布局
+  * `.enter`
+  * `.tab`
+  * `.delete` (捕获 "删除" 和 "退格" 键)
+  * `.esc`
+  * `.space`
+  * `.up`
+  * `.down`
+  * `.left`
+  * `.right`
+  * `.ctrl`
+  * `.alt`
+  * `.shift`
+  * `.meta`
 
-    `layout-top-nav`：顶部隐藏
+  ```html
+  <body>
+      <div id="app">
+          <input type="text" v-on:keyup.enter="fun1">
+  
+          <p><input @keyup.alt.67="clear"><!-- Alt + C -->
+  
+          <div @click.ctrl="doSomething">Do something</div><!-- Ctrl + Click -->
+      </div>
+  
+      <script>
+          new Vue({
+              el:'#app', //表示当前vue对象接管了div区域
+              methods:{
+                  fun1:function(){
+                      alert("你按了回车");
+                  }
+              }
+          });
+      </script>
+  </body>
+  ```
 
-    `sidebar-collapse`：侧边栏隐藏
-
-    `sidebar-mini`：侧边栏隐藏时有小图标
-
-  - 皮肤
-
-    `skin-blue`：蓝色
-
-    `skin-black`：黑色
-
-    `skin-purple`：紫色
-
-    `skin-yellow`：黄色 
-
-    `skin-red`：红色
-
-    `skin-green`：绿色
 
 
 
-- **AdminLTE2-IT黑马-定制版**
 
-  传智播客研究院针对英文版本AdminLTE进行了汉化，并优化与定制了部分页面，方便我们的学习 与使用。后续SSM综合练习课程中使用的界面就是基于AdminLTE2-IT黑马-定制版。从GitHub[获取源码](https://github.com/itheima2017/adminlte2-itheima)，也可以[在线进行浏览](http://research.itcast.cn/adminlte2-itcast/release/dist/pages/all-admin-index.html)。
+### 1.6 `v-for`
 
-  minLTE2-IT黑马-定制版是基于FIS3进行开发，在目录结构中assets、modules、pages、 plugins都是前端开发时所使用到的，最终发布的就是release。所以对于我们使用AdminLTE2-IT黑 马-定制版来说，我们只需要**关注release目录**下的结构就可以。
+`index`可以获取到索引（从0开始），但是只能写在后面（最后？）。可以根据index控制奇偶显示
 
-  在release目录下有**css、img、pages、plugins**目录。前两者就不在解决pages是产生的一些定制的页面，而plugins中是相关的插件，例如jquery、bootstrap等相关的css与js文件。
+```html
+<!--对象的遍历。其中第一个参数为值，第二个为键！！！参数名称可以任意器，如(a,b)-->
+<tr v-for="(value,key) in product">
+```
+
+```html
+<body>
+    <div id="app">
+        <table border="1">
+            <tr>
+                <td>序号号</td>
+                <td>编号</td>
+                <td>名称</td>
+                <td>价格</td>
+            </tr>
+            <tr v-for="(product,index) in products">
+                <!--也可以指定主键，不知道干啥用的？？？   v-for="(p,i) in products":key="i"  -->
+                <td>{{index}}</td>
+                <td>{{product.id}}</td>
+                <td>{{product.name}}</td>
+                <td>{{product.price}}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+<script>
+    //view model
+    new Vue({
+        el:"#app",
+        data:{
+            products:[
+                {id:1,name:'笔记本电脑',price:8888},
+                {id:2,name:'手机',price:6666},
+                {id:1,name:'电视',price:88888}
+            ]
+        }
+    });
+</script>
+```
+
+### 1.7 `v-if`,`v-else`&`v-show`
+
+`v-if`是根据表达式的值来决定是否渲染元素，效果一样，但是这个是整个标签都不渲染，网页源码中没有了这段代码
+
+`v-show`是根据表达式的值来切换元素的display css属性，效果一样，但是这个只是display属性值为none
+
+```html
+<!--名称为heima的加背景色-->
+<div v‐if="item.user.uname=='heima'" style="background: chartreuse">
+    {{index}}‐{{item.user.uname}}‐{{item.user.age}}
+</div>
+<div v‐else="">
+    {{index}}‐{{item.user.uname}}‐{{item.user.age}}
+</div>
+<!--js略-->
+```
+
+```html
+<body>
+    <div id="app">
+        <span v-if="flag">传智播客</span>
+        <span v-show="flag">itcast</span>
+        <button @click="toggle">切换</button>
+    </div>
+</body>
+<script>
+    //view model
+    new Vue({
+        el: '#app', 
+        data: {
+            flag: false
+        },
+        methods: {
+            toggle: function () {
+                this.flag = !this.flag;
+            }
+        }
+    });
+</script>
+```
+
+
+
+## 2 Vue 生命周期
+
+每个 Vue 应用都是通过用 `Vue` 函数创建一个新的 **Vue 实例**开始的：
+
+```js
+var vm = new Vue({
+  // 选项
+})
+```
+
+虽然没有完全遵循 [MVVM 模型](https://zh.wikipedia.org/wiki/MVVM)，但是 Vue 的设计也受到了它的启发。因此在文档中经常会使用 `vm` (ViewModel 的缩写) 这个变量名表示 Vue 实例。
+
+当一个 Vue 实例被创建时，它向 Vue 的**响应式系统**中加入了其 `data` 对象中能找到的所有的属性。当这些属性的值发生改变时，视图将会产生“响应”，即匹配更新为新的值。当这些数据改变时，视图会进行重渲染。值得注意的是只有当实例被创建时 `data` 中存在的属性才是**响应式**的。也就是说如果你添加一个新的属性，比如：
+
+```js
+vm.b = 'hi'
+```
+
+那么对 `b` 的改动将不会触发任何视图的更新。如果你知道你会在晚些时候需要一个属性，但是一开始它为空或不存在，那么你仅需要设置一些初始值。
+
+
+
+生命周期图示
+
+![](images/lifecycle.png)
+
+Vue在生命周期中有这些状态，`beforeCreate`,`created`,`beforeMount`,`mounted`,`beforeUpdate`,`updated`,`beforeDestroy`,`destroyed`。Vue
+在实例化的过程中，会调用这些生命周期的钩子，给我们提供了执行自定义逻辑的机会。那么，在这些vue钩子
+中，vue实例到底执行了那些操作，我们先看下面执行的例子
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>生命周期</title>
+        <script src="js/vuejs-2.5.16.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            {{message}}
+        </div>
+        <script>
+            var vm = new Vue({
+                el: "#app",
+                data: {
+                    message: 'hello world'
+                },
+                beforeCreate: function() {
+                    console.log(this);
+                    showData('创建vue实例前', this);
+                },
+                created: function() {
+                    showData('创建vue实例后', this);
+                },
+                beforeMount: function() {
+                    showData('挂载到dom前', this);
+                },
+                mounted: function() {
+                    showData('挂载到dom后', this);
+                },
+                beforeUpdate: function() {
+                    showData('数据变化更新前', this);
+                },
+                updated: function() {
+                    showData('数据变化更新后', this);
+                },
+                beforeDestroy: function() {
+                    vm.test = "3333";
+                    showData('vue实例销毁前', this);
+                },
+                destroyed: function() {
+                    showData('vue实例销毁后', this);
+                }
+            });
+            function realDom() {
+                console.log('真实dom结构：' + document.getElementById('app').innerHTML);
+            }
+            function showData(process, obj) {
+                console.log(process);
+                console.log('data 数据：' + obj.message)
+                console.log('挂载的对象：')
+                console.log(obj.$el)
+                realDom();
+                console.log('------------------')
+                console.log('------------------')
+            }
+            vm.message="good...";
+            vm.$destroy();
+        </script>
+    </body>
+</html>
+```
+
+vue对象初始化过程中，会执行到beforeCreate,created,beforeMount,mounted 这几个钩子的内容：
+
+* `beforeCreate` ：数据还没有监听，没有绑定到vue对象实例，同时也没有挂载对象
+* `created` ：数据已经绑定到了对象实例，但是还没有挂载对象
+* `beforeMount`: 模板已经编译好了，根据数据和模板已经生成了对应的元素对象，将数据对象关联到了对象的el属性，el属性是一个HTMLElement对象，也就是这个阶段，vue实例通过原生的createElement等方法来创建这个html片段，准备注入到我们vue实例指明的el属性所对应的挂载点
+* `mounted` : 将el的内容挂载到了el，相当于我们在jquery执行了(el).html(el),生成页面上真正的dom，上面我们就会发现dom的元素和我们el的元素是一致的。在此之后，我们能够用方法来获取到el元素下的dom对象，并进行各种操作
+
+* 当我们的data发生改变时，会调用beforeUpdate和updated方法
+  * `beforeUpdate` ：数据更新到dom之前，我们可以看到$el对象已经修改，但是我们页面上dom的数据还没有发生改变
+  * `updated`: dom结构会通过虚拟dom的原则，找到需要更新页面dom结构最小路径，将改变更新到dom上面，完成更新
+* `beforeDestroy` , `destroed` : 实例的销毁，vue实例还是存在的，只是解绑了事件的监听还有watcher对象数据与view的绑定，即数据驱动
+
+
+
+## 3 Vue Ajax — axios
+
+> vue-resource是Vue.js的插件提供了使用XMLHttpRequest或JSONP进行Web请求和处理响应的服务。 当vue更新
+> 到2.0之后，作者就宣告不再对vue-resource更新，而是推荐的axios，在这里大家[了解一下vue-resource](https://github.com/pagekit/vue-resource)就可以。
+
+[Axios](https://github.com/axios/axios) 是一个基于 promise 的 HTTP 库，可以用在浏览器和 node.js 中
+
+### 3.1 引入 axios
+
+如果使用es6，只需要安装axios模块之后
+
+```
+import axios from 'axios';
+//安装方法
+npm install axios
+//或
+bower install axios
+```
+
+也可以用script引入
+
+```html
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+```
+
+### 3.2 GET请求
+
+```js
+//通过给定的ID来发送请求
+axios.get('/user?ID=12345')
+    .then(function (response) {
+    console.log(response);
+})
+    .catch(function (err) {
+    console.log(err);
+});
+
+//以上请求也可以通过这种方式来发送
+axios.get('/user', {
+    params: {
+        ID: 12345
+    }
+})
+    .then(function (response) {
+    console.log(response);
+})
+    .catch(function (err) {
+    console.log(err);
+});
+```
+
+### 3.3 POST请求
+
+```js
+axios.post('/user',{
+    firstName:'Fred',
+    lastName:'Flintstone'
+})
+    .then(function(res){
+    console.log(res);
+})
+    .catch(function(err){
+    console.log(err);
+});
+```
+
+
+
+为方便起见，为所有支持的请求方法提供了别名
+
+axios.get(url[, config])
+
+axios.post(url[, data[, config]])
+
+axios.put(url[, data[, config]])
+
+axios.delete(url[, config])
+
+axios.request(config)
+
+axios.head(url[, config])
+
+axios.patch(url[, data[, config]])
+
+
+
+## 4 综合案例
+
+完成用户的查询与修改操作（使用JPA）
+
+### 4.1 后端
+
+```sql
+CREATE DATABASE vuejsdemo;
+USE vuejsdemo;
+CREATE TABLE USER(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    age INT,
+    username VARCHAR(20),
+    PASSWORD VARCHAR(50),
+    email VARCHAR(50),
+    sex VARCHAR(20)
+)
+```
+
+```java
+@Entity
+//解决JPA实体类用jackson转JSON的问题；使用fastJson就没有此问题
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler","fieldHandler"})
+public class User implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String password;
+    private String sex;
+    private int age;
+    private String email;
+    //......
+}
+```
+
+使用JPA，所有Repository直接继承。省略了service层，直接写controller
+
+```java
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/findAll")
+    public List<User> findAll(){
+        return userRepository.findAll();
+    }
+
+    @GetMapping("/findById")
+    public User findById(Long id) {
+        return userRepository.getOne(id);
+    }
+
+    @PostMapping("/update")
+    @Transactional//省略了service层代码
+    @Rollback(false)
+    public void update(@RequestBody User user){
+        System.out.println(user);
+        userRepository.save(user);//本应该在Repository接口中定义更新方法，利用JPQL来实现
+    }
+}
+```
+
+### 4.2 前端
+
+```js
+new Vue({
+    el: "#app",
+    data: {
+        user: {
+            username: '',
+            password: '',
+            sex: '',
+            age: '',
+            email: ''
+        },
+        userList: []
+    },
+    methods: {
+        findAll: function () {
+            //在当前方法中定义一个对象，表明是vue对象
+            let _this = this;
+            axios.get('/user/findAll')
+                .then(function (response) {
+                _this.userList = response.data;
+            })
+                .catch(function (error) {
+                console.log(error);
+            })
+        },
+        findById: function (userId) {
+            let _this = this;
+            axios.get('/user/findById',{params:{id:userId}})
+                .then(function (response) {
+                _this.user = response.data;
+                $("#myModal").modal("show");//模态窗口？？？
+            })
+                .catch(function (error) {
+                console.log(error);
+            })
+        },
+        update: function (user) {
+            let _this = this;
+            axios.post('/user/update',_this.user)
+                .then(function (response) {
+                _this.findAll();
+            })
+                .catch(function (error) {
+                console.log(error);
+            })
+        }
+    },
+    created: function () {
+        this.findAll();
+    }
+});
+```
+
+HTML绑定v-model、v-for等省略。利用好什么周期方法！模态窗口时什么？？？
+
+
+
+
+
+# 7 Node.js
+
+## 1 简介
+
+Node.js 是一个基于 Chrome V8 引擎的 **JavaScript 运行环境**。 Node.js 使用了一个**事件驱动**、**非阻塞式 I/O 的模型**，使其轻量又高效。在特定领域性能出色，比如用 Node.js 实现消息推送、状态监控等的业务功能非常合适。
+
+传统意义上的 JavaScript 运行在浏览器上，Chrome 使用的 JavaScript 引擎是 V8，Node.js 是一个运行在服务端的框架，它的底层就使用了 V8 引擎，这样就可以使用javascript去编写一些服务端的程序，这样也就实现了用javaScript去开发服务端的功能，这样做的好处就是前端和后端都采用javascript，即开发一份js程序即可以运行在前端也可以运行的服务端，这样比一个应用使用多种语言在开发效率上要高。
+
+在[Node.js官网](https://nodejs.org/zh-cn/)下载所属平台的安装包或二进制文件，安装后在命令行输入`node -v`查看版本
+
+## 2 快速入门
+
+### 2.1 控制台输出
+
+我们现在做个最简单的小例子，演示如何在控制台输出，创建文本文件demo1.js,代码内容
+
+```js
+var a=1;
+var b=2;
+console.log(a+b);
+```
+
+我们在命令提示符下输入命令
+
+```shell
+node demo1.js
+```
+
+### 2.2 使用函数
+
+创建文本文件demo2.js
+
+```js
+var c=add(100,200);
+console.log(c);
+function add(a,b){
+	return a+b;
+}
+```
+
+命令提示符输入命令。运行后看到输出结果为300
+
+```sh
+node demo2.js
+```
+
+### 2.3 模块化编程
+
+创建文本文件demo3_1.js
+
+```js
+exports.add=function(a,b){
+	return a+b;
+}
+```
+
+创建文本文件demo3_2.js
+
+```js
+var demo= require('./demo3_1');//ES5的语法
+console.log(demo.add(400,600));
+```
+
+我们在命令提示符下输入命令。结果为1000
+
+```sh
+node demo3_2.js
+```
+
+### 2.4 创建web服务器
+
+创建文本文件demo4.js
+
+```js
+var http = require('http');
+http.createServer(function (request, response) {
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    // 发送响应数据 "Hello World"
+    response.end('Hello World\n');
+}).listen(8888);
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8888/');
+```
+
+**`http`为node内置的web模块**
+
+我们在命令提示符下输入命令
+
+```sh
+node demo4.js
+```
+
+服务启动后，我们打开浏览器，输入网址http://localhost:8888/
+
+即可看到网页输出结果Hello World。Ctrl+c 终止运行。
+
+### 2.5 理解服务端渲染
+
+我们创建demo5.js  ，将上边的例子写成循环的形式
+
+```js
+var http = require('http');
+http.createServer(function (request, response) {
+    // 发送 HTTP 头部 
+    // HTTP 状态值: 200 : OK
+    // 内容类型: text/plain
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    // 发送响应数据 "Hello World"
+	for(var i=0;i<10;i++){
+		response.write('Hello World\n');//write和end区别
+	}  
+	response.end('');	
+}).listen(8888);
+// 终端打印如下信息
+console.log('Server running at http://127.0.0.1:8888/');
+```
+
+我们在命令提示符下输入命令启动服务
+
+```sh
+node demo5.js
+```
+
+浏览器地址栏输入http://127.0.0.1:8888即可看到查询结果。
+
+我们右键“查看源代码”发现，并没有我们写的for循环语句，而是直接的10条Hello World ，这就说明这个循环是在服务端完成的，而非浏览器（客户端）来完成。这与我们原来的JSP很是相似。
+
+### 2.6 接收参数
+
+创建demo6.js
+
+```js
+var http = require('http');
+var url = require('url');
+http.createServer(function(request, response){
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    // 解析 url 参数
+    var params = url.parse(request.url, true).query;
+    response.write("name:" + params.name);
+    response.write("\n");
+    response.end();
+}).listen(8888);
+console.log('Server running at http://127.0.0.1:8888/');
+```
+
+我们在命令提示符下输入命令
+
+```sh
+node demo6.js
+```
+
+在浏览器测试结果
+
+
+
+## 3 包资源管理器NPM
+
+### 3.1 NPM简介
+
+NPM全称Node Package Manager，他是Node包管理和分发工具。其实我们可以把NPM理解为前端的Maven。我们通过NPM可以很方便地下载js库，管理前端工程。最近版本的Node.js已经集成了npm工具，`npm -v`可查看当前npm版本
+
+
+
+### 3.2 NPM命令
+
+#### 3.2.1 初始化工程
+
+`init`命令是**工程初始化**命令。建立一个空文件夹，在命令提示符进入该文件夹执行命令初始化`npm init`
+
+按照提示输入相关信息，如果是用默认值则直接回车即可。
+
+* name: 项目名称
+* version: 项目版本号
+* description: 项目描述
+* keywords: {Array}关键词，便于用户搜索到我们的项目
+
+最后会生成`package.json`文件，这个是**包的配置文件**，相当于maven的`pom.xml`我们之后也可以根据需要进行修改。
+
+#### 3.2.2 本地安装
+
+install命令用于安装某个模块，如果我们想安装`express`模块（node的web框架），输出命令如下`npm install express`
+
+出现黄色的是警告信息，可以忽略，请放心，你已经成功执行了该命令。
+
+在该目录下已经出现了一个`node_modules`文件夹 和`package-lock.json`
+
+`node_modules`文件夹用于存放下载的js库（相当于maven的本地仓库）
+
+`package-lock.json`是当 `node_modules` 或 `package.json` 发生变化时自动生成的文件。这个文件主要功能是确定当前安装的包的依赖，以便后续重新安装的时候生成相同的依赖，而忽略项目开发过程中有些依赖已经发生的更新。
+
+我们再打开 `package.json` 文件，发现刚才下载的express已经添加到依赖列表中了.
+
+关于版本号定义：
+
+* 指定版本：比如`1.2.2`，遵循“`大版本.次要版本.小版本`”的格式规定，安装时只安装指定版本。
+* 波浪号（tilde）+指定版本：比如`~1.2.2`，表示安装`1.2.x`的最新版本（不低于`1.2.2`），但是不安装1.3.x，也就是说安装时**不改变大版本号和次要版本号**。
+* 插入号（caret）+指定版本：比如`ˆ1.2.2`，表示安装`1.x.x`的最新版本（不低于1.2.2），但是不安装2.x.x，也就是说安装时**不改变大版本号**。需要注意的是，*如果大版本号为0，则插入号的行为与波浪号相同*，这是因为此时处于开发阶段，即使是次要版本号变动，也可能带来程序的不兼容。
+* **latest**：安装最新版本。
+
+
+
+#### 3.2.3 全局安装
+
+刚才我们使用的是本地安装，会将js库安装在当前目录，而使用全局安装会将库安装到你的全局目录下。
+
+如果你不知道你的全局目录在哪里，执行命令`npm config ls`或`npm root -g`
+
+我的全局目录在`C:/用户/[用户名]/AppData/Roming/npm/node_meodules`。为了方便对依赖包管理，我们将管理包的路径设置在单独的地方，本教程将安装目录设置在node.js的目录下，创建`npm_modules`和`npm_cache`，执行下边的命令：
+
+```
+npm config set prefix "C:\Develop\nodejs\npm_modules"
+npm config set cache "C:\Develop\nodejs\npm_cache"
+```
+
+比如我们全局安装jquery,  输入以下命令`npm install jquery -g`
+
+
+
+#### 3.2.4 批量下载
+
+我们从网上下载某些代码，发现只有`package.json`，没有`node_modules`文件夹，这时我们需要通过命令重新下载这些js库
+
+进入目录（package.json所在的目录）输入命令`npm install`，此时，npm会自动下载`package.json`中依赖的js库.
+
+
+
+#### 3.2.5 淘宝NPM镜像
+
+有时我们使用npm下载资源会很慢，所以我们可以安装一个cnmp(淘宝镜像)来加快下载速度。输入如下命令：
+
+`npm install -g cnpm --registry=https://registry.npm.taobao.org`
+
+安装后使用`.\cnpm -v`查看cnpm版本（在`npm_modules`目录下执行）
+
+安装nrm`.\cnpm install -g nrm`（在`npm_modules`目录下执行）
+
+`.\nrm ls `查看镜像后，使用`nrm use XXX`切换镜像（在`npm_modules`目录下执行）
+
+配置环境变量后即可在任意目录下执行
+
+- 配置`NODE_HOME = C:\Program Files\nodejs`
+- Path中配置`%NODE_HOME%;%NODE_HOME%\npm_modules;`
+
+
+
+#### 3.2.6 运行工程
+
+如果我们想运行某个工程，则使用run命令
+
+如果`package.json`中定义的脚本如下
+
+* `dev`是开发阶段测试运行
+* `build`是构建编译工程
+* `lint` 是运行js代码检测 
+
+我们现在来试一下运行dev，命令行输入`npm run dev`
+
+
+
+#### 3.2.7 编译工程
+
+我们接下来，测试一个代码的编译，编译后我们就可以将工程部署到nginx中啦~
+
+编译后的代码会放在**dist**文件夹中，首先我们先删除dist文件夹中的文件，进入命令提示符输入命令`npm run build`
+
+生成后我们会发现只有个**静态页面**，和一个**static**文件夹
+
+这种工程我们称之为单页Web应用（single page web application，**SPA**），就是只有一张Web页面的应用，是加载单个HTML 页面并在用户与应用程序交互时动态更新该页面的Web应用程序。
+
+这里其实是调用了webpack来实现打包的，关于webpack我们后续的章节进行介绍
+
+
+
+## 4 Webpack
+
+### 4.1 Webpack简介
+
+Webpack 是一个前端资源加载/打包工具。它将根据模块的依赖关系进行静态分析，然后将这些模块按照指定的规则生成对应的静态资源。
+
+![1550510683323](images/1550510683323.png)
+
+Webpack好处如下：
+
+- **模块化开发**
+
+  程序员在开发时可以分模块创建不同的js、 css等小文件方便开发，最后使用webpack将这些小文件打包成一个文件，**减少了http的请求次数**。webpack可以实现按需打包，为了避免出现打包文件过大可以打包成多个文件。
+
+- **编译typescript、ES6等高级js语法**
+
+- **CSS预编译**
+
+  webpack允许在开发中使用Sass 和 Less等原生CSS的扩展技术，通过sass-loader、less-loader将Sass 和 Less的语法编译成浏览器可识别的CSS语法。
+
+webpack的缺点：配置有些繁琐，文档不丰富
+
+
+
+### 4.2 Webpack安装
+
+全局安装（4.0以后的版本需要安装webpack-cli）。本地安装只需去掉`-g`，即可在当前目录安装
+
+```
+npm install webpack -g
+npm install webpack-cli -g
+```
+
+安装webpack指定的版本，只需在上述命令中webpack后指定版本如`...webpack@3.6.0...`
+
+安装后查看版本号
+
+```
+webpack -v
+```
+
+### 4.3 快速入门
+
+#### 4.3.1  JS打包
+
+（1）创建src文件夹，创建bar.js
+
+```js
+exports.info=function(str){
+   document.write(str);
+}
+```
+
+（2）src下创建logic.js
+
+```js
+exports.add=function(a,b){
+	return a+b;
+}
+```
+
+（3）src下创建main.js
+
+```js
+var bar= require('./bar');
+var logic= require('./logic');
+bar.info( 'Hello world!'+ logic.add(100,200));
+```
+
+（4）创建配置文件webpack.config.js  ，该文件与src处于同级目录
+
+```js
+var path = require("path");
+module.exports = {
+	entry: './src/main.js',
+	output: {
+		path: path.resolve(__dirname, './dist'),
+		filename: 'bundle.js'
+	}
+};
+```
+
+以上代码的意思是：读取当前目录下src文件夹中的main.js（入口文件）内容，把对应的js文件打包，打包后的文件放入当前目录的dist文件夹下，打包后的js文件名为bundle.js
+
+（5）执行编译命令
+
+```
+webpack
+```
+
+执行后查看bundle.js 会发现里面包含了上面两个js文件的内容
+
+（7）创建index.html ,引用bundle.js
+
+```html
+<!doctype html>
+<html>
+  <head>  
+  </head>
+  <body>   
+    <script src="dist/bundle.js"></script>
+  </body>
+</html>
+```
+
+测试调用index.html，会发现有内容输出
+
+
+
+#### 4.3.2 CSS打包
+
+（1）安装style-loader和 css-loader
+
+Webpack 本身只能处理 JavaScript 模块，如果要处理其他类型的文件，就需要使用 loader 进行转换。
+
+Loader 可以理解为是模块和资源的转换器，它本身是一个函数，接受源文件作为参数，返回转换的结果。这样，我们就可以通过 require 来加载任何类型的模块或文件，比如 CoffeeScript、 JSX、 LESS 或图片。首先我们需要安装相关Loader插件，css-loader 是将 css 装载到 javascript；style-loader 是让 javascript 认识css
+
+```
+cnpm install style-loader css-loader --save-dev
+```
+
+（2）修改webpack.config.js
+
+```js
+var path = require("path");
+module.exports = {
+	entry: './src/main.js',
+	output: {
+		path: path.resolve(__dirname, './dist'),
+		filename: 'bundle.js'
+	},
+	module: {
+		rules: [  
+            {  
+                test: /\.css$/,  
+                use: ['style-loader', 'css-loader']
+            }  
+        ]  
+	}
+};
+```
+
+（3）在src文件夹创建css文件夹,css文件夹下创建css1
+
+```css
+body{
+ background:red;
+}
+```
+
+（4）修改main.js ，引入css1.css
+
+```
+require('./css1.css');
+```
+
+（5）重新运行webpack
+
+（6）运行index.html看看背景是不是变成红色啦？
+
+
+
+#### 4.3.3 结合Vue打包
+
+1. 定义`module01.js`，此文件就是一个模块，定义了一些方法
+
+   ```js
+   //定义add函数
+   function add(x, y) {
+       return x + y;
+   }
+   
+   //定义add2函数
+   function add2(x, y) {
+       return x + y + 2;
+   }
+   
+   //定义add3函数
+   exports.add3 = function (x, y) {
+       return x + y + 2;
+   }
+   
+   //要导出的方法
+   // module.exports.add = add;
+   // module.exports.add2 = add2;
+   module.exports = {add,add2};//多个方法这样导出更方便！或每次定义方法时导出，如add3
+   ```
+
+2. 定义`main.js`，是本程序的js主文件，名称任意取。包括如下内容：
+
+   1. 引用`module01.js`模块
+   2. 引用`vue.min.js`模块（它也一个模块）
+   3. 将html页面中构建vue实例的代码放在`main.js`中（总之html中不再有js代码）
+
+   ```js
+   //如下都是ES5的导入方法！
+   var {add} = require('./module01.js');//可以省略.js，但是必须带上./前缀表示当前目录！
+   var module01 = require('./module01.js');//也可以全部导入
+   var Vue = require('./vue.min.js');
+   
+   var VM = new Vue({
+       el: "#app",//表示当前vue对象接管app的div区域
+       data: {
+           name: '黑马程序员',// 相当于是MVVM中的Model这个角色
+           num1: 0,
+           num2: 0,
+           result: 0,
+       },
+       methods: {
+           change: function () {
+               //这里使用了导入的model01.js文件中的add方法
+               this.result = module01.add2(Number.parseInt(this.num1), Number.parseInt(this.num2));
+           }
+       }
+   });
+   ```
+
+3. 打包测试
+
+   1. 进入程序即js文件所在目录，执行`webpack main.js build.js`，将`main.js`打包输出为`build.js`文件。也可以定义webpack.config.js配置打包方式
+   2. 在HTML中引用`<script src="build.js"></script>`
+
+
+
+#### 4.3.4 webpack-dev-server
+
+webpack-dev-server开发服务器，它的功能可以实现热加载并且自动刷新浏览器。
+
+1. 创建一个新的程序目录，这里我们创建`webpacktest`目录，将webpack入门程序的代码拷贝进来，并在目录下创建`src`目录、`dist`目录。将`main.js`，`module01.js`和`vue.min.js`拷贝到src目录。html文件拷贝到当前目录下。
+
+2. 使用 webpack-dev-server需要**安装webpack**、 **webpack-dev-server**和 **html-webpack-plugin**三个包在当前程序目录
+
+   `cnpm install webpack@3.6.0 webpack-dev-server@2.9.1 html-webpack-plugin@2.30.1 --save-dev`
+
+   安装完成后程序目录出现**`package.json`文件**，此文件中记录了程序的**依赖信息**（上面三个）
+
+   还有**`node_modules`文件夹**，有993个文件或文件夹！！！存放本程序所**依赖的包**！
+
+3. **配置webpack-dev-server**，在`package.json`中配置script（运行命令），最终内容如下
+
+   ```json
+   {
+     "scripts": {
+       "dev": "webpack-dev-server --inline --hot --open --port 5008"
+     },
+     "devDependencies": {
+       "html-webpack-plugin": "^2.30.1",
+       "webpack": "^3.6.0",
+       "webpack-dev-server": "^2.9.1"
+     }
+   }
+   ```
+
+   `scripts`：可执行的命令
+
+   `--inline`：自动刷新；`--hot`：热加载；`--open`：自动在默认浏览器打开；`--port`：指定端口；
+
+   `--host`：可以指定服务器的 ip，不指定则为127.0.0.1，如果对外发布则填写公网ip地址
+
+   `devDependencies`：开发人员在开发过程中所需要的依赖
+
+4. **配置`webpack.config.js`**，是webpack的配置文件，在此文件中可以配置应用的入口文件、输出配置、插件等，其中要实现热加载自动刷新功能需要配置html-webpack-plugin插件。html-webpack-plugin的作用是根据html模板在内存生成html文件，它的工作原理是**根据模板文件在内存中生成一个index.html文件**。
+
+   1. 配置**模板文件**。将原来的`vue.html`作为模板文件，为了和内存中的`index.html`文件名区别，注意将`vue.html`中的所有`script`标签去掉
+
+   2. 在`webpack.config.js`（与`package.json`同目录）中配置`html-webpack-plugin`插件
+
+      ```js
+      //引用html-webpack-plugin插件，作用是根据html模板在内存生成html文件，它的工作原理是根据模板文件在内存中生成一个index.html文件。
+      var htmlwp = require('html-webpack-plugin');
+      module.exports = {
+          entry: './src/main.js',  //指定打包的入口文件
+          output: {
+              path: __dirname + '/dist',  // 注意：__dirname表示webpack.config.js所在目录的绝对路径
+              filename: 'build.js'		   //输出文件
+          },
+          devtool: 'eval-source-map',//Debug调试
+          plugins: [
+              new htmlwp({
+                  title: '首页',  //生成的页面标题<head><title>首页</title></head>
+                  filename: 'index.html', //webpack-dev-server在内存中生成的文件名称，自动将build注入到这个页面底部，才能实现自动刷新功能
+                  template: 'vue.html' //根据vue.html这个模板来生成(这个文件请程序员自己生成)
+              })
+          ]
+      };
+      ```
+
+5. 运行
+
+   - 在`webpacktest`目录，执行**`npm run dev`**。
+
+   - 或使用webstorm，右键`package.json`文件，选择`“Show npm Scripts”`，双击dev即可
+
+     【注意】dev就是在`package.json`中配置的`webpack-dev-server......`命令。
+
+     启动成功自动打开浏览器。修改src中的任意文件内容，自动加载并刷新浏览器。
+
+6. Debug调试
+
+   使用了webpack之后就不能采用传统js的调试方法在chrome中打断点（因为打包了！内容发生变化）
+
+   webpack提供devtool进行调试，它是基于sourcemap的方式，在调试时会生成一个map文件，其内容记录生成文件和源文件的内容映射，即生成文件中的哪个位置对应源文件中的哪个位置，有了sourcemap就可以在调试时看到源代码。
+
+   - 在webpack.config.js中配置：`devtool: 'eval‐source‐map',`具体查看上面的代码
+   - 在js中跟踪代码的位置上添加**debugger**，开启浏览器开发者工具……
+
+
+
+
+
+# 8 ES6
+
+## 8.1 什么是ES6
+
+编程语言JavaScript是ECMAScript的实现和扩展 。ECMAScript是由ECMA（一个类似W3C的标准组织）参与进行标准化的语法规范。ECMAScript定义了：
+
+[语言语法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar) – 语法解析规则、关键字、语句、声明、运算符等。
+
+[类型](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures) – 布尔型、数字、字符串、对象等。
+
+[原型和继承](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)
+
+内建对象和函数的[标准库](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) – [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)、[Math](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math)、[数组方法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)、[对象自省方法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)等。
+
+ECMAScript标准不定义HTML或CSS的相关功能，也不定义类似DOM（文档对象模型）的[Web API](https://developer.mozilla.org/en-US/docs/Web/API)，这些都在独立的标准中进行定义。ECMAScript涵盖了各种环境中JS的使用场景，无论是浏览器环境还是类似[node.js](http://nodejs.org/)的非浏览器环境。
+
+2009年发布的改进版本ES5，引入了[Object.create()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)、[Object.defineProperty()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)、[getters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)和[setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set)、[严格模式](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)以及[JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)对象。
+
+ECMAScript 6.0（以下简称ES6）是JavaScript语言的下一代标准，2015年6月正式发布。它的目标，是使得JavaScript语言可以用来编写复杂的大型应用程序，成为企业级开发语言。
+
+## 8.2 Node.js中使用ES6
+
+ES6+ 太棒了,但是很多高级功能node是不支持的,就需要使用babel转换成ES5
+
+ （1）babel转换配置,项目根目录添加.babelrc 文件
+
+```json
+{
+  "presets" : ['es2015']
+}
+```
+
+（2）安装es6转换模块。但是好像过时了`deprecate`
+
+```
+cnpm install babel-preset-es2015 --save-dev
+```
+
+（3）全局安装命令行工具
+
+```
+cnpm install  babel-cli -g
+```
+
+（4）使用
+
+```
+babel-node js文件名
+```
+
+
+
+## 8.3 语法新特性
+
+### 8.3.1 变量声明let
+
+我们都是知道在ES6以前，var关键字声明变量。无论声明在何处，都会被视为声明在**函数的最顶部**(**不在函数内即在全局作用域的最顶部**)。这就是函数变量提升例如
+
+```js
+  function aa() {
+    if(bool) {
+        var test = 'hello man'
+    } else {
+        console.log(test)
+    }
+  }
+```
+
+以上的代码实际上是:
+
+```js
+function aa() {
+    var test // 变量提升
+    if(bool) {
+        test = 'hello man'
+    } else {
+        //此处访问test 值为undefined
+        console.log(test)
+    }
+    //此处访问test 值为undefined
+  }
+```
+
+所以不用关心bool是否为true or false。实际上，无论如何test都会被创建声明。
+
+接下来ES6主角登场：
+
+我们通常用let和const来声明，let表示变量、const表示常量。let和const都是块级作用域。怎么理解这个块级作用域？在一个函数内部 ，在一个代码块内部。看以下代码
+
+```js
+ function aa() {
+    if(bool) {
+       let test = 'hello man'
+    } else {
+        //test 在此处访问不到
+        console.log(test)
+    }
+  }
+```
+
+### 8.3.2 常量声明const
+
+const 用于声明常量，看以下代码
+
+```js
+const name = 'lux'
+name = 'joe' //再次赋值此时会报错
+```
+
+
+
+### 8.3.3 模板字符串
+
+es6模板字符简直是开发者的福音啊，解决了ES5在字符串功能上的痛点。
+
+第一个用途，基本的字符串格式化。将表达式嵌入字符串中进行拼接。用`${}`来界定。
+
+```js
+    //es5 
+    var name = 'lux'
+    console.log('hello' + name)
+    //es6
+    const name = 'lux'
+    console.log(`hello ${name}`) //hello lux
+```
+
+第二个用途，在ES5时我们通过反斜杠(`\`)来做多行字符串或者字符串一行行拼接。ES6反引号(**``**)直接搞定。
+
+```js
+    // es5
+    var msg = "Hi \
+    man!"
+    // es6
+    const template = `<div>
+        <span>hello world</span>
+    </div>`
+```
+
+### 8.3.4 函数默认参数
+
+ES6为参数提供了默认值。在定义函数时便初始化了这个参数，以便在参数没有被传递进去时使用。
+
+看例子代码
+
+```js
+    function action(num = 200) {
+        console.log(num)
+    }
+    action() //200
+    action(300) //300
+```
+
+### 8.3.5 箭头函数
+
+ES6很有意思的一部分就是函数的快捷写法。也就是箭头函数。箭头函数最直观的三个特点。
+
+1不需要function关键字来创建函数
+
+2省略return关键字。当**大括号中只有一句代码**，可以**省略大括号和return**
+
+3继承当前上下文的 this 关键字
+
+看下面代码（ES6）
+
+```js
+ (response,message) => {
+    .......
+ }
+```
+
+相当于ES5代码
+
+```js
+function(response,message){
+    ......
+}
+```
+
+### 8.3.6 对象初始化简写
+
+ES5我们对于对象都是以键值对的形式书写，是有可能出现键值对重名的。例如
+
+```js
+function people(name, age) {
+    return {
+        name: name,
+        age: age
+    };
+}
+```
+
+以上代码可以简写为
+
+```js
+function people(name, age) {
+    return {
+        name,
+        age
+    };
+}
+```
+
+
+
+### 8.3.7 解构
+
+数组和对象是JS中最常用也是最重要表示形式。为了简化提取信息，ES6新增了解构，是将一个数据结构分解为更小的部分的过程
+
+ES5我们提取对象中的信息形式如下
+
+```js
+const people = {
+    name: 'lux',
+    age: 20
+}
+const name = people.name
+const age = people.age
+console.log(name + ' --- ' + age)
+```
+
+是不是觉得很熟悉，没错，在ES6之前我们就是这样获取对象信息的，一个一个获取。现在，ES6的解构能让我们从对象或者数组里取出数据存为变量，例如
+
+```js
+//对象
+const people = {
+    name: 'lux',
+    age: 20
+}
+const { name, age } = people
+console.log(`${name} --- ${age}`)
+//数组
+const color = ['red', 'blue']
+const [first, second] = color;//就得用first/second...
+console.log(first) //'red'
+console.log(second) //'blue'
+```
+
+### 8.3.8 Spread Operator`...`
+
+ES6中另外一个好玩的特性就是Spread Operator 也是三个点儿`...`接下来就展示一下它的用途。 **组装**对象或者数组
+
+```js
+//数组
+const color = ['red', 'yellow']
+const colorful = [...color, 'green', 'pink']
+console.log(colorful) //[red, yellow, green, pink]
+
+//对象
+const alp = { fist: 'a', second: 'b'}
+const alphabets = { ...alp, third: 'c' }
+console.log(alphabets) //{ "fist": "a", "second": "b", "third": "c"
+```
+
+### 8.3.9 import 和 export
+
+> ES5中导出/导入
+>
+> ```js
+> exports.add = () =>{
+>     console.log('hello...add');
+> }
+> ```
+>
+> ```js
+> let {add} = require('./test1');
+> let test1 = require('./test1');
+> add();
+> test1.add();
+> ```
+
+import导入模块、export导出模块（在导出.vue中vue模块时，可以使用`export default`...）
+
+test1.js
+
+```js
+export let add = () =>{
+    console.log('hello...add');
+}
+// export {add as ad};这样统一写也可以，可以起别名
+```
+
+
+
+test2.js
+
+```js
+import {add} from './test1';
+import * as test1 from './demo9.js';
+
+add();
+test1.add();
+```
+
+注意：node(v10.x)还是不支持import关键字，所以我们需要使用babel的命令行工具来执行（配置详见6.2小节内容）
+
+```
+babel-node demo9
+```
+
+
+
+
+
+### 8.3.10 Promise
+
+==Promise 是**异步编程的一种解决方案（将异步请求用Promise包裹）**==，比传统的解决方案–回调函数和事件——更合理和更强大。它由社区最早提出和实现，ES6将其写进了语言标准，统一了语法，原生提供了Promise。
+
+Promise是ES6提供的用于异步处理的对象，因为axios提交是异步提交，这里使用promise作为返回值。Promise使用方法如下：
+
+Promise对象在处理过程中有三种状态：
+
+* pending：进行中
+* resolved：操作成功
+* rejected: 操作失败
+
+Promise的构建方法如下：
+
+```js
+const promise = new Promise(function(resolve,reject){
+    //...TODO...
+    if(操作成功){
+        resolve(value);
+    }else{
+        reject(error);
+    }
+})
+```
+
+上边的构造方法function(resolve,reject)执行流程如下：
+1）方法执行一些业务逻辑。
+2）如果操作成功将Promise的状态由pending变为resolved，并将操作结果传出去
+3）如果操作失败会将promise的状态由pending变为rejected，并将失败结果传出去。
+
+上边说的操作成功将操作结果传给谁了呢？操作失败将失败结果传给谁了呢？通过promise的then、catch来指定
+
+```js
+promise.then(function (result) {
+    console.log('操作成功：' + result);
+});
+promise.catch(function (reason) {
+    console.log('操作失败：' + reason);
+});
+```
+
+
+
+例如：
+
+定义一个方法，返回promise对象
+
+```js
+testpromise(i){
+    return new Promise((resolve,reject)=>{
+        if(i % 2==0){
+            resolve('成功了')
+        }else{
+            reject('拒绝了')
+        }
+    })
+}
+```
+
+调用此方法：向方法传入偶数、奇数进行测试
+
+```js
+this.testpromise(3).then(res=>{//在then中对成功结果进行处理
+    alert(res)
+}).catch(res=>{//在catch中对操作失败结果进行处理
+    alert(res)
+})
+```
+
+
+
+
+
+
+

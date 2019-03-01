@@ -390,6 +390,102 @@ nexus仓库类型（默认在 sonatype-work 目录中）
 
 
 
+## 7 配置阿里源
+
+[仓库地址](https://maven.aliyun.com/mvn/view)，有很多Repository，可以根据需要配置。例如：
+
+1. 打开 `${maven_home}/conf/settings.xml`
+
+2. 在`<mirrors>`上面配置
+
+   ```xml
+   <mirror>
+       <id>aliyun-public</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun public</name>
+       <url>https://maven.aliyun.com/repository/public</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-central</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun central</name>
+       <url>https://maven.aliyun.com/repository/central</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-spring</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun spring</name>
+       <url>https://maven.aliyun.com/repository/spring</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-spring-plugin</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun spring-plugin</name>
+       <url>https://maven.aliyun.com/repository/spring-plugin</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-apache-snapshots</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun apache-snapshots</name>
+       <url>https://maven.aliyun.com/repository/apache-snapshots</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-google</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun google</name>
+       <url>https://maven.aliyun.com/repository/google</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-gradle-plugin</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun gradle-plugin</name>
+       <url>https://maven.aliyun.com/repository/gradle-plugin</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-jcenter</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun jcenter</name>
+       <url>https://maven.aliyun.com/repository/jcenter</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-releases</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun releases</name>
+       <url>https://maven.aliyun.com/repository/releases</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-snapshots</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun snapshots</name>
+       <url>https://maven.aliyun.com/repository/snapshots</url>
+   </mirror>  
+   
+   <mirror>
+       <id>aliyun-grails-core</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun grails-core</name>
+       <url>https://maven.aliyun.com/repository/grails-core</url>
+   </mirror>
+   
+   <mirror>
+       <id>aliyun-mapr-public</id>
+       <mirrorOf>*</mirrorOf>
+       <name>aliyun mapr-public</name>
+       <url>https://maven.aliyun.com/repository/mapr-public</url>
+   </mirror>
+   ```
+
+   
+
 
 
 
@@ -653,6 +749,7 @@ in.close();
     * 包装对象：**POJO类中的一个属性是另外一个POJO**
 
 * **resultType**：从这条语句中返回的期望类型的类的完全限定名或别名，若是集合，那应该是集合包含的类型
+
   * **输出简单类型**：Integer、int、String等等，写全限定类名或简单类型都可以。需求：查询用户表数据条数
   * **输出POJO对象**：`resultType = "cn.itcast.mybatis.pojo.User"`
   * **输出POJO列表**：`resultType = "cn.itcast.mybatis.pojo.User"`，分别进行映射，并把对象放到容器List中
@@ -915,7 +1012,7 @@ MyBatis是对JDBC的封装，通过**==SqlSession对象==的`commit()`和`rollba
 <select id="findUserByUsernameAndSex" parameterType="User" resultType="User" >
     select * from user
     <where>
-        <if test="username!=null and username!=''">  <!--不能使用&&-->
+        <if test="username!=null and username!=''">  <!--还可以使用_parameter代表这个入参User。不能使用&&-->
             username like ${username} <!--需调用时提供%-->
         </if>
         <if test="sex!=null and sex!=''">
@@ -1032,6 +1129,8 @@ MyBatis是对JDBC的封装，通过**==SqlSession对象==的`commit()`和`rollba
 - 需要使用**==resultMap==**，resultType也行但是得创建继承类麻烦
 
 ### 4.1 一对一（多对一）(association)
+
+> 一对一中有时返回的pojo包含两张表信息，且不是包含另一个pojo对象，可以不用写resultMap
 
 - 查询所有**账户**信息，关联查询**用户**信息。 **==从表类引用主表类==**`private User user;`
 
@@ -3959,7 +4058,7 @@ public String test(
 
 属性：  
 
-- `value`或`name`：用于指定 url 中占位符名称。若占位符名称和形参一致，可以不用指定value
+- `value`或`name`：用于指定 url 中占位符名称。若占位符名称和形参一致，可以不用指定value。尽量指定！！！
 - `required`：是否必须提供占位符。 
 
 ```html

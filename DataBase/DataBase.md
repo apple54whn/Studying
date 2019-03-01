@@ -2988,6 +2988,371 @@ public void close(){
 
 
 
+# 2 MongoDB
+
+## 1 MongoDB 简介
+
+MongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种。它介于关系数据库和非关系数据库之间，是非关系数据库当中功能最丰富，最像关系数据库的产品。它支持的数据结构非常松散，是**类似 JSON  的 BSON 格式**，因此可以**存储比较复杂的数据类型**。但是安全性不高！！！
+
+MongoDB**特点**：
+
+​	MongoDB 最大的特点是他支持的**查询语言非常强大**，其语法有点**类似于面向对象的查询语言**，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。它是一个**面向集合的，模式自由的文档型数据库**。具体特点如下：
+
+- 面向集合存储，易于存储对象类型的数据
+- 模式自由
+- 支持动态查询
+- 支持完全索引，包含内部对象
+- 支持复制和故障恢复
+- 使用高效的二进制数据存储，包括大型对象（如视频等）
+- 自动处理碎片，以支持云计算层次的扩展性
+- 支持 Python，PHP，Ruby，Java，C，C#，Javascript，Perl 及 C++语言的驱动程序，社区中也提供了对 Erlang 及.NET 等平台的驱动程序
+- 文件存储格式为 BSON（一种 JSON 的扩展）
+
+MongoDB**体系结构**：
+
+​	MongoDB 的逻辑结构是一种层次结构。在MongoDB 中是通过**数据库**、**集合**、**文档**的方式来管理数据。逻辑结构是面向用户的，用户使用 MongoDB 开发应用程序使用的就是逻辑结构。
+
+| SQL术语/概念 | MongoDB术语/概念 | 解释/说明                                  |
+| ------------ | ---------------- | ------------------------------------------ |
+| database     | database         | 数据库                                     |
+| table        | collection       | 数据库表/集合                              |
+| row          | document         | 数据记录行/文档                            |
+| column       | field            | 数据字段/域                                |
+| index        | index            | 索引                                       |
+| table joins  |                  | 表连接（MongoDB不支持）                    |
+| primary key  | primary key      | 主键，MongoDB自动在每个集合中添加_id的主键 |
+
+一个mongodb实例可以创建多个数据库；一个数据库可以创建多个集合；一个集合可以包括多个文档。
+
+
+
+
+
+## 2 下载安装
+
+MongoDB 的[官方网站](http://www.mongodb.com/)，本次使用的是3.4版本。下载好msi安装即可。
+
+在按照的目录下创建`mongo.conf`（配置文件）、``data\`（存放数据）、`logs\mongo.log`（日志，起名任意）
+
+```properties
+#数据库路径
+dbpath=C:\Develop\MongoDB\Server\3.4\data
+#日志输出文件路径
+logpath=C:\Develop\MongoDB\Server\3.4\logs\mongo.log
+#错误日志采用追加模式
+logappend=true
+#启用日志文件，默认启用
+journal=true
+#这个选项可以过滤掉一些无用的日志信息，若需要调试使用请设置为false
+quiet=true
+#端口号 默认为27017，不配置也是这样
+port=27017
+```
+
+这个版本安装后可能没有安装服务，需要手动安装（4.0之后安装时有选项）
+
+进入`bin\`使用`--install`选项来安装服务，使用`--config`选项来指定之前创建的配置文件（省去使用`--dbpath`）
+
+```
+.\mongod.exe --config "C:\Develop\MongoDB\Server\3.4\mongo.conf" --install
+```
+
+启动服务：`net start MongoDB`
+
+关闭服务：`net stop MongoDB`
+
+移除服务：`"C:\Develop\MongoDB\Server\3.4\bin\mongod.exe" ‐‐remove`
+
+启动mongodb服务后，浏览器中输入http://127.0.0.1:27017，看到`It looks like you are trying.....`安装启动成功
+
+也可以通过bin目录下的`mongo.exe`连接mongodb
+
+> studio3t是mongodb优秀的客户端工具。官方地址在https://studio3t.com/
+
+
+
+## 3 入门
+
+### 3.1 连接MongoDB
+
+MongoDB的使用方式是**客户服务器模式**，即使用一个客户端连接MongoDB数据库（服务端）。命令格式如下：
+
+```
+mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+```
+
+* `mongodb://`：固定前缀
+* `username`：账号，本地连接可不填
+* `password`：密码，本地连接可不填
+* `host`：主机名或ip地址，只有host主机名为必填项
+* `port`：端口，可不填，默认27017
+* `/database`：连接某一个数据库
+* `?options`：连接参数，key/value对
+
+```
+mongodb://localhost  连接本地数据库27017端口
+mongodb://root:itcast@localhost  使用用户名root密码为itcast连接本地数据库27017端口
+mongodb://localhost,localhost:27018,localhost:27019  连接三台主从服务器，端口为27017、27018、27019
+```
+
+------
+
+1. 使用MongoDB自带的javascript shell（`mongo.exe`）连接，不用输入用户名密码等直接连接成功
+
+2. 使用studio3T等工具连接
+
+3. 使用Java程序连接（[3.4版本详细参考](http://mongodb.github.io/mongo-java-driver/3.4/driver/tutorials/connect-to-mongodb/)）
+
+   1. Maven依赖
+
+      ```xml
+      <dependency>
+          <groupId>org.mongodb</groupId>
+          <artifactId>mongo‐java‐driver</artifactId>
+          <version>3.4.3</version>
+      </dependency>
+      ```
+
+   2. 测试程序（实际中可能使用Spring Data MongoDB使用）
+
+      ```java
+      @Test
+      public void testConnection(){
+          //创建mongodb 客户端
+          MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+          //或者采用连接字符串
+          //MongoClientURI connectionString = new
+          MongoClientURI("mongodb://root:root@localhost:27017");
+          //MongoClient mongoClient = new MongoClient(connectionString);
+          //连接数据库
+          MongoDatabase database = mongoClient.getDatabase("test");
+          // 连接collection
+          MongoCollection<Document> collection = database.getCollection("student");
+          //查询第一个文档
+          Document myDoc = collection.find().first();
+          //得到文件内容 json串
+          String json = myDoc.toJson();
+          System.out.println(json);
+      }
+      ```
+
+### 3.2 数据库
+
+- **查询**数据库
+
+  - `show dbs` 查询全部数据库
+  - `db` 显示当前数据库
+
+- **创建**数据库（没有此名称的则创建，有则切换） `use DATABASE_NAME`
+
+  【注意】新创建的数据库不显示，需要至少包括一个集合
+
+- **删除**数据库（慎用！！！需要先切换到被删除的数据库） `db.dropDatabase()`
+
+### 3.3 集合
+
+* 创建集合 `db.createCollection(name, options)` name: 新创建的集合名称；options: 创建参数，可省略
+* 删除集合 `db.collection_Name.drop()` 需先切换到某这个集合所属的数据库，collectionName: 集合名称
+
+### 3.4 文档
+
+mongodb中文档的格式是json格式，下边就是一个文档，包括两个key：_id主键和name
+
+```json
+{
+    "_id" : ObjectId("5b2cc4bfa6a44812707739b5"),
+    "name" : "黑马程序员"
+}
+```
+
+#### 3.4.1 插入文档
+
+`db.COLLECTION_NAME.insert(document)`
+
+每个文档默认以`_id`作为**主键**，主键默认类型为**ObjectId**（对象类型），MongoDB会自动生成主键值
+
+如：`db.student.insert({"name":"黑马程序员","age":10})`
+
+【注意】同一个集合中的文档的key可以不相同！但是建议设置为相同的。
+
+#### 3.4.2 更新文档（有2种方式）
+
+`db.collection.update(<query>,<update>,<options>)`
+
+query：查询条件，相当于 sql 语句的 where；update：更新文档内容；options：选项
+
+* **替换文档**
+
+  将符合条件 "name":"北京黑马程序"的第一个文档替换为{"name":"北京黑马程序员","age":10}。
+
+  `db.student.update({"name":"黑马程序员"},{"name":"北京黑马程序员","age":10})`
+
+* **`$set`修改器**（使用$set修改器指定要更新的key，key不存在则创建，存在则更新。）
+
+  将符合条件 "name":"北京黑马程序"的所有文档更新name和age的值。
+
+  `db.student.update({"name":"黑马程序员"},{$set:{"name":"北京黑马程序员","age":10}},{multi:true})`
+
+  multi：false表示更新第一个匹配的文档，true表示更新所有匹配的文档。
+
+#### 3.4.3 删除文档
+
+`db.student.remove(<query>)`
+
+query：删除条件，相当于sql语句中的where
+
+* **删除所有文档**
+
+  `db.student.remove({})`
+
+* **删除符合条件的文档**
+
+  `db.student.remove({"name":"黑马程序员"})`
+
+#### 3.4.4 查询文档
+
+`db.collection.find(query, projection)`
+
+query：查询条件，可不填；projection：投影查询key，可不填
+
+* **查询全部**
+
+  `db.student.find()`
+
+* **查询符合条件的记录**
+
+  查询name等为"黑马程序员"的文档：`db.student.find({"name":"黑马程序员"})`
+
+* **投影查询**
+
+  只显示name和age两个key，`_id`主键不显示：`db.student.find({"name":"黑马程序员"},{name:1,age:1,_id:0})`
+
+
+
+### 3.5 用户
+
+#### 3.5.1 创建用户
+
+必须选择admin数据库
+
+语法格式：
+
+```
+mongo>db.createUser(
+{ 	user: "<name>",
+	pwd: "<cleartext password>",
+	customData: { <any information> },
+	roles: [
+		{ role: "<role>", db: "<database>" } | "<role>",
+		...
+	]}
+)
+```
+
+例创建root用户，角色为root
+
+```
+use admin
+db.createUser(
+	{
+		user:"root",
+		pwd:"123",
+		roles:[{role:"root",db:"admin"}]
+	}
+)
+```
+
+内置角色如下：
+
+* 数据库用户角色：read、readWrite;
+* 数据库管理角色：dbAdmin、dbOwner、userAdmin；
+* 集群管理角色：clusterAdmin、clusterManager、clusterMonitor、hostManager；
+* 备份恢复角色：backup、restore；
+* 所有数据库角色：readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase
+* 超级用户角色：root
+
+
+
+#### 3.5.2 认证登录
+
+为了安全需要，Mongodb要打开认证开关，即用户连接Mongodb要进行认证，其中就可以通过账号密码方式进行认证
+
+1. 在`mongo.conf`中设置 `auth=true`
+2. 重启MongoDB服务
+3. 使用账号和密码连接数据库
+   1. mongo.exe连接 `.\mongo.exe ‐u root ‐p 123 ‐‐authenticationDatabase admin`
+   2. Studio 3T等工具连接：需要输入用户名、密码、验证的数据库
+
+
+
+#### 2.5.3 查询用户
+
+查询当前库下的所有用户：`show users`
+
+
+
+#### 2.5.4 删除用户
+
+语法：`db.dropUser("用户名")`，还是要先切换到admin数据库
+
+
+
+#### 2.5.5 修改用户
+
+语法格式：
+
+```
+db.updateUser(
+	"<username>",
+	{
+		customData : { <any information> },
+		roles : [
+				{ role: "<role>", db: "<database>" } | "<role>",
+				...
+				],
+		pwd: "<cleartext password>"
+	},
+	writeConcern: { <write concern> })
+```
+
+例如，先创建test1用户：
+
+```
+db.createUser(
+	{
+		user:"test1",
+		pwd:"test1",
+		roles:[{role:"root",db:"admin"}]
+	}
+)
+```
+
+修改test1用户的角色为readWriteAnyDatabase
+
+```
+use admin
+db.updateUser("test1",{roles:[{role:"readWriteAnyDatabase",db:"admin"}]})
+```
+
+
+
+#### 2.5.6 修改密码
+
+语法格式：`db.changeUserPassword("username","newPasswd")`
+
+例如，修改test1用户的密码为123
+
+```
+use admin
+db.changeUserPassword("test1","123")
+```
+
+
+
+
+
+
+
 
 
 
