@@ -3427,7 +3427,7 @@ XShell
 Mac或Linux中的SSH命令
 
 * `ssh 用户名@IP`，之后会让输密码
-* 传输文件：`scp D:\zookeeper-3.4.6.tar.gz root@192.168.25.129:/root/也可以指定文件名称扩展名`
+* 传输文件：`scp D:\zookeeper-3.4.6.tar.gz conan@192.168.25.129:/root/也可以指定文件名称扩展名`
 
 sftp：从Windows上传文件到Linux中
 

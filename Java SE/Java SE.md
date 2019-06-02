@@ -21,7 +21,7 @@
 * **JVM**
 
   * JVM（Java Virtual Machine ）：Java虚拟机，简称JVM，是运行所有Java程序的假想计算机，是Java程序的 运行环境，是Java 具吸引力的特性之一。我们编写的Java代码，都运行在 JVM 之上。 
-  * **跨平台**：任何软件的运行，都必须要运行在操作系统之上，而我们用Java编写的软件可以运行在任何的操作系 统上，这个特性称为**Java语言的跨平台特性**。该特性是**由JVM实现的**，我们编写的程序运行在JVM上，而**JVM** 运行在操作系统上，**不具有跨平台特性**，每个操作系统下都有不同版本的虚拟机。
+  * **跨平台**：任何软件的运行，都必须要运行在操作系统之上，而我们用Java编写的软件可以运行在任何的操作系 统上，这个特性称为**Java语言的跨平台特性**。该特性是**由JVM实现的**，我们编写的程序运行在JVM上，而**JVM** 运行在操作系上，**不具有跨平台特性**，每个操作系统下都有不同版本的虚拟机。
 
 * **JRE 和 JDK** 
 
@@ -44,7 +44,7 @@
 
 * 在增强版的记事本当中（例如Notepad++）有特殊颜色
 
-   public 、 class 、 static 、  void 、
+   public 、 class 、 static 、  void 
 
 ## 1.3 标识符
 
@@ -433,9 +433,9 @@
    - 堆内存里东西都有一个**地址值**：16进制
    - 堆内存里数据都有**默认值**。规则如下：
      - **整数类型—0；浮点类型—0.0；字符类型—‘\u0000’；布尔类型—false；引用类型—null**
-3. ==**方法区（Method Area）**：存储**.class相关信息**，包含**方法的信息**==
-4. 本地方法栈（Native Method Stack）：与操作系统相关
-5. 寄存器（PC Register）：与CPU相关
+3. ==**方法区（Method Area）**：存储**.class相关信息**，包含**类、方法的信息等**==
+4. 本地方法栈（Native Method Stack）：这部分主要与虚拟机用到的 Native 方法相关
+5. PC寄存器（Program Counter Register）：也叫程序计数器。JVM支持多个线程同时运行，每个线程都有自己的程序计数器。
 
 
 
@@ -567,7 +567,7 @@
 
 ### 2.3.1 封装
 
-* 原则：将**属性隐藏**起来，若需要访问某个属性，**提供公共方法**对其访问
+* 原则：将**属性隐藏**起来，若需要访问某个属性，**提供公共方法**向外暴露出该对象的功能
 
 * 封装的步骤：
   1. 使用 **private** 关键字来修饰成员变量
@@ -626,7 +626,7 @@
 - **静态使用的注意事项**
 
   1. 静态方法只能访问静态成员，==**静态不能直接访问非静态**==。（非静态既可以访问静态，又可以访问非静态）
-  2. 静态方法中不可以使用 this或者super关键字，因为其代表**对象，静态不能使用对象调用
+  2. 静态方法中不可以使用 this或者super关键字，因为其代表                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           对象，静态不能使用对象调用
   3. 主函数是静态的
 
 - 静态内存图
@@ -996,9 +996,9 @@ public class Son extends Father{
 - **权限修饰符（访问控制）**
 
   - **private（类访问级别）**：被修饰的类成员只能被**该类其他成员**访问
-  - **default（包访问级别）**：类或类成员没有修饰符为默认访问级别，只能被**本包中其他类**访问
+  - **default（包访问级别）**：**类或类成员**没有修饰符为默认访问级别，只能被**本包中其他类**访问
   - **protected（子类访问级别）**：被修饰的类成员能被**本包中其他类**、**不同包中该类子类**访问
-  - **public（公共访问级别）**：所有都能访问
+  - **public（公共访问级别）**：**类或类成员**能被所有都能访问
 
 - **访问控制级别**
 
@@ -1157,7 +1157,7 @@ public class Son extends Father{
 
   3. **`hashCode()`**返回**对象的哈希值**，十进制整数，不是实际地址值，是**逻辑地址值**
 
-     - 使用**Set、Map中键**时需要**给添加的自定义类重写**`hashCode()`和`equals()`
+     - 使用带Hash的	**Set、Map中键**时需要**给添加的自定义类重写**`hashCode()`和`equals()`
 
   4. `getClass()`返回对象的字节码文件对象，反射中讲解
 
@@ -1251,7 +1251,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
   - 绝对值**abs**                                               `abs(int/long/float/double a)`
   - 向上取整，**取大的ceil**，返回double       `ceil(double a)` ，-2.4变为-2.0
   - 向下取整，**取小的floor**，返回double     `floor(double a)`，-2.4变为-3.0
-  - 四舍五入**round**                                      `long/int round(double a/float a)`-4.9四舍五入后为-5
+  - 四舍五入**round**                                      `long/int round(double a/float a)`-4.9四舍五入后为-5。算法为Math.floor(x+0.5)
   - 两数据中大着                                         `max(int a,int b)`
   - a的b次幂**pow**                                        `double pow(double a,double b)`
   - 随机数[0,1)**random**                               `double random()`
@@ -1272,43 +1272,47 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 - Arrays工具类是针对**数组进行操作**的工具类，包括排序和查找等大量**静态方法**
 - 常用方法
   - `Arrays.toString(int[] arr)`                           将**数组转为字符串**，如[1, 2, 3]
+
   - `Arrays.sort(int[] arr,[ T[] a, Comparator<? super T> c ])`    给数组**排序**，无返回值
     - 若是数值，默认按升序
     - 若是字符串，默认按字母升序，先大写后小写，和ASCII表一致
     - 若是**自定义类型**，这个自定义类型需要**`Comparable`或`Comparator`接口的支持**
+
   - `Arrays.binarySearch(int[] arr,int key)`    **二分查找** 
-  - `Arrays.asList(int/String等[] arr)`              **数组转集合**，**长度不能变**
+
+  - `Arrays.asList(int/String等[] arr)`              **数组转集合**，**长度不能变！！！**转换的为Arrays中内部类ArrayList！！！
+
+    需要使用`List<Object> objectList = ArrayList<Object> ( Arrays . asList （ 数组） ）；`
+
+  - `Arrays.copyOf(int/String等[] original, int from, int to)`  **数组拷贝**，底层调用System.arraycopy()
 
 ## 3.6 String（java.lang）
 
 - **特点**
 
-  1. ==String字符串是**常量**，**字符串的值在创建后不能被更改**==（注意：这里指==**new对象中的内容不能改变**，不是**引用**不**能改变**==），其`overrid`了Object类的`equals()`方法。
+  * String效果上相当于char[]字符数组，但是==**底层原理被final修饰的byte[]字节数组**（Java 9）==。
+  * `String`类及其所有**属性都被声明为final**的，是**常量**，其**值在创建后不能被更改**（在**堆**（JDK7及之后）的常量池中）
 
-  2. 正由于字符串的不可变性，所以它可以==**共享使用**==。
+  - 由于它的不可变性，类似拼接，裁剪等操作，都**可能产生新的String对象**（取决于常量池中是否存在），对性能有影响。
+  - 通过引号直接赋值的方式定义的会放入字符串常量池中；但是**`new String`方式定义的不会放入字符串常量池**。
+  - 字符串若是==**变量相加，先开空间再拼接**==；若是==**常量先加，然后在常量池中找**==，==有就返回，没有就创建==。
 
-     ==**字符串常量池**==：程序中直接写上的==**双引号字符串**==，就在字符串常量池中，JDK1.7之后它在**堆**中
+  ```java
+  String str1 = "hello";
+  String str2 = "hello";
+  char[] charArray = {'h','e','l','l','o'};
+  String str3 = new String(charArray);
+  String str4 = "world";
+  String str5 = "helloworld";
+  
+  System.out.println(str1==str2);//true
+  System.out.println(str1==str3);//false，同理str2!=str3
+  System.out.println(str5==str1+str4);//false
+  System.out.println(str5=="hello"+"world");//true
+  System.out.println(s3.equals(s1+s2));//true
+  ```
 
-     字符串若是==**变量相加，先开空间再拼接**==；若是==**常量先加，然后在常量池中找**==，==有就返回，没有就创建==。
-
-     ```java
-     String str1 = "hello";
-     String str2 = "hello";
-     char[] charArray = {'h','e','l','l','o'};
-     String str3 = new String(charArray);
-     String str4 = "world";
-     String str5 = "helloworld";
-     
-     System.out.println(str1==str2);//true
-     System.out.println(str1==str3);//false，同理str2!=str3
-     System.out.println(str5==str1+str4);//false
-     System.out.println(str5=="hello"+"world");//true
-     System.out.println(s3.equals(s1+s2));//true
-     ```
-
-     ![](images\01-字符串的常量池.png)
-
-  3. 字符串效果上相当于char[]字符数组，但是==**底层原理被final修饰的byte[]字节数组**==。
+  ![](images\01-字符串的常量池.png)
 
 - 构造方法
 
@@ -1322,7 +1326,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
   - **字面值**作为**字符串对象**（新创建的字符串是该参数字符串的副本）和通过**构造方法**创建对象的不同
 
-     `String s = new String("hello")`和`String s = "hello"`,前者创建两对象，后者创建一个对象
+     `String s = new String("hello")`和`String s = "hello"`，前者最多创建两对象，后者最多创建一个对象
 
 - String常用方法(**不改变原String值**)
 
@@ -1360,7 +1364,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
     - **`static`**`String valueOf(int i/char[] chs)`       **静态方法**将int型和**字符数组型**数据转为字符串
     - `String toLowerCase() /toUpperCase()`                     将所有字符都转换为小写/大写,本身不变
-    - `byte[] getBytes()`                                                        ==将字符串转换为字节数组==
+    - `byte[] getBytes()`                                                        ==将字符串**转换为字节数组**==
     - `char[] toCharArray()`                                                  ==将字符串**转换为字符数组**==
 
   - **其他功能**
@@ -1382,6 +1386,10 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
       ==若要用英文句点”.“切分，必须写”\\\\.“（两个反斜杠）==
 
       `String[] split(String regex)`
+
+    - 若常量池中包括了一个等于此String对象的字符串（由equals确定），则返回池中字符串；否则将此字符串添加到池中，并返回其引用
+
+      `inter()`
 
 * 练习题
 
@@ -1409,7 +1417,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 - `StringBuilder`(字符串缓冲区)，又称为**可变字符序列**，表示**字符容器**，其**内容和长度可变**，同步，线程安全。没有`override`Object类的`equals()`方法，不能像String类对象可以用操作符+进行连接。
 
-- 它的**底层**拥有一个**数组**用来存放字符串内容，进行字符串拼接时，直接在数组中加入新内容。StringBuilder会**自动维护数组的扩容**。默认16字符空间，超过自动扩充。
+- 它的**底层**拥有一个**char[]**（**Java 9后为byte[]**）用来存放字符串内容，进行字符串拼接时，直接在数组中加入新内容。StringBuilder会**自动维护数组的扩容**。**默认16字符空间**，超过自动扩充。
 
 - 构造方法：
 
@@ -1703,9 +1711,21 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 ## 3.12 BigDecimal
 
-- 浮点数据做运算，会丢失精度。所以，针对浮点数据的操作建议采用BigDecimal(**金融相关的项目**)
+浮点数据做运算，会丢失精度。所以，针对浮点数据的操作建议采用BigDecimal(**金融相关的项目**)
 
-- - 
+- 尽量使用参数类型为**String**的构造函数。
+
+- BigDecimal都是不可变的（immutable）的，在进行每一步运算时，都会产生一个新的对象，所以在做加减乘除运算时千万要**保存操作后的值**。
+
+  ```java
+  BigDecimal a = new BigDecimal(Double.toString(200000.8));
+  BigDecimal b = new BigDecimal(Double.toString(170000.7));
+  
+  BigDecimal c = a.subtract(b);//减法
+  System.out.println(c);
+  ```
+
+  
 
 
 
@@ -1812,12 +1832,12 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 ### 4.2.1 Collections（java.util）
 
-- 针对**Collection**进行操作的**工具类**
+- 针对**Collection/Map**进行操作的**工具类**
 
 - **【面试】Collection和Collections的区别**
 
   - Collection 是单列集合的顶层接口，有两个子接口List和Set
-  - B:Collections 是针对集合进行操作的工具类，可以对集合进行排序和查找等
+  - Collections 是针对集合包括Map进行操作的工具类，可以对集合进行排序和查找等
 
 - **常见静态方法**
 
@@ -1861,7 +1881,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
   - `public static void reverse(List<?> list)` 
 
-- 不用Vector可以用Collections提供的静态方法**(Collection.synchronizedCollection/List/Map/Set)**
+- 不用Vector可以用Collections提供的静态方法**(`Collection.synchronizedCollection/List/Map/Set)`**，其实也不用这个！
 
   ```java
   List<String> list = Collections.synchronizedList(new ArrayList<>());
@@ -2070,7 +2090,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 ## 4.5 List
 
-* ==**元素有序(存入和取出顺序一致)**，通过**索引**来访问指定元素，**允许**出现**重复**元素==
+* ==**元素稳定(存入和取出顺序一致)**，通过**索引**来访问指定元素，**允许**出现**重复**元素==
   * 由于有索引，所以==**List集合特有遍历功能**get()和size()结合的**普通for循环**==。还有迭代器、for each。
   * 其实现类都重写了`toString()`方法
 
@@ -2095,7 +2115,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 ### 4.5.2 LinkedList
 
-- ==**底层是双向循环链表，查询慢，增删快**==。==**不同步，线程不安全，效率高**==
+- ==**底层是双向链表，查询慢，增删快**==。==**不同步，线程不安全，效率高**==
 - 重写了`toString()`方法
 - **特有方法（==操作首位元素==）**
   - **添加**
@@ -2110,25 +2130,14 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 ## 4.6 Set
 
-* ==元素**唯一**==。与`Collection`方法一致，**==没有索引，只可以迭代器或for each==**
-* ==使用Set集合保存**自定义对象**，这个对象**必须重写**`hashCode()`和`equal()`方法==
+* ==元素**唯一**==。与`Collection`方法一致，**==没有索引，只可以迭代器或foreach==**
+* ==使用Set集合保存**自定义对象**，除过TreeSet其他俩**必须重写**`hashCode()`和`equal()`方法==
 * 其实现类都重写了`toString()`方法
 
 ### 4.6.1 HashSet
 
 - ==底层数据结构是**哈希表**(**元素为链表或红黑树的数组**，实际上是一个HashMap实例)，查询快。**自动按HashCode排序**，但迭代出的元素顺序和存入顺序**不一致**。==
 
-  - 哈希表：在**JDK1.8之前**，哈希表底层采用**数组+链表**实现，即使用链表处理冲突，同一hash值的链表都存储在一个链表里。但是当位于一个桶中的元素较多，即hash值相等的元素较多时，通过key值依次查找的效率较低。而**JDK1.8中**，哈希表存储采用**数组+链表+红黑树**实现，当链表长度超过阈值（8）时，将链表转换为红黑树，这样大大减少了查找时间。
-
-    - "重地"和""通话""元素不同，但哈希值相同，**哈希冲突**
-
-    ![](images\哈希表.png)
-
-- ==**哈希表元素唯一性**底层依赖两个方法==：**`hashCode()`和`equals()`**。
-
-  - 要使用HashSet**存储自定义类型对象**，必须**==重写==**这两方法来建立属于当前对象的比较方式
-
-![](images\哈希流程图.png)
 
 ### 4.6.2 LinkedHashSet
 
@@ -2138,7 +2147,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 - 底层数据结构是==**红黑树(是一个自平衡二叉树)，并且有序**，使用TreeSet保存自定义元素，这个元素**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
 
-  - 元素唯一性通过红黑树存储时确定，相同元素丢弃， **根据比较的返回值是否是0来决定**
+  - 元素唯一性通过红黑树存储时确定，相同元素丢弃， **根据比较的返回值是否是0来决定**，最底层**compareTo**方法
   - 元素的顺序通过红黑树存储，并通过**中（根）序遍历展示**
 
 - **保证元素的排列方式：**
@@ -2153,13 +2162,21 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
      **s1-s2升序，s2-s1降序**
 
+     ```java
+     TreeSet<Person> people = new TreeSet(
+         Comparator.comparingInt(Person::getAge).thenComparing(Person::getName).reversed()
+     );
+     ```
+
+     
+
 
 
 ## 4.7 Map
 
 - ==**将键映射到值的对象**==。一个映射不能包含重复的键，每个键最多只能映射到一个值（==**键唯一，值可重复**==）
 
-- ==使用Map集合存储**自定义对象作为key的元素**，必须**重写**`hashCode()`和`equals()`方法==
+- ==使用带有~HashMap集合存储**自定义对象作为key的元素**，必须**重写**`hashCode()`和`equals()`方法==，Tree不用
 
 - 其实现类都重写了`toString()`方法
 
@@ -2179,8 +2196,8 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
     - `Set<Map.Entry<K,V>> entrySet()`    返回映射关系的Set集合
   - **判断(==isEmpty==；==containsKey==；containsValue)**
     - `boolean isEmpty()`            是否为空
-    - `boolean containsKey(Object key)`   是否包含指定键值
-    - `boolean containsValue(Object value)`  是否包含指定值
+    - `boolean containsKey(Object key)`   是否包**含指定键值**
+    - `boolean containsValue(Object value)`  是否**包含指定值**
   - **容量(size)**
     - `int size()`      返回映射中键值对的对数
 
@@ -2227,7 +2244,18 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 ### 4.7.1 HashMap
 
-- ==底层是**哈希表（数组+链表/红黑树）**，迭代出的元素顺序和存入顺序**不一致**。**自动按Key的HashCode排序**==
+- ==底层是**哈希表（数组+链表/红黑树）**，迭代出的元素顺序和存入顺序**不一致**，**自动按Key的HashCode排序**==
+
+- - 哈希表：在**JDK1.8之前**，哈希表底层采用**数组+链表**实现，即使用链表处理冲突，同一hash值Node都存储在一个链表里。但是当位于一个桶中的元素较多，即hash值相等的元素较多时，通过key值依次查找的效率较低。而**JDK1.8中**，哈希表存储采用**数组+链表+红黑树**实现，当链表长度超过阈值（8）时，将链表转换为红黑树，这样大大减少了查找时间。
+
+    - "重地"和""通话""元素不同，但哈希值相同，**哈希冲突**
+
+    ![](../Java%20SE/images/%E5%93%88%E5%B8%8C%E8%A1%A8.png)
+
+- ==**哈希表元素唯一性**底层依赖两个方法==：**`hashCode()`和`equals()`**，必须重写
+
+![](images\哈希流程图.png)
+
 - HashMap和Hashtable区别
   - HashMap：线程不安全，效率高，允许null键和null值
   - Hashtable：线程安全，效率低，不允许null键和null值
@@ -2235,10 +2263,11 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 ### 4.7.2 LinkedHashMap
 
 - 继承HashMap，==底层是**链表和哈希表**，迭代出的元素顺序和存入顺序**一致**==
+- **`hashCode()`和`equals()`**，必须重写
 
 ### 4.7.3 TreeMap
 
-- ==底层是**红黑树(自平衡二叉树)，**基本对象自动排序，若使用TreeMapt保存自定义元素，Key**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
+- ==底层是**红黑树(自平衡二叉树)，**基本对象自动排序，若使用TreeMapt保存自定义元素，Key**必须实现Comparable接口**或构造时**必须提供Comparator接口实现类**==
 
   - 元素唯一性通过红黑树存储时确定，相同元素丢弃， **根据比较的返回值是否是0来决定**
   - 元素的顺序通过红黑树存储，并通过**中（根）序遍历展示**
@@ -2251,9 +2280,17 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
   2. **比较器排序(集合具备比较性)**
 
-     让集合构造方法接收**Comparator**的**实现类对象**，重写compare方法
+     让集合构造方法接收**Comparator接口**的**实现类对象**，重写compare方法
 
      **s1-s2升序，s2-s1降序**
+
+     ```java
+     TreeMap<Person,String> map = new TreeMap<>(
+         Comparator.comparingInt(Person::getAge).thenComparing(Person::getName)
+     );
+     ```
+
+     
 
 
 
@@ -2628,7 +2665,7 @@ catch (异常类名 变量名) {
 
 ## 6.2 进程与线程
 
-* ==**进程**：是指**内存中运行的一个应用程序**==，每个进程都有一个独立的内存空间，一个应用程序可以同时运行多个进程；**进程也是程序的一次执行过程，是系统运行程序的基本单位**；系统运行一个程序即是一个进程从创建、运行到消亡的过程。
+* ==**进程**：**是程序的一次执行过程，是系统进行资源分配和处理机调度的基本单位**==，每个进程都有一个独立的内存空间，一个应用程序多次运行对应多个进程；系统运行一个程序即是一个进程从创建、运行到消亡的过程。
 
 * ==**线程**：**线程是进程中的一个执行单元**==，负责当前进程中程序的执行，一个进程中至少有一个线程。 **是程序使用CPU的最基本单位**。
 
@@ -2686,7 +2723,6 @@ catch (异常类名 变量名) {
   3. 创建Thread类的子类对象
   4. 调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
 - **实现Runnable接口（常用）**
-
   1. 定义类实现Runnable接口
   2. @Override重写接口中的`run()`方法，将线程的任务代码封装到`run()`方法中
   3. 通过Thread类创建线程对象，并将Runnable接口的子类对象作为Thread类的构造函数的参数进行传递。**线程的任务都封装在Runnable接口实现类对象的run方法中，所以要在线程对象创建时就必须明确要运行的任务**
@@ -2845,27 +2881,30 @@ catch (异常类名 变量名) {
 - 指两个或两个以上的线程在执行的过程中，因**争夺资源**产生的一种**互相等待**现象
 
   ```java
-  public class DieLock implements Runnable{
-  	private boolean flag;
-  	public DieLock(boolean flag) {
-  		this.flag = flag;
-  	}
-  	@Override
-  	public void run() {
-  		if(flag) {
-  			synchronized(MyLock.obja) {
-  				System.out.println("if obja");
-  				synchronized (MyLock.objb) {
-  					System.out.println("if objb");
-  				}
-  			}
-  		}
-  		else {
-  			synchronized (MyLock.objb) {
-  				System.out.println("else objb");
-  				synchronized (MyLock.obja) {
-  					System.out.println("else obja");
-  ...
+  public class DieLockDemo {
+      public static String lock1 = "lock1";
+      public static String lock2 = "lock2";
+  
+      public static void main(String[] args) {
+          new Thread(() -> {
+              synchronized (lock1) {
+                  System.out.println("t1 get lock1");
+                  synchronized (lock2) {
+                      System.out.println("t1 get lock2");
+                  }
+              }
+          }, "t1").start();
+  
+          new Thread(() -> {
+              synchronized (lock2) {
+                  System.out.println("t2 get lock2");
+                  synchronized (lock1) {
+                      System.out.println("t2 get lock1");
+                  }
+              }
+          }, "t2").start();
+      }
+  }
   ```
 
 
@@ -3268,7 +3307,7 @@ Java中I/O操作主要指使用`java.io`包下的内容进行输入、输出操�
 > - 系统中的换行：
 >   - Windows系统里，每行结尾是 `回车+换行` ，即`\r\n`；
 >   - Unix系统里，每行结尾只有 `换行` ，即`\n`；
->   - Mac系统里，每行结尾是 `回车` ，即`\r`。从 Mac OS X开始与Linux统一。
+>   - Mac系统里，每行结尾是 `回车` ，即`\r`。从 Mac OS X开始与Linux统一都是`\n`。
 > - 在计算机中中文的存储分两个字节
 >   - 如果写的第一个字节是正数(0-127),那么显示的时候会查询ASCII表
 >   - 如果写的第一个字节是负数，那第一个和第二个字节组成一个中文显示，查询系统默认码表(GBK)
@@ -5098,8 +5137,7 @@ public static void main(String[] args) {
 * 当程序要使用某个类时，如果该类还未被加载到内存中，则系统会通过加载，连接，初始化三步来实现对这个类进行初始化 
 
   1. **加载** 
-     - 就是指将class文件读入内存，并为之创建一个Class对象
-     - 任何类被使用时系统都会建立一个Class对象。
+     - 就是指将class文件读入内存，并为之创建一个Class对象；任何类被使用时系统都会建立一个Class对象。
   2. **连接**
      - 验证 是否有正确的内部结构，并和其他类协调一致
      - 准备 负责为类的静态成员分配内存，并设置默认初始化值
@@ -5192,10 +5230,9 @@ public static void main(String[] args) {
     
     Constructor<T> get(Declare)Construcotr(Class<?>... parameterTypes)//返回一个构造器
     Constructor[] get(Declare)Construcotrs()
+    //可以通过Constructor对象的newInstance(可传递参数列表)来创建对象；不要直接使用Class对象来创建！
     
     setAccessible(boolean b)//为以上三种反射对象设置可访问标志，true为屏蔽java语言访问检查
-        
-    
     ```
 
     ```java
@@ -5296,7 +5333,7 @@ public static void main(String[] args) throws Exception {
      `java.lang.reflect`包下提供了一个`Proxy`类和一个`InvocationHandler`接口，通过使用这个类和接口就可以生成动态代理对象。JDK提供的代理要求**被代理类最少实现一个接口**。 
 
      - 实现步骤：
-       1. 代理对象和真实对象实现相同的接口
+       1. 代理对象和真实对象实现相同接口
        2. `代理对象 = Proxy.newProxyInstance();`
        3. 使用代理对象调用方法
        4. 增强方法
@@ -5349,7 +5386,7 @@ public static void main(String[] args) throws Exception {
 
 * 基于子类的动态代理
 
-  * 提供者：第三方的 CGLib，如果报 asmxxxx 异常，需要导入 asm.jar。 
+  * 提供者：第三方的 CGLib，如果报 asmxxxx 异常，需要导入 `asm.jar`或`org.springframework.cglib.proxy`
 
   * 要求：被代理类不能用 final 修饰的类（最终类）。 
 
@@ -5357,7 +5394,7 @@ public static void main(String[] args) throws Exception {
     public static void  main(String[] args) {
         final Actor actor = new Actor();      
         Actor cglibActor = (Actor) Enhancer.create(actor.getClass(), new MethodInterceptor() {
-    		/** 
+            /** 
     		 * 执行被代理对象的任何方法，都会经过该方法。在此方法内部就可以对被代理对象的任何 方法进行增强。     
     		 * 参数：     
     		   *  前三个和基于接口的动态代理是一样的。     
@@ -5365,27 +5402,31 @@ public static void main(String[] args) throws Exception {
     		   *  返回值：当前执行方法的返回值     
     		 */    
             @Override    
-            public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+            public Object intercept(Object proxy, 
+                                    Method method, 
+                                    Object[] args, 
+                                    MethodProxy methodProxy) throws Throwable {
                 String name = method.getName();
                 Float money = (Float) args[0];
                 Object rtValue = null;     
                 if("basicAct".equals(name)){ 
-         			//基本演出      
+                    //基本演出      
                     if(money > 2000){       
                         rtValue = method.invoke(actor, money/2); 
                     }     
                 } 
                 if("dangerAct".equals(name)){ 
-         			//危险演出      
+                    //危险演出      
                     if(money > 5000){ 
                         rtValue = method.invoke(actor, money/2);      
                     } 
                 }     
                 return rtValue;    
             } 
-      });     
+        });     
         cglibActor.basicAct(10000); 
         cglibActor.dangerAct(100000); 
+    }
     ```
 
 
@@ -5572,6 +5613,8 @@ public class Dog extends Animal {
 		System.out.println("狗吃肉");
 	}
 }
+```
+```java
 public interface Factory {
 	public abstract Animal creatAnimal();
 }
@@ -5581,13 +5624,18 @@ public class DogFactory implements Factory {
 		return new Dog();
 	}
 }
+```
 
+```java
 public static void main(String[] args) {
 	Factory f = new DogFactory();
 	Animal a = f.creatAnimal();
 	a.eat();
 }
 ```
+
+
+
 ### 12.2.3 **单例设计模式**
 
 * 确保类在内存中**只有一个对象**，该实例必须**自动创建**，并且**对外提供**
@@ -5596,7 +5644,7 @@ public static void main(String[] args) {
 
   * **缺点**：
 
-    	没有抽象层，因此扩展很难；
+     没有抽象层，因此扩展很难；
 
       	职责过重，在一定程序上违背了单一职责
 
@@ -5628,6 +5676,27 @@ public static void main(String[] args) {
       	return t;
       }
       ```
+
+    * 线程安全的单例模式，还不用加锁，采用内部类
+
+      ```java
+      public class Singleton {
+      
+          private Singleton() {
+          }
+      
+          private static class Inner {
+              private static Singleton s = new Singleton();
+          }
+      
+          public static Singleton getInstance() {
+              return Inner.s;
+          }
+      
+      }
+      ```
+
+      
 
   * **Runtime类（饿汉式）**每个Java应用程序都有一个Runtime类实例，使应用程序能够与其运行的环境相连
 

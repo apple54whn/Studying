@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 # 第一部分 Maven
 
 Maven是apache下的一个开源项目，是纯java开发，用于对java项目进行**构建**、**依赖管理**
@@ -2937,7 +2941,7 @@ public Object aroundPringLog(ProceedingJoinPoint pjp){
 * `Signature getSignature()`：获取签名，即方法的签名
   * `String getName()`：获取方法的名称
 * `Object[] getArgs()`：获取实际参数列表
-* `Object getTarget()`：获取目标对象
+* `Object getTarget()`：获取目标对象（被代理对象？）
 * `Object getThis()`：获取代理对象
 
 ### 3.3 Spring纯注解配置(JavaConfig)
@@ -3758,7 +3762,7 @@ public @interface RequestMapping {
 
 ### 3.1 基本数据类型和字符串类型
 
-==当**请求的参数名称**和**处理器形参名称**一致时（**区分大小写**）会将请求参数与形参进行绑定==
+当**请求的参数名称**和**处理器形参名称**一致时（**区分大小写**）会将请求参数与形参进行绑定
 
 注意：参数类型**推荐**使用**包装数据类型**，因为基础数据类型不可为null；布尔类型的参数，请求的参数值为true或false，1或0
 
