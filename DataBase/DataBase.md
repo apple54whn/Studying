@@ -31,18 +31,19 @@
 
     > mysqld 是 MySQL 的主程序，服务器端。mysql 是 MySQL 的命令行工具，客户端。 
 
-  - C:\ProgramData\MySQL\MySQL Server 8.0\ ==**my.ini**==：**服务器配置文件**，之前版本放在安装目录中bin下
+  - C:\ProgramData\MySQL\MySQL Server 8.0\ **my.ini**：**服务器配置文件**，之前版本放在安装目录中bin下
 
-    - 配置MySQL的端口：==**默认为3306**==（一般不建议修改，本电脑MySQL5为3306、MySQL8为3308端口）
+    - 配置MySQL的端口：**默认为3306**（一般不建议修改，本电脑MySQL5为3306、MySQL8为3308端口）
     - 配置字符编码：（一般不建议修改）
       - [mysql]下配置默认客户端编码：default-character-set=gbk
       - [mysqld]下配置默认服务器编码：character-set-server=utf8
     - 配置二进制数据大小上限：（一般不建议修改）
       - 在[mysqld]下配置：max_allowed_packet=8M
-- ==**服务器操作**==（我的服务名称为mysql8）
+- **服务器操作**（我的服务名称为mysql8）
+  
   - 开启服务器(必须保证mysql为windows服务)：**`net start mysql8`**，mysqld.exe进程存在
   - 关闭服务器(必须保证mysql为windows服务)：**`net stop mysql8`**，mysqld.exe进程不存在
-- ==**客户端操作**==
+- **客户端操作**
   - 登录服务器：**`mysql -uroot -p123 `**或**`mysql -uroot -p`**，然后输入密码
     - 远程登录：**` mysql -h 127.0.0.1 -P 3306 -uroot -p`**，`-h`和`IP`分开，**`-P`必须大写**，其他同上
       - 还有一种写全称的：`mysql --host=ip地址 --user=用户名 --password=密码`（端口号不知怎么写）
@@ -54,7 +55,7 @@
 
 * **结构化查询语言**(Structured Query Language)
 
-  * 是一种所有==**关系型数据库**的**查询规范**==，不同的数据库都支持。 
+  * 是一种所有**关系型数据库**的**查询规范**，不同的数据库都支持。 
   * **通用**的数据库操作语言，可以用在不同的数据库中。 
   * 不同的数据库 SQL 语句有一些**区别**，称为方言
 
@@ -85,7 +86,7 @@
 ### 2.1.1 数据库(DATABASE)
 
 * Create
-  * ==**创建**==数据库(CREATE DATABASE)
+  * **创建**数据库(CREATE DATABASE)
 
     ```mysql
     CREATE DATABASE [IF NOT EXISTS] 数据库名 [CHARSET=UTF8];
@@ -93,13 +94,13 @@
 
 * Retrieve
 
-  * ==**查看**所有数据库==(SHOW DATABASES)
+  * **查看**所有数据库(SHOW DATABASES)
 
     ```mysql
     SHOW DATABASES;
     ```
 
-  * ==**查看**数据库**定义信息**==，包括创建语句和字符集
+  * **查看**数据库**定义信息**，包括创建语句和字符集
 
     ```mysql
     SHOW CREATE DATABASE 数据库名;
@@ -107,7 +108,7 @@
 
 * Update
 
-  * ==**修改**数据库**编码**==
+  * **修改**数据库**编码**
 
     ```mysql
     ALTER DATABASE 数据库名 CHARACTER  SET UTF8;
@@ -115,7 +116,7 @@
 
 * Delete
 
-  * ==**删除**数据库==(DROP DATABASE)
+  * **删除**数据库(DROP DATABASE)
 
     ```mysql
     DROP DATABASE [IF EXISTS] 数据库名;
@@ -123,13 +124,13 @@
 
 * 使用
 
-  * ==**切换**数据库==(USE 数据库名)
+  * **切换**数据库(USE 数据库名)
 
     ```mysql
     USE 数据库名;
     ```
 
-  * ==查看**当前使用**的数据库==，MySQL特有
+  * 查看**当前使用**的数据库，MySQL特有
 
     ```mysql
     SELECT DATABASE();
@@ -137,37 +138,37 @@
 
 ### 2.1.2 数据类型(列类型)
 
-* ==**int**==：整型
+* **int**：整型
 
   float：浮点型
 
-  ==**double()**==：浮点型，例如double(5,2)表示最多5位，其中必须有2位小数，即最大值为999.99
+  **double()**：浮点型，例如double(5,2)表示最多5位，其中必须有2位小数，即最大值为999.99
 
   **decimal**：浮点型，在表示钱方面使用该类型，因为不会出现精度缺失问题
 
   **char**：固定长度字符串类型； char(255)，数据的长度不足指定长度，补空格到指定长度！
 
-  ==**varchar()**==：可变长度**字符**串类型； varchar(65535)
+  **varchar()**：可变长度**字符**串类型； varchar(65535)
 
-  ==**date**==：日期类型，格式为yyyy-MM-dd，只有年月日，没时分秒
+  **date**：日期类型，格式为yyyy-MM-dd，只有年月日，没时分秒
 
   **time**：时间类型，格式为hh:mm:ss
 
   **datetime**：同时可以表示日期和时间，格式为yyyy-MM-dd hh:mm:ss
 
-  ==**timestamp**==：同上，若不给这个字段赋值，或赋值为null，则默认使用当前系统时间
+  **timestamp**：同上，若不给这个字段赋值，或赋值为null，则默认使用当前系统时间
 
 * text(clob)：**大字符串类型**；tinytext(2^ 8-1B)、text(2^ 16-1B)、mediumtext(2^24-1 B)、longtext(2^32-1B)
 
   blob：**大字节类型**；tinyblob(2^ 8-1B)、blob(2^ 16-1B)、mediumblob(2^ 24-1B)、longblob(2^32-1B)
 
-* ==**字符和日期**型数据应包含在**单引号**中==。MySQL 中也可以使用双引号做为分隔符。 
+* **字符和日期**型数据应包含在**单引号**中。MySQL 中也可以使用双引号做为分隔符。 
 
 ### 2.1.3 表(TABLE)
 
 * Create
 
-  * ==**创建表**==(CREATE TABLE)
+  * **创建表**(CREATE TABLE)
 
     ```mysql
     CREATE TABLE [IF NOT EXISTS] 表名(
@@ -178,7 +179,7 @@
     );
     ```
 
-    ==**复制表**==结构
+    **复制表**结构
 
     ```mysql
     CREATE TABLE 表名 LIKE 被复制的表名;
@@ -186,45 +187,45 @@
 
 * Retrieve
 
-  * ==**查看**当前数据库中**所有表名称**==(SHOW TABLES)
+  * **查看**当前数据库中**所有表名称**(SHOW TABLES)
 
     ```mysql
     SHOW TABLES;
     ```
 
-    ==**查看表结构**==(DESC)
+    **查看表结构**(DESC)
 
     ```mysql
     DESC 表名;
     ```
 
-    ==**查看**指定表的**定义信息**==，包括SQL创建语句、字符集
+    **查看**指定表的**定义信息**，包括SQL创建语句、字符集
 
     ```mysql
     SHOW CREATE TABLE 表名;
     ```
 
-* ==**删除表**==(DROP TABLE)
+* **删除表**(DROP TABLE)
 
   ```mysql
   DROP TABLE [IF EXISTS] 表名;
   ```
 
-* ==**修改表**==：前缀：ALTER TABLE 表名
+* **修改表**：前缀：ALTER TABLE 表名
 
-  * ==修改**表名称**==(RENAME TO)
+  * 修改**表名称**(RENAME TO)
 
     ```mysql
     ALTER TABLE 原表名 RENAME TO 新表名;
     ```
 
-  * ==**修改**表的**字符集**==
+  * **修改**表的**字符集**
 
     ```mysql
     ALTER TABLE 表名 CHARACTER  SET UTF8;
     ```
 
-  * ==修改之**添加列**==(ADD)
+  * 修改之**添加列**(ADD)
 
     ```mysql
     ALTER TABLE 表名 ADD (
@@ -234,19 +235,19 @@
     );
     ```
 
-  * ==修改之**删除列**==(DROP)
+  * 修改之**删除列**(DROP)
 
     ```mysql
     ALTER TABLE 表名 DROP 列名;
     ```
 
-  * ==修改之**修改列名类型**==(CHANGE)
+  * 修改之**修改列名类型**(CHANGE)
 
     ```mysql
     ALTER TABLE 表名 CHANGE 原列名 新列名 列类型 主键自增长 非空约束; -- 新的类型可能会影响到已存在数据
     ```
 
-  * ==修改之**修改列类型**==(MODIFY)
+  * 修改之**修改列类型**(MODIFY)
 
     ```mysql
     ALTER TABLE 表名 MODIFY 列名 列类型 主键自增长 非空约束 -- /新的类型可能会影响到已存在数据
@@ -254,7 +255,7 @@
 
 ## 2.2 DML
 
-* ==**插入数据**(INSERT INTO)==
+*  **插入数据**(INSERT INTO) 
 
   ```mysql
   INSERT INTO 表名(
@@ -270,26 +271,26 @@
   -- 插入所有列。值的顺序，必须与表创建时给出的列的顺序相同
   ```
 
-  ==**蠕虫复制**：将一张已经存在的表中的数据复制到另一张表中==
+  **蠕虫复制**：将一张已经存在的表中的数据复制到另一张表中
 
   ```mysql
   INSERT INTO 表名1 SELECT * FROM 表名2; -- 复制所有
   INSERT INTO 表名1(列1, 列2) SELECT 列1, 列2 FROM 表名2; -- 复制部分列
   ```
 
-* ==**删除数据**(DELETE FROM)==
+* **删除数据**(DELETE FROM)
 
   ```mysql
   DELETE FROM 表名 [WHERE 条件];-- 若不加条件，则删除所有记录
   ```
 
-  ==**删除表中所有数据**(TRUNCATE)==
+  **删除表中所有数据**(TRUNCATE)
 
   ```mysql
   TRUNCATE TABLE 表名; -- truncate 相当于删除表，再创建一张相同结构的表
   ```
 
-* ==**修改数据**(UPDATE...SET)==
+* **修改数据**(UPDATE...SET)
 
   ```mysql
   UPDATE 表名 SET 列名1=列值1, 列名2=列值2, ... [WHERE 条件] -- 不加条件则将表中所有记录修改
@@ -356,7 +357,7 @@
 
   | 比较运算符             | 说明                                                         |
   | ---------------------- | ------------------------------------------------------------ |
-  | >、<、<=、>=、=、<>    | **<>在 SQL 中表示不等于**，在 mysql 中也可以使用!=。没有==   |
+  | >、<、<=、>=、=、<>    | **<>在 SQL 中表示不等于**，在 mysql 中也可以使用!=。没有     |
   | **BETWEEN...AND**      | 在一个范围之内，如：between 100 and 200 相当于条件在 [100 到 200] 之间 |
   | **IN**、ALL、ANY(集合) | 集合表示多个值，使用逗号分隔。ALL为所有，ANY为任意一个即可，可用最值替代 |
   | **IS [NOT] NULL**      | 查询某一列为[不为] NULL 的值，注：不能写=NULL                |
@@ -390,7 +391,7 @@
 
 * GROUP BY 将分组字段结果中相同内容作为一组，并且返回每组的第一条数据，一般分组会跟**聚合函数**一起使用
 
-> ==WHERE 和 HAVING 区别：==
+> WHERE 和 HAVING 区别：
 >
 > * **WHERE：分组前过滤数据；HAVING：分组后过滤数据**
 > * **WHERE后不可以使用聚合函数，HAVING后可以使用聚合函数**
@@ -410,7 +411,7 @@
 
 ### 2.3.4 聚合函数(列的纵向运算)
 
-* 注意：聚合函数的计算，==**排除了null值**==。结果为单行单列的值。也可以修改聚合函数列名
+* 注意：聚合函数的计算，**排除了null值**。结果为单行单列的值。也可以修改聚合函数列名
   * 解决：**选择不包含null的列（主键）**；`IFNULL`函数
 
 - <span style="color:red;font-weight:bold">COUNT</span>
@@ -735,11 +736,11 @@
 
 ### 4.4.2 一对多关系
 
-* ==在多的一方（从表）建立**外键**，指向一的一方（主表）的**主键**==
+* 在多的一方（从表）建立**外键**，指向一的一方（主表）的**主键**
 
 ### 4.4.3 多对多关系
 
-- ==需要使用**中间表**，在中间表中使用两个**外键**，分别引用其他两个表的主键==
+- 需要使用**中间表**，在中间表中使用两个**外键**，分别引用其他两个表的主键
 
   ```mysql
   create table student(
@@ -771,15 +772,15 @@
 
 ### 4.2.1 第一范式（1NF）
 
-* 第一范式（1NF）：==**每一列都是不可分割的原子数据项**==
+* 第一范式（1NF）：**每一列都是不可分割的原子数据项**
 
-![](F:\GitHub\Studying\DataBase\images\1NF.PNG)
+![](.\images\1NF.PNG)
 
 ### 4.2.2 第二范式（2NF）
 
-* 第二范式（2NF）：在1NF的基础上==**非主属性必须完全依赖于码**（在1NF基础上<u>消除非主属性对主码的**部分函数依赖**</u>）==
+* 第二范式（2NF）：在1NF的基础上**非主属性必须完全依赖于码**（在1NF基础上<u>消除非主属性对主码的**部分函数依赖**</u>）
 
-  > ==**码**：如果在一张表中，**一个属性(属性组)，被其他所有属性所完全依赖**==，则称这个属性(属性组)为该表的码
+  > **码**：如果在一张表中，**一个属性(属性组)，被其他所有属性所完全依赖**，则称这个属性(属性组)为该表的码
   > 例如：该表中码为：（学号，课程名称）
   >
   > - 主属性：码中的所有属性
@@ -796,13 +797,13 @@
   >
   > **传递函数依赖**：A-->B, B -- >C,通过A属性(属性组)的值，可以确定唯一B属性的值，~~，则称 C 传递函数依赖于A      例如：学号-->系名，系名-->系主任
 
-![](F:\GitHub\Studying\DataBase\images\2NF.PNG)
+![](.\images\2NF.PNG)
 
 ### 4.2.3 第三范式（3NF）
 
-* 第三范式（3NF）：在2NF基础上==**任何非主属性不依赖于其它非主属性**（在2NF基础上<u>消除非主属性对于码的**传递函数依赖**</u>）==
+* 第三范式（3NF）：在2NF基础上**任何非主属性不依赖于其它非主属性**（在2NF基础上<u>消除非主属性对于码的**传递函数依赖**</u>）
 
-![](F:\GitHub\Studying\DataBase\images\3NF.PNG)
+![](.\images\3NF.PNG)
 
 
 
@@ -860,13 +861,13 @@
 >      * UNION ALL，不去除重复行
 >
 
-* 需要==**去除笛卡尔积中无用的数据**===
+* 需要**去除笛卡尔积中无用的数据**=
 
 ## 5.1 连接查询
 
 ### 5.1.1 内连接(, WHERE)
 
-* 内连接查询出的所有记录==**都满足条件**==
+* 内连接查询出的所有记录**都满足条件**
 
 * 显式内连接 (**[INNER] JOIN...ON**)
 
@@ -874,7 +875,7 @@
     SELECT * FROM 表1 (AS) 别名1 INNER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
     ```
 
-* ==**隐式内连接( , WHERE)**==（MySQL和Oracle都支持）
+* **隐式内连接( , WHERE)**（MySQL和Oracle都支持）
 
     ```mysql
     SELECT * FROM 表1 别名1, 表2 别名2 WHERE 别名1.xx=别名2.xx -- 还有不等关系
@@ -883,7 +884,7 @@
 
 ### 5.1.2 外连接(* JOIN...ON)
 
-* ==**左外**(**LEFT [OUTER] JOIN...ON**)==
+* **左外**(**LEFT [OUTER] JOIN...ON**)
 
   **左表记录**无论是否满足条件**都会查询出**，而**右表满足条件才能查出**。左表中不满条件的记录，右表补**NULL**
 
@@ -891,7 +892,7 @@
   SELECT * FROM 表1 别名1 LEFT OUTER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
   ```
 
-* ==**右外**(**RIGHT [OUTER] JOIN...ON**)==
+* **右外**(**RIGHT [OUTER] JOIN...ON**)
 
   **右表记录**无论是否满足条件**都会查询出**，而**左表满足条件才能查出**。右表中不满条件的记录，左表补**NULL**
 
@@ -906,7 +907,7 @@
 
 * 有查询的嵌套，内部的查询称为子查询  （看SELECT关键字的个数！）
 
-* ==**FROM**后作为**表**存在==，或用普通内连接添加多个条件来查询
+* **FROM**后作为**表**存在，或用普通内连接添加多个条件来查询
 
   - **多行多列**
 
@@ -914,7 +915,7 @@
     SELECT * FROM 表1 别名1 , (SELECT ....) 别名2 WHERE 条件
     ```
 
-* ==**WHERE**后作为**条件**存在==
+* **WHERE**后作为**条件**存在
 
   * **单行单列**：运算符为 >、<、>=、<=、=、<>
 
@@ -1042,7 +1043,7 @@
   WHERE emp.sal>(SELECT AVG(emp.sal) FROM emp);
   ```
 
-* ==**查出年份、利润、年度增长比**==
+* **查出年份、利润、年度增长比**
 
   ```mysql
   SELECT E1.*,IFNULL(CONCAT((E1.zz-E2.zz)/E2.zz*100,'%'),0)
@@ -1073,22 +1074,22 @@
     - 查看事务的默认提交方式(MySQL命令)：`SELECT @@autocommit;`1 代表自动提交；0 代表手动提交
     - 修改默认提交方式： `set @@autocommit = 0;`
 
-## ==6.1 事务的四大特性（ACID）==
+## 6.1 事务的四大特性（ACID）
 
 - **原子性**（Atomicity）：事务中所有操作是不可再分割的原子单位。事务中所有操作要么全部执行成功，要么全部执行失败。
 - **一致性**（Consistency）：事务执行后，**数据库状态保持一致**。如转账业务，无论事务执行成功与否，参与转账的两个账号余额之和应该是不变的。
 - **隔离性**（Isolation）：隔离性是指在并发操作中，不同事务之间应该隔离开来，使每个并发中的事务不会相互干扰。
 - **持久性**（Durability）：一旦事务提交成功，它对数据库的改变必须是永久的，即使出现系统故障。
 
-## 6.2 事务的隔离级别（了解）
+## 6.2 事务的隔离级别
 
 * 概念：如果多个事务操作同一批数据，则会引发一些问题，设置不同的隔离级别就可以解决这些问题
 
 - 并发事务**问题** 
 
   - **脏读**：一个事务读取到了另一个事务中**尚未提交的数据** 
-  - **不可重复读**：一个事务中**两次读取的数据==内容==不一致**，要求的是一个事务中多次读取时数据是一致的，这是事务update 时引发的问题 
-  - **幻读**（虚读）：一个事务中**两次读取的数据的==数量==不一致**，要求在一个事务多次读取的数据的数量是一致 的，这是 insert 或 delete 时引发的问题。
+  - **不可重复读**：一个事务中**两次读取的数据内容不一致**，要求的是一个事务中多次读取时数据是一致的，这是事务update 时引发的问题 
+  - **幻读**（虚读）：一个事务中**两次读取的数据的数量不一致**，要求在一个事务多次读取的数据的数量是一致 的，这是 insert 或 delete 时引发的问题。
 
 - **四大隔离级别**（“×”表示会出现这种问题；“ ”表示不会出现这种问题）
 
@@ -1140,7 +1141,7 @@
 # 7 JDBC
 
 * JDBC（Java DataBase Connectivity）就是Java数据库连接，说白了就是用Java语言来操作数据库
-* **本质**：其实是官方（sun公司）定义的一套==**操作所有关系型数据库的规则（接口）**==。各个数据库厂商去实现这套接口，提供**数据库驱动jar包**。我们可以使用这套接口（JDBC）编程，真正执行的代码是驱动jar包中的实现类。
+* **本质**：其实是官方（sun公司）定义的一套**操作所有关系型数据库的规则（接口）**。各个数据库厂商去实现这套接口，提供**数据库驱动jar包**。我们可以使用这套接口（JDBC）编程，真正执行的代码是驱动jar包中的实现类。
 
 ## 7.1 快速入门
 
@@ -1492,15 +1493,15 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 * **调用JdbcTemplate的方法**来完成CRUD的操作（查找语句若未找到，直接抛异常，不是返回null，所以要**try...catch...**）
 
   * `update()`：执行**DML**语句。增、删、改语句
-  * `query()`：查询并将结果封装为==**JavaBean对象的List集合**==。JavaBean属性使用**包装类型**最好，可以存储null。
+  * `query()`：查询并将结果封装为**JavaBean对象的List集合**。JavaBean属性使用**包装类型**最好，可以存储null。
     - query的参数：RowMapper函数式接口
       - 一般我们使用BeanPropertyRowMapper实现类。可以完成数据到JavaBean的自动封装
       - **`new BeanPropertyRowMapper<>(类型.class)`**（不用在尖括号中添加泛型）
-  * `queryForObject()`：查询并将结果封装为==**对象**==。
-    * 参数同`query()`的参数可封装为==**JavaBean对象**==；参数传**包装类型**，可用于聚合函数的查询。
-  * `queryForMap()`：查询并将结果的列名作为key(String)、值作为value(Object)封装为一个==**Map**==集合
+  * `queryForObject()`：查询并将结果封装为**对象**。
+    * 参数同`query()`的参数可封装为**JavaBean对象**；参数传**包装类型**，可用于聚合函数的查询。
+  * `queryForMap()`：查询并将结果的列名作为key(String)、值作为value(Object)封装为一个**Map**集合
     * 注意：这个方法查询的结果集长度只能是1
-  * `queryForList()`：查询并将结果集封装为==**List**==集合
+  * `queryForList()`：查询并将结果集封装为**List**集合
     * 注意：将每一条记录封装为一个Map集合，再将Map集合装载到List集合中
 
   ```java
@@ -1578,11 +1579,13 @@ Oracle数据库系统是美国Oracle公司（甲骨文）提供的以分布式�
 
 * **DataBase**
 
-  Oracle 数据库是数据的**物理存储**。这就包括（数据文件ORA或者 DBF、控制文件、联机日志、参数文件），和其它数据库不一样，这里的数据库是**一个操作系统只有一个库**。可以看作是Oracle就**只有一个大数据库**。 
+  Oracle 数据库是数据的**物理存储**。这就包括（数据文件 ORA 或者 DBF、控制文件、联机日志、参数文件等存储在计算机**硬盘上的文件**）。和其它数据库不一样，这里的数据库是**一个操作系统只有一个库**。可以看作Oracle 就只有一个大数据库。 Oracle 数据库必须**与内存里实例合作**才能对外提供数据管理服务。
 
 * **Instance**
 
-  一个 Oracle 实例（Oracle Instance）有一系列的后台进程（Backguound Processes）和内存结构（Memory Structures)组成。一个数据库可以有 n 个实例，但一般一个DataBase只创建一个Instance
+  **位于物理内存里的数据结构**，一个 Oracle 实例（Oracle Instance）有一系列的后台进程（Backguound Processes）和内存结构（Memory Structures)组成。Oracle 用他们来管理数据库访问，实际上，Oracle 实例就是平常所说的数据库服务（service）。
+
+  > <span style="color:red;font-weight:bold">Instance 可以操作数据库；一个 Instance 只能与一个 DataBase 关联，访问一个 DataBase；而同一个Database 可以由多个 Instance 访问（RAC）。一般一个 DataBase 只创建一个Instance。</span>
 
 * **User（用户）**
 
@@ -1594,7 +1597,7 @@ Oracle数据库系统是美国Oracle公司（甲骨文）提供的以分布式�
 
   每个表空间由同一磁盘上的一个或多个文件组成，这些文件叫数据文件(datafile)。一个数据文件只能属于一个表空间。 
 
-* **数据文件**（dbf、ora） 
+* **数据文件**（DBF、ORA） 
 
   数据文件是数据库的物理存储单位。数据库的数据是存储在表空间中的，真正是在某一个或者多个数据文件中。而一个表空间可以由一个或多个数据文件组成，一个数据文件只能属于一个表空间。一旦数据文件被加入到某个表空间后，就不能删除这个文件，如果要删除某个数据文件，只能删除其所属于的表空间才行。 
 
@@ -1791,14 +1794,14 @@ alter user scott identified by tiger;
 
 * **通用函数**
 
-  * ==**nvl空值处理**==
+  * **nvl空值处理**
 
     ```sql
     ----算出emp表中所有员工的年薪。奖金里面有null值，如果null值和任意数字做算术运算，结果都是null。
     select e.sal*12 + nvl(e.comm, 0) from emp e;
     ```
 
-  * ==**条件表达式**==
+  * **条件表达式**
 
     ```sql
     ---条件表达式的通用写法，mysql和oracle通用
@@ -2017,7 +2020,7 @@ create view v_emp1 as select ename, job from emp with read only;
 
 * 单列索引
 
-  ==**单列索引触发规则**，条件必须是索引列中的**原始值**。单行函数，模糊查询，都会影响索引的触发。==
+  **单列索引触发规则**，条件必须是索引列中的**原始值**。单行函数，模糊查询，都会影响索引的触发。
 
   ```sql
   ---创建单列索引
@@ -2028,7 +2031,7 @@ create view v_emp1 as select ename, job from emp with read only;
 
 * 复合索引
 
-  ==复合索引中**第一列为优先检索列**。如果要触发复合索引，必须**包含有优先检索列**中的**原始值**。==
+  复合索引中**第一列为优先检索列**。如果要触发复合索引，必须**包含有优先检索列**中的**原始值**。
 
   ```sql
   ---创建复合索引
@@ -3518,7 +3521,7 @@ db.changeUserPassword("test1","123")
   	//提交事务
   	public static void commitTransaction() throws SQLException {
   		Connection con = tl.get();//获取当前线程的事务连接
-  		if(con == null) throw new SQLException("没有事务不能提交！");
+  		if(con  null) throw new SQLException("没有事务不能提交！");
   		con.commit();//提交事务
   		con.close();//关闭连接
   		con = null;//表示事务结束！
@@ -3528,7 +3531,7 @@ db.changeUserPassword("test1","123")
   	//回滚事务
   	public static void rollbackTransaction() throws SQLException {
   		Connection con = tl.get();//获取当前线程的事务连接
-  		if(con == null) throw new SQLException("没有事务不能回滚！");
+  		if(con  null) throw new SQLException("没有事务不能回滚！");
   		con.rollback();
   		con.close();
   		con = null;
@@ -3666,7 +3669,7 @@ db.changeUserPassword("test1","123")
       pstmt.setString(1, "S_10" + i);
       pstmt.setString(2, "stu" + i);
       pstmt.setInt(3, 20 + i);
-      pstmt.setString(4, i % 2 == 0 ? "male" : "female");
+      pstmt.setString(4, i % 2  0 ? "male" : "female");
       pstmt.addBatch();
   }
   pstmt.executeBatch();
