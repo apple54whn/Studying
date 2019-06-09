@@ -1,57 +1,147 @@
 [TOC]
 
-# 第一部分 MySQL
+# DataBase
 
-# 1 DataBase 简介
+## DBMS
 
-- 数据库就是用来**存储和管理数据的仓库**，本质上是一个文件系统，以文件的方式存在服务器的电脑上的。所有的**关系型数据库**都可以使用通用的 SQL 语句进行管理。
-- 数据库的特点：
-  * **持久化存储数据**的。其实数据库就是一个文件系统
-  * **方便存储和管理**数据
-  * 使用了**统一的方式**操作数据库 -- **SQL**
-- 常见数据库
-  - **MySQL**：**开源免费**的小型的数据库，**功能强大**。已经被 Oracle 收购了。MySQL6.x 版本也开始收费。
-  - **Oracle**：收费的大型数据库，Oracle 公司的产品。收购了 Sun 和 MySql
-  - SQL Server：MicroSoft 公司收费的中型的数据库。C#、.net 等语言常使用
-  - DB2 ：IBM 公司的数据库产品，收费的。常应用在银行系统中
-  - SQLite: 嵌入式的小型数据库，应用在手机端，如：Android
-- **RDBMS（关系型数据库管理系统）** 
+- **DBMS**（数据库管理系统）由一个**互相关联的数据的集合**和一组用以**访问这些数据的程序**组成。这个数据集合通常称作数据库（database），其本质上是一个文件系统。DBMS 可以实现多个用户同时安全简单地操作大量数据。 
+
+- DBMS 主要通过数据的保存格式(数据库的种类)来进行分类，现阶段主要有以下 5 种类型：
+
+  * 层次数据库(Hierarchical Database，HDB)
+
+    最古老的数据库之一，它把数据通过层次结构(树形结构)的方式表现出来。很少使用。
+
+  * **关系数据库(Relational Database，RDB)**
+
+    1969 年诞生，和 Excel 工作表一样，它也采用**由行和列组成的二维表来管理数据**，使用专门的 **SQL**(Structured
+    Query Language，结构化查询语言)对数据进行操作。这种类型的 DBMS 称为关系数据库管理系统(Relational Database
+    Management System，RDBMS)。比较具有代表性的 RDBMS 有如下几种：
+
+    * **MySQL**：**开源免费**的小型的数据库，**功能强大**。已经被 Oracle 收购了。
+    * PostgreSQL：开源的RDBMS
+    * **Oracle**：收费的大型数据库，Oracle 公司的产品。收购了 Sun 和 MySql
+    * SQL Server：MicroSoft 公司收费的中型的数据库。C#、.net 等语言常使用
+    * DB2 ：IBM 公司的数据库产品，收费的。常应用在银行系统中
+    * SQLite: 嵌入式的小型数据库，应用在手机端，如：Android
+
+  * 面向对象数据库(Object Oriented Database，OODB)
+
+    把数据以及对数据的操作 集合起来以对象为单位进行管理。面向对象数据库就是用来保存这些对象的数据库。 
+
+  * XML 数据库(XML Database，XMLDB)
+
+    最近几年（SQL基础教程书17年出版），XMLB 作为在网络上进行交互的数据的形式逐渐普及起来。 XML 数据库可以对 XML 形式的大量数据进行高速处理。 
+
+  * **键值存储系统(Key-Value Store，KVS)**
+
+    这是一种单纯用来保存查询所使用的主键(Key)和值(Value)的组合的数据库。具有编程语言知识的读者可以把它想象成关联数组或者散列 (hash)。需要对大量数据进行超高速查询的 Web 服务当中。
+
+- **RDBMS（关系数据库管理系统）** 
 
   - n个**DataBase**（文件夹）
     - n个**table**（文件），其中有定义表的列名和列类型的表结构
       - n个**表记录**：一行一行的数据记录
-- **MySQL重要文件夹**
-  - C:\Program Files\MySQL\MySQL Server 8.0：**DBMS管理程序**
-  - C:\ProgramData\MySQL\MySQL Server 8.0\data：**DBMS数据库文件**（卸载MySQL时不会删除）
-    - 每个目录表示一个数据库，MySQl8的每个数据库目录下会有0~N个扩展名为ibd的table文件
-- **MySQL重要文件**
-  - C:\Program Files\MySQL\MySQL Server 8.0\bin\ **mysqld**.exe：**服务器程序**，必须先启动它
 
-  - C:\Program Files\MySQL\MySQL Server 8.0\bin\ **mysql**.exe：**客户端程序**操作服务器，服务器需先开启
-
-    > mysqld 是 MySQL 的主程序，服务器端。mysql 是 MySQL 的命令行工具，客户端。 
-
-  - C:\ProgramData\MySQL\MySQL Server 8.0\ **my.ini**：**服务器配置文件**，之前版本放在安装目录中bin下
-
-    - 配置MySQL的端口：**默认为3306**（一般不建议修改，本电脑MySQL5为3306、MySQL8为3308端口）
-    - 配置字符编码：（一般不建议修改）
-      - [mysql]下配置默认客户端编码：default-character-set=gbk
-      - [mysqld]下配置默认服务器编码：character-set-server=utf8
-    - 配置二进制数据大小上限：（一般不建议修改）
-      - 在[mysqld]下配置：max_allowed_packet=8M
-- **服务器操作**（我的服务名称为mysql8）
-  
-  - 开启服务器(必须保证mysql为windows服务)：**`net start mysql8`**，mysqld.exe进程存在
-  - 关闭服务器(必须保证mysql为windows服务)：**`net stop mysql8`**，mysqld.exe进程不存在
-- **客户端操作**
-  - 登录服务器：**`mysql -uroot -p123 `**或**`mysql -uroot -p`**，然后输入密码
-    - 远程登录：**` mysql -h 127.0.0.1 -P 3306 -uroot -p`**，`-h`和`IP`分开，**`-P`必须大写**，其他同上
-      - 还有一种写全称的：`mysql --host=ip地址 --user=用户名 --password=密码`（端口号不知怎么写）
-  - 退出服务器：**`exit`或`quit`**
+- 数据库的特点：
+  * **持久化存储数据**的。其实数据库就是一个文件系统
+  * **方便存储和管理**数据
+  * 使用了**统一的方式**操作关系型数据库 -- **SQL**
 
 
 
-# 2 SQL
+### MySQL
+
+#### Windows
+
+文件夹：
+
+- C:\Program Files\MySQL\MySQL Server 8.0：**DBMS管理程序**
+
+- C:\ProgramData\MySQL\MySQL Server 8.0\data：**DBMS数据库文件**（卸载MySQL时不会删除）
+
+  每个目录表示一个数据库，MySQl8的每个数据库目录下会有0~N个扩展名为ibd的table文件
+
+文件：
+
+- C:\Program Files\MySQL\MySQL Server 8.0\bin\ **mysqld**.exe：**服务器程序**，必须先启动它
+
+- C:\Program Files\MySQL\MySQL Server 8.0\bin\ **mysql**.exe：**客户端程序**操作服务器，服务器需先开启
+
+  > mysqld 是 MySQL 的主程序，服务器端。mysql 是 MySQL 的命令行工具，客户端。 
+
+- C:\ProgramData\MySQL\MySQL Server 8.0\ **my.ini**：**服务器配置文件**，之前版本放在安装目录中bin下
+
+  - 配置MySQL的端口：**默认为3306**（一般不建议修改，本电脑MySQL5为3306、MySQL8为3308端口）
+  - 配置字符编码：（一般不建议修改）
+    - [mysql]下配置默认客户端编码：default-character-set=gbk
+    - [mysqld]下配置默认服务器编码：character-set-server=utf8
+  - 配置二进制数据大小上限：（一般不建议修改）
+    - 在[mysqld]下配置：max_allowed_packet=8M
+
+服务器操作
+
+> 我的服务名称为mysql8
+
+- 开启服务器(必须保证mysql为windows服务)：**`net start mysql8`**，mysqld.exe进程存在
+- 关闭服务器(必须保证mysql为windows服务)：**`net stop mysql8`**，mysqld.exe进程不存在
+
+客户端操作
+
+- 登录服务器：**`mysql -u root -p 123 `**或**`mysql -u root -p`**，然后输入密码
+
+  远程登录：**` mysql -h 127.0.0.1 -P 3306 -uroot -p`**，`-h`和`IP`分开，**`-P`必须大写**，其他同上
+
+  还有一种写全称的：`mysql --host=ip地址 --user=用户名 --password=密码`（端口号不知怎么写？）
+
+- 退出服务器：**`exit`或`quit`**
+
+#### Docker
+
+> 详细查看Docker 笔记
+
+1. ` docker pull mysql`，会自动下载 lasted 版本；
+
+2. `docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root [mysqlname/id]`
+
+    会设置ROOT用户的密码为root
+
+3. `docker restart [mysqlname/id]`，之后每次使用前需要开启mysql
+
+4. `docker exec -it [mysqlname/id] /bin/bash`，进入mysql
+
+5. 登陆服务器如上，略
+
+
+
+### PostgreSQL
+
+### Oracle
+
+## 数据库的结构
+
+- RDBMS 通常使用客户端 / 服务器这样的系统结构。
+
+  RDBMS 既可以和其客户端安装在同一台计算机上，也可以分别安装在不同的计算机上。这样一来，不仅可以通过网络使二者相互关联，还可以实现多个客户端访问同一个 RDBMS。
+
+- 通过从客户端向服务器端发送SQL语句来实现数据库的读写操作。
+
+![image-20190609161548886](images/image-20190609161548886.png)
+
+## 表的结构
+
+* 关系数据库采用被称为数据库表的二维表来管理数据。表存储在由 RDBMS 管理的数据库中，可以存储多个表。
+* 数据库表由表示数据项目的**列(字段)**和表示一条数据的**行(记录)**所组成，以**行(记录)为单位进行数据读写**。 
+
+![image-20190609161932236](images/image-20190609161932236.png) 					 
+
+
+
+# SQL
+
+> 每隔几年，ANSI(美国国家标准协会)或 ISO(国际标准化组织)等便会修订 SQL 的标准，进行语法的修订并追加新功能。《SQL基础教程》编写时(2016 年 5 月)使用的是 2011 年修订的最新版本(SQL:2011)。但是，SQL 的标准并不强制RDBMS必须使用
+>
+> 国际标准化组织(ISO)为 SQL 制定了相应的标准，以此为基准的 SQL 称为标准 SQL 
 
 * **结构化查询语言**(Structured Query Language)
 
@@ -59,31 +149,37 @@
   * **通用**的数据库操作语言，可以用在不同的数据库中。 
   * 不同的数据库 SQL 语句有一些**区别**，称为方言
 
-* **SQL通用语法**
-
-  * SQL语句可以在**单行或多行**书写，以**分号结尾**
-  * 可使用空格和缩进来增强语句的可读性
-  * MySQL不区别大小写，**关键字建议使用大写**
-  * 注释的三种写法
-    * 单行：`--空格`；多行：`/* */`；mysql特有：`#`
-
 * SQL语句**分类**
 
-  * **DDL**（Data Definition Language）：**数据定义语言**
+  - **DDL**（Data Definition Language）：**数据定义语言**
 
-    **数据库或表**的操作，创建、删除、修改库、表
+    **数据库或表**的操作：**CREATE / DROP / ALTER**
 
-  * **DML**（Data Manipulation Language）：**数据操作语言**
+  - **DML**（Data Manipulation Language）：**数据操作语言**
 
-    对**表**的**记录**进行更新（增、删、改）
+    对**表记录**的操作：**SELECT / INSERT / UPDATE / DELETE**
 
-  * **DQL**（Data Query Language）：**数据查询语言**，对**表**的**记录**进行查询
+  - **DQL**（Data Query Language）：**数据查询语言**，对**表**的**记录**进行查询
 
-  * DCL（Data Control Language）：数据控制语言，对用户权限的设置 
+  - **DCL**（Data Control Language）：**数据控制语言**
 
-## 2.1 DDL
+    确认或者取消对数据库中的数据进行的变更；对用户权限的设置； COMMIT / ROLLABCK / GRANT / REVOKE
 
-### 2.1.1 数据库(DATABASE)
+* **标准SQL语法**
+
+  * SQL语句可以在**单行或多行**书写，以**`;`结尾**
+  * SQL**不区别大小写**。但建议关键字使用大写、表名首字母大写、其余（列名等）小写。**插入的数据时区分大小写的！**
+  * 在 SQL 语句中**直接书写的字符串、日期或者数字**等称为**常数**
+    * **字符串、日期** 需要用单引号`''`括起来
+    * **数字不需要，直接写**
+  * 只能使用**半角英文字母、数字、下划线(_)作为数据库、表和列的名称**。名称必须以**半角英文字母开头**
+  * 单词之间需要使用半角空格或者换行符进行分隔。MySQL 中也可以使用双引号做为分隔符。 
+  * 注释的三种写法
+    - 单行（MySQL需加空格）：`--空格`；多行：`/* */`；mysql特有：`#`
+
+## DDL
+
+### DATABASE
 
 * Create
   * **创建**数据库(CREATE DATABASE)
@@ -136,64 +232,40 @@
     SELECT DATABASE();
     ```
 
-### 2.1.2 数据类型(列类型)
 
-* **int**：整型
 
-  float：浮点型
+### TABLE
 
-  **double()**：浮点型，例如double(5,2)表示最多5位，其中必须有2位小数，即最大值为999.99
-
-  **decimal**：浮点型，在表示钱方面使用该类型，因为不会出现精度缺失问题
-
-  **char**：固定长度字符串类型； char(255)，数据的长度不足指定长度，补空格到指定长度！
-
-  **varchar()**：可变长度**字符**串类型； varchar(65535)
-
-  **date**：日期类型，格式为yyyy-MM-dd，只有年月日，没时分秒
-
-  **time**：时间类型，格式为hh:mm:ss
-
-  **datetime**：同时可以表示日期和时间，格式为yyyy-MM-dd hh:mm:ss
-
-  **timestamp**：同上，若不给这个字段赋值，或赋值为null，则默认使用当前系统时间
-
-* text(clob)：**大字符串类型**；tinytext(2^ 8-1B)、text(2^ 16-1B)、mediumtext(2^24-1 B)、longtext(2^32-1B)
-
-  blob：**大字节类型**；tinyblob(2^ 8-1B)、blob(2^ 16-1B)、mediumblob(2^ 24-1B)、longblob(2^32-1B)
-
-* **字符和日期**型数据应包含在**单引号**中。MySQL 中也可以使用双引号做为分隔符。 
-
-### 2.1.3 表(TABLE)
-
-* Create
+* 创建表
 
   * **创建表**(CREATE TABLE)
 
     ```mysql
     CREATE TABLE [IF NOT EXISTS] 表名(
-      列名 列类型,
-      列名 列类型,
+      列名 列类型 该列所需约束,
+      列名 列类型 该列所需约束,
       ...
-      列名 列类型
+      列名 列类型 该列所需约束,
+      PRIMARY KEY (列名)
     );
+  -- 约束可以在定义列的时候进行设置，也可以在语句的末尾进行设置。但是NOT NULL约束只能以列为单位进行设置
     ```
 
     **复制表**结构
-
+    
     ```mysql
     CREATE TABLE 表名 LIKE 被复制的表名;
     ```
 
-* Retrieve
+* 查询表
 
-  * **查看**当前数据库中**所有表名称**(SHOW TABLES)
+  * **查看**当前数据库中**所有表名称**
 
     ```mysql
     SHOW TABLES;
     ```
 
-    **查看表结构**(DESC)
+    **查看表结构**
 
     ```mysql
     DESC 表名;
@@ -216,95 +288,344 @@
   * 修改**表名称**(RENAME TO)
 
     ```mysql
-    ALTER TABLE 原表名 RENAME TO 新表名;
-    ```
-
-  * **修改**表的**字符集**
-
+    ALTER TABLE 原表名 RENAME TO 新表名; -- Oracle和PostgreSQL使用这个，MySQL8测试也可以使用
+    RENAME TABLE 原表名 TO 新表名;
+  ```
+  
+* 修改之**添加列**(ADD)
+  
     ```mysql
-    ALTER TABLE 表名 CHARACTER  SET UTF8;
-    ```
-
-  * 修改之**添加列**(ADD)
-
-    ```mysql
-    ALTER TABLE 表名 ADD (
-        列名 列类型,
-        列名 列类型,
-        ...
+    ALTER TABLE 表名 ADD /*COLUMN*/(
+      列名 列类型 该列所需约束,
+        列名 列类型 该列所需约束,
+      ...
     );
+    -- MySQL、Oracle、SQL Server中可以不用写COLUMN，PostgreSQL需写上
     ```
-
+  
   * 修改之**删除列**(DROP)
+  
+    ```mysql
+  ALTER TABLE 表名 DROP /*COLUMN*/ 列名;
+    -- MySQL、Oracle可以用 (列名，列名...)来删除多个列
+  -- MySQL、Oracle、SQL Server中可以不用写COLUMN，PostgreSQL需写上
+    ```
+  
+  * 修改之**修改列名/类型**(CHANGE)
 
     ```mysql
-    ALTER TABLE 表名 DROP 列名;
+  ALTER TABLE 表名 CHANGE 原列名 新列名 列类型 主键自增长 非空约束; -- 新的类型可能会影响到已存在数据
     ```
-
-  * 修改之**修改列名类型**(CHANGE)
-
-    ```mysql
-    ALTER TABLE 表名 CHANGE 原列名 新列名 列类型 主键自增长 非空约束; -- 新的类型可能会影响到已存在数据
-    ```
-
+  
   * 修改之**修改列类型**(MODIFY)
 
     ```mysql
-    ALTER TABLE 表名 MODIFY 列名 列类型 主键自增长 非空约束 -- /新的类型可能会影响到已存在数据
+  ALTER TABLE 表名 MODIFY 列名 列类型 主键自增长 非空约束 -- /新的类型可能会影响到已存在数据
+    ```
+    
+  * 修改表的字符集
+  
+    ```mysql
+    ALTER TABLE 表名 CHARACTER  SET UTF8;
+    ```
+  
+    
+
+### 列数据类型
+
+#### 数字类型
+
+- NUMBER 整数类型（精确值）
+
+  |      类型      | 存储（字节） | 有符号最小值 | 无符号最小值 | 有符号最大值 | 无符号最大值 |
+  | :------------: | :----------: | :----------: | :----------: | :----------: | :----------: |
+  | `INT(INTEGER)` |      4       | -2147483648  |      0       |  2147483647  |  4294967295  |
+  |   `SMALLINT`   |      2       |    -32768    |      0       |    32767     |    65535     |
+  | 上部为标准SQL  |              |              |              |              |              |
+  |   `TINYINT`    |      1       |     -128     |      0       |     127      |     255      |
+  |  `MEDIUMINT`   |      3       |   -8388608   |      0       |   8388607    |   16777215   |
+  |    `BIGINT`    |      8       |    -2^63     |      0       |    2^63-1    |    2^64-1    |
+
+- Fixed-Point 定点类型（精确值）
+
+  `DECIMA` 和 `NUMERIC` 类型的存储精确的数值数据。在保持精确精度很重要时使用这些类型，例如使用货币数据。MySQL DECIMAL 以二进制格式存储值。
+
+  在 DECIMAL 列声明中，可以（通常是）指定精度和小数位数。例如：`salary DECIMAL(5,2)`
+
+  标准SQL要求`DECIMAL(5,2)`能够存储五位数和两位小数的任何值，因此可以存储在 salary 列中的值的范围`-999.99`是 `999.99`。
+
+- Floating-Point 浮点类型（近似值）
+
+  `FLOAT`和`DOUBLE`类型代表近似数字数据值。MySQL对于单精度值使用四个字节，对于双精度值使用八个字节。
+
+  对于FLOAT，SQL标准允许在括号中的关键字FLOAT后面的位中选择性地指定精度（但不是指数的范围）；也就是FLOAT（p）。 MySQL还支持这种可选的精度规范，但FLOAT（p）中的精度值仅用于确定存储大小。 精度从0到23会产生一个4字节的单精度FLOAT列。 从24到53的精度产生8字节双精度DOUBLE列。
+
+  例如``DOUBLE(5,2)``表示最多5位，其中必须有2位小数，即最大值为999.99。从MySQL 8.0.17开始不推荐使用非标准语法，并且在将来的版本中将删除对它的支持。`FLOAT(M,D)` `DOUBLE(M,D)`
+
+- Bit 位类型
+
+- ……
+
+#### 日期和时间类型
+
+* `DATE`：日期类型，格式为`yyyy-MM-dd`，只有年月日，没时分秒
+
+  > 除了年月日之外，Oracle 中使用的 DATE 型还包含时分秒
+
+  `TIME`：时间类型，格式为`HH:mm:ss`
+
+  `DATETIME`：同时可以表示日期和时间，格式为`yyyy-MM-dd HH:mm:ss`
+
+  `TIMESTAMP`：同上，若不给这个字段赋值，或赋值为null，则默认使用当前系统时间
+
+#### 字符串类型
+
+* `CHAR`：固定长度字符串类型； `CHAR(255)`，数据的长度不足指定长度，补空格到指定长度！
+
+  `VARCHAR`：可变长度**字符**串类型；`VARCHAR(65535)`
+
+  > Oracle 中使用 VARCHAR2 型 ( Oracle 中也有 VARCHAR 这种数据类型，但并不推荐使用)
+
+* `BLOB`：**大字节类型**；tinyblob(2^ 8-1B)、blob(2^ 16-1B)、mediumblob(2^ 24-1B)、longblob(2^32-1B)
+
+  `TEXT(CLOB)`：**大字符串类型**；tinytext(2^ 8-1B)、text(2^ 16-1B)、mediumtext(2^24-1 B)、longtext(2^32-1B)
+
+……
+
+
+
+### 约束
+
+对表中的数据进行限制，保证数据的正确性、有效性和完整性。用来**约束列**
+
+#### PRIMARY KEY
+
+- 特点：**非空**、**唯一**、**被外键引用**。一般设置id为主键，不是业务字段（身份证等不建议做主键），一张表只能有一个字段
+
+  - **创建表时设置主键**
+
+    ```mysql
+    CREATE TABLE stu(
+    	stuid CHAR(6) PRIMARY KEY
+    );
     ```
 
-## 2.2 DML
+    ```mysql
+    CREATE TABLE stu(
+    	stuid CHAR(6),
+      PRIMARY KEY(stuid)
+    );
+    ```
 
-*  **插入数据**(INSERT INTO) 
+  - **修改表时添加主键**
+
+    ```mysql
+    ALTER TABLE stu ADD PRIMARY KEY(sid); -- CHANGE、MODIFY也行
+    ```
+
+  - **删除主键**
+
+    ```mysql
+    ALTER TABLE stu DROP PRIMARY KEY;
+    ```
+
+#### AUTO_INCREMENT
+
+- 保证在插入数据时主键列的唯一和非空特性，默认为1，根据读取的**上一条记录**的值
+
+  > DELETE和TRUNCATE对自增长的影响 
+  >
+  > - DELETE：删除所有的记录之后，自增长没有影响
+  > - TRUNCATE：删除以后，自增长又重新开始
+
+  - 创建表时指定主键自增长
+
+    ```mysql
+    CREATE TABLE stu(
+    	stuid CHAR(6) PRIMARY KEY AUTO_INCREMENT
+    )[auto_increment = 1000]; -- []中设置主键起始值
+    ```
+
+  - 修改表时设置主键自增长
+
+    ```mysql
+    ALTER TABLE stu MODIFY sid INT AUTO_INCREMENT; -- 或用CHANGE，需添加新名称
+    ALTER TABLE stu AUTO_INCREMENT = 2000; -- 设置主键起始值
+    ```
+
+  - 修改表时删除主键自增长
+
+    ```mysql
+    ALTER TABLE stu MODIFY sid INT; -- 或用CHANGE，需添加新名称
+    ```
+
+#### NOT NULL
+
+- 因为某些列**不能设置为NULL**值，所以可以对列添加非空约束。可以设置**默认约束**
+
+  - 创建表时设置
+
+    ```mysql
+    CREATE TABLE stu(
+    		sid INT PRIMARY KEY AUTO_INCREMENT,
+    		sname VARCHAR(20) NOT NULL DEFAULT `王八蛋`, -- 默认值，不设置时使用默认值，设置为DEFAULT时使用默认值
+    );
+    ```
+
+  - 修改表时设置
+
+    ```mysql
+    ALTER TABLE stu MODIFY name VARCHAR(20) NOT NULL; -- 或用CHANGE，需添加新名称
+    ```
+
+  - 删除
+
+    ```mysql
+    ALTER TABLE stu MODIFY name VARCHAR(20); -- 或用CHANGE，需添加新名称
+    ```
+
+#### UNIQUE
+
+> Navicat中显示在索引中
+
+- 数据库某些列**不能设置重复**的值，所以可以对列添加唯一约束。**NULL中没有值，不存在重复的问题**
+
+  - 创建表时设置
+
+    ```mysql
+    CREATE TABLE stu(
+    		sid INT PRIMARY KEY AUTO_INCREMENT,
+    		phone_number VARCHAR(11) UNIQUE
+    );
+    ```
+
+  - 修改表时设置
+
+    ```mysql
+    ALTER TABLE student MODIFY name VARCHAR(20); -- 或用CHANGE，需添加新名称
+    ```
+
+  - 删除
+
+    ```mysql
+    ALTER TABLE stu DROP INDEX phone_number;
+    ```
+
+#### FOREIGN KEY
+
+> 外键：在从表（多）中与主表（一）主键对应的那一列，如：员工表中的 dep_id 
+
+- 一张表中可以有**多个外键**。外键**可以为空**、**可以重复**、必须是另一表(可以是自己)的主键的值(**外键要引用主键**)
+
+- 语法：
 
   ```mysql
+  [CONSTRAINT 约束名称] FOREIGN KEY(外键列名) REFERENCES 关联表(关联表的主键) -- 约束名称可省略
+  ```
+
+  - **创建表时指定外键约束**
+
+    ```mysql
+    create talbe emp (
+        empno int primary key,
+        ...
+        deptno int,
+        CONSTRAINT fk_emp_dpet FOREIGN KEY(dpetno) REFERENCES dpet(dpetno)
+        /*CONSTRAINT fk_emp FOREIGN KEY(mgr) REFERENCES emp(empno)*/
+    );
+    ```
+
+  - **修改表时添加外键约束**
+
+    ```mysql
+    ALERT TABLE emp
+    ADD CONSTRAINT fk_emp_dept FOREIGN KEY(deptno) REFERENCES dept(deptno);
+    ```
+
+  - **删除外键约束**
+
+    ```mysql
+    ALTER TABLE emp DROP FOREIGN KEY fk_emp_dept;/*约束名称*/
+    ```
+
+- **外键的级联（谨慎使用）**：在修改和删除主表的主键时，同时更新或删除副表的外键值，称为级联操作。
+
+  ```mysql
+  create talbe emp (
+  	...
+      deptno int,
+      CONSTRAINT fk_emp_dpet FOREIGN KEY(dpetno) REFERENCES dpet(dpetno) on update cascade on delete cascade 
+  );
+  ```
+
+
+
+## DML
+
+* **插入数据**(INSERT INTO) 
+
+  ```mysql
+  START TRANSACTION; -- PostgreSQL中使用 BEGIN TRANSACTION; Oracle和DB2种不需要该语句
+  
   INSERT INTO 表名(
       列名1,列名2, ...
   ) VALUES(列值1, 列值2, ...),(列值1, 列值2, ...);-- 直接插入多行数据
+  
+  COMMIT;
   -- 列名和表名要一一对应
   -- 没有指定的列等同于插入null值,插入记录总是插入一行
+  -- 要插入的值为null，则输入null
   ```
 
   ```mysql
   INSERT INTO 表名 
   VALUES(列值1, 列值2);
-  -- 插入所有列。值的顺序，必须与表创建时给出的列的顺序相同
+  -- 插入所有列。值的顺序必须与表创建时给出的列的顺序相同
   ```
 
-  **蠕虫复制**：将一张已经存在的表中的数据复制到另一张表中
+  > ```sql
+  > -- Oracle中的多行INSERT
+  > INSERT ALL INTO ProductIns VALUES ('0002', '打孔器',  '办公用品', 500, 320, '2009-09-11')
+  > INTO ProductIns VALUES ('0003', '运动T恤',  '衣服', 4000, 2800, NULL)
+  > ```
+
+  **蠕虫复制**：将一张已经存在的表中的数据复制到另一张表中。SELECT子句可以使用任何SQL语法，但ORDER BY无效
 
   ```mysql
   INSERT INTO 表名1 SELECT * FROM 表名2; -- 复制所有
   INSERT INTO 表名1(列1, 列2) SELECT 列1, 列2 FROM 表名2; -- 复制部分列
   ```
 
-* **删除数据**(DELETE FROM)
+* **删除数据**(DELETE FROM)。DELETE语句中不能使用GROUP BY、HAVING和ORDER BY三类子句，只能使用WHERE。
 
   ```mysql
   DELETE FROM 表名 [WHERE 条件];-- 若不加条件，则删除所有记录
+  -- DELETE每次从表中删除一行，并将该操作作为事务记录在日志中以便回滚，不清空 AUTO_INCREMENT 记录数
   ```
 
   **删除表中所有数据**(TRUNCATE)
 
   ```mysql
-  TRUNCATE TABLE 表名; -- truncate 相当于删除表，再创建一张相同结构的表
+  TRUNCATE [TABLE] 表名; 
+  -- TRUNCATE直接删除表并重新创建一张相同结构的新表，不能回滚， AUTO_INCREMENT置为0，效率比DELETE高
   ```
 
-* **修改数据**(UPDATE...SET)
+* **修改数据**(UPDATE…SET)。使用UPDATE语句可以将值清空为NULL(但只限于未设置NOT NULL约束的列)。
 
   ```mysql
   UPDATE 表名 SET 列名1=列值1, 列名2=列值2, ... [WHERE 条件] -- 不加条件则将表中所有记录修改
+  UPDATE 表名 SET (列名1,列名2) = (列值1,列值2) [WHERE 条件] -- PostgreSQL和DB2中使用
   ```
 
 
 
 
-## 2.3 DQL
+## DQL
 
 * <span style="color:red;font-weight:bold">查询不会修改数据库表记录！</span>
-* <span style="color:red;font-weight:bold">顺序：SELECT、FROM、WHERE、GROUP BY、HAVING、ORDER BY、LIMIT</span>
+* <span style="color:red;font-weight:bold">顺序：FROM、WHERE、GROUP BY、HAVING、SELECT、ORDER BY、LIMIT</span>
 
-### 2.3.1 基本查询(SELECT...FROM)
+### 基本查询(SELECT...FROM)
 
 * <span style="color:red;font-weight:bold">字段(列)控制</span>
 
@@ -318,66 +639,96 @@
     SELECT 列1 [, 列2, ... 列N] FROM 表名; -- 查询指定列
     ```
 
-  * <span style="color:red;font-weight:bold">去重复(DISTINCT</span>
+  * <span style="color:red;font-weight:bold">去重复(DISTINCT)</span>，只能放在第一列之前
 
     ```mysql
     SELECT DISTINCT 列1 [, 列2, ... 列N]  FROM 表名; -- 结果集完全重复
+    -- NULL 也被视为一类数据。NULL 存在于多行中时，也会被合并为一条 NULL 数据
     ```
 
 * <span style="color:red;font-weight:bold">列运算</span>
 
-  * 数字类型的列可以做<span style="color:red;font-weight:bold">加、减、乘、除</span>运算
-
-    ```mysql
-    SELECT sal*1.5 FROM emp;
-    SELECT sal+comm FROM emp;
-    ```
-
-    字符串类型可以做<span style="color:red;font-weight:bold">拼接运算</span>
-
-    ```mysql
-    SELECT CONCAT('$', sal) FROM emp;
-    ```
-
-  * <span style="color:red;font-weight:bold">替换NULL值</span>
-
-    ```mysql
-    SELECT IFNULL(comm, 0)+1000 FROM emp; -- 如果comm中存在NULL值，那么当成0来运算
-    ```
-
-  * <span style="color:red;font-weight:bold">给列起别名</span>
+  * <span style="color:red;font-weight:bold">给列起别名</span>，可以使用中文（使用双引号括起来，MySQL中可以单双引或不用，其他数据库暂不知道）
 
     ```mysql
     SELECT IFNULL(comm, 0)+1000 AS 奖金 FROM emp; -- AS可以省略
     ```
+  
+* <span style="color:red;font-weight:bold">常数查询</span>
+  
+  ```sql
+    SELECT '商品' AS string, 38 AS number, '2009-02-24' AS date, product_id, product_name FROM Product;
+    ```
+  
+![image-20190609192938116](images/image-20190609192938116.png)
+  
+* 数字类型的列可以做<span style="color:red;font-weight:bold">加、减、乘、除</span>运算
+  
+    > 【注意】与NULL运算时，结果都为NULL。甚至NULL / 0 都是NULL。
+  
+  ```mysql
+    SELECT sal*1.5 FROM emp;
+  SELECT sal+comm FROM emp;
+    ```
+  
+  * <span style="color:red;font-weight:bold">替换NULL值</span>
+  
+    ```mysql
+    SELECT IFNULL(comm, 0)+1000 FROM emp; -- 如果comm中存在NULL值，那么当成0来运算
+    ```
+  
+  * 字符串类型可以做<span style="color:red;font-weight:bold">拼接运算</span>
+  
+    ```mysql
+    SELECT CONCAT('$', sal) FROM emp;
+    ```
 
-### 2.3.2 条件查询(WHERE)
+> FROM子句真的有必要吗？实际上，通过执行 SELECT 语句来代替计算器的情况基本上是不存在的。Oracle 必须有！
+>
+> 只希望得到一行临时数据的情况，还是可以通过使用没有 FROM 子句的 SELECT 语句来实现某种业务的
+>
+> ```sql
+> SELECT (100 + 200) * 3 AS calculation;
+> ```
 
-* 运算符
+
+
+### 条件查询(WHERE)
+
+* 运算符：可用于列运算、条件查询
+
+  | 算术运算符 |      |
+  | :--------: | ---- |
+  |     +      |      |
+  |     -      |      |
+  |     *      |      |
+  |     /      |      |
+  |     ()     |      |
 
   | 比较运算符             | 说明                                                         |
   | ---------------------- | ------------------------------------------------------------ |
-  | >、<、<=、>=、=、<>    | **<>在 SQL 中表示不等于**，在 mysql 中也可以使用!=。没有     |
+  | =、<>、<、>、<=、>=    | 对**数字、日期和字符（字符按照字典顺序）**等几乎所有数据类型的列和值进行比较<br />**<>在 SQL 中表示不等于**，很多RDBMS的方言可以使用!=。 |
   | **BETWEEN...AND**      | 在一个范围之内，如：between 100 and 200 相当于条件在 [100 到 200] 之间 |
   | **IN**、ALL、ANY(集合) | 集合表示多个值，使用逗号分隔。ALL为所有，ANY为任意一个即可，可用最值替代 |
-  | **IS [NOT] NULL**      | 查询某一列为[不为] NULL 的值，注：不能写=NULL                |
+| **IS [NOT] NULL**      | 查询某一列为[不为] NULL 的值，注：不能写=NULL                |
   | **LIKE**               | 模糊查询：_匹配一个任意字符；%匹配0~N个任意字符              |
-
-  | 逻辑运算符     | 说明                                 |
-  | -------------- | ------------------------------------ |
-  | **AND**或 &&   | 与，SQL 中建议使用前者，后者并不通用 |
-  | **OR** 或 \|\| | 或                                   |
-  | **NOT**或 !    | 非                                   |
-
-  ```mysql
-  WHERE age >= 18 AND age <= 80
-  WHERE age BETWEEN 18 AND 80
-  WHERE name='zhangSan' OR name='liSi'
-  WHERE name IN ('zhangSan', 'liSi')
-  WHERE age IS NULL -- 不能使用等号
-  WHERE age IS NOT NULL
+  
+  | 逻辑运算符     | 说明                                                         |
+  | -------------- | ------------------------------------------------------------ |
+  | **AND**或 &&   | 与，后者并不通用；优先于OR                                   |
+  | **OR** 或 \|\| | 或                                                           |
+  | **NOT**或 !    | 非；WHERE NOT代表后面的表达式的非运算（但是不要滥用，不清晰） |
+  
+```mysql
+  WHERE age >= 18 AND age <= 80;
+  WHERE age BETWEEN 18 AND 80;
+  WHERE name='zhangSan' OR name='liSi';
+  WHERE name IN ('zhangSan', 'liSi');
+  WHERE age IS NULL; -- 不能使用等号
+  WHERE age IS NOT NULL;
+  WHERE sale_price - purchase_price >= 500;
   ```
-
+  
   ```mysql
   SELECT * FROM emp WHERE ename LIKE '张_'; -- 姓张，名字由两个字组成的员工
   SELECT * FROM emp WHERE ename LIKE '___'; -- 姓名由3个字组成的员工
@@ -386,33 +737,22 @@
   SELECT * FROM emp WHERE ename LIKE '%阿%';-- 查询姓名中间带有阿字的员工
   SELECT * FROM emp WHERE ename LIKE '%'; -- 条件不存在，如果姓名为NULL的查询不出来
   ```
+  
+  > 与 NULL 运算时，结果都为 NULL。甚至 NULL / 0 都是 NULL。
+  >
+  > 查询 NULL 时不能使用比较运算符(= 或者 <>、>、<等)，因为结果为空不满足该条件，需使用 IS [ NOT ] NULL。
+  >
+  > 查询 NULL 时不能使用逻辑运算符，因为结果不为真也不为假，是不确定（UNKNOWN）
 
-### 2.3.3 分组查询(GROUP BY)
 
-* GROUP BY 将分组字段结果中相同内容作为一组，并且返回每组的第一条数据，一般分组会跟**聚合函数**一起使用
 
-> WHERE 和 HAVING 区别：
->
-> * **WHERE：分组前过滤数据；HAVING：分组后过滤数据**
-> * **WHERE后不可以使用聚合函数，HAVING后可以使用聚合函数**
+### 聚合函数(列的纵向运算)
 
-- **记录使用某一列进行<span style="color:red;font-weight:bold">分组(GROUP BY)</span>，然后查询组信息**
+<span style="color:red;font-weight:bold">只能用于 **SELECT** 子句和 **HAVING** 子句和 **ORDER BY**子句</span>
 
-  ```mysql
-  SELECT deptno, COUNT(*) FROM emp GROUP BY deptno; -- deptno分组，查询部门编号和每个部门记录
-  SELECT job, MAX(SAL) FROM emp GROUP BY job; -- 使用job分组，查询每种工作的最高工资
-  ```
+- 注意：聚合函数的计算，**排除了NULL值**。结果为单行单列的值。也可以修改聚合函数列名
 
-- <span style="color:red;font-weight:bold">组条件(HAVING)</span>
-
-  ```mysql
-  SELECT deptno, COUNT(*) FROM emp GROUP BY deptno HAVING COUNT(*) > 3;-- 以部门分组...。条件为记录数大于3
-  ```
-
-### 2.3.4 聚合函数(列的纵向运算)
-
-* 注意：聚合函数的计算，**排除了null值**。结果为单行单列的值。也可以修改聚合函数列名
-  * 解决：**选择不包含null的列（主键）**；`IFNULL`函数
+  解决：**选择不包含NULL的列（主键）**；`IFNULL`函数
 
 - <span style="color:red;font-weight:bold">COUNT</span>
 
@@ -421,41 +761,105 @@
   SELECT COUNT(comm) FROM emp; -- 计算emp表中comm列不为NULL的记录的行数
   ```
 
-- <span style="color:red;font-weight:bold">MAX</span>
+  <span style="color:red;font-weight:bold">MAX</span>（**原则上适用任何数据类型，能排序的，如日期、字符串**）
 
   ```mysql
   SELECT MAX(sal) FROM emp; -- 查询最高工资
   ```
 
-- <span style="color:red;font-weight:bold">MIN</span>
+- <span style="color:red;font-weight:bold">MIN</span>（**原则上适用任何数据类型，能排序的，如日期、字符串**）
 
   ```mysql
   SELECT MIN(sal) FROM emp; -- 查询最低工资
   ```
 
-- <span style="color:red;font-weight:bold">SUM</span>
+- <span style="color:red;font-weight:bold">SUM</span>（适用于**数值类型**）
 
   ```mysql
   SELECT SUM(sal) FROM emp; -- 查询工资合计
   ```
 
-- <span style="color:red;font-weight:bold">AVG</span>
+- <span style="color:red;font-weight:bold">AVG</span>（适用于**数值类型**）
 
   ```mysql
   SELECT AVG(sal) FROM emp; -- 查询平均工资
   ```
 
+  > 与四则运算中若存在NULL，结果一定为NULL不同。这里会先排除为NULL的的值，之后才进行运算！
+
+  **以上聚合函数 都可以配合`DISTINCT`来查询，如：**
+
+  ```sql
+  SELECT COUNT(DISTINCT product_type) FROM Product;
+  ```
+
+  
+
+### 分组查询(GROUP BY)
+
+* 在GROUP BY 子句中**指定的列称为聚合键**或者**分组列**。**一般与聚合函数一起使用！**
+* **聚合键中包含 NULL** 时，在结果中会以**“不确定”行(空行)**的形式表现出来。
+
+- **记录使用某一列进行<span style="color:red;font-weight:bold">分组(GROUP BY)</span>，然后查询组信息**
+
+  ```mysql
+  SELECT deptno, COUNT(*) FROM emp GROUP BY deptno; -- deptno分组，查询部门编号和每个部门记录
+  SELECT job, MAX(SAL) FROM emp GROUP BY job; -- 使用job分组，查询每种工作的最高工资
+  ```
+
+**【与聚合函数和GROUP BY子句有关的常见错误】**
+
+* 在 **SELECT** 子句中书写了多余的列。使用聚合函数时，SELECT 子句中只能存在以下三种元素：
+  * 常数：数字 123，或者字符串 '测试'，或日期
+  * 聚合函数
+  * GROUP BY子句中指定的列名(也就是**聚合键**)
+* 在**GROUP BY**子句中写了列的别名（MySQL 和 PostgreSQL 可以这样写，但不推荐）
+  - 由于SQL的执行顺序为SELECT最后，所以别名不能用做GROUP BY中。
+* **GROUP BY**子句的结果能排序吗
+  - 通常 SELECT 语句的执行结果的显示顺序都是**随机**的，需要排序则需在SELECT中指定
+* 在 **WHERE** 子句中使用聚合函数（不能使用）
+
+> **DISTINCT**和**GROUP BY**都能够删除后续列中的重复数据。在“想要删除选择结果中的重复记录”时使用DISTINCT，在“想要计算汇总结果”时使用GROUP BY。不使用COUNT等聚合函数，而只使用GROUP BY子句的SELECT语句，会让人觉得非常奇怪
 
 
-### 2.3.5 排序(ORDER BY...*SC)
 
-* <span style="color:red;font-weight:bold">升序(ORDER BY...ASC)</span>
+### 分组后条件(HAVING)
+
+WHERE 和 HAVING 区别：
+
+- **WHERE：分组前过滤数据，指定行对应条件；HAVING：分组后过滤数据，指定组对应条件**
+
+  > 聚合键所对应的条件不应该书写在 HAVING 子句当中，而应该书写在 WHERE 子句当中。
+  >
+  > 通常情况下，将条件写在 WHERE 子句中要比写在 HAVING 子句中的处理速度更快。
+  >
+  > * 使用 COUNT 函数等对表中的数据进行**聚合**操作时，DBMS 内部就会进行**排序**处理。排序处理是会大大增加机器负担的高负荷的处理 。因此，只有尽可能减少排序的行数，才能提高处理速度。通过 WHERE 子句指定条件时，由于排序之前就对数据进行了过滤，因此能够减少排序的数据量。
+  > * 可以对 WHERE 子句指定条件所对应的列**创建索引**，这样也可以大幅提高处理速度。
+
+- **WHERE后不可以使用聚合函数，HAVING后可以使用聚合函数**
+
+- ```sql
+  SELECT deptno, COUNT(*) FROM emp GROUP BY deptno HAVING COUNT(*) > 3;-- 以部门分组...。条件为记录数大于3
+  ```
+
+* HAVING 子句中能够使用的 3 种要素如下所示：
+  - 常数：数字 123，或者字符串 '测试'，或日期
+  - 聚合函数
+  - GROUP BY子句中指定的列名(也就是**聚合键**)
+
+
+
+### 排序(ORDER BY...*SC)
+
+> 通常，从表中抽取数据时，如果没有特别指定顺序，最终排列顺序便无从得知
+
+* <span style="color:red;font-weight:bold">升序(ORDER BY...ASC)</span>，ascendent
 
   ```mysql
   SELECT * FROM WHERE emp ORDER BY sal ASC; -- ASC可以省略
   ```
 
-* <span style="color:red;font-weight:bold">降序(ORDER BY...DESC)</span>
+* <span style="color:red;font-weight:bold">降序(ORDER BY...DESC)</span>，descendent
 
   ```mysql
   SELECT * FROM WHERE emp ORDER BY comm DESC; -- DESC不能省略
@@ -466,8 +870,18 @@
   ```mysql
   SELECT * FROM WHERE emp ORDER BY sal ASC, comm DESC; -- 按sal升序排，如果sal相同，按comm降序排
   ```
+  
+* **排序键中包含 NULL 时，会在开头或末尾进行汇总。**
 
-###  2.3.6 分页查询(LIMIT)
+* **在 ORDER BY 子句中可以使用 SELECT 子句中定义的别名。**与SQL执行顺序有关！
+
+* 在 ORDER BY 子句中可以使用 SELECT 子句中未使用的列和聚合函数。
+
+* 在 ORDER BY 子句中**不要使用列编号**：阅读困难；该功能将会删除
+
+
+
+###  分页查询(LIMIT)
 
 * MySQL的方言LIMIT用来限定查询结果的**起始索引（从0开始）**，以及**总行数**：**`开始的索引 = (当前页-1) * 每页记录数`**
 
@@ -482,7 +896,7 @@
 
 
 
-## 2.4 DCL
+## DCL
 
 * DBA：数据库管理员
 
@@ -537,172 +951,99 @@
   3. 撤销权限：`revoke 权限列表 on 数据库名.表名 from '用户名'@'主机名';`，撤销所有同上
 
 
-# 3 约束
 
-- 对表中的数据进行限制，保证数据的正确性、有效性和完整性。用来**约束列**
 
-## 3.1 主键约束(PRIMARY KEY)
 
-- 特点：**非空**、**唯一**、**被外键引用**。一般设置id为主键，不是业务字段（身份证等不建议做主键），一张表只能有一个字段设置
+# 事务(transaction)
 
-  - **创建表时设置主键**
+在 RDBMS 中，**事务是对表中数据进行更新的单位**。简单来讲，**事务就是需要在同一个处理单元中执行的一系列更新处理的集合**。通过使用事务，可以对数据库中的数据更新处理的提交和取消进行管理。
 
-    ```mysql
-    CREATE TABLE stu(
-    	stuid CHAR(6) PRIMARY KEY
-    );
-    ```
+> 如果一个包含多个步骤的业务操作，被事务管理，那么这些操作**要么同时成功，要么同时失败**。
 
-    ```mysql
-    CREATE TABLE stu(
-    	stuid CHAR(6),
-        PRIMARY KEY(stuid)
-    );
-    ```
+- 开启事务：`START TRANSACTION`（MySQL）；`BEGIN TRANSACTION`（PostgreSQL、SQL Server）；
 
-  - **修改表时添加主键**
+  Oracle 和 DB2 无，标准SQL手册中记述，事务会自动开始。但是结束必须手动；
 
-    ```mysql
-    ALTER TABLE stu ADD PRIMARY KEY(sid); -- CHANGE、MODIFY也行
-    ```
+- 结束事务：`COMMIT`（没有问题则提交）或`ROLLBACK`（有问题则回滚）
 
-  - **删除主键**
+事务处理何时开始？几乎所有的数据库产品的事务都无需开始指令，事务在数据库连接建立时就已经悄悄开始了，并不需要用户再明确发出开始指令。如何区分各个事务呢？有如下两种情况：
 
-    ```mysql
-    ALTER TABLE stu DROP PRIMARY KEY;
-    ```
+- 自动提交：每条DML语句就是一个事务(**自动提交模式**)。有SQL Server、PostgreSQL 和 MySQL
+- 手动提交：直到用户执行COMMIT或者ROLLBACK为止算作一个事务。有Oracle
 
-### 3.1.1 主键自增长(AUTO_INCREMENT)
+- **MySQL数据库中事务默认自动提交**
+  - 事务提交的两种方式：
+    - 自动提交：
+      - **mysql就是自动提交的**
+      - **一条DML(增删改)**语句会自动提交一次事务。
+    - 手动提交：
+      - **Oracle 数据库默认是手动提交事务**
+      - 需要**先开启事务，再提交**
+  - 修改事务的默认提交方式：
+    - 查看事务的默认提交方式(MySQL命令)：`SELECT @@autocommit;`1 代表自动提交；0 代表手动提交
+    - 修改默认提交方式： `set @@autocommit = 0;`
 
-- 保证在插入数据时主键列的唯一和非空特性，默认为1，根据读取的**上一条记录**的值
+## 事务的四大特性（ACID）
 
-  > DELETE和TRUNCATE对自增长的影响 
-  >
-  > - DELETE：删除所有的记录之后，自增长没有影响
-  > - TRUNCATE：删除以后，自增长又重新开始
+- **原子性**（Atomicity）：事务中所有操作是不可再分割的原子单位。即事务中所有操作要么全部执行成功，要么全部失败。
+- **一致性**（Consistency）：事务执行后，**数据库状态保持一致**。如转账业务，无论事务执行成功与否，参与转账的两个账号余额之和应该是不变的。
+- **隔离性**（Isolation）：隔离性是指在并发操作中，不同事务之间应该隔离开来，使每个并发中的事务不会相互干扰。
+- **持久性**（Durability）：一旦事务提交成功，它对数据库的改变必须是永久的，即使出现系统故障。
 
-  - 创建表时指定主键自增长
+## 事务的隔离级别
 
-    ```mysql
-    CREATE TABLE stu(
-    	stuid CHAR(6) PRIMARY KEY AUTO_INCREMENT
-    )[auto_increment = 1000]; -- []中设置主键起始值
-    ```
+- 概念：如果多个事务操作同一批数据，则会引发一些问题，设置不同的隔离级别就可以解决这些问题
 
-  - 修改表时设置主键自增长
+- 并发事务**问题** 
 
-    ```mysql
-    ALTER TABLE stu MODIFY sid INT AUTO_INCREMENT; -- 或用CHANGE，需添加新名称
-    ALTER TABLE stu AUTO_INCREMENT = 2000; -- 设置主键起始值
-    ```
+  - **脏读**：一个事务读取到了另一个事务中**尚未提交的数据** 
+  - **不可重复读**：一个事务中**两次读取的数据内容不一致**，要求的是一个事务中多次读取时数据是一致的，这是事务update 时引发的问题 
+  - **幻读**（虚读）：一个事务中**两次读取的数据的数量不一致**，要求在一个事务多次读取的数据的数量是一致 的，这是 insert 或 delete 时引发的问题。
 
-  - 修改表时删除主键自增长
+- **四大隔离级别**（“×”表示会出现这种问题；“ ”表示不会出现这种问题）
 
-    ```mysql
-    ALTER TABLE stu MODIFY sid INT; -- 或用CHANGE，需添加新名称
-    ```
+  | 级别 |   名称   |     隔离级别     | 脏读 | 不可重复读 | 幻读 |  数据库默认隔离级别  |
+  | :--: | :------: | :--------------: | :--: | :--------: | :--: | :------------------: |
+  |  1   | 读未提交 | read uncommitted |  ×   |     ×      |  ×   |                      |
+  |  2   | 读已提交 |  read committed  |      |     ×      |  ×   | Oracle 和 SQL Server |
+  |  3   | 可重复读 | repeatable read  |      |            |  ×   |        MySQL         |
+  |  4   |  串行化  |   serializable   |      |            |      |                      |
 
-## 3.2 非空约束(NOT NULL)
+  > 上面的级别最低，下面的级别最高。隔离级别越高，性能越差，安全性越高。 
 
-- 因为某些列**不能设置为NULL**值，所以可以对列添加非空约束。可以设置**默认约束**
+  - 查询隔离级别(MySQL语句)：`select @@tx_isolation;`
+  - 设置隔离级别(MySQL语句)：`set global transaction isolation level 隔离级别字符串; `
 
-  - 创建表时设置
+- 演示：通过转账示例，每次设置不同的隔离级别，甲乙两方**分别开启事务**，可查看到不同的结果。MySQL中不能演示幻读。
 
-    ```mysql
-    CREATE TABLE stu(
-    		sid INT PRIMARY KEY AUTO_INCREMENT,
-    		sname VARCHAR(20) NOT NULL DEFAULT `王八蛋`, -- 默认值，不设置时使用默认值
-    );
-    ```
+  - read uncommitted：在一次事务中甲方执行转账操作未提交时，乙方也可查询到账情况（脏读、不可重复读）
 
-  * 修改表时设置
+  - read committed：在一次事务中甲方执行转账操作只有提交后，乙方才能查询到账情况。两次结果不同（不可重复读）
+
+  - repeatable read：在一次事务中甲方执行转账操作提交后，乙方只能在提交后才能查询到账情况（解决上述俩问题）
+
+  - serializable：在一次事务中甲方执行转账操作未提交，此时乙方查询一直等待，只有甲方提交后才显示。（解决幻读）
 
     ```mysql
-    ALTER TABLE stu MODIFY name VARCHAR(20) NOT NULL; -- 或用CHANGE，需添加新名称
+    set global transaction isolation level read uncommitted;
+    start transaction;
+    -- 转账操作
+    update account set balance = balance - 500 where id = 1;
+    update account set balance = balance + 500 where id = 2;
+    ...
     ```
 
-  * 删除
+- JDBC设置隔离级别(con. setTransactionIsolation(int level))
 
-    ```mysql
-    ALTER TABLE stu MODIFY name VARCHAR(20); -- 或用CHANGE，需添加新名称
-    ```
+  - 参数可选值如下：
 
-## 3.3 唯一约束(UNIQUE)
+    Connection.TRANSACTION_READ_UNCOMMITTED；
 
-> Navicat中显示在索引中
+    Connection.TRANSACTION_READ_COMMITTED；
 
-- 数据库某些列**不能设置重复**的值，所以可以对列添加唯一约束。**NULL中没有值，不存在重复的问题**
+    Connection.TRANSACTION_REPEATABLE_READ；
 
-  - 创建表时设置
-
-    ```mysql
-    CREATE TABLE stu(
-    		sid INT PRIMARY KEY AUTO_INCREMENT,
-    		phone_number VARCHAR(11) UNIQUE
-    );
-    ```
-
-  - 修改表时设置
-
-    ```mysql
-    ALTER TABLE student MODIFY name VARCHAR(20); -- 或用CHANGE，需添加新名称
-    ```
-
-  - 删除
-
-    ```mysql
-    ALTER TABLE stu DROP INDEX phone_number;
-    ```
-
-
-## 3.4 外键约束(FOREIGN KEY)
-
-> 外键：在从表（多）中与主表（一）主键对应的那一列，如：员工表中的 dep_id 
-
-- 一张表中可以有**多个外键**。外键**可以为空**、**可以重复**、必须是另一表(可以是自己)的主键的值(**外键要引用主键**)
-
-- 语法：
-
-  ```mysql
-  [CONSTRAINT 约束名称] FOREIGN KEY(外键列名) REFERENCES 关联表(关联表的主键) -- 约束名称可省略
-  ```
-
-  - **创建表时指定外键约束**
-
-    ```mysql
-    create talbe emp (
-        empno int primary key,
-        ...
-        deptno int,
-        CONSTRAINT fk_emp_dpet FOREIGN KEY(dpetno) REFERENCES dpet(dpetno)
-        /*CONSTRAINT fk_emp FOREIGN KEY(mgr) REFERENCES emp(empno)*/
-    );
-    ```
-
-  - **修改表时添加外键约束**
-
-    ```mysql
-    ALERT TABLE emp
-    ADD CONSTRAINT fk_emp_dept FOREIGN KEY(deptno) REFERENCES dept(deptno);
-    ```
-
-  - **删除外键约束**
-
-    ```mysql
-    ALTER TABLE emp DROP FOREIGN KEY fk_emp_dept;/*约束名称*/
-    ```
-
-* **外键的级联（谨慎使用）**：在修改和删除主表的主键时，同时更新或删除副表的外键值，称为级联操作。
-
-  ```mysql
-  create talbe emp (
-  	...
-      deptno int,
-      CONSTRAINT fk_emp_dpet FOREIGN KEY(dpetno) REFERENCES dpet(dpetno) on update cascade on delete cascade 
-  );
-  ```
-
-
+    Connection.TRANSACTION_SERIALIZABLE。
 
 
 # 4 数据库的设计
@@ -1056,85 +1397,7 @@
 
 
 
-# 6 事务(transaction)
-
-- 如果一个包含多个步骤的业务操作，被事务管理，那么这些操作**要么同时成功，要么同时失败**。
-- MySQL中操作事务
-  - 开启事务：**`start transaction`**
-  - 结束事务：**`commit`**（没有问题则提交）或**`rollback`**（有问题则回滚）
-- **MySQL数据库中事务默认自动提交**
-  - 事务提交的两种方式：
-    - 自动提交：
-      - **mysql就是自动提交的**
-      - **一条DML(增删改)**语句会自动提交一次事务。
-    - 手动提交：
-      - **Oracle 数据库默认是手动提交事务**
-      - 需要**先开启事务，再提交**
-  - 修改事务的默认提交方式：
-    - 查看事务的默认提交方式(MySQL命令)：`SELECT @@autocommit;`1 代表自动提交；0 代表手动提交
-    - 修改默认提交方式： `set @@autocommit = 0;`
-
-## 6.1 事务的四大特性（ACID）
-
-- **原子性**（Atomicity）：事务中所有操作是不可再分割的原子单位。事务中所有操作要么全部执行成功，要么全部执行失败。
-- **一致性**（Consistency）：事务执行后，**数据库状态保持一致**。如转账业务，无论事务执行成功与否，参与转账的两个账号余额之和应该是不变的。
-- **隔离性**（Isolation）：隔离性是指在并发操作中，不同事务之间应该隔离开来，使每个并发中的事务不会相互干扰。
-- **持久性**（Durability）：一旦事务提交成功，它对数据库的改变必须是永久的，即使出现系统故障。
-
-## 6.2 事务的隔离级别
-
-* 概念：如果多个事务操作同一批数据，则会引发一些问题，设置不同的隔离级别就可以解决这些问题
-
-- 并发事务**问题** 
-
-  - **脏读**：一个事务读取到了另一个事务中**尚未提交的数据** 
-  - **不可重复读**：一个事务中**两次读取的数据内容不一致**，要求的是一个事务中多次读取时数据是一致的，这是事务update 时引发的问题 
-  - **幻读**（虚读）：一个事务中**两次读取的数据的数量不一致**，要求在一个事务多次读取的数据的数量是一致 的，这是 insert 或 delete 时引发的问题。
-
-- **四大隔离级别**（“×”表示会出现这种问题；“ ”表示不会出现这种问题）
-
-  | 级别 |   名称   |     隔离级别     | 脏读 | 不可重复读 | 幻读 |  数据库默认隔离级别  |
-  | :--: | :------: | :--------------: | :--: | :--------: | :--: | :------------------: |
-  |  1   | 读未提交 | read uncommitted |  ×   |     ×      |  ×   |                      |
-  |  2   | 读已提交 |  read committed  |      |     ×      |  ×   | Oracle 和 SQL Server |
-  |  3   | 可重复读 | repeatable read  |      |            |  ×   |        MySQL         |
-  |  4   |  串行化  |   serializable   |      |            |      |                      |
-
-  > 上面的级别最低，下面的级别最高。隔离级别越高，性能越差，安全性越高。 
-
-  - 查询隔离级别(MySQL语句)：`select @@tx_isolation;`
-  - 设置隔离级别(MySQL语句)：`set global transaction isolation level 隔离级别字符串; `
-
-- 演示：通过转账示例，每次设置不同的隔离级别，甲乙两方**分别开启事务**，可查看到不同的结果。MySQL中不能演示幻读。
-
-  - read uncommitted：在一次事务中甲方执行转账操作未提交时，乙方也可查询到账情况（脏读、不可重复读）
-
-  - read committed：在一次事务中甲方执行转账操作只有提交后，乙方才能查询到账情况。两次结果不同（不可重复读）
-
-  - repeatable read：在一次事务中甲方执行转账操作提交后，乙方只能在提交后才能查询到账情况（解决上述俩问题）
-
-  - serializable：在一次事务中甲方执行转账操作未提交，此时乙方查询一直等待，只有甲方提交后才显示。（解决幻读）
-
-    ```mysql
-    set global transaction isolation level read uncommitted;
-    start transaction;
-    -- 转账操作
-    update account set balance = balance - 500 where id = 1;
-    update account set balance = balance + 500 where id = 2;
-    ...
-    ```
-
-- JDBC设置隔离级别(con. setTransactionIsolation(int level))
-
-  - 参数可选值如下：
-
-    Connection.TRANSACTION_READ_UNCOMMITTED；
-
-    Connection.TRANSACTION_READ_COMMITTED；
-
-    Connection.TRANSACTION_REPEATABLE_READ；
-
-    Connection.TRANSACTION_SERIALIZABLE。
+- - 
 
 
 
@@ -1569,7 +1832,19 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 
 # 第二部分 Oracle
 
-# 1 Oracle简介及体系结构
+
+
+# 1 Oracle 安装及简介
+
+Oracle 安装：
+
+1. 使用的是 Oracle 快捷版，OracleXE112。安装时需要指定口令（用于SYS和SYSTEM账户），此处设置为`admin`；
+2. Oracle 数据库监听程序端口默认为1521；Oracle Service for Microsoft Transaction Server 端口默认为2030；Oracle HTTP 监听程序端口默认为8080；
+3. 打开"运行SQL命令行（即 sq"，键入`conn system/admin;`测试连接是否成功；
+4. 创建账号等，需要以SYSDBA身份连接，键入`conn system/admin as sysdba;`
+5. 创建账号，键入`create user htdms identified by 111111;`
+6. 对该账号授权，键入`grant connect,resource,dba to htdms;`连接测试；
+7. 使用其他工具连接时注意，OracleXE112只能有一个实例，所以SID需填写`XE`；
 
 Oracle数据库系统是美国Oracle公司（甲骨文）提供的以分布式数据库为核心的一组软件产品，是目前最流行的C/S或B/S体系结构的数据库之一。比如SilverStream就是基于数据库的一种中间件。安装请参考文档。
 
