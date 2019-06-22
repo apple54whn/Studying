@@ -290,6 +290,9 @@
     ```mysql
     ALTER TABLE 原表名 RENAME TO 新表名; -- Oracle和PostgreSQL使用这个，MySQL8测试也可以使用
     RENAME TABLE 原表名 TO 新表名;
+    ```
+  ```
+  
   ```
   
 * 修改之**添加列**(ADD)
@@ -658,10 +661,11 @@
   
   ```sql
     SELECT '商品' AS string, 38 AS number, '2009-02-24' AS date, product_id, product_name FROM Product;
-    ```
+  ```
   
+
 ![image-20190609192938116](images/image-20190609192938116.png)
-  
+
 * 数字类型的列可以做<span style="color:red;font-weight:bold">加、减、乘、除</span>运算
   
     > 【注意】与NULL运算时，结果都为NULL。甚至NULL / 0 都是NULL。
@@ -669,7 +673,7 @@
   ```mysql
     SELECT sal*1.5 FROM emp;
   SELECT sal+comm FROM emp;
-    ```
+  ```
   
   * <span style="color:red;font-weight:bold">替换NULL值</span>
   
@@ -727,8 +731,8 @@
   WHERE age IS NULL; -- 不能使用等号
   WHERE age IS NOT NULL;
   WHERE sale_price - purchase_price >= 500;
-  ```
-  
+```
+
   ```mysql
   SELECT * FROM emp WHERE ename LIKE '张_'; -- 姓张，名字由两个字组成的员工
   SELECT * FROM emp WHERE ename LIKE '___'; -- 姓名由3个字组成的员工
@@ -737,7 +741,7 @@
   SELECT * FROM emp WHERE ename LIKE '%阿%';-- 查询姓名中间带有阿字的员工
   SELECT * FROM emp WHERE ename LIKE '%'; -- 条件不存在，如果姓名为NULL的查询不出来
   ```
-  
+
   > 与 NULL 运算时，结果都为 NULL。甚至 NULL / 0 都是 NULL。
   >
   > 查询 NULL 时不能使用比较运算符(= 或者 <>、>、<等)，因为结果为空不满足该条件，需使用 IS [ NOT ] NULL。
@@ -952,7 +956,54 @@ WHERE 和 HAVING 区别：
 
 
 
+# 复杂查询
 
+## 视图
+
+表中存储的是实际数据，而**视图**中保存的是**从表中取出数据所使用的 SELECT 语句**。将经常使用的 SELECT 语句做成视图。
+
+* 创建视图
+
+  ```SQL
+  CREATE VIEW 视图名称(<视图列名1>, <视图列名2>, ......) AS
+  <SELECT 语句 >
+  ```
+
+  SELECT 语句需要书写在 AS 关键字之后。SELECT 语句中列的排列顺序和视图中列的排列顺序相同
+
+* 删除视图
+
+  ```sql
+  DROP VIEW 视图名称(<视图列名1>, <视图列名2>, ......)
+  ```
+
+  在 PostgreSQL 中，如果删除以视图为基础创建出来的多重视图，由于存在关联的视图，因此会发生错误。使用 CASCADE 选项来删除关联视图。`DROP VIEW ProductSum CASCADE;`
+
+> 应该避免在视图的基础上创建视图，因为对多数DBMS来说多重视图会降低 SQL 的性能。
+
+* 注意：
+  * 定义视图时不能使用ORDER BY子句（PostgreSQL可以使用）
+  * （视图和表需要同时进行更新，因此通过汇总得到的视图无法进行更新）对视图进行更新需满足：
+    * SELECT 子句中未使用 DISTINCT
+    * FROM 子句中只有一张表
+    * 未使用GROUP BY子句
+    * 4 未使用 HAVING 子句
+
+
+
+## 子查询
+
+子查询就是将用来定义视图的 SELECT 语句直接用于FROM子句当中，但是不会像视图那样保存在存储介质(硬盘)之中，而是在 SELECT 语句执行之后就消失了。实际上 SELECT 语句包含嵌套的结构，**首先会执行 FROM 子句中的 SELECT 语句，然后才会执行外层的 SELECT 语句**。尽量避免使用多层嵌套的子查询。
+
+**子查询必须设定名称**。Oracle 需要省略 AS 关键字才可以使用。
+
+* 标量子查询(scalar subquery)：必须而且只能返回 1 行 1 列的结果，即返回单一值的子查询
+
+  可用在= 或者 <> 等需要单一值的比较运算符中
+
+  
+
+## 关联子查询
 
 # 事务(transaction)
 
