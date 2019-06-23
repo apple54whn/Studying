@@ -816,7 +816,7 @@
 * 在 **SELECT** 子句中书写了多余的列。使用聚合函数时，SELECT 子句中只能存在以下三种元素：
   * 常数：数字 123，或者字符串 '测试'，或日期
   * 聚合函数
-  * GROUP BY子句中指定的列名(也就是**聚合键**)
+  * GROUP BY子句中指定的列名(也就是**聚合键**)，其实应该是每组共有的。
 * 在**GROUP BY**子句中写了列的别名（MySQL 和 PostgreSQL 可以这样写，但不推荐）
   - 由于SQL的执行顺序为SELECT最后，所以别名不能用做GROUP BY中。
 * **GROUP BY**子句的结果能排序吗
@@ -987,7 +987,7 @@ WHERE 和 HAVING 区别：
     * SELECT 子句中未使用 DISTINCT
     * FROM 子句中只有一张表
     * 未使用GROUP BY子句
-    * 4 未使用 HAVING 子句
+    * 未使用 HAVING 子句
 
 
 
@@ -997,13 +997,76 @@ WHERE 和 HAVING 区别：
 
 **子查询必须设定名称**。Oracle 需要省略 AS 关键字才可以使用。
 
-* 标量子查询(scalar subquery)：必须而且只能返回 1 行 1 列的结果，即返回单一值的子查询
+* **标量子查询**(scalar subquery)：必须而且**只能返回 1 行 1 列**的结果，即返回单一值的子查询。任何位置都可以使用。
 
   可用在= 或者 <> 等需要单一值的比较运算符中
 
+  > 由于在WHERE中不能使用聚合函数，所以可以使用标量自查询来代替！SELECT 中也比较常见！
+  
+  ```sql
+  SELECT product_id, product_name, product_type, sale_price,
+         (SELECT AVG(sale_price) FROM Product  )
+  FROM Product;
+  ```
+  
   
 
 ## 关联子查询
+
+在**细分的组内进行比较时**，需要使用关联子查询。通常会使用“限定(绑定)”或者“限制”这样的语言。必须执行时返回1行1列结果。
+
+```SQL
+SELECT product_type, product_name, sale_price
+FROM Product P1
+WHERE sale_price > (SELECT AVG(sale_price)
+                    FROM Product P2
+                    WHERE P1.product_type = P2.product_type -- 关键在这句！
+                    GROUP BY product_type); -- 其实可以省略这句，因为WHERE的条件已经令AVG按照type分组了
+-- WHERE条件的意思是 在同一商品种类中对各商品的销售单价和平均单价进行比较
+-- 且不能把WHERE放在外部，首先P2是有作用域的，且SQL执行是按照先内部再外部的顺序
+```
+
+换个角度来看，其实关联子查询也和GROUP BY子句一样，可以对集合进行切分。
+
+![image-20190623002605492](images/image-20190623002605492.png)
+
+
+
+
+
+# 函数、谓词、CASE表达式
+
+## 函数
+
+> 所谓函数，就是输入某一值得到相应输出结果的功能，输入值称为参数(parameter)，输出值称为返回值。
+
+### 算术函数
+
+* **ABS**——绝对值
+
+  ```sql
+  SELECT m, ABS(m) AS abs_col FROM SampleMath;
+  ```
+
+  > ABS 函数的参数为 NULL 时，结果也是 NULL。绝大多数函数对于 NULL 都返回 NULL，但是转换函数中的COALESCE   
+  >
+  > 函数除外 
+
+### 字符串函数
+
+### 日期函数
+
+### 转换函数
+
+### 聚合函数
+
+## 谓词
+
+## CASE表达式
+
+
+
+
 
 # 事务(transaction)
 
@@ -1025,7 +1088,7 @@ WHERE 和 HAVING 区别：
 - **MySQL数据库中事务默认自动提交**
   - 事务提交的两种方式：
     - 自动提交：
-      - **mysql就是自动提交的**
+      - **MySQL就是自动提交的**
       - **一条DML(增删改)**语句会自动提交一次事务。
     - 手动提交：
       - **Oracle 数据库默认是手动提交事务**
