@@ -137,6 +137,39 @@
 
 
 
+# SQL 的执行原理
+
+## MySQL 中 SQL 如何执行
+
+![img](images/9b515e012856099b05d9dc3a5eaabe7f.png)
+
+MySQL 是 C/S架构，服务端程序适用mysqld，整体流程如下：
+
+![img](images/c4b24ef2377e0d233af69925b0d7139e.png)
+
+* **连接层**：客户端和服务器端建立连接，客户端发送 SQL 至服务端；
+* **SQL 层**：对 SQL 语句进行查询处理；与数据库文件的存储方式无关；其结构如下：
+* **存储引擎层**：与数据库文件打交道，负责数据的存储和读取。
+
+![img](images/30819813cc9d53714c08527e282ede79.jpg)
+
+* 查询缓存：Server 如果在查询缓存中发现了这条 SQL 语句，就会直接将结果返回给客户端；如果没有，就进入到解析器阶段。需要说明的是，因为查询缓存往往效率不高，所以在 MySQL8.0 之后就抛弃了这个功能。
+* **解析器**：在解析器中对 SQL 语句进行语法分析、语义分析。
+* **优化器**：在优化器中会确定 SQL 语句的执行路径，比如是根据全表检索，还是根据索引来检索等。
+* **执行器**：在执行之前需要判断该用户是否具备权限，如果具备权限就执行 SQL 查询并返回结果。在 MySQL8.0 以下的版本，如果设置了查询缓存，这时会将查询结果进行缓存。
+
+与 Oracle 不同的是，MySQL 的存储引擎采用了插件的形式，每个存储引擎都面向一种特定的数据库应用环境。同时开源的 MySQL 还允许开发人员设置自己的存储引擎，**且MySQL中每张表都可以设置为不同的存储引擎**。下面是一些常见的存储引擎：
+
+* InnoDB 存储引擎：它是 MySQL 5.5 版本之后默认的存储引擎，最大的特点是支持事务、行级锁定、外键约束等。
+* MyISAM 存储引擎：MySQL 5.5 版本之前是默认的存储引擎，不支持事务，也不支持外键，最大特点是速度快，占用资源少。
+* Memory 存储引擎：使用系统内存作为存储介质，以便得到更快的响应速度。不过如果 mysqld 进程崩溃，则会导致所有的数据丢失，因此我们只有当数据是临时的情况下才使用 Memory 存储引擎。
+* NDB 存储引擎：也叫做 NDB Cluster 存储引擎，主要用于 MySQL Cluster 分布式集群环境，类似于 Oracle 的 RAC 集群。
+* Archive 存储引擎：它有很好的压缩机制，用于文件归档，在请求写入时会进行压缩，所以也经常用来做仓库。
+
+
+
+
+
 # SQL
 
 > 每隔几年，ANSI(美国国家标准协会)或 ISO(国际标准化组织)等便会修订 SQL 的标准，进行语法的修订并追加新功能。《SQL基础教程》编写时(2016 年 5 月)使用的是 2011 年修订的最新版本(SQL:2011)。但是，SQL 的标准并不强制RDBMS必须使用
@@ -153,7 +186,7 @@
 
   - **DDL**（Data Definition Language）：**数据定义语言**
 
-    **数据库或表**的操作：**CREATE / DROP / ALTER**
+    **数据库、表**的操作：**CREATE / DROP / ALTER**
 
   - **DML**（Data Manipulation Language）：**数据操作语言**
 
@@ -168,16 +201,37 @@
 * **标准SQL语法**
 
   * SQL语句可以在**单行或多行**书写，以**`;`结尾**
-  * SQL**不区别大小写**。但建议关键字使用大写、表名首字母大写、其余（列名等）小写。**插入的数据时区分大小写的！**
+  
+  * SQL**不区别大小写**。但建议关键字使用大写，表名、别名、字段名等小写。**插入的数据是区分大小写的！**
+  
+    > MySQL在Windows下都不区分大小写，在Linux下，MySQL对表名和数据库名是区分大小写的。
+    >
+    > 关于**表名大小**写的问题：
+    >
+    > * Oracle: `SELECT * FROM HEROS`与`SELECT * FROM heros`一样，因为 Oracle 会自动把`SELECT * FROM heros`转化为`SELECT * FROM HEROS`进行查询。数据库中存的表是大写的。
+    > * MySQL: `SELECT * FROM HEROS`与`SELECT * FROM heros`是否一样取决于参数`lower_case_table_names`，如`lower_case_table_names=1`，这两个查询是一样的。`SELECT * FROM HEROS`会自动转化为`SELECT * FROM heros`。因为数据库中存的表名是小写的。否则就有区别了。
+    >
+    > 关于**字符大小写**的问题：
+    >
+    > * Oracle: `SELECT * FROM heros WHERE role_main = 'ZHANGSHI'`与`SELECT * FROM heros WHERE role_main = 'zhangshi'`不一样，字符大小写敏感
+    > * MySQL: `SELECT * FROM heros WHERE role_main = 'ZHANGSHI'`与`SELECT * FROM heros WHERE role_main = 'zhangshi'`是否一样与该字段的`collate`定义有关
+  
   * 在 SQL 语句中**直接书写的字符串、日期或者数字**等称为**常数**
+    
     * **字符串、日期** 需要用单引号`''`括起来
     * **数字不需要，直接写**
+    
   * 只能使用**半角英文字母、数字、下划线(_)作为数据库、表和列的名称**。名称必须以**半角英文字母开头**
+  
   * 单词之间需要使用半角空格或者换行符进行分隔。MySQL 中也可以使用双引号做为分隔符。 
+  
   * 注释的三种写法
+    
     - 单行（MySQL需加空格）：`--空格`；多行：`/* */`；mysql特有：`#`
 
 ## DDL
+
+无需COMMIT
 
 ### DATABASE
 
@@ -249,8 +303,22 @@
       PRIMARY KEY (列名)
     );
   -- 约束可以在定义列的时候进行设置，也可以在语句的末尾进行设置。但是NOT NULL约束只能以列为单位进行设置
+    
     ```
 
+  DROP TABLE IF EXISTS `player`;
+    CREATE TABLE `player`  (
+      `player_id` int(11) NOT NULL AUTO_INCREMENT,
+      `team_id` int(11) NOT NULL,
+      `player_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+      `height` float(3, 2) NULL DEFAULT 0.00,
+      PRIMARY KEY (`player_id`) USING BTREE,
+      UNIQUE INDEX `player_name`(`player_name`) USING BTREE
+    ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+    ```
+    
+    * 其中 player_name 字段的字符集是 utf8（推荐utf-8mb4），排序规则是utf8_general_ci，代表对大小写不敏感，如果设置为utf8_bin，代表对大小写敏感，还有许多其他排序规则这里不进行介绍。
+    
     **复制表**结构
     
     ```mysql
@@ -291,41 +359,38 @@
     ALTER TABLE 原表名 RENAME TO 新表名; -- Oracle和PostgreSQL使用这个，MySQL8测试也可以使用
     RENAME TABLE 原表名 TO 新表名;
     ```
-  ```
-  
-  ```
-  
-* 修改之**添加列**(ADD)
-  
-    ```mysql
-    ALTER TABLE 表名 ADD /*COLUMN*/(
-      列名 列类型 该列所需约束,
+  * 修改之**添加列**(ADD)
+    
+      ```sql
+      ALTER TABLE 表名 ADD /*COLUMN*/(
         列名 列类型 该列所需约束,
-      ...
-    );
-    -- MySQL、Oracle、SQL Server中可以不用写COLUMN，PostgreSQL需写上
-    ```
-  
+          列名 列类型 该列所需约束,
+        ...
+      );
+      -- MySQL、Oracle、SQL Server中可以不用写COLUMN，PostgreSQL需写上
+      ```
+    
   * 修改之**删除列**(DROP)
   
     ```mysql
-  ALTER TABLE 表名 DROP /*COLUMN*/ 列名;
+    ALTER TABLE 表名 DROP /*COLUMN*/ 列名;
     -- MySQL、Oracle可以用 (列名，列名...)来删除多个列
-  -- MySQL、Oracle、SQL Server中可以不用写COLUMN，PostgreSQL需写上
+    -- MySQL、Oracle、SQL Server中可以不用写COLUMN，PostgreSQL需写上
     ```
   
   * 修改之**修改列名/类型**(CHANGE)
-
+  
     ```mysql
-  ALTER TABLE 表名 CHANGE 原列名 新列名 列类型 主键自增长 非空约束; -- 新的类型可能会影响到已存在数据
+    ALTER TABLE 表名 CHANGE 原列名 新列名 列类型 主键自增长 非空约束; -- 新的类型可能会影响到已存在数据
+    ALTER TABLE player RENAME COLUMN age to player_age -- RENAME也可以
     ```
   
   * 修改之**修改列类型**(MODIFY)
-
+  
     ```mysql
-  ALTER TABLE 表名 MODIFY 列名 列类型 主键自增长 非空约束 -- /新的类型可能会影响到已存在数据
+    ALTER TABLE 表名 MODIFY 列名 列类型 主键自增长 非空约束 -- /新的类型可能会影响到已存在数据
     ```
-    
+  
   * 修改表的字符集
   
     ```mysql
@@ -709,17 +774,32 @@
   |     /      |      |
   |     ()     |      |
 
-  | 比较运算符             | 说明                                                         |
-  | ---------------------- | ------------------------------------------------------------ |
-  | =、<>、<、>、<=、>=    | 对**数字、日期和字符（字符按照字典顺序）**等几乎所有数据类型的列和值进行比较<br />**<>在 SQL 中表示不等于**，很多RDBMS的方言可以使用!=。 |
-  | **BETWEEN...AND**      | 在一个范围之内，如：between 100 and 200 相当于条件在 [100 到 200] 之间 |
-  | **IN**、ALL、ANY(集合) | 集合表示多个值，使用逗号分隔。ALL为所有，ANY为任意一个即可，可用最值替代 |
-| **IS [NOT] NULL**      | 查询某一列为[不为] NULL 的值，注：不能写=NULL                |
-  | **LIKE**               | 模糊查询：_匹配一个任意字符；%匹配0~N个任意字符              |
+  | 比较运算符              | 说明                                                         |
+  | ----------------------- | ------------------------------------------------------------ |
+  | =、<>、<、>、<=、>=     | 对**数字、日期和字符（字符按照字典顺序）**等几乎所有数据类型的列和值进行比较<br />**<>在 SQL 中表示不等于**，很多RDBMS的方言可以使用!=。 |
+  | **[NOT] BETWEEN...AND** | 在一个范围之内，如：between 100 and 200 相当于条件在 [100 到 200] 之间 |
+  | **IS [NOT] NULL**       | 查询某一列为[不为] NULL 的值，注：不能写=NULL                |
+| **LIKE**                | 模糊查询：_匹配一个任意字符；%匹配0~N个任意字符              |
+  |                         |                                                              |
+  | **[NOT] IN**、ALL、ANY  | 集合表示多个值，使用逗号分隔。ALL为所有，ANY为任意一个即可，可用最值替代 |
+  | **[NOT] EXIST**         | 通常使用关联子查询作为参数（是否有该条记录，经常会使用 SELECT *） |
+  
+  > 实际上即使不使用 EXIST，基本上也都可以使用 IN(或者 NOT IN)来代替
+  >
+  > ```SQL
+  > SELECT product_name, sale_price
+  > FROM Product AS P 1
+  > WHERE EXISTS (SELECT *  -- 关联子查询
+  > 							FROM ShopProduct AS SP 2
+  > 							WHERE SP.shop_id = '000C'
+  > 							AND SP.product_id = P.product_id); -- 将 Product 表和 ShopProduct 表进行了联接
+  > ```
+  >
+  > 
   
   | 逻辑运算符     | 说明                                                         |
   | -------------- | ------------------------------------------------------------ |
-  | **AND**或 &&   | 与，后者并不通用；优先于OR                                   |
+  | **AND**或 &&   | 与，后者并不通用；**优先于OR**，**“()”优先级最高**           |
   | **OR** 或 \|\| | 或                                                           |
   | **NOT**或 !    | 非；WHERE NOT代表后面的表达式的非运算（但是不要滥用，不清晰） |
   
@@ -801,7 +881,7 @@
 
 ### 分组查询(GROUP BY)
 
-* 在GROUP BY 子句中**指定的列称为聚合键**或者**分组列**。**一般与聚合函数一起使用！**
+* 在GROUP BY 子句中**指定的列称为聚合键**或者**分组列**。**一般与聚合函数一起使用！**可以有多个分组！
 * **聚合键中包含 NULL** 时，在结果中会以**“不确定”行(空行)**的形式表现出来。
 
 - **记录使用某一列进行<span style="color:red;font-weight:bold">分组(GROUP BY)</span>，然后查询组信息**
@@ -887,18 +967,26 @@ WHERE 和 HAVING 区别：
 
 ###  分页查询(LIMIT)
 
-* MySQL的方言LIMIT用来限定查询结果的**起始索引（从0开始）**，以及**总行数**：**`开始的索引 = (当前页-1) * 每页记录数`**
+* MySQL、PostgreSQL、MariaDB 和 SQLite方言LIMIT用来限定查询结果的**起始索引（从0开始）**，以及**总行数**：**`开始的索引 = (当前页-1) * 每页记录数`**
 
-  第一个参数是0可以省略；最后不足总行数的话，有多少显示多少。
+* 第一个参数是0可以省略；最后不足总行数的话，有多少显示多少。
 
   ```mysql
-  /*1. 一页的记录数：10行;2. 查询第3页*/
+/*1. 一页的记录数：10行;2. 查询第3页*/
   select * from emp limit 20, 10;
   ```
 
+* 如果是 Oracle，你需要基于 ROWNUM 来统计行数
 
+  ```sql
+  SELECT name, hp_max 
+  FROM (SELECT name, hp_max 
+        FROM heros 
+        ORDER BY hp_max) 
+  WHERE ROWNUM <=5
+  ```
 
-
+  
 
 ## DCL
 
@@ -1009,7 +1097,34 @@ WHERE 和 HAVING 区别：
   FROM Product;
   ```
   
-  
+
+
+
+- 有查询的嵌套，内部的查询称为子查询  （看SELECT关键字的个数！）
+
+- **FROM**后作为**表**存在，或用普通内连接添加多个条件来查询
+
+  - **多行多列**
+
+    ```mysql
+    SELECT * FROM 表1 别名1 , (SELECT ....) 别名2 WHERE 条件
+    ```
+
+- **WHERE**后作为**条件**存在
+
+  - **单行单列**：运算符为 >、<、>=、<=、=、<>
+
+    ```mysql
+    SELECT * FROM 表1 别名1 WHERE 列1 [=、>、<、>=、<=、!=] (SELECT 列 FROM 表2 别名2 WHERE 条件)
+    ```
+
+  - **多行单列**：运算符为 IN、ALL、ANY
+
+    ```mysql
+    SELECT * FROM 表1 别名1 WHERE 列1 [IN, ALL, ANY] (SELECT 列 FROM 表2 别名2 WHERE 条件)
+    ```
+
+
 
 ## 关联子查询
 
@@ -1052,19 +1167,474 @@ WHERE sale_price > (SELECT AVG(sale_price)
   >
   > 函数除外 
 
+* **MOD**——求余
+
+  ```sql
+  SELECT n, p, MOD(n, p) AS mod_col FROM SampleMath;
+  ```
+
+  > 主流的 DBMS 都支持 MOD 函数，只有SQL Server 不支持该函数，使用“%”来计算余数。
+
+* **ROUND**——四舍五入
+
+  ```sql
+  SELECT m, n, ROUND(m, n) AS round_col FROM SampleMath;
+  ```
+
+  > m:对象数值；n:四舍五入位数（保留）。
+
+  
+
 ### 字符串函数
+
+* **||**——拼接
+
+  ```sql
+  SELECT str1, str2, str1 | | str2 AS str_concat FROM SampleStr;
+  ```
+
+  > 进行字符串拼接时，如果其中包含 NULL，那么得到的结果也是NULL。这是因为“||”也是变了形的函数。多个也可以。
+  >
+  > 但是|| 函数在 SQL Server 和 MySQL 中无 法使用。 
+  >
+  > * SQL Server使用“+”
+  > * MySQL使用CONCAT函数（可多个）
+
+* **LENGTH**——字符串长度
+
+  ```sql
+  SELECT str1, LENGTH(str1) AS len_str FROM SampleStr;
+  ```
+
+  > 该函数也无法在 SQL Server 中使用，可以使用LEN函数来计算。
+
+  > **MySQL 中的 LENGTH** 以字节为单位的函数进行计算时，“LENGTH( 山田 )”的返回结果是 4。MySQL中还存在计算字符串长度的自有函数 CHAR_LENGTH 。
+
+* **LOWER / UPPER**——小大写转换
+
+  ```sql
+  SELECT str1, LOWER(str1) AS low_str ....
+  ```
+
+  > LOWER / UPPER 函数只能针对英文字母使用
+
+* **REPLACE**——字符串的替换
+
+  ```sql
+  SELECT str1, str2, str3, REPLACE(str1, str2, str3) AS rep_str... -- 对象字符串，替换前的字符串，替换后的字符串
+  ```
+
+* **SUBSTRING**——字符串的截取
+
+  ```sql
+  SELECT str1, SUBSTRING(str1 FROM START FOR LEN) AS sub_str ...
+  ```
+
+  > 虽然上述 SUBSTRING 函数的语法是标准 SQL 承认的正式语法，但是现在只有 PostgreSQL 和 MySQL 支持该语法。 
+  >
+  > 该函数也存在和LENGTH函数同样的**多字节字符的问题**。
+>
+  > 起始位置都是从1开始！！！
+  
+  ```sql
+  SUBSTRING(对象字符串 FROM 截取的起始位置 FOR 截取的字符数) -- PostgreSQL 、 MySQL 都可以
+  SUBSTRING(对象字符串，截取的起始位置，截取的字符数 ) -- SQL Server、MySQL 都可以
+  SUBSTR(对象字符串，截取的起始位置，截取的字符数) -- Oracle/DB2 专用语法;MySQL也可以使用，可以有前2个参数或3个参数
+  ```
+
+
 
 ### 日期函数
 
+* **CURRENT_DATE**——当前日期
+
+  ```sql
+  SELECT CURRENT_DATE; -- PostgreSQL 和 MySQL
+  SELECT CAST(CURRENT_TIMESTAMP AS DATE) AS CUR_DATE;-- SQL Server CAST函数将CURRENT_TIMESTAMP转换为日期类型
+  
+  /* 在 Oracle 中使用该函数时，需要在 FROM 子句中指定临时表(DUAL)。在 DB2 中使用时，需要在CRUUENT和DATE之间添加半角空   格，并且还需要指定临时表 SYSIBM.SYSDUMMY1(相当于 Oracle 中的 DUAL)。 */
+  SELECT CURRENT_DATE FROM dual; -- Oracle
+  SELECT CURRENT DATE FROM SYSIBM.SYSDUMMY1; -- DB2
+  ```
+
+* **CURRENT_TIME**——当前时间
+
+  ```sql
+  SELECT CURRENT_TIME; -- PostgreSQL 和 MySQL
+  SELECT CAST(CURRENT_TIMESTAMP AS TIME) AS CUR_TIME; --SQL Server CAST函数将CURRENT_TIMESTAMP转换为时间类型
+  
+  /* 需要注意的地方和 CURRENT_DATE 函数相同。在 Oracle 中使用时所得到的结果还包含日期。 */
+  SELECT CURRENT_TIMESTAMP FROM dual; -- Oracle
+  SELECT CURRENT TIME FROM SYSIBM.SYSDUMMY1; --DB2 CURRENT和TIME之间使用了半角空格，指定临时表SYSIBM.SYSDUMMY1
+  ```
+
+* **CURRENT_TIMESTAMP**——当前日期和时间
+
+  ```sql
+  SELECT CURRENT_TIMESTAMP; -- PostgreSQL、MySQL 和 SQL Server
+  
+  /* 需要注意的 地方与 CURRENT_DATE 时完全相同。 */
+  SELECT CURRENT_TIMESTAMP FROM dual; -- Oracle
+  SELECT CURRENT TIMESTAMP FROM SYSIBM.SYSDUMMY1;--DB2 CURRENT和TIME之间使用了半角空格，指定临时表SYSIBM.SYSDUMMY1
+  ```
+
+* **EXTRACT**——截取日期元素
+
+  ```sql
+  SELECT CURRENT_TIMESTAMP,
+  EXTRACT(YEAR/MONTH/DAY/HOUR/MINUTE/SECOND) FROM CURRENT_TIMESTAMP) .. -- PostgreSQL 和 MySQL
+  
+  SELECT CURRENT_TIMESTAMP, DATEPART(YEAR , CURRENT_TIMESTAMP) -- SQL Server
+  SELECT CURRENT_TIMESTAMP, EXTRACT(YEAR FROM CURRENT_TIMESTAMP) AS year -- Oracle
+  /* CURRENT和TIME之间使用了半角空格，指定临时表SYSIBM.SYSDUMMY1 */
+  SELECT CURRENT TIMESTAMP, EXTRACT(YEAR FROM CURRENT TIMESTAMP) AS year, -- DB2
+  ```
+
+  > 该函数的返回值并不是日期类型而是**数值类型**。 
+
+* DATE()：返回时间的日期部分，下同
+
+  > DATE 日期格式必须是 yyyy-mm-dd 的形式。
+
+* YEAR()
+
+* MONTH()
+
+* DAY()
+
+* HOUR()
+
+* MINUTE()
+
+* SECOND()
+
+
+
 ### 转换函数
 
-### 聚合函数
+“转换”这个词的含义非常广泛，在 SQL 中主要有两层意思：一是数据类型的转换，简称为类型转换，在英语中称为 castA ；另一层意思是值的转换。
+
+* **CAST**——类型转换
+
+  ```sql
+  CAST(转换前的值 AS 想要转换的数据类型);
+  
+  SELECT CAST('0001' AS INTEGER) AS int_col; -- SQL Server PostgreSQL
+  SELECT CAST('0001' AS SIGNED INTEGER) AS int_col; -- MySQL
+  SELECT CAST('0001' AS INTEGER) AS int_col FROM DUAL; -- Oracle
+  SELECT CAST('0001' AS INTEGER) AS int_col FROM SYSIBM.SYSDUMMY1; -- DB2
+  ```
+
+  ```SQL
+  SELECT CAST('2009-12-14' AS DATE) AS date_col; -- SQL Server PostgreSQL MySQL
+  SELECT CAST('2009-12-14' AS DATE) AS date_col FROM DUAL; -- Oracle
+  SELECT CAST('2009-12-14' AS DATE) AS date_col FROM SYSIBM.SYSDUMMY1; -- DB2
+  ```
+
+  > 将字符串类型转换为整数类型时，前面的 “000”消失了，能够切实感到发生了转换。但是，将字符串转换为日期类型时，从结果上并不能看出数据发生了什么变化。类型转换其实并不是为了方便用户使用而开发的功能，而是为了方便 DBMS 内部处理而开发的功能。
+
+* **COALESCE**——将 **NULL** 转换为其他值，返回第一个非空数值
+
+  ```sql
+  SELECT COALESCE(数据1,数据2,数据3...)
+  /* COALESCE 是 SQL 特有的函数。该函数会返回可变参数中左侧开始第1个不是 NULL 的值。*/
+  SELECT COALESCE(NULL, NULL, '2009-11-01') ... --SQL Server PostgreSQL MySQL
+  SELECT COALESCE(NULL, NULL, '2009-11-01') AS col_1 FROM DUAL; -- Oracle
+  SELECT COALESCE(NULL, NULL, '2009-11-01') AS col_1 FROM SYSIBM.SYSDUMMY1; --  DB2
+  ```
+
+  > 多数 DBMS 中都提供了特有的 COALESCE 的简化版函数(如Oracle 中的 NVL 等)
+
+
+
+### 聚合函数（略）
 
 ## 谓词
 
+> 谓词就是**返回值为真值的函数**。例如，=、<、>、<> 等比较运算符，其正式的名称就是比较谓词。是需要满足特定条件的函数，该条件就是返回值是真值TRUE/FALSE/UNKNOWN)。如 : LIKE、IS NULL、IS NOT NULL、BETWEEN、IN、EXISTS。查看DQL中WHERE条件查询。
+
+
+
 ## CASE表达式
 
+> CASE表达式分为简单CASE表达式和搜索CASE表达式两种。搜索 CASE 表达式包含简单 CASE 表达式的全部功能。 
+>
+> * 虽然CASE表达式中的ELSE子句可以省略，这时会被默认为ELSE NULL，但为了阅读方便尽量写上
+> * CASE 表达式中的 END 不能省略
+> * 使用CASE表达式能够将SELECT语句的结果进行组合
 
+### 搜索 CASE 表达式
+
+```sql
+SELECT product_name,
+			CASE WHEN product_type = '衣服'
+					 THEN 'A :' | | product_type 
+					 WHEN product_type = '办公用品' 
+					 THEN 'B :' | | product_type 
+					 WHEN product_type = '厨房用具' 
+					 THEN 'C :' | | product_type 
+      		 ELSE NULL
+			END AS abc_product_type 
+FROM Product;
+```
+
+在对 SELECT 语句的**结果进行编辑**时，CASE 表达式能够发挥较大作用。
+
+### 简单 CASE 表达式
+
+```sql
+SELECT product_name,
+			CASE product_type
+					 WHEN '衣服'			THEN 'A :' || product_type
+					 WHEN '办公用品'	 THEN 'B :' || product_type
+					 WHEN '衣厨房用具'	THEN 'C :' || product_type
+					 ELSE NULL
+			END AS abc_product_type 
+FROM Product;
+```
+
+想要在 WHEN 子句中指定不同列时，简单 CASE 表达式就无能为力了。 
+
+
+
+> 有些 DBMS 还提供了一些特有的 CASE 表达式的简化函数，例如 Oracle 中的 DECODE、MySQL 中的 IF 等。
+
+
+
+# 集合运算
+
+> 集合在数学领域表示“(各 种各样的)事物的总和”，在数据库领域表示记录的集合。具体来说，表、 视图和查询的执行结果都是记录的集合。 
+
+## 表的加减法
+
+### 表的加法——**UNION** 
+
+UNION 等集合运算符通常都会除**去重复**的记录。注意（同样适用于其他）：
+
+* 作为运算对象的记录的**列数必须相同**
+* 作为运算对象的记录中**列的类型必须一致**。CAST转换后一致也可以。
+* 可以使用任何**SELECT、WHERE、GROUP BY、HAVING等**语句，但**ORDER BY**子句只能在最后使用一次
+
+
+
+### 包含重复行——**UNION ALL** 
+
+
+
+### 公共部分——**INTERSECT**
+
+选取两个记录集合中公共部分的 **INTERSECT(交集)**
+
+
+
+### 表的减法——**EXCEPT**
+
+减法运算 EXCEPT(差集)，其语法也与 UNION 相同。
+
+EXCEPT 有一点与 UNION 和 INTERSECT 不同，那就是在减法运算中减数和被减数的**位置**不同，所得到的结果也不相同。
+
+> 只 有 Oracle 不 使 用 EXCEPT，而是使用其特有的MINUS运算符。使用Oracle的用户，请用MINUS代替 EXCEPT。
+>
+> 此外，MySQL 还不支持 EXCEPT，因此也无法使用。
+
+
+
+## 连接/联结(以列为单位)
+
+> 联结(JOIN)就是将其他表中的列添加过来，进行“添加列”的集合运算。 UNION 是以行(纵向)为单位进行操作，而联结则是以列(横向)为单位 进行的。分为内联结和外联结两种。
+>
+> ON 是专门用来指定联结条件的（联结键），它能起到与 WHERE 相同的作用。需要指定多个键时，同样可以使用 AND、OR。并且 ON 必须书写在 FROM 和 WHERE 之间。
+>
+> 联结条件也可以使用“=”来记述。在语法上，还可以使用 <= 和 BETWEEN 等谓词。但是九成以上都用=。
+
+### 内连接——JOIN...ON
+
+- 内连接查询出的所有记录**都满足条件**
+
+- 显式内连接 (**[INNER] JOIN...ON**)
+
+  ```mysql
+  SELECT * FROM 表1 (AS) 别名1 INNER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
+  ```
+
+- 隐式内连接( , WHERE)（MySQL和Oracle都支持，过时！）
+
+  ```mysql
+  SELECT * FROM 表1 别名1, 表2 别名2 WHERE 别名1.xx=别名2.xx -- 还有不等关系
+  ```
+
+### 外连接——* JOIN...ON
+
+- **左外**(**LEFT [OUTER] JOIN...ON**)
+
+  **左表记录**无论是否满足条件**都会查询出**，而**右表满足条件才能查出**。左表中不满条件的记录，右表补**NULL**
+
+  ```mysql
+  SELECT * FROM 表1 别名1 LEFT OUTER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
+  ```
+
+- **右外**(**RIGHT [OUTER] JOIN...ON**)
+
+  **右表记录**无论是否满足条件**都会查询出**，而**左表满足条件才能查出**。右表中不满条件的记录，左表补**NULL**
+
+  ```mysql
+  SELECT * FROM 表1 别名1 RIGHT OUTER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
+  ```
+
+### 交叉联结——CROSS JOIN
+
+> 这种联结在实际业务中并不会使用，但是交叉联结是所有联结运算的基础。
+>
+> 对满足相同规则的表进行交叉联结的集合运算符是CROSS JOIN(笛卡儿积)。进行交叉联结时无法使用内联结和外联结中所使用的 ON 子句
+
+## DQL练习
+
+### 单表查询
+
+- 找出奖金高于工资60%的员工
+
+  ```mysql
+  SELECT * 
+  FROM emp
+  WHERE COMM>SAL*0.6;
+  ```
+
+- 找出部门编号10所有经理，部门编号20中所有销售员，即不是经理又不是销售员但其工资大或等于20000的...
+
+  ```mysql
+  select * 
+  from emp
+  where (DEPTNO=10 AND JOB='经理') OR (DEPTNO=20 AND JOB='销售员') OR (JOB NOT IN('经理','销售员') AND SAL>=20000);
+  ```
+
+- 查询2000年入职的员工
+
+  ```mysql
+  select * 
+  from emp
+  WHERE HIREDATE LIKE '2002%';
+  ```
+
+- 查询所有员工详细信息，用工资降序排序，如果工资相同使用入职日期升序排序
+
+  ```mysql
+  select * 
+  from emp
+  order by SAL desc,HIREDATE ASC;
+  ```
+
+- 查询每种工作的最高工资、最低工资、平均工资、人数
+
+  ```mysql
+  select JOB,AVG(SAL) 平均工资,MAX(SAL) AS 最高工资,MIN(SAL)最低工资,COUNT(*) 人数 
+  from emp
+  group by JOB;
+  ```
+
+- 有奖金的工种
+
+  ```mysql
+  select JOB 
+  FROM emp
+  where COMM IS NOT NULL
+  group by JOB;
+  ```
+
+- 显示非销售人员工作名称以及从事同一工作雇员的月工资的总和，并且要满足从事同一工作的雇员的月工资合计大于50000，输出结果按月工资的合计升序排列
+
+  ```mysql
+  select JOB,SUM(SAL) 
+  FROM EMP
+  GROUP BY JOB
+  HAVING SUM(SAL)>50000 AND JOB<>'销售员'
+  ORDER BY SUM(SAL) ASC;
+  ```
+
+### 多表查询
+
+- 查出至少有一个员工的部门。显示部门编号、部门名称、部门位置、部门人数
+
+  ```mysql
+  SELECT d.deptno,d.dname,d.loc,t.cnt
+  FROM dept d 
+  	JOIN (SELECT emp.deptno, COUNT(*) cnt FROM emp GROUP BY emp.deptno HAVING COUNT(*)>1) t 
+  	ON d.deptno = t.deptno;
+  ```
+
+- 列出薪金比关羽高的所有员工
+
+  ```mysql
+  SELECT * 
+  FROM emp
+  WHERE sal>(SELECT sal FROM emp WHERE ename='关羽')
+  ```
+
+- 列出所有员工的姓名及其直接上级的姓名
+
+  ```mysql
+  SELECT e.ename, IFNULL(m.ename, 'BOSS') 领导
+  FROM emp e LEFT JOIN emp m
+  ON e.mgr=m.empno;
+  ```
+
+- 列出受雇日期早于直接上级的所有员工的编号、姓名、部门名称(**三张表**)
+
+  ```mysql
+  SELECT e.empno, e.ename, d.dname
+  FROM emp e 
+  	JOIN emp m ON e.mgr=m.empno 
+  	JOIN dept d ON e.deptno=d.deptno
+  WHERE e.hiredate<m.hiredate;
+  ```
+
+- 列出薪金高于公司平均薪金的所有员工信息，所在部门名称，上级领导，工资等级(**四张表**)
+
+  ```mysql
+  SELECT emp.*,dept.dname,e2.ename,salgrade.grade
+  FROM emp  
+  	LEFT JOIN dept ON emp.deptno = dept.deptno 
+  	LEFT JOIN emp e2  ON emp.mgr = e2.empno
+  	LEFT JOIN salgrade ON emp.sal BETWEEN salgrade.losal AND salgrade.hisal 
+  WHERE emp.sal>(SELECT AVG(emp.sal) FROM emp);
+  ```
+
+- **查出年份、利润、年度增长比**
+
+  ```mysql
+  SELECT E1.*,IFNULL(CONCAT((E1.zz-E2.zz)/E2.zz*100,'%'),0)
+  FROM lirun E1 
+  	JOIN lirun E2 ON E1.`year`=E2.`year`+1
+  ORDER BY E1.`year` ASC;
+  ```
+
+
+
+# SQL 高级处理（暂停）
+
+## 窗口函数
+
+> 窗口函数也称为 OLAP 函数。OLAP 是 OnLine Analytical Processing 的简称，意思是对数据库数据进行实时分析处理。例如，市场分析、创建财务报表、创建计划等日常性商务工作。窗口函数就是为了实现 OLAP 而添加的标准 SQL 功能。
+>
+> 截至 2016 年 5 月，Oracle、SQL Server、DB2、PostgreSQL 的最新版本都已经支持了该功能，但是 MySQL 的最新版本5.7 还是不支持该功能。
+>
+> 窗口函数可以进行排序、生成序列号等一般的聚合函数无法实现的高级操作。
+
+语法
+
+```sql
+< 窗口函数 > OVER ([PARTITION BY < 列清单 >] ORDER BY < 排序用列清单 >) -- []中的内容可以省略
+```
+
+能够作为窗口函数使用的函数:
+
+* 能够作为窗口函数的聚合函数(SUM、AVG、COUNT、MAX、MIN)
+* RANK、DENSE_RANK、ROW_NUMBER 等专用窗口函数
+
+重要的关键字是PARTITION BY和ORDER BY
+
+
+
+## GROUPING 运算符
 
 
 
@@ -1306,206 +1876,6 @@ WHERE sale_price > (SELECT AVG(sale_price)
   ```
 
 
-
-# 5 多表查询
-
-> 合并结果集(了解)
->
->  * 要求被合并的表中（结果集），列的类型和列数相同，局限性大
->      * UNION，去除重复行
->      * UNION ALL，不去除重复行
->
-
-* 需要**去除笛卡尔积中无用的数据**=
-
-## 5.1 连接查询
-
-### 5.1.1 内连接(, WHERE)
-
-* 内连接查询出的所有记录**都满足条件**
-
-* 显式内连接 (**[INNER] JOIN...ON**)
-
-    ```mysql
-    SELECT * FROM 表1 (AS) 别名1 INNER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
-    ```
-
-* **隐式内连接( , WHERE)**（MySQL和Oracle都支持）
-
-    ```mysql
-    SELECT * FROM 表1 别名1, 表2 别名2 WHERE 别名1.xx=别名2.xx -- 还有不等关系
-    ```
-
-
-### 5.1.2 外连接(* JOIN...ON)
-
-* **左外**(**LEFT [OUTER] JOIN...ON**)
-
-  **左表记录**无论是否满足条件**都会查询出**，而**右表满足条件才能查出**。左表中不满条件的记录，右表补**NULL**
-
-  ```mysql
-  SELECT * FROM 表1 别名1 LEFT OUTER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
-  ```
-
-* **右外**(**RIGHT [OUTER] JOIN...ON**)
-
-  **右表记录**无论是否满足条件**都会查询出**，而**左表满足条件才能查出**。右表中不满条件的记录，左表补**NULL**
-
-  ```mysql
-  SELECT * FROM 表1 别名1 RIGHT OUTER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
-  ```
-
-
-> 全连接：可以使用UNION来完成全链接
-
-## 5.2 子查询
-
-* 有查询的嵌套，内部的查询称为子查询  （看SELECT关键字的个数！）
-
-* **FROM**后作为**表**存在，或用普通内连接添加多个条件来查询
-
-  - **多行多列**
-
-    ```mysql
-    SELECT * FROM 表1 别名1 , (SELECT ....) 别名2 WHERE 条件
-    ```
-
-* **WHERE**后作为**条件**存在
-
-  * **单行单列**：运算符为 >、<、>=、<=、=、<>
-
-    ```mysql
-    SELECT * FROM 表1 别名1 WHERE 列1 [=、>、<、>=、<=、!=] (SELECT 列 FROM 表2 别名2 WHERE 条件)
-    ```
-
-  * **多行单列**：运算符为 IN、ALL、ANY
-
-    ```mysql
-    SELECT * FROM 表1 别名1 WHERE 列1 [IN, ALL, ANY] (SELECT 列 FROM 表2 别名2 WHERE 条件)
-    ```
-
-
-
-
-## 5.3 DQL练习
-
-### 1 单表查询
-
-* 找出奖金高于工资60%的员工
-
-  ```mysql
-  SELECT * 
-  FROM emp
-  WHERE COMM>SAL*0.6;
-  ```
-
-* 找出部门编号10所有经理，部门编号20中所有销售员，即不是经理又不是销售员但其工资大或等于20000的...
-
-  ```mysql
-  select * 
-  from emp
-  where (DEPTNO=10 AND JOB='经理') OR (DEPTNO=20 AND JOB='销售员') OR (JOB NOT IN('经理','销售员') AND SAL>=20000);
-  ```
-
-* 查询2000年入职的员工
-
-  ```mysql
-  select * 
-  from emp
-  WHERE HIREDATE LIKE '2002%';
-  ```
-
-* 查询所有员工详细信息，用工资降序排序，如果工资相同使用入职日期升序排序
-
-  ```mysql
-  select * 
-  from emp
-  order by SAL desc,HIREDATE ASC;
-  ```
-
-* 查询每种工作的最高工资、最低工资、平均工资、人数
-
-  ```mysql
-  select JOB,AVG(SAL) 平均工资,MAX(SAL) AS 最高工资,MIN(SAL)最低工资,COUNT(*) 人数 
-  from emp
-  group by JOB;
-  ```
-
-* 有奖金的工种
-
-  ```mysql
-  select JOB 
-  FROM emp
-  where COMM IS NOT NULL
-  group by JOB;
-  ```
-
-* 显示非销售人员工作名称以及从事同一工作雇员的月工资的总和，并且要满足从事同一工作的雇员的月工资合计大于50000，输出结果按月工资的合计升序排列
-
-  ```mysql
-  select JOB,SUM(SAL) 
-  FROM EMP
-  GROUP BY JOB
-  HAVING SUM(SAL)>50000 AND JOB<>'销售员'
-  ORDER BY SUM(SAL) ASC;
-  ```
-
-### 2 多表查询
-
-* 查出至少有一个员工的部门。显示部门编号、部门名称、部门位置、部门人数
-
-  ```mysql
-  SELECT d.deptno,d.dname,d.loc,t.cnt
-  FROM dept d 
-  	JOIN (SELECT emp.deptno, COUNT(*) cnt FROM emp GROUP BY emp.deptno HAVING COUNT(*)>1) t 
-  	ON d.deptno = t.deptno;
-  ```
-
-* 列出薪金比关羽高的所有员工
-
-  ```mysql
-  SELECT * 
-  FROM emp
-  WHERE sal>(SELECT sal FROM emp WHERE ename='关羽')
-  ```
-
-* 列出所有员工的姓名及其直接上级的姓名
-
-  ```mysql
-  SELECT e.ename, IFNULL(m.ename, 'BOSS') 领导
-  FROM emp e LEFT JOIN emp m
-  ON e.mgr=m.empno;
-  ```
-
-* 列出受雇日期早于直接上级的所有员工的编号、姓名、部门名称(**三张表**)
-
-  ```mysql
-  SELECT e.empno, e.ename, d.dname
-  FROM emp e 
-  	JOIN emp m ON e.mgr=m.empno 
-  	JOIN dept d ON e.deptno=d.deptno
-  WHERE e.hiredate<m.hiredate;
-  ```
-
-* 列出薪金高于公司平均薪金的所有员工信息，所在部门名称，上级领导，工资等级(**四张表**)
-
-  ```mysql
-  SELECT emp.*,dept.dname,e2.ename,salgrade.grade
-  FROM emp  
-  	LEFT JOIN dept ON emp.deptno = dept.deptno 
-  	LEFT JOIN emp e2  ON emp.mgr = e2.empno
-  	LEFT JOIN salgrade ON emp.sal BETWEEN salgrade.losal AND salgrade.hisal 
-  WHERE emp.sal>(SELECT AVG(emp.sal) FROM emp);
-  ```
-
-* **查出年份、利润、年度增长比**
-
-  ```mysql
-  SELECT E1.*,IFNULL(CONCAT((E1.zz-E2.zz)/E2.zz*100,'%'),0)
-  FROM lirun E1 
-  	JOIN lirun E2 ON E1.`year`=E2.`year`+1
-  ORDER BY E1.`year` ASC;
-  ```
 
 
 
@@ -1942,7 +2312,87 @@ Spring框架对JDBC的简单封装，提供了一个**JdbcTemplate**对象简化
 
 
 
-# 
+# MySQL 高级
+
+## SELECT 的执行顺序
+
+FROM > WHERE > GROUP BY > HAVING > SELECT 的字段 > DISTINCT > ORDER BY > LIMIT（MySQL和Oracle基本相同），如：
+
+```sql
+SELECT DISTINCT player_id, player_name, count(*) as num -- 顺序 5
+FROM player JOIN team ON player.team_id = team.team_id -- 顺序 1
+WHERE height > 1.80 -- 顺序 2
+GROUP BY player.team_id -- 顺序 3
+HAVING num > 2 -- 顺序 4
+ORDER BY num DESC -- 顺序 6
+LIMIT 2 -- 顺序 7
+```
+
+在 SELECT 语句执行这些步骤的时候，每个步骤都会产生一个**虚拟表**，然后将这个虚拟表传入下一个步骤中作为输入。
+
+首先SELECT 是先执行 FROM 这一步的。在这个阶段，如果是多张表联查，还会经历下面的几个步骤：
+
+1. 首先先通过 CROSS JOIN 求笛卡尔积，相当于得到虚拟表 vt（virtual table）1-1；
+2. 通过 ON 进行筛选，在虚拟表 vt1-1 的基础上进行筛选，得到虚拟表 vt1-2；
+3. 添加外部行。如果我们使用的是左连接、右链接或者全连接，就会涉及到外部行，也就是在虚拟表 vt1-2 的基础上增加外部行，得到虚拟表 vt1-3。
+
+如果我们操作的是两张以上的表，还会重复上面的步骤，直到所有表都被处理完为止。
+
+当我们拿到了查询数据表的原始数据，也就是最终的虚拟表 vt1，就可以在此基础上再进行 WHERE 阶段。在这个阶段中，会根据 vt1 表的结果进行筛选过滤，得到虚拟表 vt2。
+
+然后进入第三步和第四步，也就是 GROUP 和 HAVING 阶段。在这个阶段中，实际上是在虚拟表 vt2 的基础上进行分组和分组过滤，得到中间的虚拟表 vt3 和 vt4。
+
+首先在 SELECT 阶段会提取想要的字段，然后在 DISTINCT 阶段过滤掉重复的行，分别得到中间的虚拟表 vt5-1 和 vt5-2。
+
+当我们提取了想要的字段数据之后，就可以按照指定的字段进行排序，也就是 ORDER BY 阶段，得到虚拟表 vt6。
+
+最后在 vt6 的基础上，取出指定行的记录，也就是 LIMIT 阶段，得到最终的结果，对应的是虚拟表 vt7。
+
+
+
+## 什么情况下用 SELECT*，如何提升 SELECT 查询效率？
+
+使用SELECT *的查询效率和把所有列名都写出来再进行查询的效率相差并不大，但是在生产环境下，不推荐直接使用，应是查询需要的列。
+
+
+
+## COUNT(*)和COUNT(1)
+
+在MySQL InnoDB存储引擎中，COUNT(*)和COUNT(1)都是对的所有结果进行的COUNT。如果有WHERE子句，则是对所有符合筛选条件的数据行进行统计。如果没有WHERE子句，则是对数据表的数据行数进行统计。因此COUNT(\*)和COUNT(1)本质上没有区别，执行的复杂度都是O(N)，也就是采用全表扫描，进行循环+计数的方式进行统计。
+
+如果是MySQL MyISAM存储引擎，统计数据表的行数只需要O(1)复杂度，这是因为每张MyISAM的数据表都有一个meta信息有存储了row_count值。而一致性由表级锁来保证。而InnoDB支持事务，采用行级锁和MVCC机制，所以无法像MyISAM一样，只维护一个row_count变量。因此就需要采用扫描全表，进行循环+计数的方式来完成统计。
+
+另外在InnoDB引擎中，如果是采用COUNT(*)和COUNT(1)来统计数据行数，要尽量采用二级索引。因为主键采用的索引是聚簇索引，聚簇索引包含的信息多，明显会大于二级索引（非聚簇索引）。对于查找具体的行来说，采用主键索引效率更高。而对于COUNT(\*)和COUNT(1)这种，不需要查找具体的行，只是统计行数来说，系统会自动采用占用空间更小的二级索引来进行统计。如果有多个二级索引的时候，会使用key_len小的二级索引进行扫描。当没有二级索引的时候，才会采用主键索引来进行统计。
+
+优化总结：
+1、一般情况下：COUNT(\*) = COUNT(1) > COUNT(字段)
+所以尽量使用COUNT(*)，当然如果你要统计的是就是某个字段的非空数据行数，那另当别论。毕竟执行效率比较的前提是要结果一样才行。
+2、如果要统计COUNT(\*)，尽量在数据表上建立二级索引，系统会自动采用key_len小的二级索引进行扫描，这样当我们使用SELECT COUNT(\*)的时候效率就会提升，有时候提升几倍甚至更高都是有可能的。
+
+## show profiling
+
+```mysql
+mysql> select @@profiling; -- 查看 profiling 是否开启。0为关闭，1为开启；
+mysql> set profiling=1; -- 开启profileing
+mysql> show profiles; -- 查看当前会话产生的所有 profiles
+mysql> show profile; -- 获取上一次查询的执行时间
+mysql> show profile for query 2; -- 指定id的执行时间
+```
+
+
+
+## 索引
+
+要避免全表扫描，所以我们会考虑**在 WHERE 及 ORDER BY 涉及到的列上增加索引**。目的是在WHERE子句中避免全表扫描，ORDER BY子句避免使用FileSort排序。如果WHERE和ORDER BY相同列就使用单索引列；如果不同使用联合索引。
+
+在MySQL中，支持两种排序方式：FileSort和Index排序。Index排序的效率更高，尽量使用Index索引：
+
+* Index排序：索引可以**保证数据的有序性**，因此不需要再进行排序。
+* FileSort排序：一般在内存中进行排序，占用CPU较多。如果待排结果较大，会产生临时文件I/O到磁盘进行排序，效率较低。
+
+
+
+
 
 # 第二部分 Oracle
 
