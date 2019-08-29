@@ -732,6 +732,12 @@ Java保留字：现有Java版本尚未使用，但以后版本可能会作为关
 
 
 
+## 1.10 main方法
+
+* main()方法作为程序的入口
+* main()方法也是一个普通的静态方法
+* main()方法可以作为我们与控制台交互的方式。加不加引号都可以（之前：使用Scanner）
+
 
 ## 1.9  JShell脚本工具 
 
@@ -1429,9 +1435,29 @@ public static void bubbleSort(int[] arr){
 
 ### 代码块
 
+* 作用：用来**初始化类、对象**
+* 代码块如果有修饰的话，**只能使用static**。因此可以分为如下：
+    * 静态代码块
+        * 内部可以有输出语句
+        * **随着类的加载而执行，而且只执行一次**
+        * 作用：**初始化类的信息**
+        * 如果一个类中定义了多个静态代码块，则按照声明的先后顺序执行
+        * 静态代码块的执行要优先于非静态代码块的执行
+        * 静态代码块内只能调用静态的属性、静态的方法，不能调用非静态的结构
+    * 非静态代码块
+        * 内部可以有输出语句
+        * **随着对象的创建而执行**。每创建一个对象，就执行一次非静态代码块
+        * 作用：**可以在创建对象时，对对象的属性等进行初始化**
+        * 如果一个类中定义了多个非静态代码块，则按照声明的先后顺序执行
+        * 非静态代码块内可以调用静态的属性、静态的方法，或非静态的属性、非静态的方法
+
+
+
 
 
 ### 内部类
+
+
 
 
 
@@ -1607,9 +1633,95 @@ Java中通过**将数据声明为私有的(private)**，再**提供公共的(pub
 
 ### static
 
+某些特定的数据在内存空间里只有一份，如果一个成员使用了static关键字（静态的），那么这个成员不再属于自己，而是**属于所在类**，**由多个对象共享这个成员**。可用于修饰**成员变量、方法、代码块、内部类**。
+
+* 修饰**属性/成员变量**：**静态成员变量（或类变量）**
+
+    * 属性按照是否使用static修饰，又分为：静态成员变量（或类变量）和 非静态变量（实例变量）
+        * 静态变量：多个对象共享同一个静态变量。
+        * 实例变量：每个对象都独立的拥有一套类中的非静态变量。
+
+    * static修饰属性的其他说明：
+        * 静态变量**随着类的加载而加载**。可以通过"类.静态变量"的方式进行调用
+        * 静态变量的**加载要早于对象的创建**。
+        * 由于类只会加载一次，则静态变量在内存中也只会存在一份：存在**方法区的静态域中**。
+    * 静态属性举例：System.out; Math.PI
+
+* 修饰方法：**静态方法**
+
+    * **随着类的加载而加载**，可以通过"类.静态方法"的方式进行调用
+    * 注意（由于生命周期）：
+        * 静态方法中，只能调用静态的方法或属性
+        * 非静态方法中，既可以调用非静态的方法或属性，也可以调用静态的方法或属性
+    * static注意点：
+         *    在静态的方法内，**不能使用this关键字、super关键字**
+         *    关于静态变量和静态方法的使用，大家都从生命周期的角度去理解。
+
+    > 开发中，如何确定一个属性是否要声明为static的？
+    >
+    > - 属性是可以被多个对象所共享的，不会随着对象的不同而不同的。
+    > - 类中的常量也常常声明为static
+    >
+    > 开发中，如何确定一个方法是否要声明为static的？
+    >
+    > * 操作静态属性的方法，通常设置为static的
+    > * 工具类中的方法，习惯上声明为static的。 比如：Math、Arrays、Collections
+
+* 单例设计模式有用到
+
+      
+
+
+
+
+
 
 
 ### final
+
+final，最终的。可以用来修饰的结构：类、方法、变量：
+
+* **类**：**此类不能被其他类所继承**。比如：String类、System类、StringBuffer类
+* **方法**：表明**此方法不可以被重写**。比如：Object类中getClass()，是native方法
+* **变量（成员变量、局部变量）**：**此时的"变量"就称为是一个常量，名称大写，且只 能被赋值一次。**。
+    * final修饰**属性**：**必须赋值**！可以考虑赋值的位置有：显式初始化、代码块初始化、构造器初始化（所有构造器都需）
+    * final修饰**局部变量**：尤其是使用final修饰形参时，表明此形参是一个常量。当我们调用此方法时，给常量形参赋一个实参。一旦赋值以后，就只能在方法体内使用此形参，但不能进行重新赋值。
+
+**static final 用来修饰属性：全局常量**
+
+
+
+习题1：
+
+```java
+public class Something {
+    public int addOne(final int x) {
+    	return ++x; // 编译报错
+        // return x + 1; // OK
+    } 
+}
+```
+
+习题2：
+
+```java
+public class Something {
+    public static void main(String[] args) {
+        Other o = new Other();
+        new Something().addOne(o); 
+    }
+    public void addOne(final Other o) { 
+        // o = new Other(); // 编译报错
+        o.i++; // OK
+    } 
+}
+
+class Other { 
+    public int i;
+{
+```
+
+
 
 
 
@@ -1621,15 +1733,16 @@ Java中通过**将数据声明为私有的(private)**，再**提供公共的(pub
 
 
 
-### package / import
+### package / import / jar
 
-* package语句作为Java源文件的第一条语句，指明该文件中定义的类所在的包（若缺省该语句，则指定为无名包）
+* package语句作为Java源文件的**第一条语句**，指明该文件中定义的类所在的包（若缺省该语句，则指定为无名包）
 
 * 用处：
   * 包帮助管理大型软件系统:将功能相近的类划分到同一个包中。比如：MVC的设计模式
   * 包可以包含类和子包，划分项目层次，便于管理
   * 解决类命名冲突的问题
   * 控制访问权限
+  
 * JDK中主要的包：
   * `java.lang`----包含一些Java语言的核心类，如String、Math、Integer、 System和Thread，提供常用功能
   * `java.util`----包含一些实用工具类，如定义系统特性、接口的集合框架类、使用与日期日历相关的函数。
@@ -1637,6 +1750,14 @@ Java中通过**将数据声明为私有的(private)**，再**提供公共的(pub
   * `java.net`----包含执行与网络相关的操作的类和接口。
   * `java.text`----包含了一些java格式化相关的类
   * `java.sql`----包含了java进行JDBC数据库编程的相关类/接口
+  
+* 生成与包名对应目录(目录中可以是绝对地址、相对地址、“.”可以表示当前目录)，运行时要加上包名
+
+    ```java
+    javac -d [目录] Hello.java
+    cd 目录
+    java cn.itcast.chapter01.Hello
+    ```
 
 ------
 
@@ -1648,6 +1769,42 @@ Java中通过**将数据声明为私有的(private)**，再**提供公共的(pub
   * 如果在代码中使用不同包下的同名的类。那么就需要使用类的全类名的方式指明调用的是哪个类。
   * **已经导入java.lang包下的类。那么如果需要使用其子包下的类的话，仍然需要导入**
   * **import static组合**的使用：调用指定类或接口下的静态的**属性或方法**
+
+------
+
+- Java Archive File，Java档案文件，是一种压缩文件，独立于任何操作系统。操作步骤如下：
+
+    1. **编译生成**与包名对应目录的**class文件**
+
+        ```
+        java -d . Hello.java
+        ```
+
+    2. 利用**jar命令**将cn及其目录下的文件都**压缩成jar包**
+
+        ```
+        jar -cvf Hello.jar cn
+        ```
+
+    3. 由于目前jar包中没有**主清单属性**，修改jar包`META-INF`中`MANIFEST.MF`文件，**指定main方法所在类**
+
+        ```
+        Main-Class: cn.itcast.chapter01.Hello	//注意“:”后有空格
+        ```
+
+    4. **运行jar包**
+
+        ```
+        java -jar Hello.jar
+        ```
+
+    5. **解压jar包**
+
+        ```
+        jar -xvf Hello.jar
+        ```
+
+
 
 
 
@@ -1684,7 +1841,7 @@ Java中通过**将数据声明为私有的(private)**，再**提供公共的(pub
 
 
 
-## 一个对象的实例化过程
+## 对象实例化过程&属性赋值顺序
 
 1. JVM加载`main()`所属的类的`.class`文件，**若有基类则先加载基类**（总是在使用时加载其`.class`文件）
 
@@ -1700,6 +1857,40 @@ Java中通过**将数据声明为私有的(private)**，再**提供公共的(pub
 3. 初始化完毕后，将地址**赋值**给引用变量。
 
 【注意】方法重写
+
+
+
+对属性可以赋值的位置：
+
+- ①默认初始化
+
+- ②显式初始化/⑤在代码块中赋值
+
+- ③构造器中初始化
+
+- ④有了对象以后，可以通过"对象.属性"或"对象.方法"的方式，进行赋值
+
+    执行的先后顺序：① - ② / ⑤ - ③ - ④
+
+```java
+public class OrderTest {
+    public static void main(String[] args) {
+        Order order = new Order();
+        System.out.println(order.orderId);
+    }
+}
+
+class Order{
+    {
+        orderId = 4;
+    }
+    int orderId = 3;
+}
+```
+
+------
+
+习题1：
 
 ```java
 public class Father{
@@ -1724,9 +1915,7 @@ public class Father{
         return 1;
     }
 }
-```
 
-```java
 public class Son extends Father{
     private int i = test();
     private static int j = method();
@@ -1756,6 +1945,146 @@ public class Son extends Father{
     }
 }
 ```
+
+
+
+习题2：
+
+```java
+//总结：由父及子，静态先行
+class Root{
+    static{
+        System.out.println("Root的静态初始化块");
+    }
+    {
+        System.out.println("Root的普通初始化块");
+    }
+    public Root(){
+        super();
+        System.out.println("Root的无参数的构造器");
+    }
+}
+class Mid extends Root{
+    static{
+        System.out.println("Mid的静态初始化块");
+    }
+    {
+        System.out.println("Mid的普通初始化块");
+    }
+    public Mid(){
+        super();
+        System.out.println("Mid的无参数的构造器");
+    }
+    public Mid(String msg){
+        //通过this调用同一类中重载的构造器
+        this();
+        System.out.println("Mid的带参数构造器，其参数值："
+                           + msg);
+    }
+}
+class Leaf extends Mid{
+    static{
+        System.out.println("Leaf的静态初始化块");
+    }
+    {
+        System.out.println("Leaf的普通初始化块");
+    }	
+    public Leaf(){
+        //通过super调用父类中有一个字符串参数的构造器
+        super("尚硅谷");
+        System.out.println("Leaf的构造器");
+    }
+}
+public class LeafTest{
+    public static void main(String[] args){
+        new Leaf(); 
+        System.out.println();
+        new Leaf();
+    }
+    /*
+    Root的静态初始化块
+    Mid的静态初始化块
+    Leaf的静态初始化块
+    Root的普通初始化块
+    Root的无参数的构造器
+    Mid的普通初始化块
+    Mid的无参数的构造器
+    Mid的带参数构造器，其参数值：尚硅谷
+    Leaf的普通初始化块
+    Leaf的构造器
+
+    Root的普通初始化块
+    Root的无参数的构造器
+    Mid的普通初始化块
+    Mid的无参数的构造器
+    Mid的带参数构造器，其参数值：尚硅谷
+    Leaf的普通初始
+    */
+}
+```
+
+
+
+习题3：
+
+```java
+class Father {
+    static {
+        System.out.println("11111111111");
+    }
+    {
+        System.out.println("22222222222");
+    }
+
+    public Father() {
+        System.out.println("33333333333");
+
+    }
+}
+
+public class Son extends Father {
+    static {
+        System.out.println("44444444444");
+    }
+    {
+        System.out.println("55555555555");
+    }
+    public Son() {
+        System.out.println("66666666666");
+    }
+
+
+    public static void main(String[] args) { // 由父及子 静态先行
+        System.out.println("77777777777");
+        System.out.println("************************");
+        new Son();
+        System.out.println("************************");
+        new Son();
+        System.out.println("************************");
+        new Father();
+    }
+}
+/*
+11111111111
+44444444444
+77777777777
+************************
+22222222222
+33333333333
+55555555555
+66666666666
+************************
+22222222222
+33333333333
+55555555555
+66666666666
+************************
+22222222222
+33333333333
+*/
+```
+
+
 
 
 
@@ -2575,7 +2904,12 @@ public class InterviewTest {
   * `getClass()`返回对象的字节码文件对象，反射中讲解
 
   * `finalize()`未被引用的对象（为null）将被垃圾回收。也可以调用`System.gc()`或`Runtime.getRuntime().gc()`来通知系统进行垃圾回收，但是系统是否进行垃圾回收依然不确定。在垃圾回收机制回收任何对象之前，总会调用该对象的`finalize()`方法。但若重写该方法，则又激活该对象（明白？）。总之不要主动调用该方法，应该交给垃圾回收机制来调用。
+
   * `clone()`实现对象**克隆**，包括成员变量的数据复制，但是它和两个引用指向同一个对象是有区别的 
+
+  * wait / notify / notifyAll
+
+- 只声明了一个空参构造器
 
 - **【面试】**==和equals()区别：
 
@@ -2674,7 +3008,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
         - ~~利用其构造器，可传入基本类型、String。在JDK9时过时~~
 
-            其中Boolean在传入字符串时`return "true".equalsIgnoreCase(s)`
+            其中Boolean在传入字符串时底层方法为`return "true".equalsIgnoreCase(s)`
 
     - 拆箱：将引用数据类型的值转为基本数据类型，提供如下成员方法，其他包装类同理。
 
@@ -2697,7 +3031,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
     - `static String toString(int num,int radix)`               十进制到其他进制`toString`
     - `static int parseInt(String s,int radix)`                   其他进制到十进制`parseInt`
 
-- **【面试】**基本类型的包装类（除浮点数）都有其缓存，Boolean为true、false，Character为0~127，其他为-128~127**，其内有内部类**
+- **基本类型的包装类（除浮点数）都有其缓存，Boolean为true、false，Character为0~127，其他为-128~127（其有内部类）**
 
 - **注意：**
 
@@ -6626,13 +6960,13 @@ public static void main(String[] args) {
     
     3. 给方法加**@Test**
     4. 导入**junit依赖环境**，`org.junit`
-    
+  
 * 判定结果：
     * **红色**：失败
     * **绿色**：成功
     * 一般我们会使用**断言**操作来处理结果
       * **`Assert.assertEquals(expected 期望的结果,actual 运算的结果);`**，支持各种类型数据
-  
+    
   * 补充：以下方法无论测试成功与否都会执行
     * **@Before**:
       * 修饰的方法会在**测试方法之前被自动执行**，用于资源申请`init`
@@ -7072,11 +7406,17 @@ public static void main(String[] args) throws Exception {
 
 # 12 面向对象思想设计原则及设计模式
 
-## 12.1 设计原则
+## 设计原则
 
-## 12.2 设计模式
+## 设计模式
 
-### 12.2.1 **简单工厂模式（静态工厂方法模式）**
+设计模式是在大量的实践中总结和理论化之后优选的代码结构、编程风格、 以及解决问题的思考方式。有23种设计模式：
+
+* 创建型模式（5）：
+* 结构型模式（7）：
+* 行为型模式（11）：
+
+### 简单工厂模式（静态工厂方法模式）
 
 * 它定义一个**具体的工厂类**负责创建一些类的实例
 
@@ -7107,7 +7447,7 @@ public class AnimalFactory {
 }
 	//静态方法，类名调用
 ```
-### 12.2.2 **工厂方法模式**
+### 工厂方法模式
 
 * **抽象工厂类负责**定义创建对象的**接口**，具体对象的创建工作由继承抽象工厂的具体类实现
 
@@ -7147,81 +7487,93 @@ public static void main(String[] args) {
 
 
 
-### 12.2.3 **单例设计模式**
+### 单例设计模式Singleton
 
-* 确保类在内存中**只有一个对象**，该实例必须**自动创建**，并且**对外提供**
+确保类在一个虚拟机中**只有一个对象实例**，该实例必须**自动创建**，并且**对外提供**
 
-  * **优点**：在系统内存中只存在一个对象，因此可以节约系统资源，对于一些需要频繁创建和销毁的对象单例模式无疑可以提高系统的性能
+* **优点**：由于单例模式只生成一个实例，**减少了系统性能开销**，当一个对象的 产生需要比较多的资源时，如读取配置、产生其他依赖对象时，则可 以通过在应用启动时直接产生一个单例对象，然后永久驻留内存的方 式来解决。
 
-  * **缺点**：
+* **缺点**：没有抽象层，因此扩展很难；职责过重，在一定程序上违背了单一职责
 
-     没有抽象层，因此扩展很难；
+* **实现**：
 
-      	职责过重，在一定程序上违背了单一职责
+  1. 构造方法私有
+  2. 在成员位置自己创建一个对象，加**私有**
+  3. 通过一个公共的方法提供访问，加**静态**
 
-  * **实现**：
-
-    1. 构造方法私有
-    2. 在成员位置自己创建一个对象，加**私有**
-    3. 通过一个公共的方法提供访问，加**静态**
-
-    * **饿汉式**（类一加载就创建对象）（开发用，是不会出问题的单例模式）
-
-      ```java
-      private static Student s = new Student();
-      private Student() {}
-      public static Student getStudent() {
-      	return s;
-      }
-      ```
-
-    * **懒汉式**（用的时候才创建）（面试用，可能会出问题的单例模式）
-
-      ```java
-      private static Teacher t = null;
-      private Teacher() {}
-      public static Teacher getTeacher() {
-      	if(t==null) {
-      		t=new Teacher();
-      	}
-      	return t;
-      }
-      ```
-
-    * 线程安全的单例模式，还不用加锁，采用内部类
-
-      ```java
-      public class Singleton {
-      
-          private Singleton() {
-          }
-      
-          private static class Inner {
-              private static Singleton s = new Singleton();
-          }
-      
-          public static Singleton getInstance() {
-              return Inner.s;
-          }
-      
-      }
-      ```
-
-      
-
-  * **Runtime类（饿汉式）**每个Java应用程序都有一个Runtime类实例，使应用程序能够与其运行的环境相连
-
-    `public Process exec(String command) throws IOException`在单独的进程中执行指定的字符串命令
+  * **饿汉式**（类一加载就创建对象）（线程安全）
 
     ```java
-    Runtime r = Runtime.getRuntime();
-    r.exec("calc");
-    r.exec("notepad");
-    r.exec("shutdown -s -t 10000");//10000秒后关机
-    r.exec("shutdown -a");//取消关机
+    private static Student s = new Student();
+    private Student() {}
+    public static Student getInstance() {
+    	return s;
+    }
     ```
 
-### 12.2.4 模板设计模式
+  * **懒汉式**（用的时候才创建）（可能会出问题的单例模式，需要**DCL**修改）
+
+    ```java
+    private static Teacher t = null;
+    private Teacher() {}
+    public static Teacher getInstance() {
+    	if(t==null) {
+    		t=new Teacher();
+    	}
+    	return t;
+    }
+    
+    //=================DCL=================
+    
+    ```
+
+  * 线程安全的单例模式，还不用加锁，采用内部类
+
+    ```java
+    public class Singleton {
+    
+        private Singleton() {
+        }
+    
+        private static class Inner {
+            private static Singleton s = new Singleton();
+        }
+    
+        public static Singleton getInstance() {
+            return Inner.s;
+        }
+    
+    }
+    ```
+
+  * **DCL**
+
+* **Runtime类（饿汉式）**每个Java应用程序都有一个Runtime类实例，使应用程序能够与其运行的环境相连
+
+  `public Process exec(String command) throws IOException`在单独的进程中执行指定的字符串命令
+
+  ```java
+  Runtime r = Runtime.getRuntime();
+  r.exec("calc");
+  r.exec("notepad");
+  r.exec("shutdown -s -t 10000");//10000秒后关机
+  r.exec("shutdown -a");//取消关机
+  ```
+
+* 应用场景
+    * **网站的计数器**，一般也是单例模式实现，否则难以同步
+    * **应用程序的日志应用**，一般都使用单例模式实现，这一般是由于共享的日志文件一直处于打开状态，因为只能有一个实例去操作，否则内容不好追加
+    * **数据库连接池**的设计一般也是采用单例模式，因为数据库连接是一种数据库资源
+    * 项目中，**读取配置文件的类**，一般也只有一个对象。没有必要每次使用配置文件数据，都生成一个对象去读取
+    * **Application** 也是单例的典型应用
+    * Windows的**Task Manager** (任务管理器)就是很典型的单例模式
+    * Windows的**Recycle Bin** (回收站)也是典型的单例应用。在整个系统运行过程中，回收站一直维护着仅有的一个实例
+
+
+
+
+
+### 模板设计模式
 
 * 模版设计模式就是定义一个算法的骨架，而将具体的算法延迟到子类中来实现 
 * **优点：**在定义算法骨架的同时，可以很灵活的实现具体的算法，满足用户灵活多变的需求
@@ -7232,7 +7584,7 @@ public static void main(String[] args) {
     * 需要测试的代码通过实现该抽象类并重写抽象方法
     * 在测试类中创建该实现类并调用计算耗时的方法
 
-### 12.2.5 装饰设计模式
+### 装饰设计模式
 
 * 装饰模式就是使用被装饰类的一个子类的实例，在客户端将这个子类的实例交给装饰类。是继承的替代方案 
 * 优点：使用装饰模式，可以提供比继承更灵活的扩展对象的功能，它可以动态的添加对象的功能，并且可以随意的组合这些功能 
