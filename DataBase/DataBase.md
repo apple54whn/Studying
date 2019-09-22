@@ -1235,7 +1235,7 @@ WHERE sale_price > (SELECT AVG(sale_price)
   > 该函数也存在和LENGTH函数同样的**多字节字符的问题**。
 >
   > 起始位置都是从1开始！！！
-  
+
   ```sql
   SUBSTRING(对象字符串 FROM 截取的起始位置 FOR 截取的字符数) -- PostgreSQL 、 MySQL 都可以
   SUBSTRING(对象字符串，截取的起始位置，截取的字符数 ) -- SQL Server、MySQL 都可以
@@ -1457,7 +1457,7 @@ EXCEPT 有一点与 UNION 和 INTERSECT 不同，那就是在减法运算中减�
   SELECT * FROM 表1 (AS) 别名1 INNER JOIN 表2 别名2 ON 别名1.xx=别名2.xx -- 还有不等关系
   ```
 
-- 隐式内连接( , WHERE)（MySQL和Oracle都支持，过时！）
+- 隐式内连接( , WHERE)（MySQL和Oracle都支持，与JOIN不同！主表为第一个！）
 
   ```mysql
   SELECT * FROM 表1 别名1, 表2 别名2 WHERE 别名1.xx=别名2.xx -- 还有不等关系

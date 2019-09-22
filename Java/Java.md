@@ -1,6 +1,6 @@
 [TOC]
 
-# 0-278集
+# 0
 
 ## 计算机字符编码
 
@@ -2909,18 +2909,19 @@ class Ball implements Rollable {
 
 ## 3.3 异常的处理
 
-### 3.3.4 捕获异常 try-catch-finally
+关于异常对象的产生：
+
+-   系统自动生成的异常对象
+-   手动的生成一个异常对象，并抛出（throw）
 
 Java提供的是异常处理的**抓抛模型**。
 
-*   抛：程序在正常执行的过程中，一旦出现异常，就会在异常代码处生成一个对应异常类的对象。该异常对象将被提交给Java运行时系统，这个过程称为抛出(throw)异常。一旦抛出对象以后，其后的代码就不再执行。
-*   抓：可以理解为异常的处理方式：try-catch-finally  、 throws
+-   抓：可以理解为异常的处理方式：try-catch-finally  、 throws
+-   抛：程序在正常执行的过程中，一旦出现异常，就会在异常代码处生成一个对应异常类的对象。该异常对象将被提交给Java运行时系统，这个过程称为抛出(throw)异常。一旦抛出对象以后，其后的代码就不再执行。
 
-关于异常对象的产生：
 
-*   系统自动生成的异常对象
 
- * 					 手动的生成一个异常对象，并抛出（throw）
+### 3.3.1 抓—捕获异常 try-catch-finally
 
 **捕获异常**：Java中对异常有针对性的语句进行捕获，可以对出现的异常进行指定方式的处理。
 
@@ -2934,30 +2935,98 @@ try {
 ...
 catch (异常类名 变量名) {
 
+} finally {
+    //一定会执行的代码
 }
 ```
 
--   注意：
-    -   try中可能会抛出多个异常对象,那么就可以使用多个catch来处理这些异常对象
-        -   如果try中产生了异常，那么就会执行catch中的异常处理逻辑，执行完毕catch中的处理逻辑,继续执行try...catch之后的代码
-        -   如果try中没有产生异常，那么就不会执行catch中异常的处理逻辑，执行完try中的代码,继续执行try...catch之后的代码
+*   使用try将可能出现异常代码包装起来，在执行过程中，一旦出现异常，就会生成一个对应异常类的对象，根据此对象的类型，去catch中进行匹配。一旦try中的异常对象匹配到某一个catch时，就进入catch中进行异常的处理。一旦处理完成，就跳出当前的try-catch结构（只匹配一个。在没有写finally的情况）。继续执行其后的代码。
+
+*   catch中的异常类型如果没有子父类关系，则谁声明在上，谁声明在下无所谓。也可以放入一个catch中。
+
+    catch中的异常类型如果满足子父类关系，则要求子类一定声明在父类的上面。否则，报错。
+
+*   常用的异常对象处理的方式： 
+
+    *   `String  getMessage()` 
+    *   `printStackTrace()`
+
+-   在try结构中声明的变量，再出了try结构以后，就不能再被调用
+-   try-catch-finally结构**可以嵌套**
 -   多个异常使用捕获该如何处理
     -   多个异常分别处理
-    -   ==多个异常**一次捕获，多次处理**（若捕获的异常**有子父类关系**，**父类放下面**；**没有**可以放在**一个catch中**）==
+    -   多个异常**一次捕获，多次处理**（若捕获的异常**有子父类关系**，**父类放下面**；**没有**可以放在**一个catch中**）
     -   多个异常一次捕获一次处理
 -   **运行时异常**被抛出**可以不处理**。即不捕获也不声明抛出。
 
 
 
+#### finally 代码块
+
+**finally**：`try`中异常语句后的代码不被执行，**必须要执行的**可以放在`finally`中，如**释放系统资源**。但是当在`try...catch...`中**执行`System.exit(0)`**(表示**退出当前Java虚拟机**)，**`finally`才不会执行**
+
+语法：`try...catch....finally`，不能单独使用
+
+-   如果**finally有return语句**，将**覆盖**原始的返回值，永远返回finally中的值。一般应避免该情况
+
+    ```java
+    public static int fin() {
+        int a = 10;
+        try {
+            return a;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            a = 40;
+            return a; //最终返回40。这里若修改为return 4，最终就返回4
+            // 若没有return a; 这行代码，则无论a怎么变化，还是会返回10；
+        }
+    }
+    ```
 
 
 
+### 3.3.2 抓—声明异常 throws
 
-### 3.3.1 抛出异常throw
+关键字**throws**运用于**方法声明之上**，用于**表示当前方法不处理异常**，而是**提醒**该方法的**调用者来处理异常**。
+
+```java
+修饰符 返回值类型 方法名(参数) throws 异常类名1,异常类名2…{   }
+```
+
+-   注意：
+
+    -   throws关键字必须写在**方法声明处**，指明此方法执行时，可能会抛出的异常类型。
+
+    -   一旦当方法体执行时，出现异常，仍会在异常代码处生成一个异常类的对象，此对象满足throws后异常
+
+        类型时，就会被抛出。异常代码后续的代码，就不再执行！
+
+    -   throws关键字后边声明的异常必须是**Exception或者是Exception的子类**
+
+    -   方法内部如果**抛出了多个异常对象**，那么throws后边必须也**声明多个异常**
+
+        如果抛出的多个异常对象有**子父类关系**,那么**直接声明父类异常即可**
+
+    -   **调用**了一个声明**抛出异常的方法**,我们就必须的**处理**声明的异常
+
+        -   要么**try-catch**自己处理异常
+        -   要么继续使用**throws**声明抛出，交给方法的调用者处理，最终交给JVM
+
+
+
+>   开发中如何选择使用try-catch-finally 还是使用throws？
+>
+>   *   **如果父类中被重写的方法没有throws方式处理异常，则子类重写的方法也不能使用throws**，意味着如果子类重写的方法中有异常，必须**使用try-catch-finally方式处理**。
+>    *       **执行的方法a中，先后又调用了另外的几个方法**，这几个方法是**递进关系**执行的。我们建议这几个方法**使用throws**的方式进行处理。而执行的方法a可以考虑使用try-catch-finally方式进行处理。（可能try-catch已经捕获了异常，之后的需要的数据没获取到）
+
+
+
+### 3.3.3 抛—抛出异常throw
 
 在编写程序时，我们必须要考虑程序出现问题的情况。比如，在**定义方法**时，方法需要**接受参数**。那么，当调用方法使用接受到的参数时，首先需要**先对参数数据进行合法的判断**，数据若**不合法**，就应该**告诉调用者**，传递合法的数据进来。这时需要使用**抛出异常**的方式来告诉调用者。
 
--   在java中，提供了一个throw关键字，==**throw用在方法内，抛出一个指定的异常对象**==
+-   在java中，提供了一个throw关键字，**throw用在方法内，抛出一个指定的异常对象**
 
     -   **创建一个异常对象**，封装一些提示信息(信息可以自己编写)。
 
@@ -2975,115 +3044,40 @@ catch (异常类名 变量名) {
         -   throw关键字后边创建的是**RuntimeException**或是**其子类对象**,**可以不处理**,默认交给JVM处理
         -   throw关键字后边创建的是**编译异常**(写代码的时候报错),我们就**必须处理**,要么throws,要么try...catch
 
-**【面试】**throw语句后不能跟其他代码，否则永远执行不到，编译错误
-
-```java
-try {
-    throw new Exception();
-    System.out.println("怎么也执行不到，编译失败");
-} catch (Exception e) {
-    e.printStackTrace();
-}
-```
 
 
 
-### 3.3.2 Objects非空判断
+
+### 3.3.6 子父类异常注意事项
+
+-   父类的方法**抛出或不抛出**异常，子类重写的方法抛出的异常必须**小于等于父类抛出的异常**（多态）
+
+-   父类的方法**抛出**一个或多个**异常**，**子类**重写的方法**抛出的异常**必须**与父类相同**或是**其子类**或**不抛**
+
+-   父类的方法**没有异常抛出**，子类重写的方法**不能有异常抛出**。若**产生异常则只能捕获处理**
+
+    
+
+
+
+## 3.4 Objects非空判断
 
 Objects工具类提供的判断对象是否合法`Objects.requireNonNull`，为空则抛异常，否则返回该对象。<a href="#Objects">详见此</a>
 
 
 
-### 3.3.3 声明异常 throws
-
-==关键字**throws**运用于**方法声明之上**,用于**表示当前方法不处理异常**,而是**提醒**该方法的**调用者来处理异常**(抛出异常).==
-
-```java
-修饰符 返回值类型 方法名(参数) throws 异常类名1,异常类名2…{   }
-```
-
--   注意：
-    -   throws关键字必须写在**方法声明处**
-    -   throws关键字后边声明的异常必须是**Exception或者是Exception的子类**
-    -   方法内部如果**抛出了多个异常对象**,那么throws后边必须也**声明多个异常**
-        -   如果抛出的多个异常对象有**子父类关系**,那么**直接声明父类异常即可**
-    -   **调用**了一个声明**抛出异常的方法**,我们就必须的**处理**声明的异常
-        -   要么继续使用**throws**声明抛出,交给方法的调用者处理,最终交给JVM
-        -   要么**try...catch**自己处理异常
-
-
-
-### 3.3.4 捕获异常 try…catch...finally
-
-**捕获异常**：Java中对异常有针对性的语句进行捕获，可以对出现的异常进行指定方式的处理。
-
-```java
-try {
-    //可能产生异常的代码
-} catch (异常类名  变量名) {
-    //异常的处理逻辑,异常异常对象之后,怎么处理异常对象
-    //记录日志/打印异常信息/继续抛出异常
-}
-...
-catch (异常类名 变量名) {
-
-}
-```
-
--   注意：
-    -   try中可能会抛出多个异常对象,那么就可以使用多个catch来处理这些异常对象
-        -   如果try中产生了异常，那么就会执行catch中的异常处理逻辑，执行完毕catch中的处理逻辑,继续执行try...catch之后的代码
-        -   如果try中没有产生异常，那么就不会执行catch中异常的处理逻辑，执行完try中的代码,继续执行try...catch之后的代码
--   多个异常使用捕获该如何处理
-    -   多个异常分别处理
-    -   ==多个异常**一次捕获，多次处理**（若捕获的异常**有子父类关系**，**父类放下面**；**没有**可以放在**一个catch中**）==
-    -   多个异常一次捕获一次处理
--   **运行时异常**被抛出**可以不处理**。即不捕获也不声明抛出。
-
-
-
-
-
-
-
-### 3.3.5 finally 代码块
-
-**finally**：`try`中异常语句后的代码不被执行，**必须要执行的**可以放在`finally`中，如**释放系统资源**。但是当在`try...catch...`中**执行`System.exit(0)`**(表示**==退出当前Java虚拟机==**)，**`finally`==才不会执行==**
-
-语法：`try...catch....finally`，不能单独使用
-
--   ==如果**finally有return语句**，将**覆盖**原始的返回值，永远返回finally中的值。一般应避免该情况==
-
-    ```java
-    public static int fin() {
-        int a = 10;
-        try {
-            return a;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            a = 40;
-            return a; //最终返回40
-        }
-    }
-    ```
-
-### 3.3.6 子父类异常注意事项
-
--   ==父类的方法**抛出或不抛出**异常，子类重写的方法抛出的异常必须**小于等于父类抛出的异常**==
-    -   父类的方法**没有异常抛出**，子类重写的方法**不能有异常抛出**。若产生异常则捕获处理
-    -   父类的方法**抛出**一个或多个**异常**，**子类**重写的方法**抛出的异常**必须**与父类相同**或是**其子类**或**不抛**
-
-
-
-## 3.4 自定义异常
+## 3.5 自定义异常
 
 -   自定义的异常类**继承`Exception`或`RuntimeException`（尽量继承这个，对代码没有侵入性）**
 
 -   定义**空参构造**方法和**带异常信息的构造**方法
 
+-   提供全局常量：serialVersionUID
+
     ```java
     public class MyException extends Exception/*RuntimeException*/ {
+        static final long serialVersionUID = -7034897190745766939L;
+        
         public MyException() {
         }
     
@@ -3163,13 +3157,64 @@ catch (异常类名 变量名) {
     *   `final`：最终意思，可以修饰类、成员变量、成员方法。<a href="#final">详见此</a>
     *   `finally`：异常处理，用于释放资源，finally中的代码一定会被执行，除非执行之前jvm退出
     *   `finalize`：Object类的一个方法，用于垃圾回收
-*   
+    
+*   throw语句后不能跟其他代码，否则永远执行不到，编译错误
+
+    ```java
+    try {
+        throw new Exception();
+        System.out.println("怎么也执行不到，编译失败");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    ```
+
+*   习题
+
+    ```java
+    public class ReturnExceptionDemo {
+        static void methodA() {
+            try {
+                System.out.println("进入方法A");
+                throw new RuntimeException("制造异常");
+            } finally {
+                System.out.println("用A方法的finally");
+            }
+        }
+    
+        static void methodB() {
+            try {
+                System.out.println("进入方法B");
+                return;
+            } finally {
+                System.out.println("调用B方法的finally");
+            }
+        }
+    
+        public static void main(String[] args) {
+            try {
+                methodA();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            methodB();
+            
+            // 进入方法A
+            // 用A方法的finally
+            // 制造异常
+            // 进入方法B
+            // 调用B方法的finally
+        }
+    }
+    ```
+
+    
 
 
 
 
 
-# 3 Java API
+# 4 Java API
 
 - API（Application Programming Interface），应用程序编程接口
 
@@ -3326,7 +3371,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
         - **包装类的静态方法`toString(参数)`**方法，不是Object类的`toString()`方法，重载
     - 字符串—>基本类型：
         - **包装类的静态方法`parseXxx()`**
-        - **包装类的静态方法`valueOf(参数)`转包装类后再转基本类型**
+        - **包装类的静态方法`valueOf(参数)`，转包装类后再转基本类型**
 
 - **进制转换**
 
@@ -3370,7 +3415,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
 
 
-- 
+
 
 ## 3.6 String（java.lang）
 
@@ -3422,9 +3467,9 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
     - `boolean contains(CharSequence cs)`                       字符串中是否包含指定字符序列
 
-    - `boolean equals(Object anObject)`          ==字符串与指定字符串是否相等(**内容**)，推荐**常量放前面**==
+    - `boolean equals(Object anObject)`          字符串与指定字符串是否相等(**内容**)，推荐**常量放前面**
 
-      `boolean equalsIgnoreCase(String str)`                 ==字符串与指定字符串是否相等，忽略大小写==
+      `boolean equalsIgnoreCase(String str)`                 字符串与指定字符串是否相等，忽略大小写
 
       `boolean startsWith(String prefix[,int toffset])` 从指定索引开始的子串是否以prefix开始
 
@@ -3432,30 +3477,30 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
   - **获取功能**
 
-    - `int length()`								   ==获取字符串长度==
+    - `int length()`								   获取字符串长度
 
-    - `String concat(String str)`                                        ==将字符串**拼接，本字符串不变**==
+    - `String concat(String str)`                                        将字符串**拼接，本字符串不变**
 
-    - `char charAt(int index)`                                              ==获取指定索引的字符==
+    - `char charAt(int index)`                                              获取指定索引的字符
 
-    - `int indexOf(int ch/String str)`                              ==获取指定字符/字符串第一次/出现的索引==
+    - `int indexOf(int ch/String str)`                              获取指定字符/字符串第一次/出现的索引
 
-    - `int indexOf(int ch/String str,int fromIndex)`   ==获取指定~从**[某索引开始**第一次出现的索引==
+    - `int indexOf(int ch/String str,int fromIndex)`   获取指定~从**[某索引开始**第一次出现的索引
 
       `ch`是`int`类型原因：'a'和97都能代表'a'。  (`lastIndexOF(...)`表示最后一次出现的索引)
 
-    - `String substring(int startIndex,int endIndex)` ==获取从**[start到end)**的子串,没end时到结尾==
+    - `String substring(int startIndex,int endIndex)` 获取从**[start到end)**的子串,没end时到结尾
 
   - **转换功能**
 
     - **`static`**`String valueOf(int i/char[] chs)`       **静态方法**将int型和**字符数组型**数据转为字符串
     - `String toLowerCase() /toUpperCase()`                     将所有字符都转换为小写/大写,本身不变
-    - `byte[] getBytes()`                                                        ==将字符串**转换为字节数组**==
-    - `char[] toCharArray()`                                                  ==将字符串**转换为字符数组**==
+    - `byte[] getBytes()`                                                        将字符串**转换为字节数组**
+    - `char[] toCharArray()`                                                  将字符串**转换为字符数组**
 
   - **其他功能**
 
-    - ==**替换**(将所有old字符或字符串替换为新~~)，CharSequence是个接口，包括字符串。敏感词汇过滤==
+    - **替换**(将所有old字符或字符串替换为新~~)，CharSequence是个接口，包括字符串。敏感词汇过滤
 
       `String replace(CharSequence/char target, CharSequence/char replacement)`
 
@@ -3467,9 +3512,9 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 
       `int compareTo(String str)/compareIgnoreCase(String str)`
 
-    - ==**拆分**（根据给定**正则表达式regex**的匹配拆分），返回字符串数组，不包括regex字符串==
+    - **拆分**（根据给定**正则表达式regex**的匹配拆分），返回字符串数组，不包括regex字符串
 
-      ==若要用英文句点”.“切分，必须写”\\\\.“（两个反斜杠）==
+      若要用英文句点”.“切分，必须写”\\\\.“（两个反斜杠）
 
       `String[] split(String regex)`
 
@@ -3513,7 +3558,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
 - StringBuilder常用方法(**==在原StringBuilder对象中改变并返回本身==**，原对象也改变)
 
   - **添加**
-    - `StringBuilder append(...)`        ==添加**任意类型数据**的**字符串形式**到末尾，并**返回当前对象**自身==
+    - `StringBuilder append(...)`        添加**任意类型数据**的**字符串形式**到末尾，并**返回当前对象**自身
     - `StringBuilder insert(int offset,String str)`          在字符串中的**offset位置**插入**指定参数**
   - **删除**
     - `StringBuilder deleteCharAt(int index)`                           删除指定位置字符
@@ -3527,7 +3572,7 @@ public static <T> T requireNonNull(T obj[, String message]) {   //Objects.requir
     - `String substring(int start,int end)`                             截取子串，没有end参数时截取到尾部
   - **其他**
     - `void setLength(int newLength)`                                          设置StringBuilder长度
-    - `public String toString()`：                                       ==将当前StringBuilder对象**转换为String对象**==
+    - `public String toString()`：                                       将当前StringBuilder对象**转换为String对象**
 
 - **==String和StringBuilder转换==**
 
@@ -3877,7 +3922,7 @@ public void method1() {
 
 
 
-# 4 容器（container）
+# 5 容器（container）
 
 - **对象数组：**数组可以存储基本数据类型和引用类型，存储引用类型的数组就叫**对象数组**
 
@@ -4591,125 +4636,192 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 
 
-
 # 6 多线程
 
-## 6.1 并发与并行
+## 6.1 基本概念
+
+### 程序、进程、线程
+
+*   程序（program）是为完成特定任务、用某种语言编写的一组**指令的集合**。即指**一段静态的代码**，静态对象。
+
+*   **进程（process）**是正在运行的一个程序。**是程序的一次执行过程，是系统进行资源分配和处理机调度的基本单位**。
+
+    *   每个进程都有一个**独立的内存空间**，一个应用程序多次运行对应多个进程。
+    *   它是一个**动态的过程**，系统运行一个程序即是一个进程从创建、运行到消亡的过程，即生命周期。
+
+*   **线程（thread）是进程中的一个执行单元/路径**。 负责当前进程中程序的执行，一个进程中至少有一个线程。
+
+     **是程序使用CPU的最基本单位**
+
+    *   若一个进程同一时间并行执行多个线程，就是支持多线程的。
+    *   线程作为**调度和执行的单位，是程序使用CPU的最基本单位**，**每个线程拥有独立的运行栈和程序计数器**。**线程切换的开销小**
+    *   **一个进程中的多个线程共享相同的内存单元/内存地址空间**：它们从同一堆中分配对象，可以访问相同的变量和对象。这就使得线程间通信更简便、高效。但多个线程操作共享的系统资源可能会带来**安全隐患**
+
+*   一个Java应用程序，其实至少有三个线程：**main()主线程**，**gc()垃圾回收线程**，**异常处理线程**。当然如果发生异常，会影响主线程。
+
+![image-20190817225725225](images/image-20190817225725225.png)
+
+
+
+### 线程调度模型
+
+*   **线程调度模型**（应用程序的执行都是**CPU在多个线程间快速切换**完成的）
+    1.  **分时调度模型**：所有线程轮流使用CPU的使用权，平均分配每个线程占用CPU的时间片
+    2.  **抢占式调度模型**：优先让优先级高的线程使用CPU，如果线程的优先级相同，那么会随机选择一个，优先级高的线程获取的CPU时间片相对多一些（Java使用）
+
+
+
+### 单核、多核 CPU
+
+*   单核CPU，其实是一种假的多线程，因为在一个时间单元内，也只能执行一个线程的任务。例如：虽然有多车道，但是收费站只有一个工作人员在收费，只有收了费才能通过，那么CPU就好比收费人员。如果有某个人不想交钱，那么收费人员可以 把他“挂起”（晾着他，等他想通了，准备好了钱，再去收费）。但是因为CPU时 间单元特别短，因此感觉不出来。
+*   多核CPU，能更好的发挥多线程的效率。现在的服务器都是多核的。
+
+
+
+### 并发、并行
 
 * **并发**：指两个或多个事件在**同一个时间段内**发生，**逻辑上**同时发生
-
 * **并行**：指两个或多个事件在**同一时刻**发生（同时发生），**物理上**同时发生
 
 
 
-## 6.2 进程与线程
+### 多线程优点、用处
 
-* ==**进程**：**是程序的一次执行过程，是系统进行资源分配和处理机调度的基本单位**==，每个进程都有一个独立的内存空间，一个应用程序多次运行对应多个进程；系统运行一个程序即是一个进程从创建、运行到消亡的过程。
+以单核CPU为例，只使用单个线程先后完成多个任务(调用多个方法)，肯定比用多个线程来完成用的时间更短，为何仍需多线程呢?
 
-* ==**线程**：**线程是进程中的一个执行单元**==，负责当前进程中程序的执行，一个进程中至少有一个线程。 **是程序使用CPU的最基本单位**。
+*   **提高应用程序的响应**。对图形化界面更有意义，可增强用户体验。
+*   提高计算机系统**CPU的利用率**
+*   **改善程序结构**。将既长又复杂的进程分为多个线程，独立运行，利于理解和修改
 
-  * **多线程**：**一个进程中有多个线程**的应用程序也可以称之为多线程程序。**提高程序运行效率、CPU使用率**。
-    * 好处：效率高，多个线程间互不影响
-    * 弊端：线程太多效率降低
+何时需要多线程？
 
-  简而言之：一个程序运行后至少有一个进程，一个进程中可以包含多个线程 。应用程序的执行都是**CPU在多个线程间快速切换**完成的，这个切换是随机的。
-
-* **线程调度模型**
-
-    1. **分时调度模型**：所有线程轮流使用CPU的使用权，平均分配每个线程占用CPU的时间片
-    2. ==**抢占式调度模型**==：优先让优先级高的线程使用CPU，如果线程的优先级相同，那么会随机选择一个，优先级高的线程获取的CPU时间片相对多一些（Java使用）
+*   程序需要**同时执行两个或多个任务**
+*   程序需要实现一些需要**等待的任务**时，如用户输入、文件读写操作、网络操作、搜索等
+*   需要一些**后台运行**的程序时
 
 
 
-## 6.3 多线程的实现
 
-### 6.3.1 多线程的原理
 
-> **Java程序运行原理（多线程）**：由Java命令启动JVM（相当于启动了一个进程），接着由该进程创建启动多个线程，至少两个线程可以分析出来：**执行main()函数的主线程**，该线程的任务代码都定义在main函数中，**负责垃圾回收的线程**。
+## 6.3 线程的创建和使用
 
-* ==多线程执行时，其实**每一个执行线程**都有一片自己**所属的栈内存**空间。进行**方法的压栈和弹栈**。==
+### java.lang.Thread
+
+**构造方法**
+
+-   **`Thread()`**：分配一个新的线程对象。
+-   **`Thread(String name)`**：分配一个指定名字的新的线程对象
+-   **`Thread(Runnable target)`**：分配一个带有指定目标新的线程对象，它实现了Runnable接口中的`run`方法
+-   **`Thread(Runnable target,String name)`**：分配一个带有指定目标新的线程对象并指定名字
+
+**常用方法1**
+
+-   `void run()`：**线程在被调度时执行的操作**
+-   `void start()`：**启动线程，JVM执行此线程对象的`run()`方法**
+-   `static Thread currentThread()`：返回当前线程，在Thread子类中就是this，通常用于主线程和Runnable实现类
+-   `String getName()`：**获取当前线程名称**
+-   `void setName()`：**设置当前线程名称**，或通过线程**类的有参构造设置**
+
+**常用方法2**
+
+-   `static void yield()`：**线程让步**
+
+    **暂停**当前正在执行的线程（系统指定的毫秒数），把执行机会让给优先级相同或更高的线程，并执行其他线程。若队列中没有同优先级的线程，忽略此方法。**转为就绪状态**，该线程不会失去任何监视器的所有权（**不释放锁**），不会阻塞该线程。不确保真正让出，很少用。
+
+-   `th.join()`：**线程插队**
+
+    当某个程序执行流中调用其他线程的`join()`方法时，调用线程将被**阻塞**，直到`join()`方法加入的 join 线程执行完毕，其他线程才可以抢占资源。
+
+-   `static void sleep(long millis)`：**线程睡眠**
+
+    使**当前正在执行的线程**以指定的毫秒数**睡眠**，并进入**阻塞**状态，**不释放锁**
+
+-   `boolean isAlive()`：判断线程是否还**存活**
+
+-   `th.interrupt()`：**中断线程**
+
+    **请求终止线程**，仅设置了一个标志位，中断一个不在活动状态（阻塞）的线程没意义并会抛异常
+
+    -   静态方法`interrupted()`-->**会清除中断标志位**
+    -   普通方法`isInterrupted()`-->**不会清除中断标志位**
+
+
+
+### 线程的创建方式
+
+-   **继承Thread类**
+    1.  定义子类继承Thread类。可以写无参和带参构造以便直接定义线程名称。
+    2.  子类中Override重写Thread类的`run()`方法，将线程的任务代码封装到`run()`方法中。
+    3.  创建Thread的子类对象，即创建了线程对象。
+    4.  调用线程对象的**`start()`**，JVM将调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
+-   **实现Runnable接口（常用）**
+    1.  定义类实现Runnable接口
+    2.  @Override重写接口中的`run()`方法，将线程的任务代码封装到`run()`方法中
+    3.  通过Thread类创建线程对象，并将Runnable接口的子类对象作为Thread类的构造函数的参数进行传递。**线程的任务都封装在Runnable接口实现类对象的run方法中，所以要在线程对象创建时就必须明确要运行的任务**
+    4.  调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
+-   **区别（实现Runnable接口的好处）**
+    1.  避免了Java**单继承的局限性**
+    2.  适合多个相同程序的代码去**处理同一个资源**
+    3.  增加程序的健壮性，实现**解耦**操作，代码可以被多个线程共享，**代码和线程独立**
+    4.  **线程池**只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类 
+-   **run()和start()的区别**
+    -   run()：仅仅是封装被线程执行的代码，直接调用是普通方法。
+    -   start()：首先启动了线程，然后再由jvm去调用该线程的run()方法。
+
+
+
+匿名内部类实现多线程
+
+-   **继承Thread类**
+
+    ```java
+    new Thread() {
+    	@Override
+    	public void run() {
+    		for (int i = 0; i < 100; i++) {
+    			System.out.println(getName() + "---" + i);
+    		}
+    	}
+    }.start();
+    ```
+
+-   **实现Runnable接口**
+
+    ```java
+    //lambda表达式实现
+    new Thread(() -> {
+        for (int i = 0; i < 100; i++) {
+            System.out.println(Thread.currentThread().getName() + "---" + i);
+        }
+    }).start();
+    //普通实现
+    new Thread(new Runnable() {
+    	@Override
+    	public void run() {
+    		for (int i = 0; i < 100; i++) {
+    			System.out.println(Thread.currentThread().getName() + "---" + i);
+    		}
+    	}
+    }).start();
+    ```
+
+
+
+
+
+-   
+
+
+
+### 多线程的原理
+
+> **Java程序运行原理（多线程）**：由Java命令启动JVM（相当于启动了一个进程），接着由该进程创建启动多个线程，至少三个线程可以分析出来：**执行main()函数的主线程**，该线程的任务代码都定义在main函数中，**负责垃圾回收的GC线程**，以及**异常处理线程**
+
+* 多线程执行时，其实**每一个执行线程**都有一片自己**所属的栈内存**空间（还有PC）。进行**方法的压栈和弹栈**。
 
 ![](images\栈内存原理图.png)
 
-### 6.3.2 Thread（java.lang）
-
-==**构造方法**==
-
-- **`Thread()`**：分配一个新的线程对象。
-- **`Thread(String name)`**：分配一个指定名字的新的线程对象
-- **`Thread(Runnable target)`**：分配一个带有指定目标新的线程对象。
-- **`Thread(Runnable target,String name)`**：分配一个带有指定目标新的线程对象并指定名字
-
-**常用方法**
-
-- `void run()`：**此线程要执行的任务在此处定义代码**
-- `void start()`：**此线程开始执行**；Java虚拟机调用此线程的run方法
-- `static Thread currentThread()`：返回对当前**正在执行的线程对象的引用**
-
-- `String getName()`：**获取当前线程名称**
-
-- `void setName()`：**设置当前线程名称**，或通过线程**类的有参构造设置**
-
-- `static void sleep(long millis)`：使**当前正在执行的线程**以指定的毫秒数**暂停**
-
-
-### 6.3.3 多线程的实现方式
-
-- **继承Thread类**
-
-  1. 继承Thread类。可以写无参和带参构造以便直接定义线程名称。
-  2. @Override重写Thread类的`run()`方法，将线程的任务代码封装到`run()`方法中
-  3. 创建Thread类的子类对象
-  4. 调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
-- **实现Runnable接口（常用）**
-  1. 定义类实现Runnable接口
-  2. @Override重写接口中的`run()`方法，将线程的任务代码封装到`run()`方法中
-  3. 通过Thread类创建线程对象，并将Runnable接口的子类对象作为Thread类的构造函数的参数进行传递。**线程的任务都封装在Runnable接口实现类对象的run方法中，所以要在线程对象创建时就必须明确要运行的任务**
-  4. 调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
-- ==**区别（实现Runnable接口的好处）**==
-  1. 避免了java**单继承的局限性**
-  2. 适合多个相同程序的代码去**处理同一个资源**
-  3. 增加程序的健壮性，实现**解耦**操作，代码可以被多个线程共享，**代码和线程独立**
-  4. **线程池**只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类 
-- ==**run()和start()的区别**==
-  - run()：仅仅是封装被线程执行的代码，直接调用是普通方法。
-  - start()：首先启动了线程，然后再由jvm去调用该线程的run()方法。
-
-
-### 6.3.4 匿名内部类实现多线程
-
-* **继承Thread类**
-
-  ```java
-  new Thread() {
-  	@Override
-  	public void run() {
-  		for (int i = 0; i < 100; i++) {
-  			System.out.println(getName() + "---" + i);
-  		}
-  	}
-  }.start();
-  ```
-
-* **实现Runnable接口**
-
-  ```java
-  //lambda表达式实现
-  new Thread(() -> {
-      for (int i = 0; i < 100; i++) {
-          System.out.println(Thread.currentThread().getName() + "---" + i);
-      }
-  }).start();
-  //普通实现
-  new Thread(new Runnable() {
-  	@Override
-  	public void run() {
-  		for (int i = 0; i < 100; i++) {
-  			System.out.println(Thread.currentThread().getName() + "---" + i);
-  		}
-  	}
-  }).start();
-  ```
+- 
 
 
 
