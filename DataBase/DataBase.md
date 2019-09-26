@@ -1195,7 +1195,7 @@ WHERE sale_price > (SELECT AVG(sale_price)
 
   > 进行字符串拼接时，如果其中包含 NULL，那么得到的结果也是NULL。这是因为“||”也是变了形的函数。多个也可以。
   >
-  > 但是|| 函数在 SQL Server 和 MySQL 中无 法使用。 
+  > 但是 || 函数在 SQL Server 和 MySQL 中无法使用。 
   >
   > * SQL Server使用“+”
   > * MySQL使用CONCAT函数（可多个）
@@ -1366,16 +1366,16 @@ WHERE sale_price > (SELECT AVG(sale_price)
 ### 搜索 CASE 表达式
 
 ```sql
-SELECT product_name,
-			CASE WHEN product_type = '衣服'
-					 THEN 'A :' | | product_type 
-					 WHEN product_type = '办公用品' 
-					 THEN 'B :' | | product_type 
-					 WHEN product_type = '厨房用具' 
-					 THEN 'C :' | | product_type 
-      		 ELSE NULL
-			END AS abc_product_type 
-FROM Product;
+SELECT
+  product_name,
+  CASE
+    WHEN product_type = '衣服' THEN 'A :' | | product_type
+    WHEN product_type = '办公用品' THEN 'B :' | | product_type
+    WHEN product_type = '厨房用具' THEN 'C :' | | product_type
+    ELSE NULL
+  END AS abc_product_type
+FROM
+  Product;
 ```
 
 在对 SELECT 语句的**结果进行编辑**时，CASE 表达式能够发挥较大作用。
@@ -1383,14 +1383,17 @@ FROM Product;
 ### 简单 CASE 表达式
 
 ```sql
-SELECT product_name,
-			CASE product_type
-					 WHEN '衣服'			THEN 'A :' || product_type
-					 WHEN '办公用品'	 THEN 'B :' || product_type
-					 WHEN '衣厨房用具'	THEN 'C :' || product_type
-					 ELSE NULL
-			END AS abc_product_type 
-FROM Product;
+SELECT
+  product_name,
+  CASE
+    product_type
+    WHEN '衣服' THEN 'A :' || product_type
+    WHEN '办公用品' THEN 'B :' || product_type
+    WHEN '衣厨房用具' THEN 'C :' || product_type
+    ELSE NULL
+  END AS abc_product_type
+FROM
+  Product;
 ```
 
 想要在 WHEN 子句中指定不同列时，简单 CASE 表达式就无能为力了。 
