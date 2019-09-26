@@ -4663,14 +4663,6 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 
 
-### 线程调度模型
-
-*   **线程调度模型**（应用程序的执行都是**CPU在多个线程间快速切换**完成的）
-    1.  **分时调度模型**：所有线程轮流使用CPU的使用权，平均分配每个线程占用CPU的时间片
-    2.  **抢占式调度模型**：优先让优先级高的线程使用CPU，如果线程的优先级相同，那么会随机选择一个，优先级高的线程获取的CPU时间片相对多一些（Java使用）
-
-
-
 ### 单核、多核 CPU
 
 *   单核CPU，其实是一种假的多线程，因为在一个时间单元内，也只能执行一个线程的任务。例如：虽然有多车道，但是收费站只有一个工作人员在收费，只有收了费才能通过，那么CPU就好比收费人员。如果有某个人不想交钱，那么收费人员可以 把他“挂起”（晾着他，等他想通了，准备好了钱，再去收费）。但是因为CPU时 间单元特别短，因此感觉不出来。
@@ -4703,9 +4695,15 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 
 
-## 6.3 线程的创建和使用
+## 6.2 线程的创建和使用
 
 ### java.lang.Thread
+
+**静态常量**
+
+*   `Thread.MAX_PRIORITY`：10
+*   `Thread.MIN _PRIORITY`：1
+*   `Thread.NORM_PRIORITY`：5，默认
 
 **构造方法**
 
@@ -4716,13 +4714,16 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 **常用方法1**
 
--   `void run()`：**线程在被调度时执行的操作**
+-   `void run()`：**线程在被调度时执行的操作**，若 target 有值，则调用 target 的`run()` 方法
 -   `void start()`：**启动线程，JVM执行此线程对象的`run()`方法**
 -   `static Thread currentThread()`：返回当前线程，在Thread子类中就是this，通常用于主线程和Runnable实现类
 -   `String getName()`：**获取当前线程名称**
 -   `void setName()`：**设置当前线程名称**，或通过线程**类的有参构造设置**
 
 **常用方法2**
+
+*   线程**优先级**：通过`getPriority()`获取，通过`setPriority()`设置。
+
 
 -   `static void yield()`：**线程让步**
 
@@ -4736,14 +4737,30 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
     使**当前正在执行的线程**以指定的毫秒数**睡眠**，并进入**阻塞**状态，**不释放锁**
 
--   `boolean isAlive()`：判断线程是否还**存活**
-
--   `th.interrupt()`：**中断线程**
+*   `th.interrupt()`：**中断线程**
 
     **请求终止线程**，仅设置了一个标志位，中断一个不在活动状态（阻塞）的线程没意义并会抛异常
 
     -   静态方法`interrupted()`-->**会清除中断标志位**
     -   普通方法`isInterrupted()`-->**不会清除中断标志位**
+
+*   `boolean isAlive()`：判断线程是否还**存活**
+
+
+
+
+
+### 线程的分类
+
+守护线程和用户线程在几乎每个方面都是相同的，唯一的区别是**判断JVM何时离开**
+
+*   守护线程（后台线程，如坦克大战）
+    -   **守护线程是用来服务用户线程的**，通过在`start()`方法前调用`th.setDaemon(true)`可以把一个用户线程变成一个守护线程
+    -   **Java垃圾回收**就是一个典型的守护线程
+    -   **若JVM中都是守护线程，当前JVM将退出**
+*   用户线程
+
+
 
 
 
@@ -4759,18 +4776,23 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
     2.  @Override重写接口中的`run()`方法，将线程的任务代码封装到`run()`方法中
     3.  通过Thread类创建线程对象，并将Runnable接口的子类对象作为Thread类的构造函数的参数进行传递。**线程的任务都封装在Runnable接口实现类对象的run方法中，所以要在线程对象创建时就必须明确要运行的任务**
     4.  调用**`start()`开启线程**，JVM调用该线程的**`run()`**方法执行（多次启动一个线程非法，即使执行完毕）
--   **区别（实现Runnable接口的好处）**
+-   **区别（实现Runnable接口的好处，其实 Thread 类也实现了 Runnable 接口）**
+    
     1.  避免了Java**单继承的局限性**
-    2.  适合多个相同程序的代码去**处理同一个资源**
-    3.  增加程序的健壮性，实现**解耦**操作，代码可以被多个线程共享，**代码和线程独立**
-    4.  **线程池**只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类 
--   **run()和start()的区别**
-    -   run()：仅仅是封装被线程执行的代码，直接调用是普通方法。
-    -   start()：首先启动了线程，然后再由jvm去调用该线程的run()方法。
+    
+    2.  多个线程可以共享同一个接口实现类的对象，非常适合多个相同线程来**处理同一个资源**
+    
+        增加程序的健壮性，实现**解耦**操作，代码可以被多个线程共享，**代码和线程独立**
+    
+    3.  **线程池**只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类 
+-   **`run()`和`start()`的区别**
+    
+    -   `run()`：仅仅是封装被线程执行的代码，直接调用是普通方法。
+    -   `start()`：首先启动了线程，然后再由jvm去调用该线程的run()方法。
 
 
 
-匿名内部类实现多线程
+**匿名内部类实现多线程**
 
 -   **继承Thread类**
 
@@ -4809,11 +4831,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 
 
--   
-
-
-
-### 多线程的原理
+**多线程的运行过程**
 
 > **Java程序运行原理（多线程）**：由Java命令启动JVM（相当于启动了一个进程），接着由该进程创建启动多个线程，至少三个线程可以分析出来：**执行main()函数的主线程**，该线程的任务代码都定义在main函数中，**负责垃圾回收的GC线程**，以及**异常处理线程**
 
@@ -4821,7 +4839,89 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 ![](images\栈内存原理图.png)
 
-- 
+
+
+### 线程调度
+
+-   **线程调度模型**（应用程序的执行都是**CPU在多个线程间快速切换**完成的）
+    -   **分时调度模型（时间片）**：所有线程轮流使用CPU的使用权，平均分配每个线程占用CPU的时间片
+    -   **抢占式调度模型**：优先让**优先级高**的线程使用CPU，如果线程的优先级相同，那么会随机选择一个，优先级高的线程获取的CPU时间片相对多一些
+-   **Java的线程调度方法**
+    -   **同优先级**线程组成**先进先出队列**（先到先服务），使用**时间片**策略
+    -   对**高优先级**，使用优先调度的**抢占式**策略
+
+
+
+### 线程优先级
+
+*   线程的优先级等级（通过 Thread 的静态常量）
+    *   `Thread.MAX_PRIORITY`：10
+    *   `Thread.MIN _PRIORITY`：1
+    *   `Thread.NORM_PRIORITY`：5，默认
+*   方法
+    *   `getPriority()`：返回线程优先级
+    *   `setPriority(int newPriority)`：改变线程的优先级，需在 start 前设置
+*   说明
+    *   **线程创建时继承父线程的优先级**
+    *   **低优先级只是获得调度的概率低**，并非一定是在高优先级线程之后才被调用
+
+
+
+
+
+## 6.3 线程的生命周期
+
+当线程被创建并启动以后，它既不是一启动就进入了执行状态，也不是一直处于执行状态。在线程的生命周期中， 有几种状态呢？在API中 **`java.lang.Thread`** **中的`State`内部枚举类中给出了六种线程状态**：
+
+*   **新建**：当一个Thread类或其子类的对象被声明并创建时，但是并未启动即调用 `start()`，新生的线程对象处于新建状态
+
+    >   **NEW**：Thread state for a thread which has not yet started.
+
+*   **可运行**：处于新建状态的线程被`start()`后，可能正在 JVM 中执行，也可能正在等待来自操作系统的其他资源如处理器
+
+    >   **RUNNABLE**：state for a runnable thread.  A thread in the runnable state is executing in the Java virtual machine but it may be waiting for other resources from the operating system such as processor.
+
+*   **锁阻塞**：当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状态；当该线程持有锁时，该线程将变成Runnable状态。
+
+    >   **BLOCKED**：Thread state for a thread blocked waiting for a monitor lock.A thread in the blocked state is waiting for a monitor lock to enter a synchronized block/method or reenter a synchronized block/method after calling `Object.wait`.
+
+*   **无限等待**：一个线程在等待另一个线程执行一个（唤醒）动作时，该线程进入Waiting状态。这个状态后是不能自动唤醒的
+
+    >   **WAITING**：state for a waiting thread.A thread is in the waiting state due to calling one of the following methods: 
+    >
+    >   *   `Object.wait` with no timeout
+    >
+    >   *   `th.join` with no timeout
+    >
+    >   *   `LockSupport.park`
+    >
+    >       A thread in the waiting state is waiting for another thread to perform a particular action.
+    >
+    >   For example, a thread that has called `Object.wait()` on an object is waiting for another thread to call `Object.notify()` or `Object.notifyAll()` on that object. A thread that has called `th.join()` is waiting for a specified thread to terminate.
+
+* **计时等待**：同waiting状态，有几个方法有超时参数，调用他们将进入Timed Waiting状态。这一状态将一直保持到超时期满或者接收到唤醒通知。
+
+    >   **TIMED_WAITING**：Thread state for a waiting thread with a specified waiting time. A thread is in the timed waiting state due to calling one of the following methods with a specified positive waiting time:
+    >
+    >   *   `Thread.sleep`must with timeout
+    >   *   `Object.wait` with timeout
+    >   *   `th.join` with timeout
+    >   *   `LockSupport.parkNanos`
+    >   *   `LockSupport.parkUntil`
+
+* **被终止**：因为`run`方法正常退出而终止（完成全部工作），或者因为没有捕获的异常终止了`run`方法而死亡，或者或线程被提前强制性地中止。
+
+    >   TERMINATED：Thread state for a terminated thread. The thread has completed execution.
+
+    
+
+![](images\线程状态.png)
+
+
+
+
+
+
 
 
 
@@ -4829,7 +4929,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 ### 6.4.1 线程安全问题
 
-* **买票问题**
+* **卖票问题**
 
   * 相同的票出现多次：CPU的一次操作必须是原子性的
   * 出现负数的票：随机性和延迟导致
@@ -4967,49 +5067,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 ### 6.5.1 线程状态概述
 
-当线程被创建并启动以后，它既不是一启动就进入了执行状态，也不是一直处于执行状态。在线程的生命周期中， 有几种状态呢？在API中 **`java.lang.Thread.State`** **这个枚举中给出了六种线程状态**：
 
-| 线程状态                    |                       导致状态发生条件                       |
-| --------------------------- | :----------------------------------------------------------: |
-| **NEW**(新建)               |       线程刚被创建，但是并未启动。还没调用start方法。        |
-| **Runnable**(可运行)        | 线程可以在java虚拟机中运行的状态，可能正在运行自己代码，也可能没有，这取决于操作系统处理器。 |
-| **Blocked**(锁阻塞)         | 当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状 态；当该线程持有锁时，该线程将变成Runnable状态。 |
-| **Waiting**(无限等待)       | 一个线程在等待另一个线程执行一个（唤醒）动作时，该线程进入Waiting状态。进入这个 状态后是不能自动唤醒的，必须等待另一个线程调用notify或者notifyAll方法才能够唤醒。 |
-| **Timed Waiting**(计时等待) | 同waiting状态，有几个方法有超时参数，调用他们将进入Timed Waiting状态。这一状态将一直保持到超时期满或者接收到唤醒通知。带有超时参数的常用方法有Thread.sleep(1000) 、 Object.wait。 |
-| **Terminated**(被终止)      | 因为run方法正常退出而死亡，或者因为没有捕获的异常终止了run方法而死亡。 |
-
-![](images\线程状态.png)
-
-
-
-### 6.5.2 线程调度
-
-- 线程**优先级**：通过`getPriority()`获取，通过`setPriority()`设置。
-
-  Java线程默认优先级是5(1-10低到高,Thread的**静态**常量NORM_PRIORITY(MIN/MAX))。
-
-- 线程**让步**：通过静态方法`Thread.yield()`设置
-
-  **暂停**当前正在执行的线程对象（系统指定的毫秒数），并执行其他线程。**转为就绪状态**，该线程不会失去任何监视器的所有权（不释放锁），不会阻塞该线程。不确保真正让出，很少用。
-
-- ==线程**休眠**==：通过静态方法`Thread.sleep(long millis)`设置
-
-  让当前正在执行的线程**休眠**（**暂停**执行）系统指定的毫秒数，该线程不丢失任何监视器的所属权（**不释放锁**），休眠结束回到**就绪状态**
-
-- ==线程**插队**==：线程调用方法`th.join()`
-
-  **等待该线程终止**，其他线程才可以抢占资源。
-
-- **后台线程（守护线程，如坦克大战）**：通过`th.setDaemon(true)`设置
-
-  当前正在运行的线程都是后台线程时，JVM退出，该方法必须**在启动线程前调用**
-
-- ==**中断**线程==：通过`th.interrupt()`设置
-
-  **请求终止线程**，仅设置了一个标志位，中断一个不在活动状态（阻塞）的线程没意义并会抛异常
-
-  * 静态方法interrupted()-->**会清除中断标志位**
-  * 普通方法isInterrupted()-->**不会清除中断标志位**
 
 
 
