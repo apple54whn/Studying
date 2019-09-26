@@ -1362,6 +1362,8 @@ WHERE sale_price > (SELECT AVG(sale_price)
 > * 虽然CASE表达式中的ELSE子句可以省略，这时会被默认为ELSE NULL，但为了阅读方便尽量写上
 > * CASE 表达式中的 END 不能省略
 > * 使用CASE表达式能够将SELECT语句的结果进行组合
+>
+> 有些 DBMS 还提供了一些特有的 CASE 表达式的简化函数，例如 Oracle 中的 DECODE、MySQL 中的 IF 等。
 
 ### 搜索 CASE 表达式
 
@@ -1399,8 +1401,6 @@ FROM
 想要在 WHEN 子句中指定不同列时，简单 CASE 表达式就无能为力了。 
 
 
-
-> 有些 DBMS 还提供了一些特有的 CASE 表达式的简化函数，例如 Oracle 中的 DECODE、MySQL 中的 IF 等。
 
 
 
