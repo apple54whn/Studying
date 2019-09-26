@@ -1367,7 +1367,7 @@ WHERE sale_price > (SELECT AVG(sale_price)
 
 ```sql
 SELECT
-  product_name,
+  product_name, -- 必须有这个逗号
   CASE
     WHEN product_type = '衣服' THEN 'A :' | | product_type
     WHEN product_type = '办公用品' THEN 'B :' | | product_type
@@ -1384,7 +1384,7 @@ FROM
 
 ```sql
 SELECT
-  product_name,
+  product_name, -- 必须有这个逗号
   CASE
     product_type
     WHEN '衣服' THEN 'A :' || product_type
