@@ -4735,7 +4735,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 -   `static void sleep(long millis)`：**线程睡眠**
 
-    使**当前正在执行的线程**以指定的毫秒数**睡眠**，并进入**阻塞**状态，**不释放锁**
+    使**当前正在执行的线程**以指定的毫秒数**睡眠**，**不释放锁**，~~之后进入**阻塞**状态~~
 
 *   `th.interrupt()`：**中断线程**
 
@@ -4745,6 +4745,8 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
     -   普通方法`isInterrupted()`-->**不会清除中断标志位**
 
 *   `boolean isAlive()`：判断线程是否还**存活**
+
+*   ~~`th.stop()`：`@Deprecated(since="1.2")`~~
 
 
 
@@ -4881,7 +4883,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
     >   **RUNNABLE**：state for a runnable thread.  A thread in the runnable state is executing in the Java virtual machine but it may be waiting for other resources from the operating system such as processor.
 
-*   **锁阻塞**：当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状态；当该线程持有锁时，该线程将变成Runnable状态。
+*   **阻塞**：当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状态；当该线程持有锁时，该线程将变成Runnable状态。
 
     >   **BLOCKED**：Thread state for a thread blocked waiting for a monitor lock.A thread in the blocked state is waiting for a monitor lock to enter a synchronized block/method or reenter a synchronized block/method after calling `Object.wait`.
 
@@ -4913,10 +4915,8 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
     >   TERMINATED：Thread state for a terminated thread. The thread has completed execution.
 
-    
 
-![](images\线程状态.png)
-
+![线程生命周期-2.0](images/%E7%BA%BF%E7%A8%8B%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F-2.0.jpeg)
 
 
 
@@ -4925,13 +4925,14 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 
 
-## 6.4 线程安全
 
-### 6.4.1 线程安全问题
+## 6.4 线程安全和同步
+
+### 线程安全问题
 
 * **卖票问题**
 
-  * 相同的票出现多次：CPU的一次操作必须是原子性的
+  * 相同的票出现多次：CPU的一次操作必须是原子性的（但是输出语句不是原子的）
   * 出现负数的票：随机性和延迟导致
 
 * **线程安全问题产生原因**
@@ -4940,59 +4941,78 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
   - 操作共享数据的代码有多条
 
-    **当一个线程在执行操作共享数据的多条代码过程中，其他线程参与了运算，就会导致**
+    **当一个线程在执行操作共享数据的多条代码（非原子操作）过程中，其他线程参与了运算，就会导致**
 
 
 
-### 6.4.2 线程同步
+### 线程同步
 
-要解决上述多线程并发访问一个资源的安全性问题：也就是解决重复票与不存在票问题，Java中提供了**同步机制 (synchronized)**来解决。有三种方式完成同步操作：**同步代码块**、**同步方法**、**锁机制**。
+要解决上述多线程并发访问一个资源的安全性问题：也就是解决重复票与不存在票问题，Java中提供了**同步机制 (synchronized)**来解决。有三种方式完成同步操作：**同步代码块**、**同步方法**、**Lock锁机制**。
 
 * **同步的优缺点：**
   * **好处**：解决线程的安全问题
-  * **弊端**：相对**降低效率**，因为同步外的线程都会判断同步锁；若有同步嵌套容易产生**死锁**
+  * **弊端**：相对**降低效率**，因为同步外的线程都会判断同步锁；若有**同步嵌套容易产生死锁**
 
-#### (1) 同步代码块
+#### 同步代码块
 
 * `synchronized`关键字可以用于**方法中的某个区块中**，表示只对这个区块的**资源实行互斥访问**
 
-  * **同步锁**：也称对象锁或对象**监视器**
+  * **同步锁**：也称**对象锁**或对象**监视器**
     * 锁对象可以是**任意类型**
     * 多个线程对象要使用**同一把锁**
 
   ```java
-  @Override
-  public void run() {
-      while (true) { //卖票窗口一直开着
-          synchronized (this) {
-              if (ticket > 0) { //有票才卖
-                  try {
-                      Thread.sleep(10);
-                  } catch (InterruptedException e) {
-                      e.printStackTrace();
+  public class Ticket implements Runnable {
+  
+      private int ticketCount = 100;
+  	private static final Object monitorLock = new Object();
+      
+      @Override
+      public void run() {
+          // 卖票窗口一直开着，不能在同步中，否则就会被一个线程执行完
+          while (true) {
+              // synchronized 需在内部写，否则其他线程会进不去。类似进入厕所然后锁门。需要包裹操作共享资源的代码。
+              // 还可以写 this（注意唯一性）、Ticket.class
+              synchronized (monitorLock) {
+                  if (ticketCount > 0) { 
+                      try {
+                          // 进入time waiting，提高错票几率
+                          Thread.sleep(10);
+                      } catch (Exception e) {
+                          e.printStackTrace();
+                      }
+                      System.out.println(Thread.currentThread().getName() + "卖票，票号：" + ticketCount);
+                      ticketCount--;
+                  } else {
+                      break;
                   }
-                  System.out.println(Thread.currentThread().getName() + "-->正在卖第" + ticket + "张票");
-                  ticket--;
-  ...
+              }
+          }
+      }
+  }
   ```
 
-#### (2) 同步方法
+#### 同步方法
 
 * 使用`synchronized`修饰的方法就叫做同步方法，保证A线程执行该方法的时候其他线程只能在方法外等着。
 
   * **同步锁是谁**?
-    * 对于**非static方法**，同步锁就是**this**
+    
+    * 对于**非static方法**，同步锁就是**this**，此时代表调用 run 方法的对象
+  
     * 对于**static方法**，我们使用当前方法所在类的字节码对象(**类名.class**)
-
+    
+        使用继承 Thread 类和同步方法实现时，需要写 `static synchronized`
+  
   ```java
-  public synchronized void sellTicket(){
-       if (ticket > 0) { ....  }
+  public /*static*/ synchronized void sellTicket(){
+       // TODO
   }
   ```
 
 
 
-#### (3) Lock锁
+#### Lock锁
 
 * `java.util.concurrent.locks.Lock` **接口**机制提供了比synchronized代码块和synchronized方法更广泛的锁定操作，同步代码块/同步方法具有的功能Lock都有，除此之外更强大，更体现面向对象。 
 
@@ -5087,7 +5107,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 * **Object类**（由于任意锁）中提供了三个方法：（这些方法必须通过**同一个锁对象在同步中调用**）
   * `wait([long timeout])`：==**等待**并立即**释放锁**，线程被阻塞。**被唤醒并获得锁后从这里执行后续代码**==
-  * `notify()`：==随机唤醒单个线程，被通知线程不能立即恢复执行线程，**重新请求同步锁**==
+  * `notify()`：随机唤醒单个线程且不释放锁，被通知线程不能立即恢复执行线程，**被唤醒线程需重新请求同步锁**
   * `notifyAll()`：唤醒所有线程
 
 > 哪怕只通知了一个等待的线程，被通知线程也不能立即恢复执行，因为它当初中断的地方是在同步块内，而 此刻它已经不持有锁，所以她需要再次尝试去获取锁（很可能面临其它线程的竞争），成功后才能在当初调 用 wait 方法之后的地方恢复执行。
@@ -7723,20 +7743,44 @@ public static void main(String[] args) throws Exception {
         }
         ```
 
-    - **懒汉式**（用的时候才创建）（可能会出问题的单例模式，需要**DCL**修改）
+    - **懒汉式**（用的时候才创建）（可能会出问题的单例模式）
 
         ```java
-        private static Teacher t = null;
-        private Teacher() {}
-        public static Teacher getInstance() {
-        	if(t==null) {
-        		t=new Teacher();
-        	}
-        	return t;
+        //=================可能会出问题的单例模式，加 synchronized 能解决安全问题，但是效率差=================
+        public class Teacher {
+        
+            private static Teacher t = null;
+        
+            private Teacher() {}
+        
+            public static /*synchronized*/ Teacher getInstance() {
+                if (t == null) {
+                    t = new Teacher();
+                }
+                return t;
+            }
         }
         
-        //=================DCL=================
-        
+        ```
+
+        ```java
+        //=================DCL，安全的，效率稍高的单例模式=================
+        public class Singleton {
+            //加volatile即可解决空指针问题（禁止编译优化，指令重排）
+            private static /*volatile*/ Singleton instance;  
+            
+            private Singleton() {}
+            
+            public static Singleton getInstance() {
+                if (instance == null) {
+                    synchronized(Singleton.class) {
+                        if (instance == null)
+                            instance = new Singleton();  
+                    }
+                }
+                return instance;
+            }
+        }
         ```
 
     - 线程安全的单例模式，还不用加锁，采用内部类
