@@ -4918,7 +4918,22 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 ![线程生命周期-2.0](images/%E7%BA%BF%E7%A8%8B%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F-2.0.jpeg)
 
+释放锁和不释放锁的操作（未完）
 
+释放锁的操作
+
+-   当前线程的同步方法、同步代码块**执行结束**。
+-   当前线程在同步代码块、同步方法中遇到**break、return终止**了该代码块、该方法的继续执行。
+-   当前线程在同步代码块、同步方法中出现了**未处理的Error或Exception，导致异常结束**。
+-   当前线程在同步代码块、同步方法中执行了线程对象的**`wait()`方法，当前线程暂停，并释放锁**。
+
+不释放锁的操作
+
+-   线程执行同步代码块或同步方法时，程序调用`Thread.sleep()`、`Thread.yield()`方法暂停当前线程的执行
+
+-   线程执行同步代码块时，其他线程调用了该线程的`suspend()`方法将该线程 挂起，该线程不会释放锁(同步监视器)
+
+    应尽量避免使用`suspend()`和`resume()`来控制线程
 
 
 
@@ -4952,6 +4967,8 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 * **同步的优缺点：**
   * **好处**：解决线程的安全问题
   * **弊端**：相对**降低效率**，因为同步外的线程都会判断同步锁；若有**同步嵌套容易产生死锁**
+
+
 
 #### 同步代码块
 
@@ -5014,52 +5031,72 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
 
 #### Lock锁
 
-* `java.util.concurrent.locks.Lock` **接口**机制提供了比synchronized代码块和synchronized方法更广泛的锁定操作，同步代码块/同步方法具有的功能Lock都有，除此之外更强大，更体现面向对象。 
+* 从JDK 5.0开始，Java提供了更强大的线程同步机制——通过**显式定义同步锁对象**来实现同步。`java.util.concurrent.locks.Lock` **接口**机制提供了比`synchronized`代码块和`synchronized`方法更广泛的锁定操作，同步代码块/同步方法具有的功能Lock都有，除此之外更强大，更体现面向对象。 
 
-* **Lock接口的实现类`ReentrantLock`**
+* **Lock接口的实现类`ReentrantLock`**。可在构造方法中设置是否为**公平锁**（FIFO），但是效率可能会变低。
 
 * **Lock锁也称同步锁**，加锁与释放锁方法化了，如下：
 
-  * public void **lock**()：**加同步锁**
+  * `void lock()`：**加同步锁**
 
-  * public void **unlock**()：**释放同步锁**
+  * `void unlock()`：**释放同步锁**
 
     ```java
-    private int count = 100;
-    private Lock lock= new ReentrantLock();
+    public class Ticket implements Runnable {
     
-    @Override
-    public void run() {
-        while(true) {
-            lock.lock(); //加同步锁
-            if (ticket > 0) { 
+        private int count = 100;
+        private Lock lock = new ReentrantLock();
+    
+        @Override
+        public void run() {
+            while (true) {
                 try {
-                    Thread.sleep(10);
-                    System.out.println(Thread.currentThread().getName() + "-->正在卖第" + ticket + "张票");
-                    ticket--; 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    // 加同步锁
+                    lock.lock();
+                    if (count > 0) {
+                        try {
+                            Thread.sleep(10);
+                            System.out.println(Thread.currentThread().getName() + "-->正在卖第" + count + "张票");
+                            count--;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        break;
+                    }
                 } finally {
-                    lock.unlock(); //无论程序是否异常，都会释放锁
+                    lock.unlock();
                 }
-    ...
+            }
+        }
+    
+        public static void main(String[] args) {
+            Ticket ticket = new Ticket();
+            new Thread(ticket, "窗口1").start();
+            new Thread(ticket, "窗口2").start();
+            new Thread(ticket, "窗口3").start();
+        }
+    }
     ```
 
 
 
-#### 死锁问题(哲学家就餐)
+### 死锁问题(哲学家就餐)
 
 - 指两个或两个以上的线程在执行的过程中，因**争夺资源**产生的一种**互相等待**现象
 
+  不要使用 String 来做锁。如：String s1 = "Hello" 和 String s2 = "Hello" 其实是同一把锁；还会可能与其他类库发生死锁。
+  
   ```java
-  public class DieLockDemo {
-      public static String lock1 = "lock1";
-      public static String lock2 = "lock2";
+  public class DeadLock {
+      private static Object lock1 = new Object();
+      private static Object lock2 = new Object();
   
       public static void main(String[] args) {
           new Thread(() -> {
               synchronized (lock1) {
                   System.out.println("t1 get lock1");
+                  // 可在此处sleep提高死锁概率
                   synchronized (lock2) {
                       System.out.println("t1 get lock2");
                   }
@@ -5069,6 +5106,7 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
           new Thread(() -> {
               synchronized (lock2) {
                   System.out.println("t2 get lock2");
+                  // 可在此处sleep提高死锁概率
                   synchronized (lock1) {
                       System.out.println("t2 get lock1");
                   }
@@ -5076,16 +5114,34 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
           }, "t2").start();
       }
   }
+  // 可能出现的结果有：
+  // 1
+  t1 get lock1
+  t1 get lock2
+  t2 get lock2
+  t2 get lock1
+  // 2
+  t2 get lock2
+  t2 get lock1
+  t1 get lock1
+  t1 get lock2
+  // 3
+  t1 get lock1
+  t2 get lock2
+  // 4
+  t2 get lock2
+  t1 get lock1
   ```
 
 
 
 
 
+*   
 
-## 6.5 线程状态
 
-### 6.5.1 线程状态概述
+
+
 
 
 
@@ -5202,6 +5258,16 @@ public static void main(String[] args) {
     * **实现Callable来实现多线程**（有返回值，可以抛异常）
 
 
+
+## 习题
+
+### synchronized 和 Lock 区别
+
+*   Lock是显式锁(手动开启和关闭锁，别忘记关闭锁)，synchronized是 隐式锁，出了作用域自动释放
+*   Lock只有代码块锁，synchronized有代码块锁和方法锁
+*   使用Lock锁，JVM将花费较少的时间来调度线程，性能更好。并且具有更好的扩展性(提供更多的子类)
+
+优先使用顺序：Lock —> 同步代码块(已经进入了方法体，分配了相应资源) —> 同步方法 (在方法体之外)
 
 
 
