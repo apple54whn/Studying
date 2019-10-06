@@ -623,7 +623,7 @@ Java保留字：现有Java版本尚未使用，但以后版本可能会作为关
 
 * **选择语句**
 
-  * switch语句中**表达式数据类型可以是：byte、char、short、int；enum（枚举）、String(JDK7及之后)**
+  * switch语句中**表达式数据类型可以是：byte、char、short、int；Enum（枚举）、String(JDK7及之后)**
 
     ```java
     switch (表达式) {
@@ -649,6 +649,8 @@ Java保留字：现有Java版本尚未使用，但以后版本可能会作为关
   * switch语句格式可以很灵活，**前后顺序可以颠倒**，**break语句也可以省略（例如，季节）**
 
   * default位置可以很灵活，但推荐放最后！
+
+  * JDK 1.5 中可以在 switch **表达式中使用Enum定义的枚举类的对象**作为表达式, **case 子句可以直接使用枚举值的名字，无需添加枚举类作为限定**
 
 * **循环语句**
 
@@ -2109,50 +2111,52 @@ class Other {
 
 ### interface接口
 
-继承是一个"是不是"的关系，而接口实现则是 "能不能"的关系。接口的本质是契约，标准，规范。
+#### 理解
 
-* Java中接口是多个**类的公共规范标准**，是方法的集合。是**引用数据类型**，用`interface`修饰，也会被编译成`.class`文件
+继承是一个"**是不是**"的关系，而接口实现则是 "**能不能**"的关系。接口的本质是契约，标准，规范。
 
-* 接口中包含的内容有：
+Java中接口是多个**类的公共规范标准**，是方法的集合。是**引用数据类型**，用`interface`修饰，也会被编译成`.class`文件
 
-    - JDK7：**全局常量（静态）**、**抽象方法**
+#### 接口中包含的内容
 
-        - 接口中成员变量必须是**赋值的常量**且**静态**的，默认修饰符`public static final`（大写、下划线），可省略
-        - 接口中成员方法必须是**抽象方法**，默认修饰符`public abstract`，可省略
+- JDK7：**全局常量（静态）**、**抽象方法**
 
-    - JDK8：**默认方法（default ）**、**静态方法（static）**
+    - 接口中成员变量必须是**赋值的常量**且**静态**的，默认修饰符`public static final`（大写、下划线），可省略
+    - 接口中成员方法必须是**抽象方法**，默认修饰符`public abstract`，可省略
 
-        - 默认方法：供**实现类直接调用**或者**重写**。可以解决接口升级问题、拼接函数模型
+- JDK8：**默认方法（default ）**、**静态方法（static）**
 
-            ```java
-            /*public*/ default 返回值类型 method(/*参数列表*/) { //default不可省略，public可省略
-                //方法体     
-            }
-            ```
+    - 默认方法：供**实现类直接调用**或者**重写**。可以解决接口升级问题、拼接函数模型
 
-        - 静态方法：**只能接口直接调用**，不能用接口实现类对象来调用（因为可能实现多接口）
+        ```java
+        /*public*/ default 返回值类型 method(/*参数列表*/) { //default不可省略，public可省略
+            //方法体     
+        }
+        ```
 
-            ```java
-            /*public*/ static 返回值类型 method(/*参数列表*/) { //static不可省略，public可省略
-                //方法体         
-            }
-            ```
+    - 静态方法：**只能接口直接调用**，不能用接口实现类对象来调用（因为可能实现多接口）
 
-    - JDK9：**私有方法**
+        ```java
+        /*public*/ static 返回值类型 method(/*参数列表*/) { //static不可省略，public可省略
+            //方法体         
+        }
+        ```
 
-        - 私有方法：向上抽取重复代码，只能供**接口自己**中的**默认方法**或者**静态方法调用**
+- JDK9：**私有方法**
 
-            ```java
-            private 返回值类型 method(/*参数列表*/) { 
-                //方法体     
-            }
-            ```
+    - 私有方法：向上抽取重复代码，只能供**接口自己**中的**默认方法**或者**静态方法调用**
 
-            ```java
-            private static 返回值类型 method(/*参数列表*/) {
-                //方法体         
-            }
-            ```
+        ```java
+        private 返回值类型 method(/*参数列表*/) { 
+            //方法体     
+        }
+        ```
+
+        ```java
+        private static 返回值类型 method(/*参数列表*/) {
+            //方法体         
+        }
+        ```
 
 * 接口中**没有构造器**。即不可以被实例化，需要定义一个类**实现`(implements)`接口中所有方法**，如果这个类是**抽象类，实现部分**即可。**接口的具体使用，也体现多态性**
 
@@ -2160,36 +2164,433 @@ class Other {
 
     ![](images\06-笔记本电脑案例分析.png)
 
-* **注意：**
+#### 注意事项
 
-    - 接口**没有静态代码块**和**构造方法**（其实现类继承`Object`，提供无参构造）
-    - 一个类的直接父类是唯一的，但一个**类可以实现多个接口**（用“,”隔开）
-    - 接口中定义的**静态方法，只能通过接口来调用**。
-    - 通过**实现类的对象，可以调用接口中的默认方法**。如果实现类重写了接口中的默认方法，调用时，仍然调用的是重写以后的方法
-    - 实现类实现的多个接口中，存在**重复的抽象方法**，那么**只需重写一次**即可
-    - 实现类实现的多个接口中，存在**重复的默认方法**，那么**必须重写**冲突的默认方法，否则**接口冲突。**
-    - 实现类的**直接父类中的方法**和**接口中默认方法产生冲突**，在子类没有重写情况下优先**使用父类**中的方法。**类优先原则**
-    - **实现类中调用接口中的默认方法**，`InterfaceA.super.method()`
+- 接口**没有静态代码块**和**构造方法**（其实现类继承`Object`，提供无参构造）
+- 一个类的直接父类是唯一的，但一个**类可以实现多个接口**（用“,”隔开）
+- 接口中定义的**静态方法，只能通过接口来调用**。
+- 通过**实现类的对象，可以调用接口中的默认方法**。如果实现类重写了接口中的默认方法，调用时，仍然调用的是重写以后的方法
+- 实现类实现的多个接口中，存在**重复的抽象方法**，那么**只需重写一次**即可
+- 实现类实现的多个接口中，存在**重复的默认方法**，那么**必须重写**冲突的默认方法，否则**接口冲突。**
+- 实现类的**直接父类中的方法**和**接口中默认方法产生冲突**，在子类没有重写情况下优先**使用父类**中的方法。**类优先原则**
+- **实现类中调用接口中的默认方法**，`InterfaceA.super.method()`
 
-* **类与接口关系总结**：
+#### 类与接口关系总结
 
-    * 类与类：继承关系，只能单继承，可以多层继承
+* 类与类：继承关系，只能单继承，可以多层继承
 
-    * 类与接口：实现关系，可以单实现，也可以多实现，可以在继承一个类时实现多个接口
+* 类与接口：实现关系，可以单实现，也可以多实现，可以在继承一个类时实现多个接口
 
-    * 接口与接口：继承关系，可以单继承，也可以多继承
+* 接口与接口：继承关系，可以单继承，也可以多继承
 
-        多继承中，如果父接口中的默认方法（抽象方法）有重名的，那么子接口须重写一次。
-
+    多继承中，如果父接口中的默认方法（抽象方法）有重名的，那么子接口须重写一次。
+    
 * 同抽象类，接口也可以创建：非匿名实现类的非匿名对象、非匿名实现类的匿名对象、匿名实现类的非匿名对象、匿名实现类的匿名对象
 
-* **抽象类和接口的异同？**
+      
+
+
+
+
+### Enum枚举
+
+>   类的对象只有有限个，确定的。举例如下：
+>
+>   *   星期：Monday(星期一)、......、Sunday(星期天)
+>   *   性别：Man(男)、Woman(女)
+>   *   季节：Spring(春节)......Winter(冬天)
+>   *   支付方式：Cash(现金)、WeChatPay(微信)、Alipay(支付宝)、BankCard(银行卡)、CreditCard(信用卡)
+>   *   就职状态：Busy、Free、Vocation、Dimission
+>   *   订单状态：Nonpayment(未付款)、Paid(已付款)、Delivered(已发货)、Return(退货)、Checked(已确认)、Fulfilled(已配货)
+>   *   线程状态：Thread中 State 内部枚举类
+
+**当需要定义一组常量时，强烈建议使用枚举类**
+
+#### 枚举类的实现
+
+*   JDK1.5之前需要自定义枚举类
+
+    ```java
+    //自定义枚举类
+    public class Season{
+        //1.声明Season对象的属性:private final修饰，final 可不加，但加上后在生成 set 方法时会编译报错，以示提醒
+        private final String seasonName;
+        private final String seasonDesc;
+    
+        //2.私有化类的构造器，保证不能在类的外部创建其对象，并给对象属性赋值
+        private Season(String seasonName,String seasonDesc){
+            this.seasonName = seasonName;
+            this.seasonDesc = seasonDesc;
+        }
+    
+        //3.提供当前枚举类的多个对象：public static final修饰
+        public static final Season SPRING = new Season("春天","春暖花开");
+        public static final Season SUMMER = new Season("夏天","夏日炎炎");
+        public static final Season AUTUMN = new Season("秋天","秋高气爽");
+        public static final Season WINTER = new Season("冬天","冰天雪地");
+    
+        //4.其他诉求1：获取枚举类对象的属性
+        public String getSeasonName() {
+            return seasonName;
+        }
+    
+        public String getSeasonDesc() {
+            return seasonDesc;
+        }
+        //4.其他诉求2：提供toString()
+        @Override
+        public String toString() {
+            return "Season{" +
+                "seasonName='" + seasonName + '\'' +
+                ", seasonDesc='" + seasonDesc + '\'' +
+                '}';
+        }
+    }
+    ```
+
+*   JDK 1.5 新增的 `enum` 关键字用于定义枚举类
+
+    *   使用 enum 定义的枚举类**默认继承**了 `java.lang.Enum`类，因此不能再继承其他类
+
+    *   必须在**枚举类的第一行声明枚举类对象**，以`,`分隔`;` 结尾。列出的实例对象系统会**自动添加**`public static final`修饰
+
+    *   枚举类的**属性建议使用**`private final`修饰，加上`final`后在生成`set`方法时会编译报错，以示提醒
+
+    *   枚举类的**构造器默认使用** `private` 权限修饰符
+
+        >   JDK 1.5 中可以在 switch 表达式中使用Enum定义的枚举类的对象作为表达式, case 子句可以直接使用枚举值的名字，无需添加枚举类作为限定
+
+    ```java
+    public enum Season {
+        SPRING("春天","春风又绿江南岸"),
+        SUMMER("夏天","映日荷花别样红"),
+        AUTUMN("秋天","秋水共长天一色"),
+        WINNER("冬天","窗含西岭千秋雪");
+    
+    
+        // 若没有属性，可以不定义它和构造器
+        private final String name;
+    
+        private final String des;
+    
+        Season(String name, String des) {
+            this.name = name;
+            this.des = des;
+        }
+        
+        // 可添加 get 方法、重写 Enum 类的toString()
+        public String getName() {
+            return name;
+        }
+    
+        public String getDes() {
+            return des;
+        }
+        
+        @Override
+        public String toString() {
+            return "Season{" +
+                    "name='" + name + '\'' +
+                    ", des='" + des + '\'' +
+                    '}';
+        }
+    }
+    ```
+
+*   **若枚举只有一个对象，则可以作为一种单例模式的实现方式，查看单例模式中例子**
+
+#### `java.lang.Enum`常用方法
+
+*   `values()`：返回**枚举类型的对象数组**，该方法可以很方便地遍历所有的枚举值
+
+*   `valueOf(String str)`：可以把一个字符串转为对应的枚举类对象。要求字符串必须是枚举类对象的“名字”。如不是，会有运行时异常:`IllegalArgumentException`
+
+*   `toString()`：不重写则返回当前枚举类对象常量的名称
+
+    ```java
+    // 以下代码演示不重写toString()方法
+    Season[] values = Season.values();
+    System.out.println(Arrays.toString(values));// [SPRING, SUMMER, AUTUMN, WINNER]
+    
+    Season summer = Season.valueOf("SUMMER");
+    System.out.println(summer);// SUMMER
+    
+    System.out.println(Season.SUMMER);// SUMMER，默认调用 toString()
+    ```
+
+#### 实现接口的`Enum`枚举类
+
+*   和**普通 Java 类一样**，枚举类可以**实现一个或多个接口**
+
+*   若每个枚举值在调用实现的接口方法呈现相同的行为方式，则只要统一实现该方法即可
+
+    若需要每个枚举值在调用实现的接口方法呈现出不同的行为方式，则可以让**每个枚举值分别来实现该方法**
+
+    ```java
+    // 简单示例如下
+    SPRING("春天","春风又绿江南岸"){
+        @Override
+        public String show() {
+            // TODO
+        }
+    }
+    ```
 
     
 
 
 
 
+
+
+
+### Annotation注解
+
+#### 注解和注释区别
+
+*   **注释**：在阅读程序时更清楚，给**程序员看的**
+
+*   **注解**：给jvm看的，**给机器看的**
+
+#### 注解的理解
+
+*   从 JDK 5.0 开始，Java 增加了对**元数据（MetaData）**的支持, 也就是Annotation。Annotation 其实就是代码里的**特殊标记**, 这些标记可以在**编译、类加载、运行时**被读取, 并执行相应的处理。通过使用 Annotation, 程序员可以在不改变原有逻辑的情况下, 在源文件中嵌入一些补充信息。代码分析工具、开发工具和部署工具可以通过这些补充信息进行验证或者进行部署。
+*   Annotation 可以像修饰符一样被使用，可用于修饰**包、类、构造器、方法、成员变量、参数、局部变量的声明**，这些信息被保存在 Annotation 的 key,value 对中。
+*   在JavaSE中，注解的使用目的比较简单，例如标记过时的功能， 忽略警告等。在JavaEE/Android中注解占据了更重要的角色，例如用来配置应用程序的任何切面，代替JavaEE旧版中所遗留的繁冗代码和XML配置等。未来的开发模式都是基于注解的，JPA是基于注解的，Spring2.5以上都是基于注解的，Hibernate3.x以后也是基于注解的，现在的Struts2有一部分也是基于注解的了，注解是一种趋势，一定程度上可以说：`框架 = 注解 + 反射 + 设计模式`。
+
+
+
+#### 注解的作用
+
+-   **编译检查**：通过代码里标识的注解让编译器能够实现基本的编译检查
+
+    -   `@Override`：检测被该注解标注的方法是否是继承自父类(接口)的
+    -   `@Deprecated`：该注解标注的内容，表示已过时，通常是因为 所修饰的结构危险或存在更好的选择
+    -   `@SuppressWarnings({数组})`：压制警告。不让显示黄线或灰色，变量、方法、类上都可以使用
+        *   一般传递参数all  `@SuppressWarnings("all")`
+
+-   **代码分析**：通过代码里标识的注解对代码进行分析（替代配置文件，如 Servlet3.0和 Spring 中注解）
+
+-   **编写文档**：通过代码里标识的注解生成doc文档
+
+    -   @author 标明开发该类模块的作者，多个作者之间使用,分割
+    -   @version 标明该类模块的版本
+    -   @see 参考转向，也就是相关主题
+    -   @since 从哪个版本开始增加的
+    -   @param 对方法中某参数的说明，如果没有参数就不能写
+    -   @return 对方法返回值的说明，如果方法的返回值类型是void就不能写
+    -   @exception 对方法可能抛出的异常进行说明 ，如果方法没有用throws显式抛出的异常就不能写
+
+    其中
+
+    -   @param @return 和 @exception 这三个标记都是只用于方法的
+    -   @param的格式要求:@param 形参名 形参类型 形参说明
+    -   @return 的格式要求:@return 返回值类型 返回值说明
+    -   @exception的格式要求:@exception 异常类型 异常说明
+    -   @param和@exception可以并列多个
+
+
+
+#### 自定义注解
+
+*   本质：注解本质上就是一个**接口**，该接口**默认继承`java.lang.annotation.Annotation`接口**
+
+*   格式，可参照`@SuppressWarnings`
+
+    ```java
+    @元注解
+    public @interface 注解名称{
+    	属性列表;
+    }
+    ```
+
+*   **成员变量**：以**无参数方法的形式**来声明，其方法名和返回值定义了该成员的名字和类型，称为配置参数
+
+    -   **返回值类型**的取值：`八种基本数据类型`、`String`、`Class`、`Enum`、`Annotation`、`以上类型的数组`
+
+    -   定义了属性，在**使用时**需要给属性**赋值**
+
+        *   如果定义属性时使用**`default`**关键字给属性默认初始化值，则使用注解时，可不进行属性的赋值。
+
+        *   如果**只有一个属性需要赋值**，并且属性的名称是**`value`**，则`value`可以省略，直接定义值即可。
+
+        *   **数组**赋值时，值使用**`{}`**包裹。如果数组中只有一个值，则`{}`可以省略
+
+    -   没有成员定义的 Annotation 称为**标记**，如`@Override`；包含成员变量的 Annotation 称为**元数据 Annotation**
+
+*   **元注解**：用于**描述注解的注解**，即修饰其他 Annotation的Annotation
+
+    -   **`@Target`**：描述注解能够**作用的位置**，**属性`ElementType`枚举类**。不指定则都可以使用
+
+        -   `TYPE`：可以作用于类上。Class, interface (including annotation type), or enum declaration
+
+        -   `FIELD`：可以作用于域（成员变量）上。Field declaration (includes enum constants)
+
+        -   `CONSTRUCTOR`：可以作用于构造器上。Constructor declaration
+
+        -   `METHOD`：可以作用于方法上。Method declaration
+
+        -   `PARAMETER`：Formal parameter declaration
+
+        -   `LOCAL_VARIABLE`：Local variable declaration
+
+        -   `ANNOTATION_TYPE`：Annotation type declaration
+
+        -   `PACKAGE`：Package declaration
+
+        -   `TYPE_PARAMETER`：since 1.8，Type parameter declaration，能写在类型变量的声明语句中(如:泛型声明)
+
+            ```java
+            public class TestTypeDefine<@TypeDefine() U> {}
+            ```
+
+        -   `TYPE_USE`：since 1.8，Use of a type，能写在使用类型的任何语句中
+
+            ```java
+            AnnotationTest<@MyAnnotation String> t = null;
+            int a = (@MyAnnotation int) 2L;
+            public static void test(@MyAnnotation String arg) throws @MyAnnotation Exception {}
+            // ...
+            ```
+
+    -   **`@Retention`**：只能用于修饰一个 `Annotation` 定义，用于指定该 `Annotation` 被**保留**到的阶段，`@Rentention` 包含一个 `RetentionPolicy`**枚举类型**的成员变量：
+
+        -   `SOURCE`：注解只在`.java`源文件级别有效。编译器直接丢弃这种策略的注释
+        -   `CLASS`：默认值，注解在`.java`源文件级别和`.class`字节码文件级别都有效。运行Java 程序时，JVM 丢弃
+        -   `RUNTIME`：在运行时有效，会保留到`.class`字节码文件中，并被JVM读取到，可**通过反射获取该注释**
+
+    -   **`@Repeatable`**：since 1.8，**可重复注解**。`Target` 和 `Retenton` 等元注解需相同，否则编译或运行报错
+
+        -   1.8之前
+
+            ```java
+            @Target({ElementType.TYPE,ElementType.FIELD})
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface MyAnnotations {
+            
+                MyAnnotation[] value();
+            }
+            ```
+
+            ```java
+            @Target({ElementType.TYPE,ElementType.FIELD})
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface MyAnnotation {
+            
+                String value() default "hello annotation";
+            }
+            ```
+
+            ```java
+            @MyAnnotations({@MyAnnotation, @MyAnnotation})
+            public class AnnotationTest{ }
+            ```
+
+        -   1.8及之后
+
+            ```java
+            @Target({ElementType.TYPE,ElementType.FIELD})
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface MyAnnotations {
+            
+                MyAnnotation[] value();
+            }
+            ```
+
+            ```java
+            @Repeatable(MyAnnotations.class)
+            @Target({ElementType.TYPE,ElementType.FIELD})
+            @Retention(RetentionPolicy.RUNTIME)
+            public @interface MyAnnotation {
+            
+                String value() default "hello annotation";
+            }
+            ```
+
+            ```java
+            @MyAnnotation
+            @MyAnnotation
+            public class AnnotationTest { } 
+            ```
+
+    -   `@Documented`：描述注解是否被javadoc抽取到api文档中，如`Date`类中有些`@Deprecated`方法 
+
+    -   `@Inherited`：描述注解是否被子类继承
+
+*   自定义注解必须配上注解的信息处理流程（使用反射）才有意义
+
+    ```java
+    @Target({ElementType.METHOD,ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface MyAnno {
+    	//注解的属性
+    	String name();
+    	int age() default 28;	
+    }
+    ```
+
+
+
+
+
+
+
+
+
+#### 注解的应用
+
+-   目前而言最主流的应用：**代替配置文件**，例如改写反射中加载配置文件的例子
+
+    -   配置文件与注解开发的优缺点：
+        -   注解优点：**开发效率高、成本低**
+        -   注解缺点：**耦合性大**、并且**不利于后期维护**，但是过虑了！
+
+    ```java
+    @Target({ElementType.TYPE,ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Prop {
+        String className();
+        String methodName();
+    }
+    ```
+
+    ```java
+    @Prop(className = "test.Person",methodName = "show")
+    public class UserTest1 {
+    
+        @Prop(className = "test.Person",methodName = "show")
+        public static void main(String[] args) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
+            //获取类上注解对象，并调用方法获取值
+            Class c = UserTest1.class;
+            //Prop prop = (Prop) c.getAnnotation(Prop.class);
+            //String className = prop.className();
+            //String methodName = prop.methodName();
+            
+            //获取方法上注解对象，并调用方法获取值
+            Method main = c.getMethod("main", String[].class);
+            Prop prop = main.getAnnotation(Prop.class);
+            String className = prop.className();
+            String methodName = prop.methodName();
+    	    
+            //同反射一致
+            Class clazz = Class.forName(className);
+            Constructor con = clazz.getConstructor();
+            Object o = con.newInstance();
+            Method show = clazz.getMethod(methodName, String.class);
+            show.invoke(o,"牛逼");
+        }
+    }
+    ```
+
+-   案例：简单的测试框架
+    -   通过反射获取加了注解要被测试类的方法，`method.isAnnotationPresent(Prop.class)`
+    -   通过返回值是否来执行该方法，若抛异常则通过IO流记录在文件中
+-   小结：
+    1.  以后大多数时候，我们会使用注解，而不是自定义注解
+    2.  注解给谁用？
+    3.  编译器
+    4.  给解析程序用，如上面的测试框架程序
+    5.  注解不是程序的一部分，可以理解为注解就是一个标签
 
 
 
@@ -8967,130 +9368,6 @@ public static void main(String[] args) throws Exception {
 
 
 
-# 11 注解（annotation）
-
-## 11.1 注解简介
-
-> 区别：
->
-> - **注释**：在阅读程序时更清楚，给**程序员看的**
-> - **注解**：给jvm看的，**给机器看的**
-
-- 注解（Annotation）：也叫元数据，一种**代码**级别的**说明**。 JDK1.5之后的新特性，使用**`@Xxx`**表示
-- 作用分类：
-
-  - **编译检查**：通过代码里标识的注解让编译器能够实现基本的编译检查【@Override】
-  - ==**代码分析**==：通过代码里标识的注解对代码进行分析【使用反射】
-  - **编写文档**：通过代码里标识的注解生成文档【生成doc文档】
-- JDK中预定义的一些注解
-
-  * @**Override**：检测被该注解标注的方法是否是继承自父类(接口)的
-  * @**Deprecated**：该注解标注的内容，表示已过时
-  * @**SuppressWarnings**({数组})：压制警告。不让弹出黄线，变量、方法、类上都可以使用
-    * 一般传递参数all  `@SuppressWarnings("all")`
-
-## 11.2 自定义注解
-
-- ==**自定义注解（了解，在框架中会使用即可）**==
-
-  > 本质：注解本质上就是一个**接口**，该接口默认继承`java.lang.annotation.Annotation`接口
-
-  - 格式
-
-    ```java
-    @元注解
-    public @interface 注解名称{
-    	属性列表;
-    }
-    ```
-
-  * **属性**：接口中的**抽象方法**
-
-    * 属性的**返回值类型**有下列取值：基本数据类型、String、枚举、注解、以上类型的数组
-    * 定义了属性，在**使用时**需要给属性**赋值**
-      1. 如果定义属性时使用**default**关键字给属性默认初始化值，则使用注解时，可不进行属性的赋值。
-      2. 如果**只有一个属性需要赋值**，并且属性的名称是**value**，则value可以省略，直接定义值即可。
-      3. **数组**赋值时，值使用**{}**包裹。如果数组中只有一个值，则{}可以省略
-
-  * **元注解**：用于**描述注解的注解**
-
-    * **@Target**：描述注解能够**作用的位置**，**属性ElementType枚举类取值**（类名调用）
-      * TYPE：可以作用于类上
-      * FIELD：可以作用于域（成员变量）上
-      * METHOD：可以作用于方法上
-    * **@Retention**：描述注解**被保留的阶段**，**属性RetentionPolicy枚举类取值**（类名调用）
-      * SOURCE：注解只在`.java`源码级别可见
-      * CLASS：注解在`.java`源码级别和`.class`字节码文件级别都可见
-      * RUNTIME：当前被描述的注解，会保留到`.class`字节码文件中，并被JVM读取到
-    * @Documented：描述注解是否被抽取到api文档中
-    * @Inherited：描述注解是否被子类继承
-
-    ```java
-    @Target({ElementType.METHOD,ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface MyAnno {
-    	//注解的属性
-    	String name();
-    	int age() default 28;	
-    }
-    ```
-
-## 11.3 注解的应用
-
-- 目前而言最主流的应用：**代替配置文件**，例如改写反射中加载配置文件的例子
-
-  - 配置文件与注解开发的优缺点：
-    - 注解优点：**开发效率高、成本低**
-    - 注解缺点：**耦合性大**、并且**不利于后期维护**
-
-  ```java
-  @Target({ElementType.TYPE,ElementType.METHOD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface Prop {
-      String className();
-      String methodName();
-  }
-  ```
-
-  ```java
-  @Prop(className = "test.Person",methodName = "show")
-  public class UserTest1 {
-  
-      @Prop(className = "test.Person",methodName = "show")
-      public static void main(String[] args) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
-          //获取类上注解对象，并调用方法获取值
-          Class c = UserTest1.class;
-          //Prop prop = (Prop) c.getAnnotation(Prop.class);
-          //String className = prop.className();
-          //String methodName = prop.methodName();
-          
-          //获取方法上注解对象，并调用方法获取值
-          Method main = c.getMethod("main", String[].class);
-          Prop prop = main.getAnnotation(Prop.class);
-          String className = prop.className();
-          String methodName = prop.methodName();
-  	    
-          //同反射一致
-          Class clazz = Class.forName(className);
-          Constructor con = clazz.getConstructor();
-          Object o = con.newInstance();
-          Method show = clazz.getMethod(methodName, String.class);
-          show.invoke(o,"牛逼");
-      }
-  }
-  ```
-
-* 案例：简单的测试框架
-  * 通过反射获取加了注解要被测试类的方法，`method.isAnnotationPresent(Prop.class)`
-  * 通过返回值是否来执行该方法，若抛异常则通过IO流记录在文件中
-* 小结：
-  1. 以后大多数时候，我们会使用注解，而不是自定义注解
-  2. 注解给谁用？
-    1. 编译器
-    2. 给解析程序用，如上面的测试框架程序
-  3. 注解不是程序的一部分，可以理解为注解就是一个标签
-
-
 
 
 
@@ -9137,10 +9414,12 @@ public static void main(String[] args) throws Exception {
     - **饿汉式**（类一加载就创建对象）（线程安全）
 
         ```java
-        private static Student s = new Student();
-        private Student() {}
-        public static Student getInstance() {
-        	return s;
+        public class Student{
+            private static Student s = new Student();
+            private Student() {}
+            public static Student getInstance() {
+                return s;
+            }
         }
         ```
 
@@ -9204,6 +9483,19 @@ public static void main(String[] args) throws Exception {
         ```
 
     - 枚举实现
+
+        ```java
+        public enum Teacher {
+        
+            private static final Teacher t = new Teacher();
+            
+            public static Teacher getInstance(){
+            	return t;
+            }
+        }
+        ```
+
+        
 
 - **Runtime类（饿汉式）**每个Java应用程序都有一个Runtime类实例，使应用程序能够与其运行的环境相连
 
