@@ -2187,7 +2187,7 @@ Java中接口是多个**类的公共规范标准**，是方法的集合。是**�
     
 * 同抽象类，接口也可以创建：非匿名实现类的非匿名对象、非匿名实现类的匿名对象、匿名实现类的非匿名对象、匿名实现类的匿名对象
 
-      
+  ​    
 
 
 
@@ -5271,12 +5271,9 @@ System.out.println(a == c);//false
   - **由来**  Java-->面向对象-->操作很多对象-->存储-->容器
   - **容器与数组的区别**
     1. **长度**     数组固定，容器（集合）可变
-    2. **内容**     数组可以是基本类型和引用类型，容器（集合）只能是引用类型
-    3. **元素内容**     数组只能存储同一类型，容器（集合）可以存储不同类型(一般也是同一种类型)
+    2. **存储类型**     数组可以是基本类型和引用类型，容器（集合）只能是引用类型
+    3. **元素类型**     数组只能存储同一类型，容器（集合）可以存储不同类型（一般也存储同一种类型）
 
-- **继承体系结构**
-
-  ![](images\容器.png)
 
 ## 4.1 数据结构
 
@@ -5335,29 +5332,33 @@ System.out.println(a == c);//false
 
 
 
-## 4.2 Collection接口（java.util）
+## 4.2 Collection & Collections
 
-- Collection是所有**单列集合**的**父接口**，因此在Collection中定义了单列集合(List和Set)通用的一些方法，这些方法可用于操作所有的单列集合。由于**其`Override`了`toString()`方法**，所以可以直接打印其内容。
+### Collection（java.util）
+
+![image-20191007235251066](images/image-20191007235251066.png)
+
+- `Collection`是所有**单列集合**的**父接口**，因此在Collection中定义了单列集合(List和Set)通用的一些方法，这些方法可用于操作所有的单列集合。由于**其`Override`了`toString()`方法**，所以可以直接打印其内容。
 - **常用方法:**
-  - **添加(==add==；addAll)**
+  - **添加**
     - `boolean add(Object o)`
     - `boolean addAll(Collection c)`
-  - **删除(==clear==；==remove==；removeAll)**
+  - **删除**
     - `void clear()`：删除集合中所有元素，但集合还存在，如[]
     - `boolean remove(Object o)`
     - `boolean removeAll(Collection)`
-  - **判断(==isEmpty==；==contains==；containsAll)**
+  - **判断**
     - `boolean isEmpty()`
     - `boolean contains(Object o)` 底层是equals方法，需重写
     - `boolean containsAll(Collection c)`  底层是equals方法，需重写
-  - **获取容量(==size==)**
+  - **获取容量**
     - `int size()`
-  - **返回迭代器(==iterator==)Collection特有的**
+  - **返回迭代器，Collection特有**
     - `Iterator iterator()`
-  - 把**集合**中的元素，存储到**数组**中(**==toArray==**)
+  - **集合**转**数组**
     - `public Object[] toArray()`
 
-### 4.2.1 Collections（java.util）
+### Collections（java.util）
 
 - 针对**Collection/Map**进行操作的**工具类**
 
@@ -5417,7 +5418,7 @@ System.out.println(a == c);//false
 
 
 
-## 4.3 Iterator接口（java.util）
+## 4.3 Iterator（java.util）
 
 * **迭代**：即**==Collection集合元素的通用获取方式==**。在取元素之前先要判断集合中有没有元素，如果有，就把这个元素取出来，继续在判断，如果还有就再取出出来。一直把集合中的所有元素全部取出。这种取出方式专业术语称为迭代。
 
@@ -5701,6 +5702,8 @@ System.out.println(a == c);//false
 
 ## 4.7 Map
 
+![image-20191007235010685](images/image-20191007235010685.png)
+
 - ==**将键映射到值的对象**==。一个映射不能包含重复的键，每个键最多只能映射到一个值（==**键唯一，值可重复**==）
 
 - ==使用带有~HashMap集合存储**自定义对象作为key的元素**，必须**重写**`hashCode()`和`equals()`方法==，Tree不用
@@ -5821,7 +5824,7 @@ System.out.println(a == c);//false
 
 
 
-## 4.8 Properties
+### 4.7.4 Properties
 
 - `java.util.Properties ` 继承自` Hashtable` ，来表示一个持久的**属性集**。它使用**键值结构**存储数据，每个键及其对应值都是一个**字符串**。`Properties`可以**保存在流中或从流中加载**。
 - ==**特有功能**==
