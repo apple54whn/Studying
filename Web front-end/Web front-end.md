@@ -4,21 +4,53 @@
 
 # 1 HTML
 
-- HyperText Markup Language：超文本标记语言，网页语言
+HyperText Markup Language：超文本标记语言
 
-- **规范**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+```
 
-  ```html
-  <!DOCTYPE html>
-  <html lang='en'> <!--字符集-->
-  	<head>
-  		<meta charset='utf-8'>
-  		<title>标题</title>
-  	</head>
-  	<body>
-  	</body>
-  </html>
-  ```
+## 根元素（html）
+
+-   `<html>`：表示一个HTML文档的**根（顶级元素）**，所以它也被称为根元素，所有其他元素必须是此元素的后代。
+    -   `xmlns`：指派文档的 XML 命名空间。默认是`http://www.w3.org/1999/xhtml`。只在XHTML中必要。
+
+## 文档元数据
+
+元数据（Metadata）含有页面的相关信息，包括样式、脚本及数据，能帮助一些软件（例如 搜索引擎SEO、浏览器 等等）更好地运用和渲染页面。对于样式和脚本的元数据，可以直接在网页里定义，也可以链接到包含相关信息的外部文件。
+
+-   `<base>` ：指定用于一个文档中包含的所有**相对 URL 的根 URL**。一份中只能有一个。一个文档的基本 URL，可以通过使用 `document.baseURI` 的 JS 脚本查询。[详细查看](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/base)
+-   `<head>`：**规定文档相关的配置信息（元数据）**，包括文档的标题，引用的文档样式和脚本等。
+    -   `<meta>`：该元素表示那些不能由其它HTML元相关元素 (`<base>`, `<link>`, `<script>`, `<style>` 或 `<title>`) 之一表示的任何**元数据信息**。
+        -   
+    -   `<title>`： 该元素定义文档的**标题**，显示在浏览器的标题栏或标签页上。它只可以包含文本，若是包含有标签，则包含的任何标签都不会被解释。
+    -   `<link>`：该元素规定了外部资源与当前文档的关系。这个元素最常于链接 CSS 样式表，还能被用来创建站点图标（比如PC端的“favicon”图标和移动设备上用以显示在主屏幕的图标）甚至一些其他事情。
+    -   `<style>`：该元素包含文档的样式信息或者文档的部分内容。默认情况下，该标签的样式信息通常是 CSS 的格式。
+
+## 分区根元素（body）
+
+-   `<body>`：该元素表示文档的内容。`document.body`属性提供了可以轻松访问文档的 body 元素的脚本。
+
+## 内容分区（逻辑分区）
+
+内容分区元素允许你将文档内容从**逻辑上进行组织划分**。使用包括页眉(header)、页脚(footer)、导航(nav)和标题(h1~h6)等分区元素，来为页面内容创建明确的大纲，以便区分各个章节的内容。
+
+-   
+
+
+
+## 主要
 
 - **文字、注释标签**
 
