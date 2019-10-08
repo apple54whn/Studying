@@ -812,7 +812,20 @@ Arrays工具类是针对**数组进行操作**的工具类，包括排序和查�
 
 -   `asList(int/String等[] arr)`**数组转集合**，**长度不能变！！！**转换的为Arrays中内部类ArrayList！
 
-    需要使用`List<Object> objectList = ArrayList<Object>(Arrays.asList(数组))；`
+    需要使用`List<Object> objectList = ArrayList<Object>(Arrays.asList(数组))；`注意：
+
+    ```java
+    List arr1 = Arrays.asList(123, 456);
+    System.out.println(arr1.size());//2
+    
+    List arr1 = Arrays.asList(new int[]{123, 456});
+    System.out.println(arr1.size());//1
+    
+    List arr2 = Arrays.asList(new Integer[]{123, 456});
+    System.out.println(arr2.size());//2
+    ```
+
+    
 
 -   `copyOf(int/String等[] original, int from, int to)`  **数组拷贝**，底层调用`System.arraycopy()`
 
@@ -5266,13 +5279,14 @@ System.out.println(a == c);//false
 
 - **对象数组：**数组可以存储基本数据类型和引用类型，存储引用类型的数组就叫**对象数组**
 
-- **容器(container)**
-
-  - **由来**  Java-->面向对象-->操作很多对象-->存储-->容器
+- **容器（container）**
+- **由来**  Java-->面向对象-->操作很多对象-->存储-->容器
   - **容器与数组的区别**
     1. **长度**     数组固定，容器（集合）可变
     2. **存储类型**     数组可以是基本类型和引用类型，容器（集合）只能是引用类型
     3. **元素类型**     数组只能存储同一类型，容器（集合）可以存储不同类型（一般也存储同一种类型）
+    4. 方法		     数组方法有限，增删改非常不便，效率也不高；集合就不同了，可选择性多
+    5. 数据结构      数组元素有序可重复；集合可选择多
 
 
 ## 4.1 数据结构
@@ -5332,90 +5346,35 @@ System.out.println(a == c);//false
 
 
 
-## 4.2 Collection & Collections
-
-### Collection（java.util）
+## 4.2 Collection（java.util）
 
 ![image-20191007235251066](images/image-20191007235251066.png)
 
 - `Collection`是所有**单列集合**的**父接口**，因此在Collection中定义了单列集合(List和Set)通用的一些方法，这些方法可用于操作所有的单列集合。由于**其`Override`了`toString()`方法**，所以可以直接打印其内容。
-- **常用方法:**
+- 注意：添加元素到`Collection`集合中时，建议重写该元素所属类的`equals`方法
+- **常用方法（底层会调用`equals`方法，建议重写）**
   - **添加**
-    - `boolean add(Object o)`
+    - `boolean add(E e)`
     - `boolean addAll(Collection c)`
   - **删除**
-    - `void clear()`：删除集合中所有元素，但集合还存在，如[]
-    - `boolean remove(Object o)`
-    - `boolean removeAll(Collection)`
+    - `void clear()`：删除集合中所有元素，但集合还存在
+    - `boolean remove(Object o)`：
+    - `boolean removeAll(Collection c)`：差集关系
+    - `default boolean removeIf(Predicate<? super E> filter)`：根据条件删除
   - **判断**
     - `boolean isEmpty()`
-    - `boolean contains(Object o)` 底层是equals方法，需重写
-    - `boolean containsAll(Collection c)`  底层是equals方法，需重写
+    - `boolean contains(Object o)` ：
+    - `boolean containsAll(Collection<?> c)`  ：子集关系
+    - `boolean equals(Object o)`：（根据实际对象可能根据元素顺序依次）对比每个元素
+    - `int hashCode()`
+  - **交集**
+      - `boolean retainAll(Collection<?> c)`：交集
   - **获取容量**
     - `int size()`
-  - **返回迭代器，Collection特有**
+  - **返回迭代器，`Collection`特有**
     - `Iterator iterator()`
   - **集合**转**数组**
-    - `public Object[] toArray()`
-
-### Collections（java.util）
-
-- 针对**Collection/Map**进行操作的**工具类**
-
-- **【面试】Collection和Collections的区别**
-
-  - Collection 是单列集合的顶层接口，有两个子接口List和Set
-  - Collections 是针对集合包括Map进行操作的工具类，可以对集合进行排序和查找等
-
-- **常见静态方法**
-
-  - `public static <T> boolean addAll(Collection<T> c, T... elements)  `**==添加一些元素==**
-
-  - `public static void shuffle(List<?> list)`  **==打乱集合顺序，洗牌==**
-
-  - `public static <T> void sort(List<T> list)` **==元素按照默认规则排序，默认自然排序==**
-
-    - **自然排序(元素具备比较性)**：元素所属的类实现**==Comparable接口==**，重写**`compareTo()`**方法
-
-      **`this - 参数`：升序，反之降序**
-
-  - `public static <T> void sort(List<T> list，Comparator<? super T> )`**==元素按照指定规则排序==**
-
-    - **比较器排序(集合具备比较性)**：方法接收==**Comparator实现类对象**==，重写**`compare(O o1,O o2)`**方法
-
-      **`o1-o2`升序，`o2-o1`降序**
-
-      ```java
-      //可以根据多条规则排序
-      public int compare(Student o1, Student o2) {
-          int result = o1.getAge() - o2.getAge();
-          result = result == 0 ? o1.getName().charAt(0) - o2.getName().charAt(0) : result;
-          return result;
-      }
-      ```
-
-      ```java
-      //lambda改写
-      Collections.sort(list, (o1, o2) -> {
-          int result = o1.getAge() - o2.getAge();
-          result = result == 0 ? o1.getName().compareTo(o2.getName()) : result;
-          return result;
-      });
-      ```
-
-  - `public static <T> int binarySearch(List<?> list,T key)` 
-
-  - `public static <T> T max(Collection<?> coll)` 
-
-  - `public static void reverse(List<?> list)` 
-
-- 不用Vector可以用Collections提供的静态方法**(`Collection.synchronizedCollection/List/Map/Set)`**，其实也不用这个！
-
-  ```java
-  List<String> list = Collections.synchronizedList(new ArrayList<>());
-  ```
-
-
+    - `Object[] toArray()`
 
 
 ## 4.3 Iterator（java.util）
@@ -5618,7 +5577,7 @@ System.out.println(a == c);//false
 
 ## 4.5 List
 
-* ==**元素稳定(存入和取出顺序一致)**，通过**索引**来访问指定元素，**允许**出现**重复**元素==
+* **元素稳定（存入和取出顺序一致）**，通过**索引**来访问指定元素，**允许**出现**重复**元素
   * 由于有索引，所以==**List集合特有遍历功能**get()和size()结合的**普通for循环**==。还有迭代器、for each。
   * 其实现类都重写了`toString()`方法
 
@@ -5638,12 +5597,12 @@ System.out.println(a == c);//false
 
 ### 4.5.1 ArrayList
 
-- ==**底层是数组，查询快，增删慢**==。==**不同步，线程不安全，效率高**==
+- **底层是数组，查询快，增删慢**。**不同步，线程不安全，效率高**
 - 常用方法：没有特殊方法
 
 ### 4.5.2 LinkedList
 
-- ==**底层是双向链表，查询慢，增删快**==。==**不同步，线程不安全，效率高**==
+- **底层是双向链表，查询慢，增删快**。**不同步，线程不安全，效率高**
 - 重写了`toString()`方法
 - **特有方法（==操作首位元素==）**
   - **添加**
@@ -5658,22 +5617,22 @@ System.out.println(a == c);//false
 
 ## 4.6 Set
 
-* ==元素**唯一**==。与`Collection`方法一致，**==没有索引，只可以迭代器或foreach==**
-* ==使用Set集合保存**自定义对象**，除过TreeSet其他俩**必须重写**`hashCode()`和`equal()`方法==
+* 元素**唯一**。与`Collection`方法一致，**没有索引，只可以迭代器或foreach**
+* 使用Set集合保存**自定义对象**，除过TreeSet其他俩**必须重写**`hashCode()`和`equal()`方法
 * 其实现类都重写了`toString()`方法
 
 ### 4.6.1 HashSet
 
-- ==底层数据结构是**哈希表**(**元素为链表或红黑树的数组**，实际上是一个HashMap实例)，查询快。**自动按HashCode排序**，但迭代出的元素顺序和存入顺序**不一致**。==
+- 底层数据结构是**哈希表**(**元素为链表或红黑树的数组**，实际上是一个HashMap实例)，查询快。**自动按HashCode排序**，但迭代出的元素顺序和存入顺序**不一致**。
 
 
 ### 4.6.2 LinkedHashSet
 
-- 继承HashSet，底层数据结构是**==链表和哈希表（数组+链表/红黑树），元素迭代顺序和存入顺序一致==**
+- 继承HashSet，底层数据结构是**链表和哈希表（数组+链表/红黑树），元素迭代顺序和存入顺序一致**
 
 ### 4.6.3 TreeSet
 
-- 底层数据结构是==**红黑树(是一个自平衡二叉树)，并且有序**，使用TreeSet保存自定义元素，这个元素**必须实现Comparable接口**或构造时**必须提供Comparator实现类**==
+- 底层数据结构是**红黑树(是一个自平衡二叉树)，并且有序**，使用TreeSet保存自定义元素，这个元素**必须实现Comparable接口**或构造时**必须提供Comparator实现类**
 
   - 元素唯一性通过红黑树存储时确定，相同元素丢弃， **根据比较的返回值是否是0来决定**，最底层**compareTo**方法
   - 元素的顺序通过红黑树存储，并通过**中（根）序遍历展示**
@@ -5704,9 +5663,9 @@ System.out.println(a == c);//false
 
 ![image-20191007235010685](images/image-20191007235010685.png)
 
-- ==**将键映射到值的对象**==。一个映射不能包含重复的键，每个键最多只能映射到一个值（==**键唯一，值可重复**==）
+- ==**将键映射到值的对象**==。一个映射不能包含重复的键，每个键最多只能映射到一个值（**键唯一，值可重复**）
 
-- ==使用带有~HashMap集合存储**自定义对象作为key的元素**，必须**重写**`hashCode()`和`equals()`方法==，Tree不用
+- 使用带有~HashMap集合存储**自定义对象作为key的元素**，必须**重写**`hashCode()`和`equals()`方法，Tree不用
 
 - 其实现类都重写了`toString()`方法
 
@@ -5780,7 +5739,7 @@ System.out.println(a == c);//false
 
     - "重地"和""通话""元素不同，但哈希值相同，**哈希冲突**
 
-    ![](../Java%20SE/images/%E5%93%88%E5%B8%8C%E8%A1%A8.png)
+    ![](./images/%E5%93%88%E5%B8%8C%E8%A1%A8.png)
 
 - ==**哈希表元素唯一性**底层依赖两个方法==：**`hashCode()`和`equals()`**，必须重写
 
@@ -5869,6 +5828,63 @@ public static void myStore() throws IOException {
 ```
 
 
+
+## Collections（java.util）
+
+-   针对**Collection/Map**进行操作的**工具类**
+
+-   **【面试】Collection和Collections的区别**
+
+    -   Collection 是单列集合的顶层接口，有两个子接口List和Set
+    -   Collections 是针对集合包括Map进行操作的工具类，可以对集合进行排序和查找等
+
+-   **常见静态方法**
+
+    -   `public static <T> boolean addAll(Collection<T> c, T... elements)  `**==添加一些元素==**
+
+    -   `public static void shuffle(List<?> list)`  **==打乱集合顺序，洗牌==**
+
+    -   `public static <T> void sort(List<T> list)` **==元素按照默认规则排序，默认自然排序==**
+
+        -   **自然排序(元素具备比较性)**：元素所属的类实现**==Comparable接口==**，重写**`compareTo()`**方法
+
+            **`this - 参数`：升序，反之降序**
+
+    -   `public static <T> void sort(List<T> list，Comparator<? super T> )`**==元素按照指定规则排序==**
+
+        -   **比较器排序(集合具备比较性)**：方法接收==**Comparator实现类对象**==，重写**`compare(O o1,O o2)`**方法
+
+            **`o1-o2`升序，`o2-o1`降序**
+
+            ```java
+            //可以根据多条规则排序
+            public int compare(Student o1, Student o2) {
+                int result = o1.getAge() - o2.getAge();
+                result = result == 0 ? o1.getName().charAt(0) - o2.getName().charAt(0) : result;
+                return result;
+            }
+            ```
+
+            ```java
+            //lambda改写
+            Collections.sort(list, (o1, o2) -> {
+                int result = o1.getAge() - o2.getAge();
+                result = result == 0 ? o1.getName().compareTo(o2.getName()) : result;
+                return result;
+            });
+            ```
+
+    -   `public static <T> int binarySearch(List<?> list,T key)` 
+
+    -   `public static <T> T max(Collection<?> coll)` 
+
+    -   `public static void reverse(List<?> list)` 
+
+-   不用Vector可以用Collections提供的静态方法**(`Collection.synchronizedCollection/List/Map/Set)`**，其实也不用这个！
+
+    ```java
+    List<String> list = Collections.synchronizedList(new ArrayList<>());
+    ```
 
 
 
