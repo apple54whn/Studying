@@ -5275,7 +5275,160 @@ System.out.println(a == c);//false
 
 
 
-# 5 容器（container）
+
+
+
+
+# 5 泛型
+
+## 4.4 泛型
+
+>   集合中是可以存放任意对象的，只要把对象存储集合后，那么这时他们都会被提升成Object类型。当我们在取出每一个对象并且进行相应的操作时必须采用类型转换。有可能强转引发运行时`ClassCastException`。
+>
+>   Collection虽然可以存储各种对象，但实际上通常Collection只存储同一类型对象。例如都是存储字符串对象。因此在JDK5之后，新增了**泛型**(**Generic**)语法，让你在设计API时可以指定类或方法支持泛型，这样我们使用API的时候也变得更为简洁，并得到了编译时期的语法检查。
+
+-   **泛型**：可以在类或方法中预支地使用未知的类型。
+-   **泛型的好处：**
+    -   将**运行时期**的ClassCastException，转移到了**编译时期**变成了编译失败。
+    -   **避免了类型强转**的麻烦。
+
+>   tips:泛型是数据类型的一部分，我们将类名与泛型合并一起看做数据类型。
+
+-   **泛型的定义与使用**
+
+    -   泛型，用来灵活地**将数据类型应用**到不同的**类**、**方法**、**接口**当中。**将数据类型作为参数进行传递**。
+
+    -   **含有泛型的类**（在**创建对象时**就确定泛型的类型）
+
+        ```java
+        修饰符 class 类名 <代表泛型的变量> {  } //格式
+        public class MyGenericClass<E> {//没有E类型，在这里代表 未知的一种数据类型 未来传递什么就是什么类型
+            private E e;
+        
+            public void setE(E e) {
+                this.e = e;
+            }
+            public E getE() {
+                return e;
+            }
+        }
+        ```
+
+        ```java
+        MyGenericClass<String> my = new MyGenericClass<String>(); //创建对象时就确定泛型的类型
+        ```
+
+    -   **含有泛型的方法**（**调用方法传递数据时**确定泛型的类型）
+
+        ```java
+        修饰符 <代表泛型的变量> 返回值类型 方法名(参数){  } //格式
+        public class MyGenericMethod {	  
+            public <E> void show(E e) {
+                System.out.println(e.getClass());
+            }
+        
+            public static <E> E show2(E e) {	
+                return e;
+            }
+        }
+        ```
+
+        ```java
+        MyGenericMethod mm = new MyGenericMethod();
+        mm.show("aaa"); //调用方法传递数据时确定泛型的类型
+        mm.show(1);
+        ```
+
+    -   **含有泛型的接口**（1.**实现接口时**确定泛型的类型；2.始终不确定泛型，直到**创建对象时**确定泛型的类型）
+
+        ```java
+        修饰符 interface 接口名 <代表泛型的变量> {  } //格式
+        public interface MyGenericInterface<E>{
+        	public abstract void add(E e);
+        	
+        	public abstract E getE();  
+        }
+        ```
+
+        ```java
+        public class MyImp1 implements MyGenericInterface<String> { //实现接口时确定泛型的类型
+            @Override
+            public void add(String e) { /*省略...*/ }
+        
+            @Override
+            public String getE() { /*省略...*/ }
+        }
+        ```
+
+        ```java
+        public class MyImp2<E> implements MyGenericInterface<E> { //始终不确定泛型
+            @Override
+            public void add(E e) { /*省略...*/ }
+            
+        	@Override
+            public E getE() { /*省略...*/ }
+        }
+        MyImp2<String>  my = new MyImp2<String>();  //直到创建对象时确定泛型的类型
+        my.add("aa");
+        ```
+
+-   **泛型通配符**
+
+    -   当**使用泛型类或者接口**时，**传递的数据中**，**泛型类型不确定**，可以通过通配符<?>表示。但是一旦使用泛型的通配符后，只能使用Object类中的共性方法，集合中元素自身方法无法使用。此时只能接收数据,不能往该集合中存储数据。
+    -   使用方式：不能创建对象时使用，只能**作为方法的参数使用**
+
+    ```java
+    public static void main(String[] args) {
+        Collection<Intger> list1 = new ArrayList<Integer>();
+        getElement(list1);
+        Collection<String> list2 = new ArrayList<String>();
+        getElement(list2);
+    }
+    public static void getElement(Collection<?> coll){}//？代表可以接收任意类型
+    ```
+
+-   **通配符高级使用**----**受限泛型**
+
+    -   之前设置泛型的时候，实际上是可以任意设置的，只要是类就可以设置。但是在JAVA的泛型中可以指定一个泛型的**上限**和**下限**。
+
+    -   **泛型的上限**：
+
+        -   **格式**： `类型名称 <? extends 类 > 对象名称`
+        -   **意义**：只能接收该类型及其子类
+
+        **泛型的下限**：
+
+        -   **格式**： `类型名称 <? super 类 > 对象名称`
+        -   **意义**：只能接收该类型及其父类型
+
+        ```java
+        //现已知Object类，String 类，Number类，Integer类，其中Number是Integer的父类
+        public static void main(String[] args) {
+            Collection<Integer> list1 = new ArrayList<Integer>();
+            Collection<String> list2 = new ArrayList<String>();
+            Collection<Number> list3 = new ArrayList<Number>();
+            Collection<Object> list4 = new ArrayList<Object>();
+        
+            getElement1(list1);
+            getElement1(list2);//报错
+            getElement1(list3);
+            getElement1(list4);//报错
+        
+            getElement2(list1);//报错
+            getElement2(list2);//报错
+            getElement2(list3);
+            getElement2(list4);
+        
+        }
+        public static void getElement1(Collection<? extends Number> coll){}
+        public static void getElement2(Collection<? super Number> coll){}
+        ```
+
+
+
+
+
+# 6 容器（container）
 
 - **对象数组：**数组可以存储基本数据类型和引用类型，存储引用类型的数组就叫**对象数组**
 
@@ -5375,45 +5528,66 @@ System.out.println(a == c);//false
     - `Iterator iterator()`
   - **集合**转**数组**
     - `Object[] toArray()`
-
+  - **Stream 流**
 
 ## 4.3 Iterator（java.util）
 
-* **迭代**：即**==Collection集合元素的通用获取方式==**。在取元素之前先要判断集合中有没有元素，如果有，就把这个元素取出来，继续在判断，如果还有就再取出出来。一直把集合中的所有元素全部取出。这种取出方式专业术语称为迭代。
+### 4.3.1 Iterator
 
-* `public Iterator iterator()`: **获取==集合对应的迭代器==**，用来遍历集合中的元素的。
+* `Iterator`对象称为迭代器（设计模式的一种），主要用于遍历 `Collection` 集合中的元素。
+* GOF给迭代器模式的定义为：提供一种方法访问一个容器（container）对象中各个元素，而又不需暴露该对象的内部细节。迭代器模式，就是为容器而生。类似于“公交车上的售票员”、“火车上的乘务员”、“空姐”。——检票
+* `Collection`接口继承了`java.lang.Iterable`接口，该接口有一个`iterator()`方法，那么所有实现了`Collection`接口的集合类都有一个`iterator()`方法，用以返回一个实现了`Iterator`接口的对象。`Iterator` **仅用于遍历集合**，`Iterator` 本身并不提供承装对象的能力。如果需要创建`Iterator` 对象，则必须有一个被迭代的集合。集合对象**每次**调用`iterator()`方法都得到一个**全新的迭代器对象**，**默认游标都在集合的第一个元素之前**。
 
-  * 这个接口也有泛型，但是跟着所属集合走，集合是什么泛型，迭代器就是什么泛型
 
-* `public E next()`:返回迭代的**下一个元素**。
 
-* `public boolean hasNext()`:如果**仍有元素可以迭代**，则**返回 true**。
+常用方法：
 
-  ```java
-  Iterator<String> iterator = list.iterator();
-  while (iterator.hasNext()) {
-      System.out.println(iterator.next());
-  }
-  ```
+* `Iterator<E> iterator()`: **获取`Collection`对应的迭代器**，用来遍历集合中的元素的。这个接口的泛型跟着所属集合走，集合是什么泛型，迭代器就是什么泛型。**每次调用都会得到一个全新的迭代器对象**。
 
-- **迭代器原理**：Iterator迭代器对象在遍历集合时，内部采用指针的方式来跟踪集合中的元素。在调用Iterator的next方法之前，迭代器的索引位于第一个元素之前，不指向任何元素，当第一次调用迭代器的next方法后，迭代器的索引会向后移动一位，指向第一个元素并将该元素返回，当再次~。依此类推，直到hasNext方法返回false，表示到达了集合的末尾，终止对元素的遍历。
+* `boolean hasNext()`：如果**容器中还有元素可以迭代**，则**返回 true**。
 
-### 4.3.1 for each循环
+* `E next()`：指针下移，并返回迭代的**元素**。
 
-`Collection<E> extends Iterable<E>`，（**所有Collection**）实现此接口允许对象成为“**foreach**”语句目标。
+* `default void remove()`：删除集合的元素。但是是遍历过程中通过迭代器对象的`remove`方法，**不是集合对象的`remove`方法**。如果还未调用`next()`或在上一次调用 `next()` 方法之后已经调用了 `remove` 方法，再调用`remove`都会报`IllegalStateException`。
 
-* 增强for循环(也称for each循环)是**JDK1.5**以后出来的一个高级for循环，专门用来==遍历**数组**和**Collection**==的。它的内部**原理其实是个Iterator迭代器**，所以在遍历的过程中，**==不能对Collection中的元素进行增删操作==**。
+* ```java
+    Iterator<String> iterator = c.iterator();
+    while (iterator.hasNext()) {
+        // iterator.remove();// 错误
+        String next = iterator.next();
+        if ("123".equals(next)) {
+            iterator.remove();
+        }
+        // iterator.remove();// 错误
+    }
+    ```
+
+- 迭代器执行原理如下：
+
+    ![page17image24711664.png](images/page17image24711664.png) 
+
+    在调用`it.next()`方法之前必须要调用`it.hasNext()`进行检测。若不调用，且下一条记录无效，会抛出`NoSuchElementException`异常。
+
+    `Iterator`迭代器对象在遍历集合时，内部采用指针的方式来跟踪集合中的元素。在调用`Iterator`的`next()`方法之前，迭代器的索引位于**第一个元素之前**，不指向任何元素，当第一次调用迭代器的`next()`方法后，迭代器的**索引会向后移动一位，指向第一个元素并将该元素返回**，当再次~。依此类推，直到`hasNext()`方法返回false，表示到达了集合的末尾，终止对元素的遍历。
+
+
+
+### 4.3.2 foreach循环
+
+* 增强for循环（也称foreach循环）是**JDK1.5**以后出来的一个高级for循环，专门用来**遍历`Array`和`Collection`**。它的内部**原理其实是个`Iterator`迭代器**，所以在遍历的过程中，**尽量不要对`Collection`中的元素进行增删操作**。
+
+* `Collection<E> extends Iterable<E>`，（**所有Collection**）实现此接口允许对象成为“**foreach**”语句目标。
 
   ```java
   ArrayList<String> arraylist = new ArrayList<>();
   for(String s:arraylist){
-  	System.out.println(s);
+      System.out.println(s);
   }
   ```
 
 
 
-### 4.3.2 并发修改异常
+### 4.3.3 并发修改异常
 
 - `ConcurrentModificationException`现象：**迭代器遍历集合，集合修改集合元素**
 
@@ -5421,155 +5595,10 @@ System.out.println(a == c);//false
 
 - 解决：
 
-  - ==**迭代器遍历，并利用Iterator的remove方法**==
-  - **集合遍历，集合修改**(利用get()和size())，增加元素在集合末尾
+  - **迭代器遍历，并利用`Iterator`的`remove`方法**
+  - **集合遍历，集合修改**（利用`get()`和`size()`），增加元素在集合末尾
 
   - 删除元素时并跟上break语句
-
-
-
-## 4.4 泛型
-
-> 集合中是可以存放任意对象的，只要把对象存储集合后，那么这时他们都会被提升成Object类型。当我们在取出每一个对象并且进行相应的操作时必须采用类型转换。有可能强转引发运行时`ClassCastException`。
->
-> Collection虽然可以存储各种对象，但实际上通常Collection只存储同一类型对象。例如都是存储字符串对象。因此在JDK5之后，新增了**泛型**(**Generic**)语法，让你在设计API时可以指定类或方法支持泛型，这样我们使用API的时候也变得更为简洁，并得到了编译时期的语法检查。
-
-* **泛型**：可以在类或方法中预支地使用未知的类型。
-* **泛型的好处：**
-  * 将**运行时期**的ClassCastException，转移到了**编译时期**变成了编译失败。
-  * **避免了类型强转**的麻烦。
-
-> tips:泛型是数据类型的一部分，我们将类名与泛型合并一起看做数据类型。
-
-* **泛型的定义与使用**
-
-  * 泛型，用来灵活地**将数据类型应用**到不同的**类**、**方法**、**接口**当中。**将数据类型作为参数进行传递**。
-
-  * **含有泛型的类**（在**创建对象时**就确定泛型的类型）
-
-    ```java
-    修饰符 class 类名 <代表泛型的变量> {  } //格式
-    public class MyGenericClass<E> {//没有E类型，在这里代表 未知的一种数据类型 未来传递什么就是什么类型
-        private E e;
-    
-        public void setE(E e) {
-            this.e = e;
-        }
-        public E getE() {
-            return e;
-        }
-    }
-    ```
-
-    ```java
-    MyGenericClass<String> my = new MyGenericClass<String>(); //创建对象时就确定泛型的类型
-    ```
-
-  * **含有泛型的方法**（**调用方法传递数据时**确定泛型的类型）
-
-    ```java
-    修饰符 <代表泛型的变量> 返回值类型 方法名(参数){  } //格式
-    public class MyGenericMethod {	  
-        public <E> void show(E e) {
-            System.out.println(e.getClass());
-        }
-    
-        public static <E> E show2(E e) {	
-            return e;
-        }
-    }
-    ```
-
-    ```java
-    MyGenericMethod mm = new MyGenericMethod();
-    mm.show("aaa"); //调用方法传递数据时确定泛型的类型
-    mm.show(1);
-    ```
-
-  * **含有泛型的接口**（1.**实现接口时**确定泛型的类型；2.始终不确定泛型，直到**创建对象时**确定泛型的类型）
-
-    ```java
-    修饰符 interface 接口名 <代表泛型的变量> {  } //格式
-    public interface MyGenericInterface<E>{
-    	public abstract void add(E e);
-    	
-    	public abstract E getE();  
-    }
-    ```
-
-    ```java
-    public class MyImp1 implements MyGenericInterface<String> { //实现接口时确定泛型的类型
-        @Override
-        public void add(String e) { /*省略...*/ }
-    
-        @Override
-        public String getE() { /*省略...*/ }
-    }
-    ```
-
-    ```java
-    public class MyImp2<E> implements MyGenericInterface<E> { //始终不确定泛型
-        @Override
-        public void add(E e) { /*省略...*/ }
-        
-    	@Override
-        public E getE() { /*省略...*/ }
-    }
-    MyImp2<String>  my = new MyImp2<String>();  //直到创建对象时确定泛型的类型
-    my.add("aa");
-    ```
-
-* **泛型通配符**
-
-  * 当**使用泛型类或者接口**时，**传递的数据中**，**泛型类型不确定**，可以通过通配符<?>表示。但是一旦使用泛型的通配符后，只能使用Object类中的共性方法，集合中元素自身方法无法使用。此时只能接收数据,不能往该集合中存储数据。
-  * 使用方式：不能创建对象时使用，只能**作为方法的参数使用**
-
-  ```java
-  public static void main(String[] args) {
-      Collection<Intger> list1 = new ArrayList<Integer>();
-      getElement(list1);
-      Collection<String> list2 = new ArrayList<String>();
-      getElement(list2);
-  }
-  public static void getElement(Collection<?> coll){}//？代表可以接收任意类型
-  ```
-
-* **通配符高级使用**----**受限泛型**
-
-  * 之前设置泛型的时候，实际上是可以任意设置的，只要是类就可以设置。但是在JAVA的泛型中可以指定一个泛型的**上限**和**下限**。
-
-  * **泛型的上限**：
-
-    - **格式**： `类型名称 <? extends 类 > 对象名称`
-    - **意义**：只能接收该类型及其子类
-
-    **泛型的下限**：
-
-    - **格式**： `类型名称 <? super 类 > 对象名称`
-    - **意义**：只能接收该类型及其父类型
-
-    ```java
-    //现已知Object类，String 类，Number类，Integer类，其中Number是Integer的父类
-    public static void main(String[] args) {
-        Collection<Integer> list1 = new ArrayList<Integer>();
-        Collection<String> list2 = new ArrayList<String>();
-        Collection<Number> list3 = new ArrayList<Number>();
-        Collection<Object> list4 = new ArrayList<Object>();
-    
-        getElement1(list1);
-        getElement1(list2);//报错
-        getElement1(list3);
-        getElement1(list4);//报错
-    
-        getElement2(list1);//报错
-        getElement2(list2);//报错
-        getElement2(list3);
-        getElement2(list4);
-    
-    }
-    public static void getElement1(Collection<? extends Number> coll){}
-    public static void getElement2(Collection<? super Number> coll){}
-    ```
 
 
 
@@ -5577,32 +5606,55 @@ System.out.println(a == c);//false
 
 ## 4.5 List
 
-* **元素稳定（存入和取出顺序一致）**，通过**索引**来访问指定元素，**允许**出现**重复**元素
-  * 由于有索引，所以==**List集合特有遍历功能**get()和size()结合的**普通for循环**==。还有迭代器、for each。
+* **元素稳定**（存入和取出顺序一致）、**可重复**（允许出现重复元素），通过**索引**来访问指定元素，
+  * 由于有索引，所以**List集合特有遍历功能**`get()`和`size()`结合的**普通for循环**。还有**迭代器**、**foreach**。
   * 其实现类都重写了`toString()`方法
 
 - **特有方法**
-  - **添加(==add==；addAll)**
-    - `void add(int index,E e)`
+  - **添加**
+    - `void add([int index,]E e)`
     - `void addAll([int index,]Collection c)`
-  - **删除(==remove==)**
+  - **删除**
     - `Object remove(int index)`
-  - **获取(==get==；indexOf；lastIndexOf；subList)**
+  - **获取**
     - `Object get(index)`
     - `int indexOf(Object o)`
     - `int lastIndexOf(Object o)`
     - `List subList(int fromIndex,int toIndex)`
-  - **修改替换(==set==)**
+  - **修改替换**
     - `Object set(int index,E e)`
 
 ### 4.5.1 ArrayList
 
 - **底层是数组，查询快，增删慢**。**不同步，线程不安全，效率高**
+
 - 常用方法：没有特殊方法
+
+- 源码分析（JDK7）
+
+    - `ArrayList list = new ArrayList()`，底层创建了长度是**10**的`Object[]`数组`elementData`
+
+    - `list.add(123)` 即`elementData[0] = new Integer(123)`
+
+    - `list.add(11)`，如果此次的添加导致底层`elementData`数组容量不够，则扩容。
+
+    - 默认情况下扩容为**原来的容量的1.5倍**（原有容量+容量右移一位），同时需要将原有数组中的数据**复制到新数组**中。
+
+        若扩容一次后还不够，则使用传入的容量（后续总结）
+
+- 源码分析（JDK8）
+
+    - `ArrayList list = new ArrayList()`，底层`Object[] elementData`初始化为`{}`，并没有创建长度为10的数组
+    - `list.add(123)`，第一次调用`add()`时，底层才创建了长度10的数组，并将数据123添加到`elementData[0]`
+    - 后续的添加和扩容操作与jdk 7 无异（但是注释没改！）
+
+- 小结：jdk7中的`ArrayList`的对象的创建类似于**单例的饿汉式**，而jdk8中的`ArrayList`的对象的创建类似于**单例的懒汉式**，**延迟了数组的创建，节省内存**。
+
+- **建议开发中使用带参的构造器**：`ArrayList list = new ArrayList(int capacity)`
 
 ### 4.5.2 LinkedList
 
-- **底层是双向链表，查询慢，增删快**。**不同步，线程不安全，效率高**
+- **底层是双向链表，查询慢，增删快**。**线程不安全，效率高**
 - 重写了`toString()`方法
 - **特有方法（==操作首位元素==）**
   - **添加**
@@ -5614,6 +5666,18 @@ System.out.println(a == c);//false
   - **获取**
     - `Object getFirst()`
     - `Objcet getLast()`
+
+
+
+### ArrayList、LinkedList、Vector 异同
+
+-   相同：都实现了List接口；存储稳定、可重复的数据。
+-   不同：
+    -   `ArrayList`：底层是`Object[] elementData`，**支持快速随机访问，增删慢**（或涉及元素移动`Arrays.copyOf` `System.arraycopy`），**线程不安全，效率高**
+    -   `LinkedList`：底层是**双向链表**，**查找慢，增删快**，**线程不安全**；长度没有限制，占用空间比`ArrayList`大（需要维护指针）
+    -   `Vector`：底层是`Object[] elementData`，**线程安全，效率低**，即使为了线程安全也别用它
+
+
 
 ## 4.6 Set
 
@@ -5992,6 +6056,34 @@ private static void lookPuke(String name, TreeSet<Integer> player, Map<Integer, 
     System.out.println();
 }
 ```
+
+
+
+### Foreach问题
+
+```java
+String[] arr = new String[] { "MM", "MM", "MM" };
+
+// 方式一：普通for赋值
+//for (int i = 0; i < arr.length; i++) {
+//    arr[i] = "GG";
+//}
+
+// 方式二：增强for循环
+for (String s : arr) {
+    s = "GG";
+}
+
+for (int i = 0; i < arr.length; i++) {
+    System.out.println(arr[i]);// 不变，还是 MM，因为局部变量
+}
+```
+
+
+
+*   *   
+
+
 
 
 
