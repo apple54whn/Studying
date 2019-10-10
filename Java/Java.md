@@ -5511,7 +5511,7 @@ System.out.println(a == c);//false
     - `boolean addAll(Collection c)`
   - **删除**
     - `void clear()`：删除集合中所有元素，但集合还存在
-    - `boolean remove(Object o)`：
+    - `boolean remove(Object o)`：区别 List 中的
     - `boolean removeAll(Collection c)`：差集关系
     - `default boolean removeIf(Predicate<? super E> filter)`：根据条件删除
   - **判断**
@@ -5606,23 +5606,27 @@ System.out.println(a == c);//false
 
 ## 4.5 List
 
-* **元素稳定**（存入和取出顺序一致）、**可重复**（允许出现重复元素），通过**索引**来访问指定元素，
-  * 由于有索引，所以**List集合特有遍历功能**`get()`和`size()`结合的**普通for循环**。还有**迭代器**、**foreach**。
+* **元素稳定**（存入和取出顺序一致）、**可重复**（允许出现重复元素），通过**索引**来访问指定元素
   * 其实现类都重写了`toString()`方法
 
 - **特有方法**
   - **添加**
-    - `void add([int index,]E e)`
-    - `void addAll([int index,]Collection c)`
+    - `void add([int index,]E e)`：当成单独元素
+    - `void addAll([int index,]Collection c)`：当成整体
   - **删除**
-    - `Object remove(int index)`
+    - `Object remove(int index)`：返回被删除元素
+    - `boolean remove(Object o)`：删除对象
+  - **修改替换**
+      -   `Object set(int index,E e)`：返回被替换掉的元素
   - **获取**
     - `Object get(index)`
     - `int indexOf(Object o)`
     - `int lastIndexOf(Object o)`
-    - `List subList(int fromIndex,int toIndex)`
-  - **修改替换**
-    - `Object set(int index,E e)`
+    - `List subList(int fromIndex,int toIndex)`：返回新的 List，旧 List 不改变
+  - 长度：同 Collection
+  - 遍历：由于有索引，所以**List集合特有遍历功能**`get()`和`size()`结合的**普通for循环**。还有**迭代器**、**foreach**。
+
+
 
 ### 4.5.1 ArrayList
 
@@ -5652,11 +5656,13 @@ System.out.println(a == c);//false
 
 - **建议开发中使用带参的构造器**：`ArrayList list = new ArrayList(int capacity)`
 
+
+
 ### 4.5.2 LinkedList
 
 - **底层是双向链表，查询慢，增删快**。**线程不安全，效率高**
 - 重写了`toString()`方法
-- **特有方法（==操作首位元素==）**
+- **特有方法（操作首尾元素）**
   - **添加**
     - `void addFirst(E e)`等效于`push(E e)`
     - `void addLast(Object o)`
@@ -5666,6 +5672,40 @@ System.out.println(a == c);//false
   - **获取**
     - `Object getFirst()`
     - `Objcet getLast()`
+
+*   源码分析（JDK8，与7没区别）
+
+    *   `LinkedList list = new LinkedList()`，内部声明了`Node`内部类的`first`和`last`属性，默认值为`null`
+
+    *   `list.add(123)`，将123封装到Node中，创建了Node对象。
+
+    *   其中，`Node`定义为：体现了`LinkedList`的双向链表的说法
+
+        ```java
+        private static class Node<E> {
+            E item;
+            Node<E> next;
+            Node<E> prev;
+        
+            Node(Node<E> prev, E element, Node<E> next) {
+                this.item = element;
+                this.next = next;
+                this.prev = prev;
+            }
+        }
+        ```
+
+
+
+### 4.5.3 Vector
+
+*   源码分析：
+    *   jdk7和jdk8中通过Vector()构造器创建对象时，底层直接创建了长度为10的数组。
+    *   扩容时与 ArrayLIst 相比，默认变为原来的2倍
+
+
+
+
 
 
 
@@ -6076,12 +6116,29 @@ for (String s : arr) {
 
 for (int i = 0; i < arr.length; i++) {
     System.out.println(arr[i]);// 不变，还是 MM，因为局部变量
-}
+
 ```
 
 
 
-*   *   
+### List 面试题
+
+```java
+@Test
+public void testListRemove() {
+    List list = new ArrayList();
+    list.add(1);
+    list.add(2);
+    list.add(3);
+    updateList(list);
+    System.out.println(list);//1，2
+}
+
+private static void updateList(List list) {
+    list.remove(2);// 到底删除的是元素2还是 index 呢？是index！
+    //list.remove(new Integer(2));// 此时就删除对象2
+}
+```
 
 
 
