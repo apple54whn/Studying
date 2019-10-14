@@ -4596,7 +4596,7 @@ System.out.println(parse3);// {},ISO resolved to 2019-10-05T19:43:04
     *   `数值类型对应的包装类`以及`BigInteger`、`BigDecimal`：按照对应的数值大小进行比较。提供了`compare()`
     *   `Character`：按照字符的Unicode值来进行比较。提供了`compare()`
     *   **`Boolean`：true 对应的包装类实例大于 false 对应的包装类实例**。提供了`compare()`
-    *   `String`：按照字符串中字符的Unicode值进行比较。使用`-`比较
+    *   `String`：按照字符串中字符的Unicode值进行比较。提供了`compareTo()`
     *   `Date`、`Time`等：后面的日期时间比前面的日期时间大。
 
 
@@ -4612,6 +4612,8 @@ System.out.println(parse3);// {},ISO resolved to 2019-10-05T19:43:04
     *   返回负整数，表示 o1小于o2。
 *   可以将 `Comparator` **传递给 `sort` 方法**（如`Collections.sort` 或 `Arrays.sort`）， 实现精确控制排序。
 *   还可以使用 `Comparator` 来控制某些数据结构（如有序set或有序map）的顺序，或者为那些没有自然顺序的对象 `container` 提供排序。
+*   **方法（结合 Lambda 使用）**
+    *   
 
 
 
