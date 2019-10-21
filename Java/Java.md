@@ -5291,29 +5291,182 @@ System.out.println(a == c);//false
 
 
 
-# 5 泛型
+# 5 泛型 Generic
 
-## 4.4 泛型
+## 5.1 为什么要有泛型
 
->   集合中是可以存放任意对象的，只要把对象存储集合后，那么这时他们都会被提升成Object类型。当我们在取出每一个对象并且进行相应的操作时必须采用类型转换。有可能强转引发运行时`ClassCastException`。
->
->   Collection虽然可以存储各种对象，但实际上通常Collection只存储同一类型对象。例如都是存储字符串对象。因此在JDK5之后，新增了**泛型**(**Generic**)语法，让你在设计API时可以指定类或方法支持泛型，这样我们使用API的时候也变得更为简洁，并得到了编译时期的语法检查。
+*   泛型：类似标签。例如：中药店，每个抽屉外面贴着标签；垃圾分类！
 
--   **泛型**：可以在类或方法中预支地使用未知的类型。
--   **泛型的好处：**
-    -   将**运行时期**的ClassCastException，转移到了**编译时期**变成了编译失败。
-    -   **避免了类型强转**的麻烦。
+*   泛型的**设计背景**：
 
->   tips:泛型是数据类型的一部分，我们将类名与泛型合并一起看做数据类型。
+    集合容器类在设计阶段、声明阶段不能确定这个容器到底实际存的是什么类型的对象，所以在JDK1.5之前只能把元素类型设计为`Object`，JDK1.5之后使用泛型来解决。因为这个时候除了元素的类型不确定，其他的部分是确定的，例如关于这个元素如何保存，如何管理等是确定的，因此此时把**元素的类型设计成一个参数**，这个**类型参数叫做泛型**。 `Collection<E>`，`List<E>`，`ArrayList<E>` 这个`<E>`就是类型参数，即泛型。
 
--   **泛型的定义与使用**
+*   泛型的概念：所谓泛型，就是允许在**定义类、接口时通过一个标识表示类中某个属性的类型或者是某个方法的返回值及参数类型**。这个类型参数将在**使用时**（例如， 继承或实现这个接口，用这个类型声明变量、创建对象时）**确定**（即传入实际的类型参数，也称为类型实参）。
+
+    从JDK1.5以后，Java引入了“参数化类型(Parameterized type)”的概念， 允许我们在创建集合时再指定集合元素的类型，正如：`List<String>`，这表明该`List`只能保存字符串类型的对象。JDK1.5改写了集合框架中的全部接口和类，为这些接口、类增加了泛型支持， 从而可以在声明集合变量、创建集合对象时传入类型实参。
+
+*   那么为什么要有泛型？泛型的好处？
+
+    *   解决元素**存储**的**类型不安全**问题，好比商品、药品标签，不会弄错。在设计API时可以指定类或方法支持泛型，这样使用API的时候也变得更为简洁，并得到了**编译时期的语法检查**。
+    *   解决**获取**数据元素时，需要**类型强制转换**的问题，有可能强转引发**运行时**`ClassCastException`。不用每回拿商品、药品都要辨别。
+
+>   TIPS：泛型是数据类型的一部分，我们将类名与泛型合并一起看做数据类型。
+
+
+
+## 5.2 集合中使用泛型
+
+略👻
+
+
+
+## 5.3 自定义泛型
+
+注意：
+
+*   泛型类可能有多个参数，此时应将多个参数一起放在尖括号内。比如`<E1,E2,E3>`
+
+*   `E`或其他只能是类，不能用基本数据类型填充，但可以使用包装类填充。
+
+*   构造器不用带`E`
+
+*   **泛型不同的引用不能相互赋值**
+
+*   在类/接口上声明的泛型，在本类或本接口中即代表某种类型，可以作为**非静态属性的类型、非静态方法的参数类型、非静态方法的返回值类型**。但**在静态方法中不能使用类的泛型**。因为泛型是在创建对象时确定，晚于 static
+
+*   异常类不能是泛型的；不能在try-catch中使用泛型定义 
+
+*   不能使用`new E[]`。但是可以`E[] elements = (E[])new Object[capacity]`，参考`ArrayList`源码中声明`Object[] elementData`，而非泛型参数类型数组
+
+*   **父类有泛型，子类可以选择保留泛型也可以选择指定泛型类型**
+
+    *   子类不保留父类的泛型：按需实现
+        *   没有类型擦除
+        *   具体类型
+    *   子类保留父类的泛型：泛型子类
+        *   全部保留
+        *   部分保留
+
+    结论：子类必须是“富二代”，**子类除了指定或保留父类的泛型，还可以增加自己的泛型**
+
+    ```java
+    class Father<T1, T2> {}
+    
+    // 子类不保留父类的泛型
+    // 1)没有类型 擦除
+    class Son1 extends Father {/*等价于class Son extends Father<Object,Object>{}*/}
+    // 2)具体类型
+    class Son2 extends Father<Integer, String> { }
+    
+    // 子类保留父类的泛型
+    // 1)全部保留
+    class Son3<T1, T2> extends Father<T1, T2> { }
+    // 2)部分保留
+    class Son4<T2> extends Father<Integer, T2> { }
+    ```
+
+    ```java
+    class Father<T1, T2> {}
+    // 子类不保留父类的泛型
+    // 1)没有类型 擦除
+    class Son<A, B> extends Father{/*等价于class Son extends Father<Object,Object>{ }*/}
+    // 2)具体类型
+    class Son2<A, B> extends Father<Integer, String> { }
+    
+    // 子类保留父类的泛型
+    // 1)全部保留
+    class Son3<T1, T2, A, B> extends Father<T1, T2> { }
+    // 2)部分保留
+    class Son4<T2, A, B> extends Father<Integer, T2> { }
+    ```
+
+    
+
+### 5.3.1 自定义泛型类
+
+在**创建对象时**就确定泛型的类型。
+
+```java
+public class MyGenericClass<E> {//没有E类型，在这里代表 未知的一种数据类型 未来传递什么就是什么类型
+    private E e;
+
+    public MyGenericClass() {
+    }
+
+    public MyGenericClass(E e) {
+        this.e = e;
+    }
+
+    public void setE(E e) {
+        this.e = e;
+    }
+  
+    public E getE() {
+        return e;
+    }
+}
+```
+
+```java
+MyGenericClass<String> my = new MyGenericClass<>(); //创建对象时就确定泛型的类型
+```
+
+
+
+
+
+### 5.3.2 自定义泛型接口
+
+*   **实现接口时**确定泛型的类型；
+*   始终不确定泛型，直到**创建对象时**确定泛型的类型
+
+```java
+public interface MyGenericInterface<E>{
+	
+  public abstract void add(E e);
+	
+	public abstract E getE();  
+}
+```
+
+```java
+public class MyImp1 implements MyGenericInterface<String> { //实现接口时确定泛型的类型
+    @Override
+    public void add(String e) { /*省略...*/ }
+
+    @Override
+    public String getE() { /*省略...*/ }
+}
+```
+
+```java
+public class MyImp2<E> implements MyGenericInterface<E> { //始终不确定泛型
+    @Override
+    public void add(E e) { /*省略...*/ }
+    
+	@Override
+    public E getE() { /*省略...*/ }
+}
+MyImp2<String>  my = new MyImp2<>();  //直到创建对象时确定泛型的类型
+my.add("aa"); 
+```
+
+
+
+### 5.3.3 自定义泛型类
+
+
+
+
+
+-   泛型的定义与使用**
 
     -   泛型，用来灵活地**将数据类型应用**到不同的**类**、**方法**、**接口**当中。**将数据类型作为参数进行传递**。
 
     -   **含有泛型的类**（在**创建对象时**就确定泛型的类型）
 
         ```java
-        修饰符 class 类名 <代表泛型的变量> {  } //格式
+        修饰符 class 类名 <E> {  } //格式
         public class MyGenericClass<E> {//没有E类型，在这里代表 未知的一种数据类型 未来传递什么就是什么类型
             private E e;
         
