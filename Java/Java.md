@@ -5332,7 +5332,7 @@ System.out.println(a == c);//false
 
 *   **泛型不同的引用不能相互赋值**
 
-*   在类/接口上声明的泛型，在本类或本接口中即代表某种类型，可以作为**非静态属性的类型、非静态方法的参数类型、非静态方法的返回值类型**。但**在静态方法中不能使用类的泛型**。因为泛型是在创建对象时确定，晚于 static
+*   在类/接口上声明的泛型，在本类或本接口中即代表某种类型，可以作为**非静态属性的类型、非静态方法的参数类型、非静态方法的返回值类型**。但**在静态方法中不能使用（使用！）类的泛型**。因为泛型是在创建对象时确定，晚于 static
 
 *   异常类不能是泛型的；不能在try-catch中使用泛型定义 
 
@@ -5384,7 +5384,7 @@ System.out.println(a == c);//false
 
 ### 5.3.1 自定义泛型类
 
-在**创建对象时**就确定泛型的类型。
+*   在**创建对象时**就确定泛型的类型。
 
 ```java
 public class MyGenericClass<E> {//没有E类型，在这里代表 未知的一种数据类型 未来传递什么就是什么类型
@@ -5453,106 +5453,93 @@ my.add("aa");
 
 
 
-### 5.3.3 自定义泛型类
+### 5.3.3 自定义泛型方法
+
+*   方法也可以被泛型化，**不管此时定义在其中的类是不是泛型类**。在泛型方法中可以定义泛型参数，此时参数的类型就是传入数据的类型。
+
+*   **调用方法传递数据时**确定泛型的类型
+*   **泛型方法可以声明为静态的（不同于使用类的泛型）**。原因：泛型参数是在调用方法时确定的。并非在实例化类时确定。
+
+```java
+修饰符 <代表泛型的变量> 返回值类型 方法名(参数){  } //格式
+public class MyGenericMethod {	  
+    // 权限修饰符后的<E>可以写上，让编译器知道这是泛型，不是具体类。也可以不写，在 IDEA2019中没报错
+    public <E>  List<E> show(E[] e) {
+        System.out.println(e.getClass());
+        return null;
+    }
+
+    public static <E> E show2(E e) {
+        return e;
+    }
+}
+```
+
+```java
+MyGenericMethod mm = new MyGenericMethod();
+mm.show("aaa"); //调用方法传递数据时确定泛型的类型
+mm.show(1);
+```
 
 
 
+## 5.4 泛型在继承方面的体现
 
+*   如果 `B` 是 `A` 的一个子类型（子类或者子接口），而 `G` 是具有泛型声明的类或接口，`G<B>`并不是`G<A>`的子类型
 
--   泛型的定义与使用**
+    类`A`是类`B`的父类，`A<G>`是`B<G>`的父类
 
-    -   泛型，用来灵活地**将数据类型应用**到不同的**类**、**方法**、**接口**当中。**将数据类型作为参数进行传递**。
+    ```java
+    List<Object> list1 = null;
+    List<String> list2 = null;
+    list1 = list2; // 编译失败。add 时数据不安全
+    
+    Object a = null;
+    String b = null;
+    a = b;// 成功
+    ```
 
-    -   **含有泛型的类**（在**创建对象时**就确定泛型的类型）
+    
 
-        ```java
-        修饰符 class 类名 <E> {  } //格式
-        public class MyGenericClass<E> {//没有E类型，在这里代表 未知的一种数据类型 未来传递什么就是什么类型
-            private E e;
-        
-            public void setE(E e) {
-                this.e = e;
-            }
-            public E getE() {
-                return e;
-            }
-        }
-        ```
+## 5.5 泛型通配符
 
-        ```java
-        MyGenericClass<String> my = new MyGenericClass<String>(); //创建对象时就确定泛型的类型
-        ```
+-   当**使用泛型类或者接口**时，**传递的数据中**，**泛型类型不确定**，可以通过通配符`?`表示。但是一旦使用泛型的通配符后，只能使用`Object`类中的共性方法。集合中元素自身方法无法使用，此时**只能读取数据，不能添加数据（除了 null ）**。
+-   类`A`是类`B`的父类，`G<A>`和`G<B>`是没有关系的，二者共同的父类
 
-    -   **含有泛型的方法**（**调用方法传递数据时**确定泛型的类型）
-
-        ```java
-        修饰符 <代表泛型的变量> 返回值类型 方法名(参数){  } //格式
-        public class MyGenericMethod {	  
-            public <E> void show(E e) {
-                System.out.println(e.getClass());
-            }
-        
-            public static <E> E show2(E e) {	
-                return e;
-            }
-        }
-        ```
-
-        ```java
-        MyGenericMethod mm = new MyGenericMethod();
-        mm.show("aaa"); //调用方法传递数据时确定泛型的类型
-        mm.show(1);
-        ```
-
-    -   **含有泛型的接口**（1.**实现接口时**确定泛型的类型；2.始终不确定泛型，直到**创建对象时**确定泛型的类型）
-
-        ```java
-        修饰符 interface 接口名 <代表泛型的变量> {  } //格式
-        public interface MyGenericInterface<E>{
-        	public abstract void add(E e);
-        	
-        	public abstract E getE();  
-        }
-        ```
-
-        ```java
-        public class MyImp1 implements MyGenericInterface<String> { //实现接口时确定泛型的类型
-            @Override
-            public void add(String e) { /*省略...*/ }
-        
-            @Override
-            public String getE() { /*省略...*/ }
-        }
-        ```
-
-        ```java
-        public class MyImp2<E> implements MyGenericInterface<E> { //始终不确定泛型
-            @Override
-            public void add(E e) { /*省略...*/ }
-            
-        	@Override
-            public E getE() { /*省略...*/ }
-        }
-        MyImp2<String>  my = new MyImp2<String>();  //直到创建对象时确定泛型的类型
-        my.add("aa");
-        ```
-
--   **泛型通配符**
-
-    -   当**使用泛型类或者接口**时，**传递的数据中**，**泛型类型不确定**，可以通过通配符<?>表示。但是一旦使用泛型的通配符后，只能使用Object类中的共性方法，集合中元素自身方法无法使用。此时只能接收数据,不能往该集合中存储数据。
-    -   使用方式：不能创建对象时使用，只能**作为方法的参数使用**
+-   使用方式：不能创建对象时使用，只能**作为方法的参数使用**
 
     ```java
     public static void main(String[] args) {
-        Collection<Intger> list1 = new ArrayList<Integer>();
-        getElement(list1);
-        Collection<String> list2 = new ArrayList<String>();
-        getElement(list2);
+      Collection<Intger> list1 = new ArrayList<Integer>();
+      getElement(list1);
+      Collection<String> list2 = new ArrayList<String>();
+      getElement(list2);
     }
     public static void getElement(Collection<?> coll){}//？代表可以接收任意类型
     ```
 
--   **通配符高级使用**----**受限泛型**
+-   注意
+
+    ```java
+    //注意点1:编译错误:不能用在泛型方法声明上，返回值类型前面<>不能使用? 
+    public static <?> void test(ArrayList<?> list){
+    }
+    ```
+
+    ```java
+    //注意点2:编译错误:不能用在泛型类的声明上 
+    class GenericTypeClass<?>{
+    }
+    ```
+
+    ```java
+    //注意点3:编译错误:不能用在创建对象上，右边属于创建集合对象 
+    ArrayList<?> list2 = new ArrayList<?>();
+    ```
+
+    
+
+-   **通配符高级使用——受限泛型**
 
     -   之前设置泛型的时候，实际上是可以任意设置的，只要是类就可以设置。但是在JAVA的泛型中可以指定一个泛型的**上限**和**下限**。
 
@@ -5588,6 +5575,39 @@ my.add("aa");
         public static void getElement1(Collection<? extends Number> coll){}
         public static void getElement2(Collection<? super Number> coll){}
         ```
+
+
+
+
+
+
+
+## 用处
+
+#### Mybatis-Plus 的通用 Mapper
+
+```java
+public interface BaseMapper<T> extends Mapper<T> {
+
+    /**
+     * 插入一条记录
+     *
+     * @param entity 实体对象
+     */
+    int insert(T entity);
+  
+  	//......
+}
+```
+
+```java
+public class UserDao implements BaseMapper<User> {
+}
+```
+
+
+
+
 
 
 
