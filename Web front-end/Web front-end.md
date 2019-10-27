@@ -124,11 +124,11 @@ HyperText Markup Language：超文本标记语言
     <a href='#top'>returnTop</a>
     ```
 
-  - `href`中添加`javascript:void(0);`==可以**禁止跳转**==
+  - `href`中添加`javascript:void(0);`可以**禁止跳转**
 
   - 在**发送邮件**时：`<a href="mailto:xxx@gmail.com">联系我们</a>`
 
-  - 可以**包裹img标签**
+  - 可以**包裹`<img>`标签**
 
 - **表格标签**
 
@@ -158,37 +158,37 @@ HyperText Markup Language：超文本标记语言
 
 - **表单标签**：提交用户数据到服务器 
 
-  - `<form></form>`: 定义一个表单的范围 
+  `<form></form>`: 定义一个表单的范围 
 
-    - **action**：提交到地址，默认提交到当前的页面（可以是一个页面，也可以是后台代码）
+  - **action**：提交到地址，默认提交到当前的页面（可以是一个页面，也可以是后台代码）
 
-    - **method**：常用的有两种  get和post，默认是get请求 
+  - **method**：常用的有两种  get和post，默认是get请求 
 
-      - ==**get和post区别**==
+    - **GET和POST区别**
 
-        1. get请求地址栏会携带提交的数据（封装到请求行中），post不会携带（封装在请求体里面，http协议）
-        2. get请求数据有大小的限制，post没有限制
-        3. get请求安全级别较低，post较高
+      1. get请求地址栏会携带提交的数据（封装到请求行中），post不会携带（封装在请求体里面，http协议）
+      2. get请求数据有大小的限制，post没有限制
+      3. get请求安全级别较低，post较高
 
-      - form表单不支持其他请求方式，使用时需要在input中添加一个**`_method`属性**，Ajax方式示例：
+    - form表单不支持其他请求方式，使用时需要在input中添加一个**`_method`属性**，Ajax方式示例：
 
-        注意：Java后端需**配置`HiddenHttpMethodFilter`**
+      注意：Java后端需**配置`HiddenHttpMethodFilter`**
 
-        ```javascript
-        $.ajax({
-            url:"/user",
-            type: "POST",
-            data: {
-                "_method":"DELETE",
-                "body":$("#form1").serialize()
-            },
-            success : function (href) {
-                location.href = href;
-            }
-        })
-        ```
+      ```javascript
+      $.ajax({
+          url:"/user",
+          type: "POST",
+          data: {
+              "_method":"DELETE",
+              "body":$("#form1").serialize()
+          },
+          success : function (href) {
+              location.href = href;
+          }
+      })
+      ```
 
-    - **enctype**：一般请求下不需要这个属性，做**文件上传**时候需要设置这个属性 
+  - **enctype**：一般请求下不需要这个属性，做**文件上传**时候需要设置这个属性 
 
   - **输入项**`<input type="输入项类型">`
 
@@ -215,7 +215,7 @@ HyperText Markup Language：超文本标记语言
 
     - ==**submit**==：提交按钮，点击后跳转至指定action或本页
 
-      还可以获取==**form**==，使用**其`submit()`方法，返回false（true或无返回值都将跳转）**！用于Ajax提交表单
+      还可以获取**form**，使用**其`submit()`方法，返回false（true或无返回值都将跳转）**！用于Ajax提交表单
 
       ```html
       <a onclick="document:loginForm.submit()">登陆</a> <!--这样也可以提交，但是会跳转。了解-->
