@@ -1625,15 +1625,33 @@ EXCEPT 有一点与 UNION 和 INTERSECT 不同，那就是在减法运算中减�
 语法
 
 ```sql
-< 窗口函数 > OVER ([PARTITION BY < 列清单 >] ORDER BY < 排序用列清单 >) -- []中的内容可以省略
+-- []中的内容可以省略
+<窗口函数> OVER ([PARTITION BY <列清单>] 
+             ORDER BY <排序用列清单>)         
 ```
 
 能够作为窗口函数使用的函数:
 
-* 能够作为窗口函数的聚合函数(SUM、AVG、COUNT、MAX、MIN)
-* RANK、DENSE_RANK、ROW_NUMBER 等专用窗口函数
+* 能够作为窗口函数的**聚合函数**(SUM、AVG、COUNT、MAX、MIN)，写在`<窗口函数>`中。根据使用语法的不同，可以在聚合函数和窗口函数之间进行转换。
+* RANK、DENSE_RANK、ROW_NUMBER 等**专用窗口函数**（标准 SQL 定义的 OLAP 专用函数）
 
 重要的关键字是PARTITION BY和ORDER BY
+
+窗口函数兼具之前我们学过的GROUP BY 子句的分组功能以及 ORDER BY 子句的排序功能。但是，PARTITION BY 子句并不具备 GROUP BY 子句的汇总功能。因此，使用RANK 函数并**不会减少原表中记录的行数**
+
+
+
+### RANK 函数
+
+用来计算记录**排序**的函数
+
+
+
+
+
+
+
+
 
 
 
